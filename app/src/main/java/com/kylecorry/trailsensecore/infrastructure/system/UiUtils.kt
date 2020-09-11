@@ -1,18 +1,16 @@
-package com.kylecorry.trail_sense.shared.system
+package com.kylecorry.trailsensecore.infrastructure.system
 
+import android.R
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
+import androidx.annotation.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
-import com.kylecorry.trail_sense.R
+
 
 object UiUtils {
 
@@ -20,6 +18,7 @@ object UiUtils {
         context: Context,
         title: String,
         content: String,
+        @StringRes okString: Int,
         onClose: (() -> Unit)? = null
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
@@ -27,7 +26,7 @@ object UiUtils {
             setMessage(content)
             setTitle(title)
             setPositiveButton(
-                R.string.dialog_ok
+                okString
             ) { dialog, _ ->
                 onClose?.invoke()
                 dialog.dismiss()
@@ -43,6 +42,8 @@ object UiUtils {
         context: Context,
         title: String,
         content: String,
+        @StringRes okString: Int,
+        @StringRes cancelString: Int,
         onClose: ((cancelled: Boolean) -> Unit)? = null
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
@@ -50,13 +51,13 @@ object UiUtils {
             setMessage(content)
             setTitle(title)
             setPositiveButton(
-                R.string.dialog_ok
+                okString
             ) { dialog, _ ->
                 onClose?.invoke(false)
                 dialog.dismiss()
             }
             setNegativeButton(
-                R.string.dialog_cancel
+                cancelString
             ) { dialog, _ ->
                 onClose?.invoke(true)
                 dialog.dismiss()
@@ -78,22 +79,22 @@ object UiUtils {
 
     @ColorInt
     fun androidTextColorPrimary(context: Context): Int {
-        return getAndroidColorAttr(context, android.R.attr.textColorPrimary)
+        return getAndroidColorAttr(context, R.attr.textColorPrimary)
     }
 
     @ColorInt
     fun androidBackgroundColorPrimary(context: Context): Int {
-        return getAndroidColorAttr(context, android.R.attr.colorBackground)
+        return getAndroidColorAttr(context, R.attr.colorBackground)
     }
 
     @ColorInt
     fun androidBackgroundColorSecondary(context: Context): Int {
-        return getAndroidColorAttr(context, android.R.attr.colorBackgroundFloating)
+        return getAndroidColorAttr(context, R.attr.colorBackgroundFloating)
     }
 
     @ColorInt
     fun androidTextColorSecondary(context: Context): Int {
-        return getAndroidColorAttr(context, android.R.attr.textColorSecondary)
+        return getAndroidColorAttr(context, R.attr.textColorSecondary)
     }
 
     @ColorInt
@@ -105,12 +106,15 @@ object UiUtils {
         return ResourcesCompat.getDrawable(context.resources, drawableId, null)
     }
 
-    fun setButtonState(button: ImageButton, isOn: Boolean) {
+    fun setButtonState(
+        button: ImageButton,
+        isOn: Boolean,
+        @ColorInt primaryColor: Int,
+        @ColorInt secondaryColor: Int
+    ) {
         if (isOn) {
-            button.imageTintList =
-                ColorStateList.valueOf(color(button.context, R.color.colorSecondary))
-            button.backgroundTintList =
-                ColorStateList.valueOf(color(button.context, R.color.colorPrimary))
+            button.imageTintList = ColorStateList.valueOf(secondaryColor)
+            button.backgroundTintList = ColorStateList.valueOf(primaryColor)
         } else {
             button.imageTintList =
                 ColorStateList.valueOf(androidTextColorSecondary(button.context))
