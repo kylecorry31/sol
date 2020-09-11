@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.domain.time
 
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 internal object DateUtils {
     fun getClosestPastTime(
@@ -9,7 +10,7 @@ internal object DateUtils {
         times: List<LocalDateTime?>
     ): LocalDateTime? {
         return times.filterNotNull().filter { it.isBefore(currentTime) }
-            .minBy { Duration.between(it, currentTime).abs() }
+            .minByOrNull { Duration.between(it, currentTime).abs() }
     }
 
     fun getClosestFutureTime(
@@ -17,6 +18,14 @@ internal object DateUtils {
         times: List<LocalDateTime?>
     ): LocalDateTime? {
         return times.filterNotNull().filter { it.isAfter(currentTime) }
-            .minBy { Duration.between(it, currentTime).abs() }
+            .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
+
+    fun getClosestFutureTime(
+        currentTime: ZonedDateTime,
+        times: List<ZonedDateTime?>
+    ): ZonedDateTime? {
+        return times.filterNotNull().filter { it.isAfter(currentTime) }
+            .minByOrNull { Duration.between(it, currentTime).abs() }
     }
 }
