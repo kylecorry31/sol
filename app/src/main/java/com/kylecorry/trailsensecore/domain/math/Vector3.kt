@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.math
+package com.kylecorry.trailsensecore.domain.math
 
 import kotlin.math.sqrt
 
