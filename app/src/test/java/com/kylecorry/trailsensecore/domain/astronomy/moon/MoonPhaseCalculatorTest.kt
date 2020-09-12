@@ -1,4 +1,4 @@
-package com.kylecorry.trail_sense.astronomy.domain.moon
+package com.kylecorry.trailsensecore.domain.astronomy.moon
 
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhaseCalculator

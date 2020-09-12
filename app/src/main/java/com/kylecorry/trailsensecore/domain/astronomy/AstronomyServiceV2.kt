@@ -28,7 +28,11 @@ class AstronomyServiceV2 : IAstronomyService {
         val ut = Astro.ut(time)
         val jd = Astro.julianDay(ut)
         val solarCoordinates = Astro.solarCoordinates(jd)
-        val hourAngle = Astro.hourAngle(Astro.meanSiderealTime(jd), solarCoordinates.rightAscension)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            solarCoordinates.rightAscension
+        )
         return Astro.altitude(hourAngle, location.latitude, solarCoordinates.declination).toFloat()
     }
 
@@ -36,8 +40,14 @@ class AstronomyServiceV2 : IAstronomyService {
         val ut = Astro.ut(time)
         val jd = Astro.julianDay(ut)
         val solarCoordinates = Astro.solarCoordinates(jd)
-        val hourAngle = Astro.hourAngle(Astro.meanSiderealTime(jd), solarCoordinates.rightAscension)
-        return Bearing(Astro.azimuth(hourAngle, location.latitude, solarCoordinates.declination).toFloat())
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            solarCoordinates.rightAscension
+        )
+        return Bearing(
+            Astro.azimuth(hourAngle, location.latitude, solarCoordinates.declination).toFloat()
+        )
     }
 
     override fun getNextSunset(

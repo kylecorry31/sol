@@ -1,4 +1,4 @@
-package com.kylecorry.trail_sense.astronomy.domain.sun
+package com.kylecorry.trailsensecore.domain.astronomy.sun
 
 import com.kylecorry.trailsensecore.domain.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.sun.*
