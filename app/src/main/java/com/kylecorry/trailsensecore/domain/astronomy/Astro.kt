@@ -200,15 +200,14 @@ internal object Astro {
 
     fun azimuth(hourAngle: Double, latitude: Double, declination: Double): Double {
         return reduceAngleDegrees(
-            180 -
-                    Math.toDegrees(
-                        atan2(
-                            sinDegrees(hourAngle),
-                            cosDegrees(hourAngle) * sinDegrees(latitude) - tanDegrees(declination) * cosDegrees(
-                                latitude
-                            )
-                        )
+            Math.toDegrees(
+                atan2(
+                    sinDegrees(hourAngle),
+                    cosDegrees(hourAngle) * sinDegrees(latitude) - tanDegrees(declination) * cosDegrees(
+                        latitude
                     )
+                )
+            ) - 180
         )
     }
 

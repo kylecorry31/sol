@@ -209,7 +209,7 @@ class AstroTest {
 
     @Test
     fun azimuth(){
-        assertEquals(111.9663, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
+        assertEquals(248.0337, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
     }
 
     @Test
