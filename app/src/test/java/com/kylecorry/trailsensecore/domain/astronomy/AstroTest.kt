@@ -1,6 +1,7 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -229,7 +230,7 @@ class AstroTest {
     fun accurateRiseSetTransitTimes() {
         val times = Astro.accurateRiseSetTransitTimes(42.3333, -71.0833, 177.74208, -0.5667, 56.0,
             Triple(18.04761, 18.44092, 18.82742), Triple(40.68021, 41.73129, 42.78204))
-        assertEquals(0.51766 * 24, times.first, 0.001)
+        assertEquals(0.51766 * 24, times!!.first, 0.001)
         assertEquals(0.81980 * 24, times.second, 0.001)
         assertEquals(0.12130 * 24, times.third, 0.001)
     }
@@ -239,6 +240,13 @@ class AstroTest {
         val coords = Astro.solarCoordinates(2448908.5)
         assertEquals(-7.78507, coords.declination, 0.0001)
         assertEquals(-161.61917, coords.rightAscension, 0.0001)
+    }
+
+    @Test
+    fun lunarCoordinates(){
+        val coords = Astro.lunarCoordinates(2448724.5)
+        assertEquals(13.768368, coords.declination, 0.001)
+        assertEquals(134.688470, coords.rightAscension, 0.001)
     }
 
 }
