@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 group = 'com.kylecorry.trailsensecore'
-version = '1.0'
+version = '0.1.0-beta5'
 
 android {
     compileSdkVersion 29
@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 2
+        versionCode 3
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
