@@ -64,3 +64,8 @@ fun Float.roundPlaces(places: Int): Float {
 fun Float.toDegrees(): Float {
     return Math.toDegrees(this.toDouble()).toFloat()
 }
+
+fun Double.toDegrees(): Double {
+    return Math.toDegrees(this)
+}
+

@@ -25,3 +25,11 @@ fun LocalDateTime.roundNearestMinute(minutes: Long): LocalDateTime {
 fun Instant.toZonedDateTime(): ZonedDateTime {
     return ZonedDateTime.ofInstant(this, ZoneId.systemDefault())
 }
+
+fun LocalDateTime.plusHours(hours: Double): LocalDateTime {
+    val h = hours.toLong()
+    val m = ((hours % 1) * 60).toLong()
+    val s = (hours * 60) % 1
+    val ns = (1e9 * s).toLong()
+    return this.plusHours(h).plusMinutes(m).plusNanos(ns)
+}
