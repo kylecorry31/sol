@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import com.kylecorry.trailsensecore.domain.Coordinate
 
 object IntentUtils {
 
@@ -36,6 +37,10 @@ object IntentUtils {
         return Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(url)
         }
+    }
+
+    fun geo(location: Coordinate): Intent {
+        return url("geo:${location.latitude},${location.longitude}")
     }
 
     fun appSettings(context: Context): Intent {

@@ -1,21 +1,16 @@
 package com.kylecorry.trailsensecore.domain.inclinometer
 
-class InclinationService {
+class InclinationService : IInclinationService {
 
     private val riskClassifier = AvalancheRiskClassifier()
     private val heightCalculator = HeightCalculator()
 
-    fun getAvalancheRisk(inclination: Float): AvalancheRisk {
+    override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
         return riskClassifier.classify(inclination)
     }
 
-    fun estimateHeight(
-        distanceAwayMeters: Float,
-        inclination: Float,
-        phoneHeightMeters: Float
-    ): Float {
-        return heightCalculator.calculate(distanceAwayMeters, inclination, phoneHeightMeters)
+    override fun estimateHeight(distance: Float, inclination: Float, phoneHeight: Float): Float {
+        return heightCalculator.calculate(distance, inclination, phoneHeight)
     }
-
 
 }

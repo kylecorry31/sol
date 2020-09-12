@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.infrastructure.database
+package com.kylecorry.trailsensecore.infrastructure.persistence
 
 import android.content.Context
 import android.database.Cursor
