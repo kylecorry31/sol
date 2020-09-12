@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-group = 'com.github.kylecorry'
+group = 'com.github.kylecorry31'
 version = '0.1.0'
 
 android {
