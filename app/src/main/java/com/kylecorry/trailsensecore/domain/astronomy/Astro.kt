@@ -356,9 +356,12 @@ internal object Astro {
         coordinate: Coordinate,
         standardAltitude: Double = -0.8333
     ): RiseSetTransitTimes {
-        val ut = ut(date).toLocalDate().atStartOfDay()
-        val sr = meanSiderealTime(julianDay(ut))
-        val sun = solarCoordinates(julianDay(ut))
+        val ut = ut0hOnDate(date)
+        val jd = julianDay(ut)
+        val longitudeNutation = nutationInLongitude(jd)
+        val eclipticObliquity = trueObliquityOfEcliptic(jd)
+        val sr = apparentSiderealTime(jd, longitudeNutation, eclipticObliquity)
+        val sun = solarCoordinates(jd)
         val times = riseSetTransitTimes(
             coordinate.latitude,
             coordinate.longitude,
@@ -528,6 +531,22 @@ internal object Astro {
     private fun square(a: Double): Double {
         return a * a
     }
+
+
+    private fun ut0hOnDate(date: ZonedDateTime): LocalDateTime {
+        val localDate = date.toLocalDate()
+
+        for (i in -1..1){
+            val ut0h = ut(date.plusDays(i.toLong())).toLocalDate().atStartOfDay()
+            val local0h = utToLocal(ut0h, date.zone)
+            if (localDate == local0h.toLocalDate()){
+                return ut0h
+            }
+        }
+
+        return ut(date).toLocalDate().atStartOfDay()
+    }
+
 }
 
 data class AstroCoordinates(val declination: Double, val rightAscension: Double)
