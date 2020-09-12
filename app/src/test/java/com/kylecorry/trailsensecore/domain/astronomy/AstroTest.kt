@@ -209,7 +209,7 @@ class AstroTest {
 
     @Test
     fun azimuth(){
-        assertEquals(68.0337, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
+        assertEquals(111.9663, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
     }
 
     @Test
@@ -239,11 +239,5 @@ class AstroTest {
         val coords = Astro.solarCoordinates(2448908.5)
         assertEquals(-7.78507, coords.declination, 0.0001)
         assertEquals(-161.61917, coords.rightAscension, 0.0001)
-    }
-
-    @Test
-    fun canCalculateSunTimes() {
-        val date = ZonedDateTime.now().plusDays(-21)
-        val times = Astro.getSunTimes(date, Coordinate(42.0, -72.0), -0.8333333)
     }
 }

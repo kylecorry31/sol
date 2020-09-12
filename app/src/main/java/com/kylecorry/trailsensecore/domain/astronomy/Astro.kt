@@ -200,26 +200,27 @@ internal object Astro {
 
     fun azimuth(hourAngle: Double, latitude: Double, declination: Double): Double {
         return reduceAngleDegrees(
-            Math.toDegrees(
-                atan2(
-                    sinDegrees(hourAngle),
-                    cosDegrees(hourAngle) * sinDegrees(latitude) - tanDegrees(declination) * cosDegrees(
-                        latitude
+            180 -
+                    Math.toDegrees(
+                        atan2(
+                            sinDegrees(hourAngle),
+                            cosDegrees(hourAngle) * sinDegrees(latitude) - tanDegrees(declination) * cosDegrees(
+                                latitude
+                            )
+                        )
                     )
-                )
-            )
         )
     }
 
     fun altitude(hourAngle: Double, latitude: Double, declination: Double): Double {
-        return reduceAngleDegrees(
+        return wrap(
             Math.toDegrees(
                 asin(
                     sinDegrees(latitude) * sinDegrees(declination) + cosDegrees(
                         latitude
                     ) * cosDegrees(declination) * cosDegrees(hourAngle)
                 )
-            )
+            ), -90.0, 90.0
         )
     }
 
@@ -351,17 +352,28 @@ internal object Astro {
         return Triple(riseHour, transitHour, setHour)
     }
 
-    fun getSunTimes(date: ZonedDateTime, coordinate: Coordinate, standardAltitude: Double = -0.8333): RiseSetTransitTimes {
+    fun getSunTimes(
+        date: ZonedDateTime,
+        coordinate: Coordinate,
+        standardAltitude: Double = -0.8333
+    ): RiseSetTransitTimes {
         val ut = ut(date).toLocalDate().atStartOfDay()
         val sr = meanSiderealTime(julianDay(ut))
         val sun = solarCoordinates(julianDay(ut))
-        val times = riseSetTransitTimes(coordinate.latitude, coordinate.longitude, sr, standardAltitude, sun.declination, sun.rightAscension)
+        val times = riseSetTransitTimes(
+            coordinate.latitude,
+            coordinate.longitude,
+            sr,
+            standardAltitude,
+            sun.declination,
+            sun.rightAscension
+        )
 
-        if (times.fourth){
+        if (times.fourth) {
             return RiseSetTransitTimes(null, null, null)
         }
 
-        if (times.fifth){
+        if (times.fifth) {
             return RiseSetTransitTimes(null, null, null)
         }
 
@@ -369,21 +381,21 @@ internal object Astro {
         var transit = utToLocal(ut.plusHours(times.second), date.zone)
         var set = utToLocal(ut.plusHours(times.third), date.zone)
 
-        if (transit.toLocalDate().isBefore(date.toLocalDate())){
+        if (transit.toLocalDate().isBefore(date.toLocalDate())) {
             transit = transit.plusDays(1)
-        } else if (transit.toLocalDate().isAfter(date.toLocalDate())){
+        } else if (transit.toLocalDate().isAfter(date.toLocalDate())) {
             transit = transit.minusDays(1)
         }
 
-        if (rise.toLocalDate().isBefore(date.toLocalDate())){
+        if (rise.toLocalDate().isBefore(date.toLocalDate())) {
             rise = rise.plusDays(1)
-        } else if (rise.toLocalDate().isAfter(date.toLocalDate())){
+        } else if (rise.toLocalDate().isAfter(date.toLocalDate())) {
             rise = rise.minusDays(1)
         }
 
-        if (set.toLocalDate().isBefore(date.toLocalDate())){
+        if (set.toLocalDate().isBefore(date.toLocalDate())) {
             set = set.plusDays(1)
-        } else if (set.toLocalDate().isAfter(date.toLocalDate())){
+        } else if (set.toLocalDate().isAfter(date.toLocalDate())) {
             set = set.minusDays(1)
         }
 
@@ -467,8 +479,12 @@ internal object Astro {
         val apparentLongitude = trueLng - 0.00569 - 0.00478 * sinDegrees(sunAscendingNodeLongitude)
         val obliquity = meanObliquityOfEcliptic(julianDay)
         val correctedObliquity = obliquity + 0.00256 * cosDegrees(sunAscendingNodeLongitude)
-        val rightAscension = atan2(cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude), cosDegrees(apparentLongitude)).toDegrees()
-        val declination = asin(sinDegrees(correctedObliquity) * sinDegrees(apparentLongitude)).toDegrees()
+        val rightAscension = atan2(
+            cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
+            cosDegrees(apparentLongitude)
+        ).toDegrees()
+        val declination =
+            asin(sinDegrees(correctedObliquity) * sinDegrees(apparentLongitude)).toDegrees()
 
         return AstroCoordinates(declination, rightAscension)
     }
@@ -517,4 +533,10 @@ internal object Astro {
 
 data class AstroCoordinates(val declination: Double, val rightAscension: Double)
 
-data class NTuple5<T1, T2, T3, T4, T5>(val first: T1, val second: T2, val third: T3, val fourth: T4, val fifth: T5)
+data class NTuple5<T1, T2, T3, T4, T5>(
+    val first: T1,
+    val second: T2,
+    val third: T3,
+    val fourth: T4,
+    val fifth: T5
+)
