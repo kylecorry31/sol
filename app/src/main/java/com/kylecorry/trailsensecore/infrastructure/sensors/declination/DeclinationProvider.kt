@@ -31,13 +31,19 @@ class DeclinationProvider(private val gps: IGPS, private val altimeter: IAltimet
     override fun startImpl() {
         started = true
         gps.start(this::onGPSUpdate)
-        altimeter.start(this::onAltimeterUpdate)
+        if (gps == altimeter) {
+            gotAltitude = true
+        } else {
+            altimeter.start(this::onAltimeterUpdate)
+        }
     }
 
     override fun stopImpl() {
         started = false
         gps.stop(this::onGPSUpdate)
-        altimeter.stop(this::onAltimeterUpdate)
+        if (gps != altimeter) {
+            altimeter.stop(this::onAltimeterUpdate)
+        }
     }
 
     private fun onGPSUpdate(): Boolean {
