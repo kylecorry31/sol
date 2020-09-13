@@ -9,6 +9,7 @@ import com.kylecorry.trailsensecore.domain.time.toUTCLocal
 import java.time.*
 import kotlin.math.*
 
+// Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)
 internal object Astro {
 
     fun timeToAngle(hours: Number, minutes: Number, seconds: Number): Double {
