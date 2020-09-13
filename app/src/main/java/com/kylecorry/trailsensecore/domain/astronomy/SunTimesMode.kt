@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain.astronomy.sun
+package com.kylecorry.trailsensecore.domain.astronomy
 
 enum class SunTimesMode {
     Actual,

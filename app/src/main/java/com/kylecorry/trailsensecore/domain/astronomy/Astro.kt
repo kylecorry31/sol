@@ -1,8 +1,11 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
+import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.math.*
 import com.kylecorry.trailsensecore.domain.time.plusHours
+import com.kylecorry.trailsensecore.domain.time.toUTCLocal
 import java.time.*
 import kotlin.math.*
 
@@ -666,6 +669,69 @@ internal object Astro {
         return LocalTime.of(hours.toInt(), ((hours % 1) * 60).toInt(), ((hours * 60) % 1).toInt())
     }
 
+    /**
+     * Get the current phase of the moon
+     * @return The moon phase
+     */
+    fun getMoonPhase(time: ZonedDateTime = ZonedDateTime.now()): MoonPhase {
+        val phaseAngle = getMoonPhaseAngle(time)
+        val illumination = getMoonIllumination(phaseAngle).toFloat()
+
+        for (phase in MoonTruePhase.values()) {
+            if (phase.startAngle <= phaseAngle && phase.endAngle >= phaseAngle) {
+                return MoonPhase(phase, illumination)
+            }
+
+            // Handle new moon
+            if (phase.startAngle >= phase.endAngle) {
+                if (phase.startAngle <= phaseAngle || phase.endAngle >= phaseAngle) {
+                    return MoonPhase(phase, illumination)
+                }
+            }
+        }
+
+        return MoonPhase(MoonTruePhase.New, illumination)
+    }
+
+    fun getMoonPhaseAngle(time: ZonedDateTime): Double {
+        val JDE = JulianDayCalculator.calculate(time.toUTCLocal()) //Julian Ephemeris Day
+
+        val T = (JDE - 2451545) / 36525.0
+
+        val D =
+            normalizeAngle(
+                297.8501921 + 445267.1114034 * T - 0.0018819 * T.pow(
+                    2
+                ) + T.pow(3) / 545868 - T.pow(4) / 113065000
+            )
+
+        val M = normalizeAngle(
+            357.5291092 + 35999.0502909 * T - 0.0001536 * T.pow(2) + T.pow(3) / 24490000
+        )
+
+        val Mp =
+            normalizeAngle(
+                134.9633964 + 477198.8675055 * T - 0.0087414 * T.pow(
+                    2
+                ) + T.pow(3) / 69699 - T.pow(4) / 14712000
+            )
+
+        val i =
+            180 - D - 6.289 * sinDegrees(Mp) + 2.100 * sinDegrees(
+                M
+            ) - 1.274 * sinDegrees(2 * D - Mp) - 0.658 * sinDegrees(
+                2 * D
+            ) - 0.214 * sinDegrees(
+                2 * Mp
+            ) - 0.110 * sinDegrees(D)
+
+        return (i + 180) % 360.0
+    }
+
+    fun getMoonIllumination(phaseAngle: Double): Double {
+        return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
+    }
+
 
     private fun wrap(value: Double, min: Double, max: Double): Double {
         val range = max - min
@@ -839,9 +905,9 @@ internal object Astro {
 }
 
 
-data class AstroCoordinates(val declination: Double, val rightAscension: Double)
+internal data class AstroCoordinates(val declination: Double, val rightAscension: Double)
 
-data class NTuple5<T1, T2, T3, T4, T5>(
+internal data class NTuple5<T1, T2, T3, T4, T5>(
     val first: T1,
     val second: T2,
     val third: T3,

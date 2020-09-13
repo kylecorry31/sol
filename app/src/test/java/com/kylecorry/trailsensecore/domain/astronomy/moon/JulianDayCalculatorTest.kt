@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.astronomy.moon
 
-import com.kylecorry.trailsensecore.domain.astronomy.moon.JulianDayCalculator
+import com.kylecorry.trailsensecore.domain.astronomy.JulianDayCalculator
 import org.junit.Assert.*
 import org.junit.Test
 import java.time.LocalDateTime

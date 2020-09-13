@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.Bearing
 import com.kylecorry.trailsensecore.domain.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
-import com.kylecorry.trailsensecore.domain.astronomy.sun.SunTimesMode
 import java.time.ZonedDateTime
 
 interface IAstronomyService {

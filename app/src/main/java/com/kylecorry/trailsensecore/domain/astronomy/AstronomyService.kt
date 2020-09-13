@@ -3,35 +3,48 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.Bearing
 import com.kylecorry.trailsensecore.domain.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
-import com.kylecorry.trailsensecore.domain.astronomy.sun.SunTimesMode
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import java.time.ZonedDateTime
 
 class AstronomyService : IAstronomyService {
-
-    private val oldService = OldAstronomyService()
 
     override fun getSunEvents(
         date: ZonedDateTime,
         location: Coordinate,
         mode: SunTimesMode
     ): RiseSetTransitTimes {
-        val times = oldService.getSunTimes(location, mode, date.toLocalDate())
-        val noon = oldService.getSolarNoon(location, date.toLocalDate())
-
-        val rise = times.up?.atZone(date.zone)
-        val set = times.down?.atZone(date.zone)
-        val transit = noon?.atZone(date.zone)
-
-        return RiseSetTransitTimes(rise, transit, set)
+        return when (mode) {
+            SunTimesMode.Actual -> Astro.getSunTimes(date, location, -0.8333)
+            SunTimesMode.Civil -> Astro.getSunTimes(date, location, -6.0)
+            SunTimesMode.Nautical -> Astro.getSunTimes(date, location, -12.0)
+            SunTimesMode.Astronomical -> Astro.getSunTimes(date, location, -18.0)
+        }
     }
 
     override fun getSunAltitude(time: ZonedDateTime, location: Coordinate): Float {
-        return oldService.getSunAltitude(location, time.toLocalDateTime()).altitudeDegrees
+        val ut = Astro.ut(time)
+        val jd = Astro.julianDay(ut)
+        val solarCoordinates = Astro.solarCoordinates(jd)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            solarCoordinates.rightAscension
+        )
+        return Astro.altitude(hourAngle, location.latitude, solarCoordinates.declination).toFloat()
     }
 
     override fun getSunAzimuth(time: ZonedDateTime, location: Coordinate): Bearing {
-        return oldService.getSunAzimuth(location, time.toLocalDateTime())
+        val ut = Astro.ut(time)
+        val jd = Astro.julianDay(ut)
+        val solarCoordinates = Astro.solarCoordinates(jd)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            solarCoordinates.rightAscension
+        )
+        return Bearing(
+            Astro.azimuth(hourAngle, location.latitude, solarCoordinates.declination).toFloat()
+        )
     }
 
     override fun getNextSunset(
@@ -61,22 +74,33 @@ class AstronomyService : IAstronomyService {
     }
 
     override fun getMoonEvents(date: ZonedDateTime, location: Coordinate): RiseSetTransitTimes {
-        val times = oldService.getMoonTimes(location, date.toLocalDate())
-        val noon = oldService.getLunarNoon(location, date.toLocalDate())
-
-        val rise = times.up?.atZone(date.zone)
-        val set = times.down?.atZone(date.zone)
-        val transit = noon?.atZone(date.zone)
-
-        return RiseSetTransitTimes(rise, transit, set)
+        return Astro.getMoonTimes(date, location)
     }
 
     override fun getMoonAltitude(time: ZonedDateTime, location: Coordinate): Float {
-        return oldService.getMoonAltitude(location, time.toLocalDateTime()).altitudeDegrees
+        val ut = Astro.ut(time)
+        val jd = Astro.julianDay(ut)
+        val lunarCoordinates = Astro.lunarCoordinates(jd)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            lunarCoordinates.rightAscension
+        )
+        return Astro.altitude(hourAngle, location.latitude, lunarCoordinates.declination).toFloat()
     }
 
     override fun getMoonAzimuth(time: ZonedDateTime, location: Coordinate): Bearing {
-        return oldService.getMoonAzimuth(location, time.toLocalDateTime())
+        val ut = Astro.ut(time)
+        val jd = Astro.julianDay(ut)
+        val lunarCoordinates = Astro.lunarCoordinates(jd)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            lunarCoordinates.rightAscension
+        )
+        return Bearing(
+            Astro.azimuth(hourAngle, location.latitude, lunarCoordinates.declination).toFloat()
+        )
     }
 
     override fun getNextMoonset(time: ZonedDateTime, location: Coordinate): ZonedDateTime? {
@@ -98,7 +122,7 @@ class AstronomyService : IAstronomyService {
     }
 
     override fun getMoonPhase(date: ZonedDateTime): MoonPhase {
-        return oldService.getMoonPhase(date.toLocalDate())
+        return Astro.getMoonPhase(date)
     }
 
 }

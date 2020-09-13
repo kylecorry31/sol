@@ -1,7 +1,6 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.trailsensecore.domain.Coordinate
-import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -260,80 +259,13 @@ class AstroTest {
         assertEquals(134.688470, coords.rightAscension, 0.001)
     }
 
-    @Test
-    fun moonTimes() {
-        val cases = listOf(
-            RiseSetTransetTestInput(
-                LocalDate.of(2020, Month.SEPTEMBER, 12),
-                LocalTime.of(0, 46),
-                LocalTime.of(8, 34),
-                LocalTime.of(16, 21)
-            ),
-            RiseSetTransetTestInput(
-                LocalDate.of(2020, Month.SEPTEMBER, 11),
-                null,
-                LocalTime.of(7, 39),
-                LocalTime.of(15, 27)
-            ),
-            RiseSetTransetTestInput(
-                LocalDate.of(2020, Month.SEPTEMBER, 24),
-                LocalTime.of(15, 1),
-                LocalTime.of(19, 38),
-                null
-            ),
-            RiseSetTransetTestInput(
-                LocalDate.of(2020, Month.SEPTEMBER, 11),
-                null,
-                null,
-                null,
-                Coordinate(76.7667, -18.6667),
-                "America/Danmarkshavn"
-            )
-        )
-
-        for (case in cases) {
-            val date = ZonedDateTime.of(
-                case.date,
-                LocalTime.of(10, 0),
-                ZoneId.of(case.zone)
-            )
-
-            val expected = RiseSetTransitTimes(
-                if (case.rise != null) date.withHour(case.rise.hour).withMinute(case.rise.minute) else null,
-                if (case.transit != null) date.withHour(case.transit.hour).withMinute(case.transit.minute) else null,
-                if (case.set != null) date.withHour(case.set.hour).withMinute(case.set.minute) else null
-            )
-
-            val actual = Astro.getMoonTimes(date, case.location)
-            assertRst(expected, actual)
-        }
-    }
-
-    private fun assertRst(expected: RiseSetTransitTimes, actual: RiseSetTransitTimes, maxDifference: Duration = Duration.ofMinutes(1)){
-        if (expected.rise == null){
-            assertNull(actual.rise)
-        } else {
-            val diff = Duration.between(expected.rise, actual.rise)
-            assertTrue(diff.abs() <= maxDifference)
-        }
-
-        if (expected.transit == null){
-            assertNull(actual.transit)
-        } else {
-            val diff = Duration.between(expected.transit, actual.transit)
-            assertTrue(diff.abs() <= maxDifference)
-        }
-
-        if (expected.set == null){
-            assertNull(actual.set)
-        } else {
-            val diff = Duration.between(expected.set, actual.set)
-            assertTrue(diff.abs() <= maxDifference)
-        }
-
-
-    }
-
-    data class RiseSetTransetTestInput(val date: LocalDate, val rise: LocalTime?, val transit: LocalTime?, val set: LocalTime?, val location: Coordinate = Coordinate(40.7128, -74.0060), val zone: String = "America/New_York")
+    data class RiseSetTransetTestInput(
+        val date: LocalDate,
+        val rise: LocalTime?,
+        val transit: LocalTime?,
+        val set: LocalTime?,
+        val location: Coordinate = Coordinate(40.7128, -74.0060),
+        val zone: String = "America/New_York"
+    )
 
 }

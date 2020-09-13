@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain.astronomy.moon
+package com.kylecorry.trailsensecore.domain.astronomy
 
 import java.time.LocalDateTime
 import kotlin.math.floor
