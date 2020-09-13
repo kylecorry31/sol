@@ -181,46 +181,55 @@ class AstroTest {
     }
 
     @Test
-    fun meanSiderealTime(){
+    fun meanSiderealTime() {
         assertEquals(128.7378734, Astro.meanSiderealTime(2446896.30625), 0.0001)
     }
 
     @Test
-    fun apparentSiderealTime(){
+    fun apparentSiderealTime() {
         val jd = 2446895.5
-        assertEquals(Astro.timeToAngle(13, 10, 46.1351), Astro.apparentSiderealTime(jd, -3.788, 23.44357), 0.5)
+        assertEquals(
+            Astro.timeToAngle(13, 10, 46.1351),
+            Astro.apparentSiderealTime(jd, -3.788, 23.44357),
+            0.5
+        )
     }
 
     @Test
-    fun localMeanSiderealTime(){
+    fun localMeanSiderealTime() {
         assertEquals(138.7378734, Astro.localMeanSidereal(2446896.30625, 10.0), 0.0001)
     }
 
     @Test
-    fun localApparentSiderealTime(){
+    fun localApparentSiderealTime() {
         val jd = 2446895.5
-        assertEquals(Astro.timeToAngle(13, 10, 46.1351) - 15, Astro.localApparentSidereal(jd, -15.0, -3.788, 23.44357), 0.5)
+        assertEquals(
+            Astro.timeToAngle(13, 10, 46.1351) - 15,
+            Astro.localApparentSidereal(jd, -15.0, -3.788, 23.44357),
+            0.5
+        )
     }
 
     @Test
-    fun hourAngle(){
+    fun hourAngle() {
         assertEquals(-2.0, Astro.hourAngle(10.0, -4.0, 8.0), 0.00001)
         assertEquals(2.0, Astro.hourAngle(10.0, 8.0), 0.00001)
     }
 
     @Test
-    fun azimuth(){
+    fun azimuth() {
         assertEquals(248.0337, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
     }
 
     @Test
-    fun altitude(){
+    fun altitude() {
         assertEquals(15.1249, Astro.altitude(64.352133, 38.92139, -6.719892), 0.0001)
     }
 
     @Test
     fun riseSetTransitTimes() {
-        val times = Astro.riseSetTransitTimes(42.3333, -71.0833, 177.74208, -0.5667, 18.44092, 41.73129)
+        val times =
+            Astro.riseSetTransitTimes(42.3333, -71.0833, 177.74208, -0.5667, 18.44092, 41.73129)
         assertEquals(0.51817 * 24, times.first, 0.001)
         assertEquals(0.81965 * 24, times.second, 0.001)
         assertEquals(0.12113 * 24, times.third, 0.001)
@@ -228,25 +237,103 @@ class AstroTest {
 
     @Test
     fun accurateRiseSetTransitTimes() {
-        val times = Astro.accurateRiseSetTransitTimes(42.3333, -71.0833, 177.74208, -0.5667, 56.0,
-            Triple(18.04761, 18.44092, 18.82742), Triple(40.68021, 41.73129, 42.78204))
+        val times = Astro.accurateRiseSetTransitTimes(
+            42.3333, -71.0833, 177.74208, -0.5667, 56.0,
+            Triple(18.04761, 18.44092, 18.82742), Triple(40.68021, 41.73129, 42.78204)
+        )
         assertEquals(0.51766 * 24, times!!.first, 0.001)
         assertEquals(0.81980 * 24, times.second, 0.001)
         assertEquals(0.12130 * 24, times.third, 0.001)
     }
 
     @Test
-    fun solarCoordinates(){
+    fun solarCoordinates() {
         val coords = Astro.solarCoordinates(2448908.5)
         assertEquals(-7.78507, coords.declination, 0.0001)
         assertEquals(-161.61917, coords.rightAscension, 0.0001)
     }
 
     @Test
-    fun lunarCoordinates(){
+    fun lunarCoordinates() {
         val coords = Astro.lunarCoordinates(2448724.5)
         assertEquals(13.768368, coords.declination, 0.001)
         assertEquals(134.688470, coords.rightAscension, 0.001)
     }
+
+    @Test
+    fun moonTimes() {
+        val cases = listOf(
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.SEPTEMBER, 12),
+                LocalTime.of(0, 46),
+                LocalTime.of(8, 34),
+                LocalTime.of(16, 21)
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.SEPTEMBER, 11),
+                null,
+                LocalTime.of(7, 39),
+                LocalTime.of(15, 27)
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.SEPTEMBER, 24),
+                LocalTime.of(15, 1),
+                LocalTime.of(19, 38),
+                null
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.SEPTEMBER, 11),
+                null,
+                null,
+                null,
+                Coordinate(76.7667, -18.6667),
+                "America/Danmarkshavn"
+            )
+        )
+
+        for (case in cases) {
+            val date = ZonedDateTime.of(
+                case.date,
+                LocalTime.of(10, 0),
+                ZoneId.of(case.zone)
+            )
+
+            val expected = RiseSetTransitTimes(
+                if (case.rise != null) date.withHour(case.rise.hour).withMinute(case.rise.minute) else null,
+                if (case.transit != null) date.withHour(case.transit.hour).withMinute(case.transit.minute) else null,
+                if (case.set != null) date.withHour(case.set.hour).withMinute(case.set.minute) else null
+            )
+
+            val actual = Astro.getMoonTimes(date, case.location)
+            assertRst(expected, actual)
+        }
+    }
+
+    private fun assertRst(expected: RiseSetTransitTimes, actual: RiseSetTransitTimes, maxDifference: Duration = Duration.ofMinutes(1)){
+        if (expected.rise == null){
+            assertNull(actual.rise)
+        } else {
+            val diff = Duration.between(expected.rise, actual.rise)
+            assertTrue(diff.abs() <= maxDifference)
+        }
+
+        if (expected.transit == null){
+            assertNull(actual.transit)
+        } else {
+            val diff = Duration.between(expected.transit, actual.transit)
+            assertTrue(diff.abs() <= maxDifference)
+        }
+
+        if (expected.set == null){
+            assertNull(actual.set)
+        } else {
+            val diff = Duration.between(expected.set, actual.set)
+            assertTrue(diff.abs() <= maxDifference)
+        }
+
+
+    }
+
+    data class RiseSetTransetTestInput(val date: LocalDate, val rise: LocalTime?, val transit: LocalTime?, val set: LocalTime?, val location: Coordinate = Coordinate(40.7128, -74.0060), val zone: String = "America/New_York")
 
 }

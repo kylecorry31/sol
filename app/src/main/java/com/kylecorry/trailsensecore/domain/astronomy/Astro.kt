@@ -270,10 +270,10 @@ internal object Astro {
 
         if (cosH >= 1) {
             // Always down
-            return Triple(-1.0, -1.0, -1.0)
+            return null
         } else if (cosH <= -1) {
             // Always up
-            return Triple(-1.0, 0.0, -1.0)
+            return null
         }
 
         val H = wrap(Math.toDegrees(acos(cosH)), 0.0, 180.0)
@@ -348,12 +348,11 @@ internal object Astro {
         return Triple(riseHour, transitHour, setHour)
     }
 
-    fun getTransitEvents(
+    private fun getTransitTimesHelper(
         date: ZonedDateTime,
         coordinate: Coordinate,
         standardAltitude: Double,
-        coordinateFn: (julianDate: Double) -> AstroCoordinates,
-        initialDate: ZonedDateTime
+        coordinateFn: (julianDate: Double) -> AstroCoordinates
     ): RiseSetTransitTimes {
         val ut = ut0hOnDate(date)
         val uty = ut0hOnDate(date.minusDays(1))
@@ -380,72 +379,51 @@ internal object Astro {
         )
             ?: return RiseSetTransitTimes(null, null, null)
 
-//        if (times.fourth) {
-//            return RiseSetTransitTimes(null, null, null)
-//        }
-//
-//        if (times.fifth) {
-//            return RiseSetTransitTimes(null, null, null)
-//        }
+        val rise = utToLocal(ut.plusHours(times.first), date.zone)
+        val transit = utToLocal(ut.plusHours(times.second), date.zone)
+        val set = utToLocal(ut.plusHours(times.third), date.zone)
 
-        var rise = utToLocal(ut.plusHours(times.first), date.zone)
-        var transit = utToLocal(ut.plusHours(times.second), date.zone)
-        var set = utToLocal(ut.plusHours(times.third), date.zone)
 
-        // TODO: This needs to be revisited
-        if (transit.toLocalDate().isBefore(initialDate.toLocalDate())) {
-            transit = getTransitEvents(
-                date.plusDays(1),
-                coordinate,
-                standardAltitude,
-                coordinateFn,
-                initialDate
-            ).transit!!
-        } else if (transit.toLocalDate().isAfter(initialDate.toLocalDate())) {
-            transit = getTransitEvents(
-                date.minusDays(1),
-                coordinate,
-                standardAltitude,
-                coordinateFn,
-                initialDate
-            ).transit!!
+
+        return RiseSetTransitTimes(rise, transit, set)
+    }
+
+    fun getTransitEvents(
+        date: ZonedDateTime,
+        coordinate: Coordinate,
+        standardAltitude: Double,
+        coordinateFn: (julianDate: Double) -> AstroCoordinates
+    ): RiseSetTransitTimes {
+
+        val ld = date.toLocalDate()
+
+        // Get today's times
+        val today = getTransitTimesHelper(date, coordinate, standardAltitude, coordinateFn)
+        if (today.rise?.toLocalDate() == ld && today.transit?.toLocalDate() == ld && today.set?.toLocalDate() == ld) {
+            return today
         }
 
-        if (rise.toLocalDate().isBefore(initialDate.toLocalDate())) {
-            rise = getTransitEvents(
-                date.plusDays(1),
-                coordinate,
-                standardAltitude,
-                coordinateFn,
-                initialDate
-            ).rise!!
-        } else if (rise.toLocalDate().isAfter(initialDate.toLocalDate())) {
-            rise = getTransitEvents(
-                date.minusDays(1),
-                coordinate,
-                standardAltitude,
-                coordinateFn,
-                initialDate
-            ).rise!!
-        }
+        // Today's times didn't contain all the events / were on the wrong day, check the surrounding days
+        val yesterday =
+            getTransitTimesHelper(date.minusDays(1), coordinate, standardAltitude, coordinateFn)
+        val tomorrow =
+            getTransitTimesHelper(date.plusDays(1), coordinate, standardAltitude, coordinateFn)
 
-        if (set.toLocalDate().isBefore(initialDate.toLocalDate())) {
-            set = getTransitEvents(
-                date.plusDays(1),
-                coordinate,
-                standardAltitude,
-                coordinateFn,
-                initialDate
-            ).set!!
-        } else if (set.toLocalDate().isAfter(initialDate.toLocalDate())) {
-            set = getTransitEvents(
-                date.minusDays(1),
-                coordinate,
-                standardAltitude,
-                coordinateFn,
-                initialDate
-            ).set!!
-        }
+        val rise = listOfNotNull(
+            yesterday.rise,
+            today.rise,
+            tomorrow.rise
+        ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
+        val transit = listOfNotNull(
+            yesterday.transit,
+            today.transit,
+            tomorrow.transit
+        ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
+        val set = listOfNotNull(
+            yesterday.set,
+            today.set,
+            tomorrow.set
+        ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
 
         return RiseSetTransitTimes(rise, transit, set)
     }
@@ -455,7 +433,7 @@ internal object Astro {
         coordinate: Coordinate,
         standardAltitude: Double = -0.8333
     ): RiseSetTransitTimes {
-        return getTransitEvents(date, coordinate, standardAltitude, this::solarCoordinates, date)
+        return getTransitEvents(date, coordinate, standardAltitude, this::solarCoordinates)
     }
 
     fun getMoonTimes(
@@ -463,7 +441,7 @@ internal object Astro {
         coordinate: Coordinate,
         standardAltitude: Double = 0.125
     ): RiseSetTransitTimes {
-        return getTransitEvents(date, coordinate, standardAltitude, this::lunarCoordinates, date)
+        return getTransitEvents(date, coordinate, standardAltitude, this::lunarCoordinates)
     }
 
     fun sunMeanAnomaly(julianDay: Double): Double {
