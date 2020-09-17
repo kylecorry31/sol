@@ -4,11 +4,11 @@ import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.barometer.IBarometer
 
-class BarometricAltimeter(private val barometer: IBarometer, private val seaLevelPressure: Float) : AbstractSensor(),
+class BarometricAltimeter(private val barometer: IBarometer, private val seaLevelPressureFn: () -> Float) : AbstractSensor(),
     IAltimeter {
 
     override val altitude: Float
-        get() = SensorManager.getAltitude(seaLevelPressure, barometer.pressure)
+        get() = SensorManager.getAltitude(seaLevelPressureFn.invoke(), barometer.pressure)
 
     override val hasValidReading: Boolean
         get() = barometer.hasValidReading
