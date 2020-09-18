@@ -33,13 +33,13 @@ interface IWeatherService {
 
     /**
      * Convert a reading to sea level
-     * @param reading The pressure altitude reading (hPa, m)
-     * @param temperature (optional) The temperature (C)
+     * @param reading The pressure altitude reading (hPa, m, C)
+     * @param useTemperature True if the temperature should be used in the sea level conversion (default true)
      * @return The reading at sea level pressure (hPa)
      */
     fun convertToSeaLevel(
         reading: PressureAltitudeReading,
-        temperature: Float? = null
+        useTemperature: Boolean = true
     ): PressureReading
 
     /**

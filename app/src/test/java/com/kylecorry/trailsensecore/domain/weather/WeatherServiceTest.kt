@@ -1,6 +1,5 @@
 package com.kylecorry.trailsensecore.domain.weather
 
-import android.hardware.SensorManager
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Instant

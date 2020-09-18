@@ -53,23 +53,15 @@ class WeatherService : IWeatherService {
 
     override fun convertToSeaLevel(
         reading: PressureAltitudeReading,
-        temperature: Float?
+        useTemperature: Boolean
     ): PressureReading {
-        val pressure = if (temperature != null) {
-            reading.pressure * (1 - ((0.0065f * reading.altitude) / (temperature + 0.0065f * reading.altitude + 273.15f))).pow(
-                -5.257f
-            )
-        } else {
-            reading.pressure * (1 - reading.altitude / 44330.0).pow(-5.255).toFloat()
-        }
-
-        return PressureReading(reading.time, pressure)
+        return reading.seaLevel(useTemperature)
     }
 
     override fun classifyPressure(reading: PressureReading): PressureClassification {
         return when {
-            reading.value >= 1022.689 -> PressureClassification.High
-            reading.value <= 1009.144 -> PressureClassification.Low
+            reading.isHigh() -> PressureClassification.High
+            reading.isLow() -> PressureClassification.Low
             else -> PressureClassification.Normal
         }
     }
