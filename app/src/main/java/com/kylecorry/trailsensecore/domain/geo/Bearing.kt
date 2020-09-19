@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain
+package com.kylecorry.trailsensecore.domain.geo
 
 import com.kylecorry.trailsensecore.domain.math.normalizeAngle
 import kotlin.math.roundToInt

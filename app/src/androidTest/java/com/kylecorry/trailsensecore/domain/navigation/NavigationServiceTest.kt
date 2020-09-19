@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.domain.navigation
 
 import android.location.Location
-import com.kylecorry.trailsensecore.domain.Bearing
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Bearing
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import org.junit.Test
 
 import org.junit.Assert.*

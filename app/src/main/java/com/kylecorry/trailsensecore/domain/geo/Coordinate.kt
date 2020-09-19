@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain
+package com.kylecorry.trailsensecore.domain.geo
 
 import android.location.Location
 import com.kylecorry.trailsensecore.domain.math.roundPlaces

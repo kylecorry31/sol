@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.navigation
 
 import android.hardware.GeomagneticField
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 
 internal class DeclinationCalculator {
     fun calculate(location: Coordinate, altitude: Float): Float {

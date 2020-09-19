@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.navigation
 
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import java.time.Duration
 
 interface INavigationService {

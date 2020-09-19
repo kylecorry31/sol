@@ -1,5 +1,6 @@
-package com.kylecorry.trailsensecore.domain
+package com.kylecorry.trailsensecore.domain.geo
 
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import org.junit.Assert.*
 import org.junit.Test
 

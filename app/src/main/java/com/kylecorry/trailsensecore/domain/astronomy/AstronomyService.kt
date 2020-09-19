@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.Bearing
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Bearing
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import java.time.ZonedDateTime

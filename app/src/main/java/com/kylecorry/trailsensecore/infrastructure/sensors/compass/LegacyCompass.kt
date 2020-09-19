@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.domain.Bearing
+import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 import kotlin.math.abs

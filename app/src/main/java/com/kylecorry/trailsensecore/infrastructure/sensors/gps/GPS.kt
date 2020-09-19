@@ -6,7 +6,7 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.Accuracy
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 

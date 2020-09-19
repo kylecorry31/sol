@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain
+package com.kylecorry.trailsensecore.domain.geo
 
 enum class CompassDirection(val azimuth: Float) {
     North(0f),

@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.system
 
 import android.net.Uri
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 
 class GeoUriParser {
 

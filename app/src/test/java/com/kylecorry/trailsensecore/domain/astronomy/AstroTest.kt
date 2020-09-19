@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.Coordinate
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import org.junit.Test
 
 import org.junit.Assert.*
