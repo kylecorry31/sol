@@ -1,8 +1,5 @@
 package com.kylecorry.trailsensecore.domain.weather
 
-import com.kylecorry.trail_sense.weather.domain.HeatAlert
-import com.kylecorry.trail_sense.weather.domain.HumidityComfortLevel
-
 interface IWeatherService {
 
     /**
@@ -32,24 +29,6 @@ interface IWeatherService {
     ): Weather
 
     /**
-     * Convert a reading to sea level
-     * @param reading The pressure altitude reading (hPa, m, C)
-     * @param useTemperature True if the temperature should be used in the sea level conversion (default true)
-     * @return The reading at sea level pressure (hPa)
-     */
-    fun convertToSeaLevel(
-        reading: PressureAltitudeReading,
-        useTemperature: Boolean = true
-    ): PressureReading
-
-    /**
-     * Determines if a pressure is high or low
-     * @param reading The pressure - ideally adjusted for sea level (hPa)
-     * @return The pressure classification
-     */
-    fun classifyPressure(reading: PressureReading): PressureClassification
-
-    /**
      * Calculates the heat index
      * @param temperature The temperature (C)
      * @param relativeHumidity The relative humidity (%)
@@ -71,11 +50,4 @@ interface IWeatherService {
      * @return The dew point (C)
      */
     fun getDewPoint(temperature: Float, relativeHumidity: Float): Float
-
-    /**
-     * Gets the humidity comfort level
-     * @param dewPoint The dew point (C)
-     * @return The humidity comfort level
-     */
-    fun getHumidityComfortLevel(dewPoint: Float): HumidityComfortLevel
 }

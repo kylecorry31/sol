@@ -1,4 +1,4 @@
-package com.kylecorry.trail_sense.weather.domain
+package com.kylecorry.trailsensecore.domain.weather
 
 enum class HumidityComfortLevel {
     Pleasant,

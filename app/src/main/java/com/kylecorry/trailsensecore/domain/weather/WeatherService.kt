@@ -1,11 +1,8 @@
 package com.kylecorry.trailsensecore.domain.weather
 
-import com.kylecorry.trail_sense.weather.domain.HeatAlert
-import com.kylecorry.trail_sense.weather.domain.HumidityComfortLevel
 import java.time.Duration
 import kotlin.math.abs
 import kotlin.math.ln
-import kotlin.math.pow
 
 class WeatherService : IWeatherService {
     override fun getTendency(
@@ -15,6 +12,11 @@ class WeatherService : IWeatherService {
     ): PressureTendency {
         val diff = current.value - last.value
         val dt = Duration.between(last.time, current.time).seconds
+
+        if (dt == 0L) {
+            return PressureTendency(PressureCharacteristic.Steady, 0f)
+        }
+
         val changeAmt = (diff / dt) * 60 * 60 * 3
 
         val fastThreshold = changeThreshold + 2
@@ -36,7 +38,7 @@ class WeatherService : IWeatherService {
         currentPressure: PressureReading,
         stormThreshold: Float?
     ): Weather {
-        val isStorm = tendency.amount <= (stormThreshold ?: 6f)
+        val isStorm = tendency.amount <= (stormThreshold ?: -6f)
 
         if (isStorm) {
             return Weather.Storm
@@ -48,21 +50,6 @@ class WeatherService : IWeatherService {
             PressureCharacteristic.RisingFast -> Weather.ImprovingFast
             PressureCharacteristic.Rising -> Weather.ImprovingSlow
             else -> Weather.NoChange
-        }
-    }
-
-    override fun convertToSeaLevel(
-        reading: PressureAltitudeReading,
-        useTemperature: Boolean
-    ): PressureReading {
-        return reading.seaLevel(useTemperature)
-    }
-
-    override fun classifyPressure(reading: PressureReading): PressureClassification {
-        return when {
-            reading.isHigh() -> PressureClassification.High
-            reading.isLow() -> PressureClassification.Low
-            else -> PressureClassification.Normal
         }
     }
 
@@ -116,16 +103,5 @@ class WeatherService : IWeatherService {
         if (bottom == 0.0) bottom = 0.00001
         val dewPoint = tn * top / bottom
         return dewPoint.toFloat()
-    }
-
-    override fun getHumidityComfortLevel(dewPoint: Float): HumidityComfortLevel {
-        return when {
-            dewPoint <= 55 -> HumidityComfortLevel.Pleasant
-            dewPoint <= 60 -> HumidityComfortLevel.Comfortable
-            dewPoint <= 65 -> HumidityComfortLevel.Sticky
-            dewPoint <= 70 -> HumidityComfortLevel.Uncomfortable
-            dewPoint <= 75 -> HumidityComfortLevel.Oppressive
-            else -> HumidityComfortLevel.Miserable
-        }
     }
 }
