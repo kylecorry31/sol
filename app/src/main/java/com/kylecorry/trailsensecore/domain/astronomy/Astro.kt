@@ -20,10 +20,6 @@ internal object Astro {
         return hours.toDouble() + minutes.toDouble() / 60.0 + seconds.toDouble() / 3600.0
     }
 
-    fun degreesToHours(degrees: Double): Double {
-        return degrees / 15.0
-    }
-
     /**
      * Converts an angle to between 0 and 360 degrees
      */
@@ -229,40 +225,6 @@ internal object Astro {
         longitude: Double,
         apparentSidereal: Double,
         standardAltitude: Double,
-        declination: Double,
-        rightAscension: Double
-    ): NTuple5<Double, Double, Double, Boolean, Boolean> {
-        val cosH =
-            (sinDegrees(standardAltitude) - sinDegrees(latitude) * sinDegrees(declination)) / (cosDegrees(
-                latitude
-            ) * cosDegrees(declination))
-
-        if (cosH >= 1) {
-            // Always down
-            return NTuple5(0.0, 0.0, 0.0, false, true)
-        } else if (cosH <= -1) {
-            // Always up
-            return NTuple5(0.0, 0.0, 0.0, true, false)
-        }
-
-        val H = wrap(Math.toDegrees(acos(cosH)), 0.0, 180.0)
-
-        val m0 = wrap((rightAscension - longitude - apparentSidereal) / 360.0, 0.0, 1.0)
-        val m1 = wrap(m0 - H / 360, 0.0, 1.0)
-        val m2 = wrap(m0 + H / 360, 0.0, 1.0)
-
-        val riseHour = m1 * 24
-        val transitHour = m0 * 24
-        val setHour = m2 * 24
-
-        return NTuple5(riseHour, transitHour, setHour, false, false)
-    }
-
-    fun accurateRiseSetTransitTimes(
-        latitude: Double,
-        longitude: Double,
-        apparentSidereal: Double,
-        standardAltitude: Double,
         deltaT: Double,
         declinations: Triple<Double, Double, Double>,
         rightAscensions: Triple<Double, Double, Double>
@@ -368,7 +330,7 @@ internal object Astro {
         val astroCoords = coordinateFn.invoke(jd)
         val astroCoordsy = coordinateFn.invoke(julianDay(uty))
         val astroCoordst = coordinateFn.invoke(julianDay(utt))
-        val times = accurateRiseSetTransitTimes(
+        val times = riseSetTransitTimes(
             coordinate.latitude,
             coordinate.longitude,
             sr,
@@ -472,10 +434,10 @@ internal object Astro {
         )
     }
 
-    fun sunToMoonMeanElongation(julianDay: Double): Double {
-        val T = (julianDay - 2451545.0) / 36525
-        return polynomial(T, 297.85036, 445267.111480, -0.0019142, 1 / 189474.0)
-    }
+//    fun sunToMoonMeanElongation(julianDay: Double): Double {
+//        val T = (julianDay - 2451545.0) / 36525
+//        return polynomial(T, 297.85036, 445267.111480, -0.0019142, 1 / 189474.0)
+//    }
 
     fun moonArgumentOfLatitude(julianDay: Double): Double {
         val T = (julianDay - 2451545.0) / 36525
@@ -523,10 +485,10 @@ internal object Astro {
         return meanObliquityOfEcliptic(julianDay) + nutationInObliquity(julianDay)
     }
 
-    fun eccentricity(julianDay: Double): Double {
-        val T = (julianDay - 2451545.0) / 36525
-        return polynomial(T, 0.016708634, -0.000042037, -0.0000001267)
-    }
+//    fun eccentricity(julianDay: Double): Double {
+//        val T = (julianDay - 2451545.0) / 36525
+//        return polynomial(T, 0.016708634, -0.000042037, -0.0000001267)
+//    }
 
     fun lunarCoordinates(julianDay: Double): AstroCoordinates {
         val T = (julianDay - 2451545.0) / 36525
@@ -658,17 +620,6 @@ internal object Astro {
 //    fun parallacticAngle(hourAngle: Double, latitude: Double, declination: Double): Double {
 //        return atan2(sinDegrees(hourAngle), tanDegrees(latitude) * cosDegrees(declination) - sinDegrees(declination) * cosDegrees(hourAngle)).toDegrees()
 //    }
-
-    fun hourToDuration(hours: Double): Duration {
-        return Duration
-            .ofHours(hours.toLong())
-            .plusMinutes(((hours % 1) * 60).toLong())
-            .plusSeconds(((hours * 60) % 1).toLong())
-    }
-
-    fun hourToLocalTime(hours: Double): LocalTime {
-        return LocalTime.of(hours.toInt(), ((hours % 1) * 60).toInt(), ((hours * 60) % 1).toInt())
-    }
 
     /**
      * Get the current phase of the moon
@@ -907,11 +858,3 @@ internal object Astro {
 
 
 internal data class AstroCoordinates(val declination: Double, val rightAscension: Double)
-
-internal data class NTuple5<T1, T2, T3, T4, T5>(
-    val first: T1,
-    val second: T2,
-    val third: T3,
-    val fourth: T4,
-    val fifth: T5
-)
