@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain.navigation
+package com.kylecorry.trailsensecore.domain.geo
 
 import android.hardware.GeomagneticField
 import com.kylecorry.trailsensecore.domain.geo.Coordinate

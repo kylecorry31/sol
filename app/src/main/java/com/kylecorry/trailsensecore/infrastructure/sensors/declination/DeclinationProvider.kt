@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.declination
 
-import com.kylecorry.trailsensecore.domain.navigation.DeclinationCalculator
+import com.kylecorry.trailsensecore.domain.geo.DeclinationCalculator
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.altimeter.IAltimeter
 import com.kylecorry.trailsensecore.infrastructure.sensors.gps.IGPS
