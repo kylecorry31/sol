@@ -2,6 +2,13 @@ package com.kylecorry.trailsensecore.domain.units
 
 class UnitService {
 
+    /**
+     * Converts a pressure from one unit to another
+     * @param pressure The pressure in the from units
+     * @param from The pressure to convert from
+     * @param to The pressure to convert to
+     * @return The pressure in the to units
+     */
     fun convert(pressure: Float, from: PressureUnits, to: PressureUnits): Float {
         val hpa = when (from) {
             PressureUnits.Hpa -> pressure
@@ -18,6 +25,13 @@ class UnitService {
         }
     }
 
+    /**
+     * Converts a temperature from one unit to another
+     * @param temperature The temperature in the from units
+     * @param from The temperature to convert from
+     * @param to The temperature to convert to
+     * @return The temperature in the to units
+     */
     fun convert(temperature: Float, from: TemperatureUnits, to: TemperatureUnits): Float {
         val c = when (from) {
             TemperatureUnits.C -> temperature
@@ -30,12 +44,20 @@ class UnitService {
         }
     }
 
+    /**
+     * Converts a distance from one unit to another
+     * @param distance The distance in the from units
+     * @param from The distance to convert from
+     * @param to The distance to convert to
+     * @return The distance in the to units
+     */
     fun convert(distance: Float, from: DistanceUnits, to: DistanceUnits): Float {
         val m = when (from) {
             DistanceUnits.Meters -> distance
             DistanceUnits.Kilometers -> distance * 1000
             DistanceUnits.Miles -> distance * 5280f / 3.28084f
             DistanceUnits.Feet -> distance / 3.28084f
+            DistanceUnits.NauticalMiles -> distance * 1852f
         }
 
         return when (to) {
@@ -43,8 +65,8 @@ class UnitService {
             DistanceUnits.Kilometers -> m / 1000f
             DistanceUnits.Feet -> m * 3.28084f
             DistanceUnits.Miles -> (m * 3.28084f) / 5280f
+            DistanceUnits.NauticalMiles -> m / 1852f
         }
     }
-
 
 }
