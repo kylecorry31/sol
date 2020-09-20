@@ -54,4 +54,14 @@ class NavigationService : INavigationService {
 
         return Duration.ofSeconds(baseTime.toLong()).plusSeconds(elevationMinutes.toLong())
     }
+
+    override fun nearby(
+        location: Coordinate,
+        beacons: List<Beacon>,
+        maxDistance: Float
+    ): List<Beacon> {
+        return beacons.filter {
+            location.distanceTo(it.coordinate) <= maxDistance
+        }
+    }
 }

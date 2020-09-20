@@ -21,4 +21,6 @@ interface INavigationService {
 
     fun eta(from: Position, to: Beacon, nonLinear: Boolean): Duration
 
+    fun nearby(location: Coordinate, beacons: List<Beacon>, maxDistance: Float): List<Beacon>
+
 }
