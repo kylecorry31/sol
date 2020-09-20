@@ -69,3 +69,48 @@ fun Double.toDegrees(): Double {
     return Math.toDegrees(this)
 }
 
+fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
+    if (data.isEmpty()) {
+        return data
+    }
+
+    val filter = LowPassFilter(smoothing, data.first())
+
+    return data.mapIndexed { index, value ->
+        if (index == 0) {
+            value
+        } else {
+            filter.filter(value)
+        }
+    }
+}
+
+fun movingAverage(data: List<Float>, window: Int = 5): List<Float> {
+    val filter = MovingAverageFilter(window)
+
+    return data.map { filter.filter(it.toDouble()).toFloat() }
+}
+
+/**
+ * Calculates the slope of the best fit line
+ */
+fun slope(data: List<Pair<Float, Float>>): Float {
+    if (data.isEmpty()) {
+        return 0f
+    }
+
+    val xBar = data.map { it.first }.average().toFloat()
+    val yBar = data.map { it.second }.average().toFloat()
+
+    var ssxx = 0.0f
+    var ssxy = 0.0f
+    var ssto = 0.0f
+
+    for (i in data.indices) {
+        ssxx += (data[i].first - xBar).pow(2)
+        ssxy += (data[i].first - xBar) * (data[i].second - yBar)
+        ssto += (data[i].second - yBar).pow(2)
+    }
+
+    return ssxy / ssxx
+}
