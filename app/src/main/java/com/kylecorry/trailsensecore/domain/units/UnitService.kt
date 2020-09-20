@@ -7,14 +7,14 @@ class UnitService {
             PressureUnits.Hpa -> pressure
             PressureUnits.Mbar -> pressure
             PressureUnits.Inhg -> pressure / 0.02953f
-            PressureUnits.Psi -> pressure / 0.01450f
+            PressureUnits.Psi -> pressure / 0.0145037738f
         }
 
         return when (to) {
             PressureUnits.Hpa -> hpa
             PressureUnits.Inhg -> 0.02953f * hpa
             PressureUnits.Mbar -> hpa
-            PressureUnits.Psi -> 0.01450f * hpa
+            PressureUnits.Psi -> 0.0145037738f * hpa
         }
     }
 
