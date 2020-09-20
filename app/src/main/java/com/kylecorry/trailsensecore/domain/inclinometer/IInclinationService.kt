@@ -16,4 +16,13 @@ interface IInclinationService {
      * @return The estimated height of the object (m)
      */
     fun estimateHeight(distance: Float, inclination: Float, phoneHeight: Float): Float
+
+    /**
+     * Estimates the height of an object
+     * @param distance The distance to the object (m)
+     * @param bottomInclination The inclination angle to the bottom (degrees)
+     * @param topInclination The inclination angle to the top (degrees)
+     * @return The estimated height of the object (m)
+     */
+    fun estimateHeightAngles(distance: Float, bottomInclination: Float, topInclination: Float): Float
 }

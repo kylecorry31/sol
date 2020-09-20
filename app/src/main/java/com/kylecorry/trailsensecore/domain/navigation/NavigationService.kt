@@ -50,9 +50,9 @@ class NavigationService : INavigationService {
             from.location.distanceTo(to.coordinate) * (if (nonLinear) PI.toFloat() / 2f else 1f)
 
         val baseTime = distance / speed
-        val elevationMinutes = (elevationGain / 300f) * 30f * 60f
+        val elevationSeconds = (elevationGain / 300f) * 30f * 60f
 
-        return Duration.ofSeconds(baseTime.toLong()).plusSeconds(elevationMinutes.toLong())
+        return Duration.ofSeconds(baseTime.toLong()).plusSeconds(elevationSeconds.toLong())
     }
 
     override fun nearby(
