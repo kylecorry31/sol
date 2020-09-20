@@ -6,38 +6,42 @@ import com.kylecorry.trailsensecore.domain.geo.Coordinate
 class GeoUriParser {
 
     fun parse(data: Uri): NamedCoordinate? {
-        val pattern = "geo:([-\\d.]+),([-\\d.]+)(\\([^\\)]+\\))?(?:\\?[\\w=&]*q=([^&]+))?"
+        val pattern = "geo:(-?[0-9]*\\.?[0-9]+),(-?[0-9]*\\.?[0-9]+)(?:\\?[\\w=&]*q=([^&]+))?"
+        val qPattern = "(-?[0-9]*\\.?[0-9]+),(-?[0-9]*\\.?[0-9]+)(\\([^\\)]+\\))?"
         val regex = Regex(pattern)
+
         val matches = regex.find(data.toString())
-        println(data.toString())
 
         if (matches != null) {
-            val lat = matches.groupValues[1].toDouble()
-            val lng = matches.groupValues[2].toDouble()
-            val coord =
-                Coordinate(lat, lng)
-            val label = Uri.decode(matches.groupValues[3]).replace('+', ' ')
-            val address = Uri.decode(matches.groupValues[4]).replace('+', ' ')
+            var lat = matches.groupValues[1].toDouble()
+            var lng = matches.groupValues[2].toDouble()
+            val q = matches.groupValues[3]
+            var name: String? = null
 
-            val name = when {
-                label.isNotEmpty() -> {
-                    label
-                }
-                address.isNotEmpty() -> {
-                    address
-                }
-                else -> {
-                    null
+            if (lat == 0.0 && lng == 0.0 && q.isNotEmpty()){
+                val qRegex = Regex(qPattern)
+                val qMatches = qRegex.find(q)
+                if (qMatches != null){
+                    lat = qMatches.groupValues[1].toDouble()
+                    lng = qMatches.groupValues[2].toDouble()
+                    name = Uri.decode(qMatches.groupValues[3]).replace('+', ' ')
+                    if (name.length >= 2){
+                        name = name.substring(1, name.length - 1)
+                    }
+
+                    if (name.isEmpty()){
+                        name = null
+                    }
+                } else {
+                    return null
                 }
             }
 
-            return NamedCoordinate(coord, name)
+            return NamedCoordinate(Coordinate(lat, lng), name)
         }
 
         return null
     }
-
-
     data class NamedCoordinate(val coordinate: Coordinate, val name: String? = null)
 
 }
