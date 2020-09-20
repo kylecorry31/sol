@@ -19,6 +19,13 @@ internal class PressureAltitudeReadingTest {
     }
 
     @Test
+    fun defaultsToUsingTempInSeaLevel(){
+        val reading = PressureAltitudeReading(Instant.now(), 980f, 1000f, 15f)
+        val sl = reading.seaLevel()
+        assertEquals(1101.93f, sl.value, 0.1f)
+    }
+
+    @Test
     fun convertsToPressureReading(){
         val i = Instant.ofEpochMilli(2000)
         val reading = PressureAltitudeReading(i, 1f, 2f, 3f)

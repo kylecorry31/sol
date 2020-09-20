@@ -249,14 +249,4 @@ class AstroTest {
         assertEquals(13.768368, coords.declination, 0.001)
         assertEquals(134.688470, coords.rightAscension, 0.001)
     }
-
-    data class RiseSetTransetTestInput(
-        val date: LocalDate,
-        val rise: LocalTime?,
-        val transit: LocalTime?,
-        val set: LocalTime?,
-        val location: Coordinate = Coordinate(40.7128, -74.0060),
-        val zone: String = "America/New_York"
-    )
-
 }

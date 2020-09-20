@@ -14,16 +14,18 @@ class AstronomyServiceTest {
 
     private val service = AstronomyService()
 
+    // TODO: Verify sun events other than actual time
+
     @Test
     fun getSunEventsActual() {
         val cases = listOf(
-            AstroTest.RiseSetTransetTestInput(
+            RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 12),
                 LocalTime.of(6, 34),
                 LocalTime.of(12, 52),
                 LocalTime.of(19, 9)
             ),
-            AstroTest.RiseSetTransetTestInput( // UP ALL DAY
+            RiseSetTransetTestInput( // UP ALL DAY
                 LocalDate.of(2020, Month.JUNE, 4),
                 null,
                 null,
@@ -31,7 +33,7 @@ class AstronomyServiceTest {
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
             ),
-            AstroTest.RiseSetTransetTestInput( // DOWN ALL DAY
+            RiseSetTransetTestInput( // DOWN ALL DAY
                 LocalDate.of(2020, Month.OCTOBER, 31),
                 null,
                 null,
@@ -39,7 +41,7 @@ class AstronomyServiceTest {
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
             ),
-            AstroTest.RiseSetTransetTestInput(
+            RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.OCTOBER, 30),
                 LocalTime.of(12, 41),
                 LocalTime.of(12, 58),
@@ -197,25 +199,25 @@ class AstronomyServiceTest {
     @Test
     fun getMoonEvents() {
         val cases = listOf(
-            AstroTest.RiseSetTransetTestInput(
+            RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 12),
                 LocalTime.of(0, 46),
                 LocalTime.of(8, 34),
                 LocalTime.of(16, 21)
             ),
-            AstroTest.RiseSetTransetTestInput(
+            RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 11),
                 null,
                 LocalTime.of(7, 39),
                 LocalTime.of(15, 27)
             ),
-            AstroTest.RiseSetTransetTestInput(
+            RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 24),
                 LocalTime.of(15, 1),
                 LocalTime.of(19, 38),
                 null
             ),
-            AstroTest.RiseSetTransetTestInput(
+            RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 11),
                 null,
                 null,
@@ -407,6 +409,98 @@ class AstronomyServiceTest {
             service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 18, 12, 0))),
             tolerance
         )
+    }
+
+    @Test
+    fun isSunUp() {
+        val ny = Coordinate(40.7128, -74.0060)
+        val zoneNy = ZoneId.of("America/New_York")
+        assertTrue(
+            service.isSunUp(
+                ZonedDateTime.of(
+                    LocalDateTime.of(
+                        2020,
+                        Month.SEPTEMBER,
+                        13,
+                        12,
+                        0
+                    ), zoneNy
+                ), ny
+            )
+        )
+        assertFalse(
+            service.isSunUp(
+                ZonedDateTime.of(
+                    LocalDateTime.of(
+                        2020,
+                        Month.SEPTEMBER,
+                        13,
+                        23,
+                        0
+                    ), zoneNy
+                ), ny
+            )
+        )
+    }
+
+    @Test
+    fun isMoonUp() {
+        val ny = Coordinate(40.7128, -74.0060)
+        val zoneNy = ZoneId.of("America/New_York")
+        assertTrue(
+            service.isMoonUp(
+                ZonedDateTime.of(
+                    LocalDateTime.of(
+                        2020,
+                        Month.SEPTEMBER,
+                        13,
+                        9,
+                        8
+                    ), zoneNy
+                ), ny
+            )
+        )
+        assertFalse(
+            service.isMoonUp(
+                ZonedDateTime.of(
+                    LocalDateTime.of(
+                        2020,
+                        Month.SEPTEMBER,
+                        13,
+                        21,
+                        58
+                    ), zoneNy
+                ), ny
+            )
+        )
+    }
+
+    @Test
+    fun defaultGetSunEvents() {
+        val expected = RiseSetTransetTestInput(
+            LocalDate.of(2020, Month.SEPTEMBER, 12),
+            LocalTime.of(6, 34),
+            LocalTime.of(12, 52),
+            LocalTime.of(19, 9)
+        )
+
+        val date = ZonedDateTime.of(
+            expected.date,
+            LocalTime.of(12, 0),
+            ZoneId.of(expected.zone)
+        )
+
+        val e = RiseSetTransitTimes(
+            if (expected.rise != null) date.withHour(expected.rise.hour)
+                .withMinute(expected.rise.minute) else null,
+            if (expected.transit != null) date.withHour(expected.transit.hour)
+                .withMinute(expected.transit.minute) else null,
+            if (expected.set != null) date.withHour(expected.set.hour)
+                .withMinute(expected.set.minute) else null
+        )
+
+        val actual = service.getSunEvents(date, expected.location)
+        assertRst(e, actual)
     }
 
 
