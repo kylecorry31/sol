@@ -60,9 +60,26 @@ internal object Astro {
         return abs(b - a) < threshold
     }
 
-    fun interpolate(n: Double, y1: Double, y2: Double, y3: Double): Double {
-        val a = y2 - y1
-        val b = y3 - y2
+    fun interpolate(
+        n: Double,
+        y1: Double,
+        y2: Double,
+        y3: Double,
+        normalize: Boolean = false
+    ): Double {
+        var a = y2 - y1
+        var b = y3 - y2
+
+        if (normalize) {
+            if (a < 0) {
+                a += 360
+            }
+
+            if (b < 0) {
+                b += 360
+            }
+        }
+
         val c = b - a
 
         return y2 + (n / 2.0) * (a + b + n * c)
@@ -260,23 +277,28 @@ internal object Astro {
             val n1 = m1 + deltaT / 86400
             val n2 = m2 + deltaT / 86400
 
-            val ra0 = interpolate(
-                n0,
-                rightAscensions.first,
-                rightAscensions.second,
-                rightAscensions.third
-            )
-            val ra1 = interpolate(
-                n1,
-                rightAscensions.first,
-                rightAscensions.second,
-                rightAscensions.third
-            )
+            val ra0 =
+                interpolate(
+                    n0,
+                    rightAscensions.first,
+                    rightAscensions.second,
+                    rightAscensions.third,
+                    true
+                )
+            val ra1 =
+                interpolate(
+                    n1,
+                    rightAscensions.first,
+                    rightAscensions.second,
+                    rightAscensions.third,
+                    true
+                )
             val ra2 = interpolate(
                 n2,
                 rightAscensions.first,
                 rightAscensions.second,
-                rightAscensions.third
+                rightAscensions.third,
+                true
             )
             val declination1 =
                 interpolate(n1, declinations.first, declinations.second, declinations.third)
@@ -412,7 +434,7 @@ internal object Astro {
 
     fun sunMeanAnomaly(julianDay: Double): Double {
         val T = (julianDay - 2451545.0) / 36525
-        return reduceAngleDegrees(polynomial(T, 357.52772, 35999.05340, -0.0001603, -1 / 3000000.0))
+        return reduceAngleDegrees(polynomial(T, 357.52772, 35999.050340, -0.0001603, -1 / 300000.0))
     }
 
     fun sunGeometricLongitude(julianDay: Double): Double {
@@ -853,7 +875,6 @@ internal object Astro {
             listOf(2, -2, 0, 1, 107)
         )
     }
-
 }
 
 
