@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.infrastructure.time
 
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import java.time.Duration
 
 class Intervalometer(private val runnable: Runnable) {
@@ -23,13 +24,17 @@ class Intervalometer(private val runnable: Runnable) {
             runnable.run()
             val nextRunnable = intervalRunnable
             if (nextRunnable != null) {
-                handler.postDelayed(nextRunnable, periodMillis)
+                handler.postAtTime(nextRunnable, SystemClock.uptimeMillis() + periodMillis)
             }
         }
 
         intervalRunnable = r
 
-        handler.postDelayed(r, initialDelayMillis)
+        if (initialDelayMillis == 0L) {
+            handler.post(r)
+        } else {
+            handler.postAtTime(r, SystemClock.uptimeMillis() + initialDelayMillis)
+        }
     }
 
     fun interval(period: Duration, initialDelay: Duration = Duration.ZERO) {
@@ -42,7 +47,11 @@ class Intervalometer(private val runnable: Runnable) {
         }
 
         running = true
-        handler.postDelayed(runnable, delayMillis)
+        if (delayMillis == 0L){
+            handler.post(runnable)
+        } else {
+            handler.postAtTime(runnable, SystemClock.uptimeMillis() + delayMillis)
+        }
     }
 
     fun once(delay: Duration) {
