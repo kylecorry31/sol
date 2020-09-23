@@ -22,16 +22,39 @@ class AstronomyServiceTest {
             RiseSetTransetTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 12),
                 LocalTime.of(6, 34),
-                LocalTime.of(12, 52),
+                LocalTime.of(12, 52, 5),
                 LocalTime.of(19, 9)
             ),
-            // TODO: Figure out why this didn't work - something with equinoxes
-//            RiseSetTransetTestInput(
-//                LocalDate.of(2020, Month.SEPTEMBER, 22),
-//                LocalTime.of(6, 33),
-//                LocalTime.of(12, 38),
-//                LocalTime.of(18, 41)
-//            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.SEPTEMBER, 22),
+                LocalTime.of(6, 44),
+                LocalTime.of(12, 48, 32),
+                LocalTime.of(18, 52)
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.MARCH, 21),
+                LocalTime.of(6, 57),
+                LocalTime.of(13, 2, 58),
+                LocalTime.of(19, 10)
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.DECEMBER, 21),
+                LocalTime.of(7, 17),
+                LocalTime.of(11, 54, 26),
+                LocalTime.of(16, 32)
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.DECEMBER, 21),
+                LocalTime.of(7, 17),
+                LocalTime.of(11, 54, 26),
+                LocalTime.of(16, 32)
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2020, Month.JUNE, 21),
+                LocalTime.of(5, 25),
+                LocalTime.of(12, 57, 59),
+                LocalTime.of(20, 31)
+            ),
             RiseSetTransetTestInput( // UP ALL DAY
                 LocalDate.of(2020, Month.JUNE, 4),
                 null,
@@ -84,10 +107,9 @@ class AstronomyServiceTest {
         val ny = Coordinate(40.7128, -74.0060)
         parametrized(
             listOf(
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 28f),
+                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 27.63f),
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -31f),
-                // TODO: Figure out why this didn't work - something with equinoxes
-//                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 22, 6, 51), 3f),
+                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 22, 6, 51), 0.9f),
             )
         ) {
             val altitude = service.getSunAltitude(
@@ -537,7 +559,7 @@ class AstronomyServiceTest {
         val rise: LocalTime?,
         val transit: LocalTime?,
         val set: LocalTime?,
-        val location: Coordinate = Coordinate(40.7128, -74.0060),
+            val location: Coordinate = Coordinate(40.7128, -74.0060),
         val zone: String = "America/New_York"
     )
 }

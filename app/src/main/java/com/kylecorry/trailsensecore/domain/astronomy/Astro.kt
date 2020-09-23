@@ -64,22 +64,10 @@ internal object Astro {
         n: Double,
         y1: Double,
         y2: Double,
-        y3: Double,
-        normalize: Boolean = false
+        y3: Double
     ): Double {
         var a = y2 - y1
         var b = y3 - y2
-
-        if (normalize) {
-            if (a < 0) {
-                a += 360
-            }
-
-            if (b < 0) {
-                b += 360
-            }
-        }
-
         val c = b - a
 
         return y2 + (n / 2.0) * (a + b + n * c)
@@ -129,8 +117,7 @@ internal object Astro {
     fun julianDay(date: LocalDateTime): Double {
         var Y = date.year.toDouble()
         var M = date.month.value.toDouble()
-        val D =
-            date.dayOfMonth.toDouble() + timeToAngle(date.hour, date.minute, date.second) / 360.0
+        val D = date.dayOfMonth.toDouble() + timeToAngle(date.hour, date.minute, date.second) / 360.0
 
         if (M <= 2) {
             Y--
@@ -141,6 +128,14 @@ internal object Astro {
         val B = 2 - A + floor(A / 4)
 
         return floor(365.25 * (Y + 4716)) + floor(30.6001 * (M + 1)) + D + B - 1524.5
+    }
+
+    fun julianCenturies(julianDay: Double): Double {
+        return (julianDay - 2451545.0) / 36525.0
+    }
+
+    fun julianDateFromCenturies(julianCenturies: Double): Double {
+        return julianCenturies * 36525.0 + 2451545.0
     }
 
     /**
@@ -237,6 +232,38 @@ internal object Astro {
         )
     }
 
+    fun equationOfTime(julianDay: Double): Double {
+        val obliquity = obliquityCorrection(julianDay)
+        val L = sunGeometricLongitude(julianDay)
+        val e = eccentricity(julianDay)
+        val M = sunMeanAnomaly(julianDay)
+        val y = square(tanDegrees(obliquity / 2.0))
+
+        val radTime = y * sinDegrees(2.0 * L) - 2.0 * e * sinDegrees(M) +
+                4.0 * e * y * sinDegrees(M) * cosDegrees(2.0 * L) -
+                0.5 * square(y) * sinDegrees(4.0 * L) -
+                1.25 * square(e) * sinDegrees(2.0 * M)
+        return radTime.toDegrees() * 4.0
+    }
+
+    fun refraction(elevation: Double): Double {
+        if (elevation > 85.0){
+            return 0.0
+        }
+
+        val tanElev = tanDegrees(elevation)
+
+        if (elevation > 5.0){
+            return 58.1 / tanElev - 0.07 / cube(tanElev) + 0.000086 / power(tanElev, 5) / 3600.0
+        }
+
+        if (elevation > -0.575){
+            return polynomial(elevation, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
+        }
+
+        return -20.774 / tanElev / 3600.0
+    }
+
     fun riseSetTransitTimes(
         latitude: Double,
         longitude: Double,
@@ -277,40 +304,39 @@ internal object Astro {
             val n1 = m1 + deltaT / 86400
             val n2 = m2 + deltaT / 86400
 
+            val normalizedRas = normalizeRightAscensions(rightAscensions)
+
             val ra0 =
-                interpolate(
+                reduceAngleDegrees(interpolate(
                     n0,
-                    rightAscensions.first,
-                    rightAscensions.second,
-                    rightAscensions.third,
-                    true
-                )
+                    normalizedRas.first,
+                    normalizedRas.second,
+                    normalizedRas.third
+                ))
             val ra1 =
-                interpolate(
+                reduceAngleDegrees(interpolate(
                     n1,
-                    rightAscensions.first,
-                    rightAscensions.second,
-                    rightAscensions.third,
-                    true
-                )
-            val ra2 = interpolate(
+                    normalizedRas.first,
+                    normalizedRas.second,
+                    normalizedRas.third
+                ))
+            val ra2 = reduceAngleDegrees(interpolate(
                 n2,
-                rightAscensions.first,
-                rightAscensions.second,
-                rightAscensions.third,
-                true
-            )
+                normalizedRas.first,
+                normalizedRas.second,
+                normalizedRas.third
+            ))
             val declination1 =
                 interpolate(n1, declinations.first, declinations.second, declinations.third)
             val declination2 =
                 interpolate(n2, declinations.first, declinations.second, declinations.third)
 
-            val hourAngle0 = wrap(hourAngle(sidereal0, longitude, ra0), -180.0, 180.0)
-            val hourAngle1 = wrap(hourAngle(sidereal1, longitude, ra1), -180.0, 180.0)
-            val hourAngle2 = wrap(hourAngle(sidereal2, longitude, ra2), -180.0, 180.0)
+            val hourAngle0 = reduceAngleDegrees(hourAngle(sidereal0, longitude, ra0))
+            val hourAngle1 = reduceAngleDegrees(hourAngle(sidereal1, longitude, ra1))
+            val hourAngle2 = reduceAngleDegrees(hourAngle(sidereal2, longitude, ra2))
 
-            val altitude1 = wrap(altitude(hourAngle1, latitude, declination1), -180.0, 180.0)
-            val altitude2 = wrap(altitude(hourAngle2, latitude, declination2), -180.0, 180.0)
+            val altitude1 = altitude(hourAngle1, latitude, declination1)
+            val altitude2 = altitude(hourAngle2, latitude, declination2)
 
             val dm0 = -hourAngle0 / 360
             val dm1 = (altitude1 - standardAltitude) / (360 * cosDegrees(declination1) * cosDegrees(
@@ -433,17 +459,18 @@ internal object Astro {
     }
 
     fun sunMeanAnomaly(julianDay: Double): Double {
-        val T = (julianDay - 2451545.0) / 36525
-        return reduceAngleDegrees(polynomial(T, 357.52772, 35999.050340, -0.0001603, -1 / 300000.0))
+        val T = julianCenturies(julianDay)
+        // TODO: Maybe don't reduce here?
+        return reduceAngleDegrees(polynomial(T, 357.52911, 35999.05029, -0.0001537))
     }
 
     fun sunGeometricLongitude(julianDay: Double): Double {
-        val T = (julianDay - 2451545.0) / 36525
-        return polynomial(T, 280.46646, 36000.76983, 0.0003032)
+        val T = julianCenturies(julianDay)
+        return reduceAngleDegrees(polynomial(T, 280.46646, 36000.76983, 0.0003032))
     }
 
     fun moonMeanAnomaly(julianDay: Double): Double {
-        val T = (julianDay - 2451545.0) / 36525
+        val T = julianCenturies(julianDay)
         return reduceAngleDegrees(
             polynomial(
                 T,
@@ -499,18 +526,27 @@ internal object Astro {
     }
 
     fun meanObliquityOfEcliptic(julianDay: Double): Double {
-        val T = (julianDay - 2451545.0) / 36525
-        return polynomial(T, 23.43929, -0.01300417, -1.638889e-7, 5.036111e-7)
+        val T = julianCenturies(julianDay)
+        val seconds = polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
+        return 23.0 + (26.0 + seconds / 60.0) / 60.0
+//        return polynomial(T, 23.43929, -0.01300417, -1.638889e-7, 5.036111e-7)
+    }
+
+    fun obliquityCorrection(julianDay: Double): Double {
+        val T = julianCenturies(julianDay)
+        val e = meanObliquityOfEcliptic(julianDay)
+        val omega = polynomial(T, 125.04, -1934.136)
+        return e + 0.00256 * cosDegrees(omega)
     }
 
     fun trueObliquityOfEcliptic(julianDay: Double): Double {
         return meanObliquityOfEcliptic(julianDay) + nutationInObliquity(julianDay)
     }
 
-//    fun eccentricity(julianDay: Double): Double {
-//        val T = (julianDay - 2451545.0) / 36525
-//        return polynomial(T, 0.016708634, -0.000042037, -0.0000001267)
-//    }
+    fun eccentricity(julianDay: Double): Double {
+        val T = julianCenturies(julianDay)
+        return polynomial(T, 0.016708634, -0.000042037, -0.0000001267)
+    }
 
     fun lunarCoordinates(julianDay: Double): AstroCoordinates {
         val T = (julianDay - 2451545.0) / 36525
@@ -616,25 +652,56 @@ internal object Astro {
         ).toDegrees()
     }
 
-    fun solarCoordinates(julianDay: Double): AstroCoordinates {
-        val T = (julianDay - 2451545.0) / 36525
+    private fun sunCenter(julianDay: Double): Double {
+        val T = julianCenturies(julianDay)
         val M = sunMeanAnomaly(julianDay)
-        val L = sunGeometricLongitude(julianDay)
-        val C = polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
+        // TODO: Maybe restrict to between 0 and 360
+        return polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
                 polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
                 0.000289 * sinDegrees(3 * M)
-        val trueLng = reduceAngleDegrees(L + C)
-        val sunAscendingNodeLongitude = 125.04 - 1934.136 * T
-        val apparentLongitude = trueLng - 0.00569 - 0.00478 * sinDegrees(sunAscendingNodeLongitude)
-        val obliquity = meanObliquityOfEcliptic(julianDay)
-        val correctedObliquity = obliquity + 0.00256 * cosDegrees(sunAscendingNodeLongitude)
-        val rightAscension = atan2(
-            cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
-            cosDegrees(apparentLongitude)
-        ).toDegrees()
-        val declination =
-            asin(sinDegrees(correctedObliquity) * sinDegrees(apparentLongitude)).toDegrees()
+    }
 
+    fun sunTrueLongitude(julianDay: Double): Double {
+        val L = sunGeometricLongitude(julianDay)
+        val C = sunCenter(julianDay)
+        // TODO: Maybe reduce this
+        return L + C
+    }
+
+    fun sunTrueAnomaly(julianDay: Double): Double {
+        val M = sunMeanAnomaly(julianDay)
+        val C = sunCenter(julianDay)
+        // TODO: Reduce degrees?
+        return M + C
+    }
+
+    fun sunRadiusVector(julianDay: Double): Double {
+        val v = sunTrueAnomaly(julianDay)
+        val e = eccentricity(julianDay)
+        return (1.000001018 * (1 - e * e)) / (1 + e * cosDegrees(v))
+    }
+
+    fun sunApparentLongitude(julianDay: Double): Double {
+        val T = julianCenturies(julianDay)
+        val trueLng = sunTrueLongitude(julianDay)
+        val omega = polynomial(T, 125.04, -1934.136)
+        return trueLng - 0.00569 - 0.00478 * sinDegrees(omega)
+    }
+
+    fun solarCoordinates(julianDay: Double): AstroCoordinates {
+        val apparentLongitude = sunApparentLongitude(julianDay)
+        val correctedObliquity = obliquityCorrection(julianDay)
+        val rightAscension = reduceAngleDegrees(
+            atan2(
+                cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
+                cosDegrees(apparentLongitude)
+            ).toDegrees()
+        )
+        val declination = wrap(
+            asin(sinDegrees(correctedObliquity) * sinDegrees(apparentLongitude)).toDegrees(),
+            -90.0, 90.0
+        )
+        // TODO: Reduce angle or not?
         return AstroCoordinates(declination, rightAscension)
     }
 
@@ -706,6 +773,20 @@ internal object Astro {
         return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
     }
 
+    private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {
+        val ra1 = rightAscensions.first
+        val ra2 = if (rightAscensions.second < ra1){
+            rightAscensions.second + 360
+        } else {
+            rightAscensions.second
+        }
+        val ra3 = if (rightAscensions.third < ra2){
+            rightAscensions.third + 360
+        } else {
+            rightAscensions.third
+        }
+        return Triple(ra1, ra2, ra3)
+    }
 
     private fun wrap(value: Double, min: Double, max: Double): Double {
         val range = max - min
