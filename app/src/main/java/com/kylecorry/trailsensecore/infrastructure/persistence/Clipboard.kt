@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.core.content.getSystemService
 
 class Clipboard(private val context: Context) {
-    private val clipboardManager = context.getSystemService<ClipboardManager>()
+    private val clipboardManager by lazy { context.getSystemService<ClipboardManager>() }
 
     fun copy(text: String, toastMessage: String? = null) {
         clipboardManager?.setPrimaryClip(ClipData.newPlainText(text, text))

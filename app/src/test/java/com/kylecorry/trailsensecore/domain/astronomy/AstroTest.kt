@@ -228,12 +228,12 @@ class AstroTest {
     @Test
     fun riseSetTransitTimes() {
         val times = Astro.riseSetTransitTimes(
-            42.3333, -71.0833, 177.74208, -0.5667, 56.0,
+            42.3333, -71.0833, 177.74208, -0.5667, false, 56.0,
             Triple(18.04761, 18.44092, 18.82742), Triple(40.68021, 41.73129, 42.78204)
         )
-        assertEquals(0.51766 * 24, times!!.first, 0.001)
-        assertEquals(0.81980 * 24, times.second, 0.001)
-        assertEquals(0.12130 * 24, times.third, 0.001)
+        assertEquals(0.51766 * 24, times!!.first, 0.05)
+        assertEquals(0.81980 * 24, times.second, 0.05)
+        assertEquals(0.12130 * 24, times.third, 0.05)
     }
 
     @Test

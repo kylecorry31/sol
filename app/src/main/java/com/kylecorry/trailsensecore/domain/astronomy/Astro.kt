@@ -220,8 +220,8 @@ internal object Astro {
         )
     }
 
-    fun altitude(hourAngle: Double, latitude: Double, declination: Double): Double {
-        return wrap(
+    fun altitude(hourAngle: Double, latitude: Double, declination: Double, withRefraction: Boolean = false): Double {
+        val altitude = wrap(
             Math.toDegrees(
                 asin(
                     sinDegrees(latitude) * sinDegrees(declination) + cosDegrees(
@@ -230,6 +230,13 @@ internal object Astro {
                 )
             ), -90.0, 90.0
         )
+
+        return if (withRefraction){
+            val refract = wrap(refraction(altitude), -90.0, 90.0)
+            wrap(altitude + refract, -90.0, 90.0)
+        } else {
+            altitude
+        }
     }
 
     fun equationOfTime(julianDay: Double): Double {
@@ -254,7 +261,7 @@ internal object Astro {
         val tanElev = tanDegrees(elevation)
 
         if (elevation > 5.0){
-            return 58.1 / tanElev - 0.07 / cube(tanElev) + 0.000086 / power(tanElev, 5) / 3600.0
+            return (58.1 / tanElev - 0.07 / cube(tanElev) + 0.000086 / power(tanElev, 5)) / 3600.0
         }
 
         if (elevation > -0.575){
@@ -269,6 +276,7 @@ internal object Astro {
         longitude: Double,
         apparentSidereal: Double,
         standardAltitude: Double,
+        withRefraction: Boolean,
         deltaT: Double,
         declinations: Triple<Double, Double, Double>,
         rightAscensions: Triple<Double, Double, Double>
@@ -335,8 +343,8 @@ internal object Astro {
             val hourAngle1 = reduceAngleDegrees(hourAngle(sidereal1, longitude, ra1))
             val hourAngle2 = reduceAngleDegrees(hourAngle(sidereal2, longitude, ra2))
 
-            val altitude1 = altitude(hourAngle1, latitude, declination1)
-            val altitude2 = altitude(hourAngle2, latitude, declination2)
+            val altitude1 = altitude(hourAngle1, latitude, declination1, withRefraction)
+            val altitude2 = altitude(hourAngle2, latitude, declination2, withRefraction)
 
             val dm0 = -hourAngle0 / 360
             val dm1 = (altitude1 - standardAltitude) / (360 * cosDegrees(declination1) * cosDegrees(
@@ -366,6 +374,7 @@ internal object Astro {
         date: ZonedDateTime,
         coordinate: Coordinate,
         standardAltitude: Double,
+        withRefraction: Boolean,
         coordinateFn: (julianDate: Double) -> AstroCoordinates
     ): RiseSetTransitTimes {
         val ut = ut0hOnDate(date)
@@ -383,6 +392,7 @@ internal object Astro {
             coordinate.longitude,
             sr,
             standardAltitude,
+            withRefraction,
             deltaT(date.year),
             Triple(astroCoordsy.declination, astroCoords.declination, astroCoordst.declination),
             Triple(
@@ -406,22 +416,23 @@ internal object Astro {
         date: ZonedDateTime,
         coordinate: Coordinate,
         standardAltitude: Double,
+        withRefraction: Boolean,
         coordinateFn: (julianDate: Double) -> AstroCoordinates
     ): RiseSetTransitTimes {
 
         val ld = date.toLocalDate()
 
         // Get today's times
-        val today = getTransitTimesHelper(date, coordinate, standardAltitude, coordinateFn)
+        val today = getTransitTimesHelper(date, coordinate, standardAltitude, withRefraction, coordinateFn)
         if (today.rise?.toLocalDate() == ld && today.transit?.toLocalDate() == ld && today.set?.toLocalDate() == ld) {
             return today
         }
 
         // Today's times didn't contain all the events / were on the wrong day, check the surrounding days
         val yesterday =
-            getTransitTimesHelper(date.minusDays(1), coordinate, standardAltitude, coordinateFn)
+            getTransitTimesHelper(date.minusDays(1), coordinate, standardAltitude, withRefraction, coordinateFn)
         val tomorrow =
-            getTransitTimesHelper(date.plusDays(1), coordinate, standardAltitude, coordinateFn)
+            getTransitTimesHelper(date.plusDays(1), coordinate, standardAltitude, withRefraction, coordinateFn)
 
         val rise = listOfNotNull(
             yesterday.rise,
@@ -445,17 +456,19 @@ internal object Astro {
     fun getSunTimes(
         date: ZonedDateTime,
         coordinate: Coordinate,
-        standardAltitude: Double = -0.8333
+        standardAltitude: Double = -0.8333,
+        withRefraction: Boolean = false
     ): RiseSetTransitTimes {
-        return getTransitEvents(date, coordinate, standardAltitude, this::solarCoordinates)
+        return getTransitEvents(date, coordinate, standardAltitude, withRefraction, this::solarCoordinates)
     }
 
     fun getMoonTimes(
         date: ZonedDateTime,
         coordinate: Coordinate,
-        standardAltitude: Double = 0.125
+        standardAltitude: Double = 0.125,
+        withRefraction: Boolean = false
     ): RiseSetTransitTimes {
-        return getTransitEvents(date, coordinate, standardAltitude, this::lunarCoordinates)
+        return getTransitEvents(date, coordinate, standardAltitude, withRefraction, this::lunarCoordinates)
     }
 
     fun sunMeanAnomaly(julianDay: Double): Double {

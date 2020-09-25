@@ -9,7 +9,7 @@ import androidx.core.content.getSystemService
 
 class SensorChecker(private val context: Context) {
 
-    private val sensorManager = context.getSystemService<SensorManager>()
+    private val sensorManager by lazy { context.getSystemService<SensorManager>() }
 
     fun hasBarometer(): Boolean {
         return hasSensor(Sensor.TYPE_PRESSURE)

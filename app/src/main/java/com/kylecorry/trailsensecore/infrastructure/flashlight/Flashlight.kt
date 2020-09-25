@@ -10,7 +10,7 @@ import java.lang.Exception
 
 class Flashlight(private val context: Context) : IFlashlight {
 
-    private val cameraService = getCameraManager(context)
+    private val cameraService by lazy { getCameraManager(context) }
 
     override fun on() {
         if (!hasFlashlight(context)) {

@@ -108,15 +108,16 @@ class AstronomyServiceTest {
         parametrized(
             listOf(
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 27.63f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -31f),
+                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -30.8f),
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 22, 6, 51), 0.9f),
             )
         ) {
             val altitude = service.getSunAltitude(
                 ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-                ny
+                ny,
+                true
             )
-            assertEquals(it.second, altitude, 0.5f)
+            assertEquals(it.second, altitude, 0.05f)
         }
     }
 

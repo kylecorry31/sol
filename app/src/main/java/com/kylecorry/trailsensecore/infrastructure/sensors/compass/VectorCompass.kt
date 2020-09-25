@@ -25,7 +25,6 @@ class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueN
         get() = _accuracy
     private var _accuracy: Accuracy = Accuracy.Unknown
 
-    // TODO: Check if gravity sensor is available, else use accelerometer
     private val sensorChecker = SensorChecker(context)
     private val accelerometer: IAccelerometer =
         if (sensorChecker.hasGravity()) GravitySensor(context) else LowPassAccelerometer(context)

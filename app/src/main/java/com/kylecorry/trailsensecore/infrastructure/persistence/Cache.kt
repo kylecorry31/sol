@@ -6,7 +6,7 @@ import androidx.preference.PreferenceManager
 
 class Cache(context: Context) {
 
-    private val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+    private val sharedPrefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
     fun remove(key: String) {
         sharedPrefs.edit { remove(key) }
