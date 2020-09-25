@@ -8,7 +8,4 @@ internal class SimpleLocationListener(private val onLocationChangedFn: (location
     override fun onLocationChanged(location: Location) {
         onLocationChangedFn.invoke(location)
     }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-    }
 }
