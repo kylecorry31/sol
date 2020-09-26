@@ -18,7 +18,26 @@ object UiUtils {
         context: Context,
         title: String,
         content: String,
+        onClose: (() -> Unit)? = null
+    ): AlertDialog {
+        return alert(context, title, content, R.string.ok, onClose)
+    }
+
+    fun alert(
+        context: Context,
+        title: String,
+        content: String,
         @StringRes okString: Int,
+        onClose: (() -> Unit)? = null
+    ): AlertDialog {
+        return alert(context, title, content, context.getString(okString), onClose)
+    }
+
+    fun alert(
+        context: Context,
+        title: String,
+        content: String,
+        okString: String,
         onClose: (() -> Unit)? = null
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
@@ -42,8 +61,42 @@ object UiUtils {
         context: Context,
         title: String,
         content: String,
-        @StringRes okString: Int,
-        @StringRes cancelString: Int,
+        @StringRes buttonOk: Int,
+        @StringRes buttonCancel: Int,
+        onClose: ((cancelled: Boolean) -> Unit)? = null
+    ): AlertDialog {
+        return alertWithCancel(
+            context,
+            title,
+            content,
+            context.getString(buttonOk),
+            context.getString(buttonCancel),
+            onClose
+        )
+    }
+
+    fun alertWithCancel(
+        context: Context,
+        title: String,
+        content: String,
+        onClose: ((cancelled: Boolean) -> Unit)? = null
+    ): AlertDialog {
+        return alertWithCancel(
+            context,
+            title,
+            content,
+            R.string.ok,
+            R.string.cancel,
+            onClose
+        )
+    }
+
+    fun alertWithCancel(
+        context: Context,
+        title: String,
+        content: String,
+        buttonOk: String,
+        buttonCancel: String,
         onClose: ((cancelled: Boolean) -> Unit)? = null
     ): AlertDialog {
         val builder = AlertDialog.Builder(context)
@@ -51,13 +104,13 @@ object UiUtils {
             setMessage(content)
             setTitle(title)
             setPositiveButton(
-                okString
+                buttonOk
             ) { dialog, _ ->
                 onClose?.invoke(false)
                 dialog.dismiss()
             }
             setNegativeButton(
-                cancelString
+                buttonCancel
             ) { dialog, _ ->
                 onClose?.invoke(true)
                 dialog.dismiss()
