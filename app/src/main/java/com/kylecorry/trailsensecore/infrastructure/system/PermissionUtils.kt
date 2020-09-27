@@ -30,15 +30,20 @@ object PermissionUtils {
     }
 
     fun requestPermissions(activity: Activity, permissions: List<String>, requestCode: Int) {
-        if (permissions.isEmpty()) {
+        val notGrantedPermissions = permissions.filterNot { hasPermission(activity, it) }
+        if (notGrantedPermissions.isEmpty()) {
             activity.onRequestPermissionsResult(
                 requestCode,
                 permissions.toTypedArray(),
-                intArrayOf()
+                intArrayOf(PackageManager.PERMISSION_GRANTED)
             )
             return
         }
-        ActivityCompat.requestPermissions(activity, permissions.toTypedArray(), requestCode)
+        ActivityCompat.requestPermissions(
+            activity,
+            notGrantedPermissions.toTypedArray(),
+            requestCode
+        )
     }
 
     fun requestPermissionsWithRationale(
@@ -49,6 +54,15 @@ object PermissionUtils {
         buttonGrant: String,
         buttonDeny: String
     ) {
+        val notGrantedPermissions = permissions.filterNot { hasPermission(activity, it) }
+        if (notGrantedPermissions.isEmpty()) {
+            activity.onRequestPermissionsResult(
+                requestCode,
+                permissions.toTypedArray(),
+                intArrayOf(PackageManager.PERMISSION_GRANTED)
+            )
+            return
+        }
         UiUtils.alertWithCancel(
             activity,
             rationale.title,
@@ -57,11 +71,11 @@ object PermissionUtils {
             buttonDeny
         ) { cancelled ->
             if (!cancelled) {
-                requestPermissions(activity, permissions, requestCode)
+                requestPermissions(activity, notGrantedPermissions, requestCode)
             } else {
                 activity.onRequestPermissionsResult(
                     requestCode,
-                    permissions.toTypedArray(),
+                    notGrantedPermissions.toTypedArray(),
                     intArrayOf(PackageManager.PERMISSION_DENIED)
                 )
             }
