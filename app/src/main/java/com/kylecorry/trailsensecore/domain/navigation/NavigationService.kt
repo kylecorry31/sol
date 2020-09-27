@@ -60,8 +60,12 @@ class NavigationService : INavigationService {
         beacons: List<Beacon>,
         maxDistance: Float
     ): List<Beacon> {
-        return beacons.filter {
-            location.distanceTo(it.coordinate) <= maxDistance
-        }
+        return beacons
+            .asSequence()
+            .map { Pair(it, location.distanceTo(it.coordinate)) }
+            .filter { it.second <= maxDistance }
+            .sortedBy { it.second }
+            .map { it.first }
+            .toList()
     }
 }
