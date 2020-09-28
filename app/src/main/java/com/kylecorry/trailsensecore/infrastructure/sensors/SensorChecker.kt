@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.location.LocationManager
 import androidx.core.content.getSystemService
+import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 
 class SensorChecker(private val context: Context) {
 
@@ -16,7 +18,17 @@ class SensorChecker(private val context: Context) {
     }
 
     fun hasGPS(): Boolean {
-        return context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (!PermissionUtils.isLocationEnabled(context)) {
+            return false
+        }
+
+        val lm = context.getSystemService<LocationManager>()
+        try {
+            return lm?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+        } catch (e: Exception) {
+            // Do nothing
+        }
+        return false
     }
 
     fun hasGravity(): Boolean {

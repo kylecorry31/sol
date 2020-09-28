@@ -32,10 +32,7 @@ interface IAstronomyService {
         withRefraction: Boolean = false
     ): ZonedDateTime?
 
-    fun isSunUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean {
-        return getSunAltitude(time, location, withRefraction) > 0
-    }
-
+    fun isSunUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
 
     // MOON
     fun getMoonEvents(date: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): RiseSetTransitTimes
@@ -45,8 +42,6 @@ interface IAstronomyService {
     fun getNextMoonrise(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): ZonedDateTime?
     fun getMoonPhase(date: ZonedDateTime): MoonPhase
 
-    fun isMoonUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean {
-        return getMoonAltitude(time, location, withRefraction) > 0
-    }
+    fun isMoonUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
 
 }

@@ -88,6 +88,14 @@ class AstronomyService : IAstronomyService {
         )
     }
 
+    override fun isSunUp(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean
+    ): Boolean {
+        return getSunAltitude(time, location, withRefraction) > 0
+    }
+
     override fun getMoonEvents(
         date: ZonedDateTime, location: Coordinate,
         withRefraction: Boolean
@@ -156,6 +164,14 @@ class AstronomyService : IAstronomyService {
 
     override fun getMoonPhase(date: ZonedDateTime): MoonPhase {
         return Astro.getMoonPhase(date)
+    }
+
+    override fun isMoonUp(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean
+    ): Boolean {
+        return getMoonAltitude(time, location, withRefraction) > 0
     }
 
 }
