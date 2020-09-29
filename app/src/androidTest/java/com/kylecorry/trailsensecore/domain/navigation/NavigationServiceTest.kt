@@ -37,8 +37,8 @@ class NavigationServiceTest {
         val near5km = service.nearby(mtWashington, beacons, 5000f).map { it.id }
         val near500m = service.nearby(mtWashington, beacons, 500f).map { it.id }
 
-        assertEquals(listOf(0, 1, 2), near5km)
-        assertEquals(listOf(0, 1), near500m)
+        assertEquals(listOf(0L, 1L, 2L), near5km)
+        assertEquals(listOf(0L, 1L), near500m)
     }
 
     @Test
