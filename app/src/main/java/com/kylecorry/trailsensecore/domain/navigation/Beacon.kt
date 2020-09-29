@@ -8,6 +8,6 @@ data class Beacon(
     val coordinate: Coordinate,
     val visible: Boolean = true,
     val comment: String? = null,
-    val beaconGroupId: Int? = null,
+    val beaconGroupId: Long? = null,
     val elevation: Float? = null
 ) : IBeacon
