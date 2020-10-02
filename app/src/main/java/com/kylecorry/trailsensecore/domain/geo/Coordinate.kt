@@ -1,13 +1,16 @@
 package com.kylecorry.trailsensecore.domain.geo
 
 import android.location.Location
+import android.os.Parcelable
 import com.kylecorry.trailsensecore.domain.math.roundPlaces
+import kotlinx.android.parcel.Parcelize
 import java.lang.Exception
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-data class Coordinate(val latitude: Double, val longitude: Double) {
+@Parcelize
+data class Coordinate(val latitude: Double, val longitude: Double): Parcelable {
 
     private val latitudeDMS: String
         get() {

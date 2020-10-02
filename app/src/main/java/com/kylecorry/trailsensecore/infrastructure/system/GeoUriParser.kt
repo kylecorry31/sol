@@ -1,7 +1,9 @@
 package com.kylecorry.trailsensecore.infrastructure.system
 
 import android.net.Uri
+import android.os.Parcelable
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import kotlinx.android.parcel.Parcelize
 
 class GeoUriParser {
 
@@ -42,6 +44,8 @@ class GeoUriParser {
 
         return null
     }
-    data class NamedCoordinate(val coordinate: Coordinate, val name: String? = null)
+
+    @Parcelize
+    data class NamedCoordinate(val coordinate: Coordinate, val name: String? = null): Parcelable
 
 }

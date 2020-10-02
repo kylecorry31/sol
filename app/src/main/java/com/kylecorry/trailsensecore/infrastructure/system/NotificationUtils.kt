@@ -26,6 +26,15 @@ object NotificationUtils {
         notificationManager?.notify(notificationId, notification)
     }
 
+    fun builder(context: Context, channel: String): Notification.Builder {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(context, channel)
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(context)
+        }
+    }
+
     fun cancel(context: Context, notificationId: Int) {
         val notificationManager = getNotificationManager(context)
         notificationManager?.cancel(notificationId)
@@ -36,13 +45,17 @@ object NotificationUtils {
         id: String,
         name: String,
         description: String,
-        importance: Int
+        importance: Int,
+        muteSound: Boolean = false
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
         val channel = NotificationChannel(id, name, importance).apply {
             this.description = description
+            if (muteSound) {
+                setSound(null, null)
+            }
         }
         getNotificationManager(context)?.createNotificationChannel(channel)
     }
