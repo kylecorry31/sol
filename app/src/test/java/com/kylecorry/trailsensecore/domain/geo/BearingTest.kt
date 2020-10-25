@@ -48,6 +48,10 @@ internal class BearingTest {
 
                 Arguments.of(10f, CompassDirection.North),
                 Arguments.of(350f, CompassDirection.North),
+
+                Arguments.of(Float.NaN, CompassDirection.North),
+                Arguments.of(Float.NEGATIVE_INFINITY, CompassDirection.North),
+                Arguments.of(Float.POSITIVE_INFINITY, CompassDirection.North),
             )
         }
 
@@ -60,7 +64,10 @@ internal class BearingTest {
                 Arguments.of(-180f, 180f),
                 Arguments.of(710f, 350f),
                 Arguments.of(360f, 0f),
-                Arguments.of(-710f, 10f)
+                Arguments.of(-710f, 10f),
+                Arguments.of(Float.NaN, 0f),
+                Arguments.of(Float.NEGATIVE_INFINITY, 0f),
+                Arguments.of(Float.POSITIVE_INFINITY, 0f),
             )
         }
     }

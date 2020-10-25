@@ -801,22 +801,6 @@ internal object Astro {
         return Triple(ra1, ra2, ra3)
     }
 
-    private fun wrap(value: Double, min: Double, max: Double): Double {
-        val range = max - min
-
-        var newValue = value
-
-        while (newValue > max) {
-            newValue -= range
-        }
-
-        while (newValue < min) {
-            newValue += range
-        }
-
-        return newValue
-    }
-
     private fun cube(a: Double): Double {
         return a * a * a
     }

@@ -16,6 +16,14 @@ object IntentUtils {
         return i
     }
 
+    fun startService(context: Context, intent: Intent, foreground: Boolean = false) {
+        if (foreground && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
     fun pendingIntentExists(context: Context, requestCode: Int, intent: Intent): Boolean {
         return PendingIntent.getBroadcast(
             context, requestCode,

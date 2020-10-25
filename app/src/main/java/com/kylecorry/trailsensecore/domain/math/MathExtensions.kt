@@ -3,15 +3,31 @@ package com.kylecorry.trailsensecore.domain.math
 import kotlin.math.*
 
 fun normalizeAngle(angle: Float): Float {
-    var outputAngle = angle
-    while (outputAngle < 0) outputAngle += 360
-    return outputAngle % 360
+    return wrap(angle, 0f, 360f) % 360
 }
 
 fun normalizeAngle(angle: Double): Double {
-    var outputAngle = angle
-    while (outputAngle < 0) outputAngle += 360
-    return outputAngle % 360
+    return wrap(angle, 0.0, 360.0) % 360
+}
+
+fun wrap(value: Float, min: Float, max: Float): Float {
+    return wrap(value.toDouble(), min.toDouble(), max.toDouble()).toFloat()
+}
+
+fun wrap(value: Double, min: Double, max: Double): Double {
+    val range = max - min
+
+    var newValue = value
+
+    while (newValue > max) {
+        newValue -= range
+    }
+
+    while (newValue < min) {
+        newValue += range
+    }
+
+    return newValue
 }
 
 fun sinDegrees(angle: Double): Double {

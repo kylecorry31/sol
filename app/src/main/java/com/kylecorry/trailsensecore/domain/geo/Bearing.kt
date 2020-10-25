@@ -4,8 +4,7 @@ import com.kylecorry.trailsensecore.domain.math.normalizeAngle
 import kotlin.math.roundToInt
 
 class Bearing(_value: Float){
-    val value: Float =
-        normalizeAngle(_value)
+    val value: Float = if (_value.isNaN() || !_value.isFinite()) 0f else normalizeAngle(_value)
 
     val direction: CompassDirection
             get(){
