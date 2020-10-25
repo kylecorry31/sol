@@ -9,6 +9,7 @@ import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.max
 
 @Suppress("DEPRECATION")
 class LegacyCompass(context: Context, smoothingAmount: Int, private val useTrueNorth: Boolean) :
@@ -20,7 +21,7 @@ class LegacyCompass(context: Context, smoothingAmount: Int, private val useTrueN
     private var gotReading = false
 
     private var filterSize = smoothingAmount * 2
-    private val filter = MovingAverageFilter(filterSize)
+    private val filter = MovingAverageFilter(max(1, filterSize))
 
     override var declination = 0f
 

@@ -12,6 +12,7 @@ import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.domain.math.deltaAngle
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
+import kotlin.math.max
 import kotlin.math.min
 
 class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueNorth: Boolean) :
@@ -31,7 +32,7 @@ class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueN
     private val magnetometer = Magnetometer(context)
 
     private var filterSize = smoothingFactor * 2 * 2
-    private val filter = MovingAverageFilter(filterSize)
+    private val filter = MovingAverageFilter(max(1, filterSize))
 
     override var declination = 0f
 
