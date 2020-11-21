@@ -6,79 +6,79 @@ import androidx.preference.PreferenceManager
 
 class Cache(context: Context) {
 
-    private val sharedPrefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
+    private val sharedPrefs by lazy { PreferenceManager.getDefaultSharedPreferences(context.applicationContext) }
 
     fun remove(key: String) {
-        sharedPrefs.edit { remove(key) }
+        sharedPrefs?.edit { remove(key) }
     }
 
     fun contains(key: String): Boolean {
-        return sharedPrefs.contains(key)
+        return sharedPrefs?.contains(key) ?: false
     }
 
     fun putInt(key: String, value: Int) {
-        sharedPrefs.edit { putInt(key, value) }
+        sharedPrefs?.edit { putInt(key, value) }
     }
 
     fun putBoolean(key: String, value: Boolean) {
-        sharedPrefs.edit { putBoolean(key, value) }
+        sharedPrefs?.edit { putBoolean(key, value) }
     }
 
     fun putString(key: String, value: String) {
-        sharedPrefs.edit { putString(key, value) }
+        sharedPrefs?.edit { putString(key, value) }
     }
 
     fun putFloat(key: String, value: Float) {
-        sharedPrefs.edit { putFloat(key, value) }
+        sharedPrefs?.edit { putFloat(key, value) }
     }
 
     fun putDouble(key: String, value: Double) {
-        sharedPrefs.edit { putString(key, value.toString()) }
+        sharedPrefs?.edit { putString(key, value.toString()) }
     }
 
     fun putLong(key: String, value: Long) {
-        sharedPrefs.edit { putLong(key, value) }
+        sharedPrefs?.edit { putLong(key, value) }
     }
 
     fun getInt(key: String): Int? {
-        if (!sharedPrefs.contains(key)) {
+        if (!contains(key)) {
             return null
         }
-        return sharedPrefs.getInt(key, 0)
+        return sharedPrefs?.getInt(key, 0)
     }
 
     fun getBoolean(key: String): Boolean? {
-        if (!sharedPrefs.contains(key)) {
+        if (!contains(key)) {
             return null
         }
-        return sharedPrefs.getBoolean(key, false)
+        return sharedPrefs?.getBoolean(key, false)
     }
 
     fun getString(key: String): String? {
-        if (!sharedPrefs.contains(key)) {
+        if (!contains(key)) {
             return null
         }
-        return sharedPrefs.getString(key, null)
+        return sharedPrefs?.getString(key, null)
     }
 
     fun getFloat(key: String): Float? {
-        if (!sharedPrefs.contains(key)) {
+        if (!contains(key)) {
             return null
         }
-        return sharedPrefs.getFloat(key, 0f)
+        return sharedPrefs?.getFloat(key, 0f)
     }
 
     fun getDouble(key: String): Double? {
-        if (!sharedPrefs.contains(key)) {
+        if (!contains(key)) {
             return null
         }
-        return sharedPrefs.getString(key, null)?.toDoubleOrNull()
+        return sharedPrefs?.getString(key, null)?.toDoubleOrNull()
     }
 
     fun getLong(key: String): Long? {
-        if (!sharedPrefs.contains(key)) {
+        if (!contains(key)) {
             return null
         }
-        return sharedPrefs.getLong(key, 0L)
+        return sharedPrefs?.getLong(key, 0L)
     }
 }
