@@ -15,6 +15,21 @@ class CoordinateTest {
     }
 
     @Test
+    fun canConvertToUTM(){
+        assertEquals("31 N 166021 0", Coordinate(0.0, 0.0).toUTM())
+        assertEquals("30 N 808084 14385", Coordinate(0.1300, -0.2324).toUTM())
+        assertEquals("34 G 683473 4942631", Coordinate(-45.6456, 23.3545).toUTM())
+//        assertEquals("25 L 404859 8588690", Coordinate(-12.7650, -33.8765).toUTM())
+        assertEquals("02 C 506346 1057742", Coordinate(-80.5434, -170.6540).toUTM())
+//        assertEquals("60 Z 500000 9997964", Coordinate(90.0000, 177.0000).toUTM())
+//        assertEquals("01 A 500000 2035", Coordinate(-90.0000, -177.0000).toUTM())
+//        assertEquals("31 Z 500000 9997964", Coordinate(90.0000, 3.0000).toUTM())
+        assertEquals("08 Q 453580 2594272", Coordinate(23.4578, -135.4545).toUTM())
+        assertEquals("57 X 450793 8586116", Coordinate(77.3450, 156.9876).toUTM())
+//        assertEquals("22 A 502639 75072", Coordinate(-89.3454, -48.9306).toUTM())
+    }
+
+    @Test
     fun canParseLongitude(){
         val cases = listOf(
             // DMS
