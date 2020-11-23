@@ -37,8 +37,8 @@ interface IAstronomyService {
     fun isSunUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
 
     // SOLAR PANELS
-    fun getOptimalSolarTilt(date: ZonedDateTime, location: Coordinate): Float
-    fun getOptimalSolarDirection(location: Coordinate): Bearing
+    fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition
+    fun getBestSolarPanelPositionForTime(time: ZonedDateTime, location: Coordinate): SolarPanelPosition
 
     // MOON
     fun getMoonEvents(date: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): RiseSetTransitTimes

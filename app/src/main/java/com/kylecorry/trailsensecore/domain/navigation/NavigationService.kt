@@ -41,6 +41,10 @@ class NavigationService : INavigationService {
         return originalVector.copy(altitudeChange = altitudeChange)
     }
 
+    override fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
+        return from.plus(distance.toDouble(), bearing)
+    }
+
     override fun eta(from: Position, to: Beacon, nonLinear: Boolean): Duration {
         val speed =
             if (from.speed < 3) clamp(from.speed, 0.89408f, 1.78816f) else from.speed

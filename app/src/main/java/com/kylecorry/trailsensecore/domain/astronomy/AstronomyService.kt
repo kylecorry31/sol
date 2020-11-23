@@ -5,7 +5,6 @@ import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.geo.CompassDirection
 import com.kylecorry.trailsensecore.domain.time.DateUtils
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.max
 
@@ -99,7 +98,16 @@ class AstronomyService : IAstronomyService {
         return getSunAltitude(time, location, withRefraction) > 0
     }
 
-    override fun getOptimalSolarTilt(date: ZonedDateTime, location: Coordinate): Float {
+
+    private fun getOptimalSolarDirection(location: Coordinate): Bearing {
+        return if (location.latitude > 0){
+            Bearing.from(CompassDirection.South)
+        } else {
+            Bearing.from(CompassDirection.North)
+        }
+    }
+
+    override fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition {
         var maximum = 0f
         val interval = 5L
 
@@ -113,15 +121,25 @@ class AstronomyService : IAstronomyService {
             time = time.plusMinutes(interval)
         }
 
-        return 90f - maximum
+        val angle = 90f - maximum
+        val direction = getOptimalSolarDirection(location)
+        return SolarPanelPosition(angle, direction)
     }
 
-    override fun getOptimalSolarDirection(location: Coordinate): Bearing {
-        return if (location.latitude > 0){
-            Bearing.from(CompassDirection.South)
-        } else {
-            Bearing.from(CompassDirection.North)
+    override fun getBestSolarPanelPositionForTime(time: ZonedDateTime, location: Coordinate): SolarPanelPosition {
+        val sunAltitude = getSunAltitude(time, location, true)
+
+        if (sunAltitude >= 0){
+            val azimuth = getSunAzimuth(time, location)
+            return SolarPanelPosition(90f - sunAltitude, azimuth)
         }
+
+        // Get azimuth of next sunrise
+        val nextSunrise = getNextSunrise(time, location)
+            ?: return getBestSolarPanelPositionForDay(time, location)
+
+        val azimuth = getSunAzimuth(nextSunrise, location)
+        return SolarPanelPosition(90f, azimuth)
     }
 
     override fun getMoonEvents(

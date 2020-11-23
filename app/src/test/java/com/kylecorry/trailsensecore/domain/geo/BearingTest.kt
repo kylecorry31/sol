@@ -33,6 +33,13 @@ internal class BearingTest {
         assertEquals(expected, bearing.value, 0.01f)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideInverse")
+    fun inverse(azimuth: Float, expected: Float){
+        val bearing = Bearing(azimuth)
+        assertEquals(expected, bearing.inverse().value, 0.01f)
+    }
+
     @Test
     fun withDeclination() {
         val bearing = Bearing(45f)
@@ -76,6 +83,16 @@ internal class BearingTest {
                 Arguments.of(Float.NaN, 0f),
                 Arguments.of(Float.NEGATIVE_INFINITY, 0f),
                 Arguments.of(Float.POSITIVE_INFINITY, 0f),
+            )
+        }
+
+        @JvmStatic
+        fun provideInverse(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0f, 180f),
+                Arguments.of(180f, 0f),
+                Arguments.of(90f, 270f),
+                Arguments.of(270f, 90f),
             )
         }
     }

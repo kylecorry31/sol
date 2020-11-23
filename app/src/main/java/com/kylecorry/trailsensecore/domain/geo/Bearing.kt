@@ -22,6 +22,10 @@ class Bearing(_value: Float){
         return Bearing(value + declination)
     }
 
+    fun inverse(): Bearing {
+        return Bearing(value + 180)
+    }
+
     companion object {
         fun from(direction: CompassDirection): Bearing {
             return Bearing(direction.azimuth)

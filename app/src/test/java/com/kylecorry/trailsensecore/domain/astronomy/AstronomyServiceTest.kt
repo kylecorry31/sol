@@ -123,31 +123,44 @@ class AstronomyServiceTest {
     }
 
     @Test
-    fun getOptimalSolarTilt(){
+    fun getBestSolarPanelPositionForDay(){
+        // TODO: Test in southern hemisphere
         val ny = Coordinate(40.7128, -74.0060)
         parametrized(
             listOf(
-                Pair(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 20.43502f),
-                Pair(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 61.01094f),
-                Pair(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 61.01094f)
+                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 180f, 20.43502f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 180f, 61.01094f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 180f, 61.01094f),
             )
         ) {
-            val tilt = service.getOptimalSolarTilt(
+            val position = service.getBestSolarPanelPositionForDay(
                 ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
                 ny
             )
-            assertEquals(it.second, tilt, 0.05f)
+            assertEquals(it.second, position.bearing.value, 0.05f)
+            assertEquals(it.third, position.angle, 0.05f)
         }
     }
 
-    @Test
-    fun getOptimalSolarDirection(){
-        val northern = service.getOptimalSolarDirection(Coordinate(10.0, 0.0))
-        assertEquals(northern.value, 180f, 0.05f)
-
-        val southern = service.getOptimalSolarDirection(Coordinate(-10.0, 0.0))
-        assertEquals(southern.value, 0f, 0.05f)
-    }
+//    @Test
+//    fun getBestSolarPanelPositionForTime(){
+//        // TODO: Test in southern hemisphere
+//        val ny = Coordinate(40.7128, -74.0060)
+//        parametrized(
+//            listOf(
+//                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 180f, 20.43502f),
+//                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 180f, 61.01094f),
+//                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 180f, 61.01094f),
+//            )
+//        ) {
+//            val position = service.getBestSolarPanelPositionForTime(
+//                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
+//                ny
+//            )
+//            assertEquals(it.second, position.bearing.value, 0.05f)
+//            assertEquals(it.third, position.angle, 0.05f)
+//        }
+//    }
 
     @Test
     fun getSunAzimuth() {
