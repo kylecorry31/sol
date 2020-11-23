@@ -3,6 +3,8 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
+import com.kylecorry.trailsensecore.domain.geo.CompassDirection
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 interface IAstronomyService {
@@ -33,6 +35,10 @@ interface IAstronomyService {
     ): ZonedDateTime?
 
     fun isSunUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
+
+    // SOLAR PANELS
+    fun getOptimalSolarTilt(date: ZonedDateTime, location: Coordinate): Float
+    fun getOptimalSolarDirection(location: Coordinate): Bearing
 
     // MOON
     fun getMoonEvents(date: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): RiseSetTransitTimes

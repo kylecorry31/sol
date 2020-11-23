@@ -3,6 +3,7 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
+import com.kylecorry.trailsensecore.domain.geo.CompassDirection
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.parametrized
 import org.junit.Test
@@ -119,6 +120,33 @@ class AstronomyServiceTest {
             )
             assertEquals(it.second, altitude, 0.05f)
         }
+    }
+
+    @Test
+    fun getOptimalSolarTilt(){
+        val ny = Coordinate(40.7128, -74.0060)
+        parametrized(
+            listOf(
+                Pair(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 20.43502f),
+                Pair(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 61.01094f),
+                Pair(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 61.01094f)
+            )
+        ) {
+            val tilt = service.getOptimalSolarTilt(
+                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
+                ny
+            )
+            assertEquals(it.second, tilt, 0.05f)
+        }
+    }
+
+    @Test
+    fun getOptimalSolarDirection(){
+        val northern = service.getOptimalSolarDirection(Coordinate(10.0, 0.0))
+        assertEquals(northern.value, 180f, 0.05f)
+
+        val southern = service.getOptimalSolarDirection(Coordinate(-10.0, 0.0))
+        assertEquals(southern.value, 0f, 0.05f)
     }
 
     @Test

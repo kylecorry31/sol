@@ -18,6 +18,14 @@ internal class BearingTest {
         assertEquals(expected, bearing.direction)
     }
 
+    @Test
+    fun from(){
+        for (direction in CompassDirection.values()){
+            val bearing = Bearing.from(direction)
+            assertEquals(direction.azimuth, bearing.value)
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("provideAzimuth")
     fun value(azimuth: Float, expected: Float){

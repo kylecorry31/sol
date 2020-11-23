@@ -3,8 +3,11 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
+import com.kylecorry.trailsensecore.domain.geo.CompassDirection
 import com.kylecorry.trailsensecore.domain.time.DateUtils
+import java.time.LocalDate
 import java.time.ZonedDateTime
+import kotlin.math.max
 
 class AstronomyService : IAstronomyService {
 
@@ -94,6 +97,31 @@ class AstronomyService : IAstronomyService {
         withRefraction: Boolean
     ): Boolean {
         return getSunAltitude(time, location, withRefraction) > 0
+    }
+
+    override fun getOptimalSolarTilt(date: ZonedDateTime, location: Coordinate): Float {
+        var maximum = 0f
+        val interval = 5L
+
+        var time = date.withHour(0).withMinute(0).withSecond(0)
+
+        while(time.toLocalDate() == date.toLocalDate()){
+            val altitude = getSunAltitude(time, location, true)
+            if (altitude >= 0){
+                maximum = max(altitude, maximum)
+            }
+            time = time.plusMinutes(interval)
+        }
+
+        return 90f - maximum
+    }
+
+    override fun getOptimalSolarDirection(location: Coordinate): Bearing {
+        return if (location.latitude > 0){
+            Bearing.from(CompassDirection.South)
+        } else {
+            Bearing.from(CompassDirection.North)
+        }
     }
 
     override fun getMoonEvents(

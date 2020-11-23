@@ -21,4 +21,10 @@ class Bearing(_value: Float){
     fun withDeclination(declination: Float): Bearing {
         return Bearing(value + declination)
     }
+
+    companion object {
+        fun from(direction: CompassDirection): Bearing {
+            return Bearing(direction.azimuth)
+        }
+    }
 }
