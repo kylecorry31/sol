@@ -17,7 +17,7 @@ object UiUtils {
     fun alert(
         context: Context,
         title: String,
-        content: String,
+        content: CharSequence,
         onClose: (() -> Unit)? = null
     ): AlertDialog {
         return alert(context, title, content, R.string.ok, onClose)
@@ -26,7 +26,7 @@ object UiUtils {
     fun alert(
         context: Context,
         title: String,
-        content: String,
+        content: CharSequence,
         @StringRes okString: Int,
         onClose: (() -> Unit)? = null
     ): AlertDialog {
@@ -36,7 +36,7 @@ object UiUtils {
     fun alert(
         context: Context,
         title: String,
-        content: String,
+        content: CharSequence,
         okString: String,
         onClose: (() -> Unit)? = null
     ): AlertDialog {
@@ -60,7 +60,7 @@ object UiUtils {
     fun alertWithCancel(
         context: Context,
         title: String,
-        content: String,
+        content: CharSequence,
         @StringRes buttonOk: Int,
         @StringRes buttonCancel: Int,
         onClose: ((cancelled: Boolean) -> Unit)? = null
@@ -78,7 +78,7 @@ object UiUtils {
     fun alertWithCancel(
         context: Context,
         title: String,
-        content: String,
+        content: CharSequence,
         onClose: ((cancelled: Boolean) -> Unit)? = null
     ): AlertDialog {
         return alertWithCancel(
@@ -94,7 +94,7 @@ object UiUtils {
     fun alertWithCancel(
         context: Context,
         title: String,
-        content: String,
+        content: CharSequence,
         buttonOk: String,
         buttonCancel: String,
         onClose: ((cancelled: Boolean) -> Unit)? = null
