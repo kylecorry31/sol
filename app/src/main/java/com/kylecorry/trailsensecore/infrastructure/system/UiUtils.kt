@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
+import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.*
@@ -102,6 +103,37 @@ object UiUtils {
         val builder = AlertDialog.Builder(context)
         builder.apply {
             setMessage(content)
+            setTitle(title)
+            setPositiveButton(
+                buttonOk
+            ) { dialog, _ ->
+                onClose?.invoke(false)
+                dialog.dismiss()
+            }
+            setNegativeButton(
+                buttonCancel
+            ) { dialog, _ ->
+                onClose?.invoke(true)
+                dialog.dismiss()
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+        return dialog
+    }
+
+    fun alertViewWithCancel(
+        context: Context,
+        title: String,
+        view: View,
+        buttonOk: String,
+        buttonCancel: String,
+        onClose: ((cancelled: Boolean) -> Unit)? = null
+    ): AlertDialog {
+        val builder = AlertDialog.Builder(context)
+        builder.apply {
+            setView(view)
             setTitle(title)
             setPositiveButton(
                 buttonOk

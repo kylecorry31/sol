@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.text.method.LinkMovementMethod
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -63,10 +65,15 @@ object PermissionUtils {
             )
             return
         }
-        UiUtils.alertWithCancel(
+
+        val message = TextView(activity.applicationContext)
+        message.text = rationale.reason
+        message.movementMethod = LinkMovementMethod.getInstance()
+
+        UiUtils.alertViewWithCancel(
             activity,
             rationale.title,
-            rationale.reason,
+            message,
             buttonGrant,
             buttonDeny
         ) { cancelled ->
