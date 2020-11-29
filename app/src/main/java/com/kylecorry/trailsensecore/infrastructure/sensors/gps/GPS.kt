@@ -9,6 +9,7 @@ import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
+import java.time.Instant
 
 class GPS(context: Context) : AbstractSensor(), IGPS {
 
@@ -36,11 +37,15 @@ class GPS(context: Context) : AbstractSensor(), IGPS {
     override val altitude: Float
         get() = _altitude
 
+    override val time: Instant
+        get() = _time
+
     private val locationManager = context.getSystemService<LocationManager>()
     private val sensorChecker = SensorChecker(context)
     private val locationListener = SimpleLocationListener { updateLastLocation(it, true) }
 
     private var _altitude = 0f
+    private var _time = Instant.now()
     private var _accuracy: Accuracy = Accuracy.Unknown
     private var _horizontalAccuracy: Float? = null
     private var _verticalAccuracy: Float? = null
@@ -85,6 +90,8 @@ class GPS(context: Context) : AbstractSensor(), IGPS {
         if (location == null) {
             return
         }
+
+        _time = Instant.ofEpochMilli(location.time)
 
         val satellites = location.extras.getInt("satellites")
         val dt = System.currentTimeMillis() - fixStart
