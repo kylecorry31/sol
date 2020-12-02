@@ -1,6 +1,7 @@
 package com.kylecorry.trailsensecore.domain.weather
 
 import java.time.Duration
+import java.time.Instant
 import kotlin.math.abs
 import kotlin.math.ln
 
@@ -103,5 +104,17 @@ class WeatherService : IWeatherService {
         if (bottom == 0.0) bottom = 0.00001
         val dewPoint = tn * top / bottom
         return dewPoint.toFloat()
+    }
+
+    override fun getLightningStrikeDistance(lightning: Instant, thunder: Instant): Float {
+        val speedOfSound = 343f
+        val duration = Duration.between(lightning, thunder)
+
+        if (duration.isNegative || duration.isZero){
+            return 0f
+        }
+
+        val seconds = duration.toMillis() / 1000f
+        return speedOfSound * seconds
     }
 }

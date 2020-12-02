@@ -1,5 +1,7 @@
 package com.kylecorry.trailsensecore.domain.weather
 
+import java.time.Instant
+
 interface IWeatherService {
 
     /**
@@ -50,4 +52,12 @@ interface IWeatherService {
      * @return The dew point (C)
      */
     fun getDewPoint(temperature: Float, relativeHumidity: Float): Float
+
+    /**
+     * Calculates the distance of the lightning strike from the current position in meters
+     * @param lightning The time the lightning was seen
+     * @param thunder The time the thunder was heard
+     * @return The distance to the lightning strike in meters
+     */
+    fun getLightningStrikeDistance(lightning: Instant, thunder: Instant): Float
 }

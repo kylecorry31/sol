@@ -59,6 +59,13 @@ class WeatherServiceTest {
         assertEquals(expected, dew, 0.5f)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideLightningStrikes")
+    fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float){
+        val distance = weatherService.getLightningStrikeDistance(lightning, thunder)
+        assertEquals(expected, distance, 0.5f)
+    }
+
 
     companion object {
         @JvmStatic
@@ -220,6 +227,17 @@ class WeatherServiceTest {
                 Arguments.of(21f, 90f, 19f),
                 Arguments.of(15f, 24f, -5f),
                 Arguments.of(16f, 10f, -16f),
+            )
+        }
+
+        @JvmStatic
+        fun provideLightningStrikes(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(1), 343f),
+                Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(2), 686f),
+                Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(10), 3430f),
+                Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(0), 0f),
+                Arguments.of(Instant.ofEpochSecond(1), Instant.ofEpochSecond(0), 0f),
             )
         }
     }
