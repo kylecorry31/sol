@@ -39,8 +39,21 @@ class CelestialNavigationService: ICelestialNavigationService {
         TODO("Not yet implemented")
     }
 
-    override fun getLatitudeFromPolaris(polarisAltitude: Double): Double {
-        return polarisAltitude
+    override fun getLatitudeFromPolaris(polarisAltitude: Float): Double {
+        return polarisAltitude.toDouble()
+    }
+
+    override fun getLatitudeFromNoon(sunAltitude: Float, noon: Instant, inNorthernHemisphere: Boolean): Double {
+        val ut = Astro.ut(noon.atZone(ZoneId.of("UTC")))
+        val jd = Astro.julianDay(ut)
+        val solarCoordinates = Astro.solarCoordinates(jd)
+        val declination = solarCoordinates.declination
+
+        return if (inNorthernHemisphere) {
+            90.0 - sunAltitude.toDouble() + declination
+        } else {
+            -(90.0 - sunAltitude.toDouble() - declination)
+        }
     }
 
     override fun getLatitudeFromShadow(
@@ -53,7 +66,7 @@ class CelestialNavigationService: ICelestialNavigationService {
     }
 
     override fun getLatitudeFromSun(
-        sunLowerLimbAltitude: Double,
+        sunLowerLimbAltitude: Float,
         utc: Instant,
         isAfternoon: Boolean
     ): Double {

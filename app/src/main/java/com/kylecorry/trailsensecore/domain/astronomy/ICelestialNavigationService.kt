@@ -13,9 +13,10 @@ interface ICelestialNavigationService {
     fun deadReckon(lastLocation: Coordinate, distanceTravelled: Float, bearingToLast: Bearing)
 
     // Latitude only
-    fun getLatitudeFromPolaris(polarisAltitude: Double): Double
+    fun getLatitudeFromPolaris(polarisAltitude: Float): Double
+    fun getLatitudeFromNoon(sunAltitude: Float, noon: Instant, inNorthernHemisphere: Boolean): Double
     fun getLatitudeFromShadow(shadowLength: Float, objectLength: Float, utc: Instant, isAfternoon: Boolean): Double
-    fun getLatitudeFromSun(sunLowerLimbAltitude: Double, utc: Instant, isAfternoon: Boolean): Double
+    fun getLatitudeFromSun(sunLowerLimbAltitude: Float, utc: Instant, isAfternoon: Boolean): Double
 
     // Longitude only
     fun getLongitudeFromNoon(noon: Instant): Double
