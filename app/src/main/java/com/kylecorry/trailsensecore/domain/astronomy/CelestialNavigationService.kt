@@ -2,10 +2,12 @@ package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import java.lang.Math.atan
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
+import kotlin.math.atan
 
 class CelestialNavigationService: ICelestialNavigationService {
 
@@ -62,7 +64,7 @@ class CelestialNavigationService: ICelestialNavigationService {
         utc: Instant,
         isAfternoon: Boolean
     ): Double {
-        TODO("Not yet implemented")
+        return getLatitudeFromSun(getSunAltitudeFromShadow(objectLength, shadowLength), utc, isAfternoon)
     }
 
     override fun getLatitudeFromSun(
@@ -84,6 +86,10 @@ class CelestialNavigationService: ICelestialNavigationService {
         val utcNoon = solarNoon?.toLocalTime() ?: LocalTime.NOON
         val noonDiff = Duration.between(utcNoon, LocalTime.NOON)
         return -getLongitudeFromUtcDiff(localSolarTime, utc.plus(noonDiff).toLocalTime())
+    }
+
+    override fun getSunAltitudeFromShadow(objectHeight: Float, shadowLength: Float): Float {
+        return atan(objectHeight / shadowLength)
     }
 
     private fun getLongitudeFromUtcDiff(local: LocalTime, utc: LocalTime): Double {
