@@ -8,6 +8,7 @@ import android.os.Build
 import android.text.method.LinkMovementMethod
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -32,6 +33,7 @@ object PermissionUtils {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun requestPermissions(activity: Activity, permissions: List<String>, requestCode: Int) {
         val notGrantedPermissions = permissions.filterNot { hasPermission(activity, it) }
         if (notGrantedPermissions.isEmpty()) {
@@ -49,6 +51,7 @@ object PermissionUtils {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun requestPermissionsWithRationale(
         activity: Activity,
         permissions: List<String>,

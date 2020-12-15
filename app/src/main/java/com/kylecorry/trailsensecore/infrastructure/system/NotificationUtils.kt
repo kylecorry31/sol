@@ -18,7 +18,12 @@ object NotificationUtils {
 
     fun isNotificationActive(context: Context, notificationId: Int): Boolean {
         val notificationManager = getNotificationManager(context)
-        return notificationManager?.activeNotifications?.any { it.id == notificationId } ?: false
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notificationManager?.activeNotifications?.any { it.id == notificationId } ?: false
+        } else {
+            // TODO: Determine if the notification exists
+            false
+        }
     }
 
     fun send(context: Context, notificationId: Int, notification: Notification) {
