@@ -51,6 +51,14 @@ internal class CelestialNavigationServiceTest {
         assertEquals(-74.0060, longitude, 0.1)
     }
 
+    @Test
+    fun getSunAltitudeFromShadow(){
+        val service = CelestialNavigationService()
+        val height = 0.24f
+        val shadow = 0.08f
+        val angle = service.getSunAltitudeFromShadow(height, shadow)
+        assertEquals(71.57f, angle, 0.01f)
+    }
 
     companion object {
 

@@ -20,7 +20,7 @@ interface ICelestialNavigationService {
 
     // Longitude only
     fun getLongitudeFromNoon(noon: Instant): Double
-    fun getLongitudeFromSundial(localSolarTime: LocalTime, utc: Instant): Double
+    fun getLongitudeFromSundial(localSolarTime: LocalTime, instant: Instant): Double
 
     // Helpers
     fun getSunAltitudeFromShadow(objectHeight: Float, shadowLength: Float): Float
