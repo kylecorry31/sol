@@ -3,6 +3,8 @@ package com.kylecorry.trailsensecore.infrastructure.system
 import android.R
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.TypedValue
@@ -11,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 
 
@@ -198,6 +201,17 @@ object UiUtils {
         @ColorInt primaryColor: Int,
         @ColorInt secondaryColor: Int
     ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            if (isOn){
+                button.background.setColorFilter(primaryColor, PorterDuff.Mode.SRC_ATOP)
+                button.setColorFilter(secondaryColor)
+            } else {
+                button.background.setColorFilter(androidBackgroundColorSecondary(button.context), PorterDuff.Mode.SRC_ATOP)
+                button.setColorFilter(androidTextColorSecondary(button.context))
+            }
+            return
+        }
+
         if (isOn) {
             button.imageTintList = ColorStateList.valueOf(secondaryColor)
             button.backgroundTintList = ColorStateList.valueOf(primaryColor)
@@ -215,7 +229,7 @@ object UiUtils {
         val typedValue = TypedValue()
         theme.resolveAttribute(attrRes, typedValue, true)
         val colorRes = if (typedValue.resourceId != 0) typedValue.resourceId else typedValue.data
-        return context.getColor(colorRes)
+        return ContextCompat.getColor(context, colorRes)
     }
 
 }
