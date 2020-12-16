@@ -1,10 +1,21 @@
 package com.kylecorry.trailsensecore.domain.geo
 
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import org.junit.Assert.*
 import org.junit.Test
 
 class CoordinateTest {
+
+    @Test
+    fun canAddDistance(){
+        val start = Coordinate(40.0, 10.0)
+        val bearing = Bearing(100f)
+        val distance = 10000.0
+
+        val expected = Coordinate(39.984444, 10.115556)
+        val actual = start.plus(distance, bearing)
+        assertEquals(expected.latitude, actual.latitude, 0.01)
+        assertEquals(expected.longitude, actual.longitude, 0.01)
+    }
 
     @Test
     fun canConvertToString(){

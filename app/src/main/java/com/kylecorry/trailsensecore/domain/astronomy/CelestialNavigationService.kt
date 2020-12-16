@@ -14,34 +14,6 @@ class CelestialNavigationService: ICelestialNavigationService {
 
     private val astronomyService = AstronomyService()
 
-    override fun triangulate(
-        pointA: Coordinate,
-        bearingA: Bearing,
-        pointB: Coordinate,
-        bearingB: Bearing
-    ): Coordinate {
-        TODO("Not yet implemented")
-    }
-
-    override fun triangulate(
-        pointA: Coordinate,
-        bearingA: Bearing,
-        pointB: Coordinate,
-        bearingB: Bearing,
-        pointC: Coordinate,
-        bearingC: Bearing
-    ): Coordinate {
-        TODO("Not yet implemented")
-    }
-
-    override fun deadReckon(
-        lastLocation: Coordinate,
-        distanceTravelled: Float,
-        bearingToLast: Bearing
-    ) {
-        TODO("Not yet implemented")
-    }
-
     override fun getLatitudeFromPolaris(polarisAltitude: Float): Double {
         return polarisAltitude.toDouble()
     }

@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.declination
 
-import com.kylecorry.trailsensecore.domain.geo.DeclinationCalculator
+import com.kylecorry.trailsensecore.domain.geo.GeoService
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.altimeter.IAltimeter
 import com.kylecorry.trailsensecore.infrastructure.sensors.gps.IGPS
@@ -18,7 +18,7 @@ class DeclinationProvider(private val gps: IGPS, private val altimeter: IAltimet
     private var gotLocation = false
     private var gotAltitude = false
 
-    private val declinationCalculator = DeclinationCalculator()
+    private val geoService = GeoService()
 
     init {
         if (gps.hasValidReading && altimeter.hasValidReading) {
@@ -65,7 +65,7 @@ class DeclinationProvider(private val gps: IGPS, private val altimeter: IAltimet
     }
 
     private fun calculateDeclination(): Float {
-        return declinationCalculator.calculate(gps.location, altimeter.altitude)
+        return geoService.getDeclination(gps.location, altimeter.altitude)
     }
 
 }

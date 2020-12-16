@@ -6,6 +6,9 @@ import java.time.Duration
 
 interface INavigationService {
 
+    fun triangulate(pointA: Coordinate, bearingA: Bearing, pointB: Coordinate, bearingB: Bearing): Coordinate?
+    fun deadReckon(lastLocation: Coordinate, distanceTravelled: Float, bearingToLast: Bearing): Coordinate
+
     fun navigate(
         from: Coordinate,
         to: Coordinate,

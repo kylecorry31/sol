@@ -12,6 +12,33 @@ class NavigationServiceTest {
     private val service = NavigationService()
 
     @Test
+    fun triangulate(){
+        val pointA = Coordinate(40.0, 10.0)
+        val bearingA = Bearing(220f)
+        val pointB = Coordinate(40.5, 9.5)
+        val bearingB = Bearing(295f)
+
+        val expected = Coordinate(40.229722, 10.252778)
+        val actual = service.triangulate(pointA, bearingA, pointB, bearingB)
+
+        assertNotNull(actual)
+        assertEquals(expected.latitude, actual!!.latitude, 0.01)
+        assertEquals(expected.longitude, actual.longitude, 0.01)
+    }
+
+    @Test
+    fun deadReckon(){
+        val start = Coordinate(40.0, 10.0)
+        val bearing = Bearing(280f)
+        val distance = 10000f
+
+        val expected = Coordinate(39.984444, 10.115556)
+        val actual = service.deadReckon(start, distance, bearing)
+        assertEquals(expected.latitude, actual.latitude, 0.01)
+        assertEquals(expected.longitude, actual.longitude, 0.01)
+    }
+
+    @Test
     fun navigate() {
         val start = Coordinate(0.0, 1.0)
         val end = Coordinate(10.0, -8.0)

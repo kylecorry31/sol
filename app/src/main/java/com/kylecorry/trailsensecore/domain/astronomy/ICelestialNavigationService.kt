@@ -7,11 +7,6 @@ import java.time.LocalTime
 
 interface ICelestialNavigationService {
 
-    // Both
-    fun triangulate(pointA: Coordinate, bearingA: Bearing, pointB: Coordinate, bearingB: Bearing): Coordinate
-    fun triangulate(pointA: Coordinate, bearingA: Bearing, pointB: Coordinate, bearingB: Bearing, pointC: Coordinate, bearingC: Bearing): Coordinate
-    fun deadReckon(lastLocation: Coordinate, distanceTravelled: Float, bearingToLast: Bearing)
-
     // Latitude only
     fun getLatitudeFromPolaris(polarisAltitude: Float): Double
     fun getLatitudeFromNoon(sunAltitude: Float, noon: Instant, inNorthernHemisphere: Boolean): Double
