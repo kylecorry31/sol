@@ -5,8 +5,6 @@ import android.content.pm.PackageManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import java.lang.Exception
 
@@ -15,9 +13,6 @@ class Flashlight(private val context: Context) : IFlashlight {
     private val cameraService by lazy { getCameraManager(context) }
 
     override fun on() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
-        }
         if (!hasFlashlight(context)) {
             return
         }
@@ -29,9 +24,6 @@ class Flashlight(private val context: Context) : IFlashlight {
     }
 
     override fun off() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
-        }
         try {
             cameraService?.setTorchMode(getRearCameraId(context), false)
         } catch (e: Exception) {
@@ -50,9 +42,6 @@ class Flashlight(private val context: Context) : IFlashlight {
         }
 
         fun hasFlashlight(context: Context): Boolean {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                return false
-            }
 
             try {
                 if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
@@ -81,9 +70,6 @@ class Flashlight(private val context: Context) : IFlashlight {
         }
 
         private fun getRearCameraId(context: Context): String {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                return ""
-            }
             val cs = getCameraManager(context)
             val cameraList = cs?.cameraIdList
             if (cameraList == null || cameraList.isEmpty()) return ""

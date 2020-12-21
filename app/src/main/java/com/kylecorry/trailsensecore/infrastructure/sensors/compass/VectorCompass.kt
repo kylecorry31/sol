@@ -4,7 +4,7 @@ import android.content.Context
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.GravitySensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.IAccelerometer
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.LowPassAccelerometer
-import com.kylecorry.trailsensecore.infrastructure.sensors.magnetometer.Magnetometer
+import com.kylecorry.trailsensecore.infrastructure.sensors.magnetometer.LowPassMagnetometer
 import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.geo.AzimuthCalculator
 import com.kylecorry.trailsensecore.domain.geo.Bearing
@@ -29,7 +29,7 @@ class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueN
     private val sensorChecker = SensorChecker(context)
     private val accelerometer: IAccelerometer =
         if (sensorChecker.hasGravity()) GravitySensor(context) else LowPassAccelerometer(context)
-    private val magnetometer = Magnetometer(context)
+    private val magnetometer = LowPassMagnetometer(context)
 
     private var filterSize = smoothingFactor * 2 * 2
     private val filter = MovingAverageFilter(max(1, filterSize))

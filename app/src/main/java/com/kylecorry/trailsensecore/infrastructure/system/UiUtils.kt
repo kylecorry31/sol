@@ -3,10 +3,7 @@ package com.kylecorry.trailsensecore.infrastructure.system
 import android.R
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
@@ -201,17 +198,6 @@ object UiUtils {
         @ColorInt primaryColor: Int,
         @ColorInt secondaryColor: Int
     ) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            if (isOn){
-                button.background.setColorFilter(primaryColor, PorterDuff.Mode.SRC_ATOP)
-                button.setColorFilter(secondaryColor)
-            } else {
-                button.background.setColorFilter(androidBackgroundColorSecondary(button.context), PorterDuff.Mode.SRC_ATOP)
-                button.setColorFilter(androidTextColorSecondary(button.context))
-            }
-            return
-        }
-
         if (isOn) {
             button.imageTintList = ColorStateList.valueOf(secondaryColor)
             button.backgroundTintList = ColorStateList.valueOf(primaryColor)
