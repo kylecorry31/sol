@@ -60,4 +60,13 @@ interface IWeatherService {
      * @return The distance to the lightning strike in meters
      */
     fun getLightningStrikeDistance(lightning: Instant, thunder: Instant): Float
+
+    /**
+     * Calculates the ambient temperature from sequential temperature readings
+     * @param temp0 the initial temperature (celsius)
+     * @param temp1 the temperature occurring 1 time unit after temp0
+     * @param temp2 the temperature occurring 2 time units after temp0
+     * @return the ambient temperature in celsius or null if the readings weren't all increasing or decreasing
+     */
+    fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float?
 }

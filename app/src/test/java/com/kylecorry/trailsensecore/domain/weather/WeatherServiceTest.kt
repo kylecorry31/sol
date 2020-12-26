@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.weather
 
+import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -64,6 +65,12 @@ class WeatherServiceTest {
     fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float){
         val distance = weatherService.getLightningStrikeDistance(lightning, thunder)
         assertEquals(expected, distance, 0.5f)
+    }
+
+    @Test
+    fun ambientTemperature(){
+        val temp = weatherService.getAmbientTemperature(170f, 125f, 100f)
+        assertEquals(68.75f, temp)
     }
 
 

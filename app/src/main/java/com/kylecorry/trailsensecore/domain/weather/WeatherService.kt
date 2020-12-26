@@ -110,11 +110,18 @@ class WeatherService : IWeatherService {
         val speedOfSound = 343f
         val duration = Duration.between(lightning, thunder)
 
-        if (duration.isNegative || duration.isZero){
+        if (duration.isNegative || duration.isZero) {
             return 0f
         }
 
         val seconds = duration.toMillis() / 1000f
         return speedOfSound * seconds
+    }
+
+    override fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
+        if (!((temp0 < temp1 && temp1 < temp2) || (temp0 > temp1 && temp1 > temp2))) {
+            return null
+        }
+        return (temp0 * temp2 - temp1 * temp1) / (temp0 + temp2 - 2 * temp1)
     }
 }
