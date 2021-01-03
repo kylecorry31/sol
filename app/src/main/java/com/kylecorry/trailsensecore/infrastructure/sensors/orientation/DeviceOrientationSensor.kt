@@ -3,13 +3,16 @@ package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 import android.content.Context
 import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.math.Vector3
+import com.kylecorry.trailsensecore.domain.math.toDegrees
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.GravitySensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.LowPassAccelerometer
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.IAccelerometer
 import kotlin.math.atan2
+import kotlin.math.sqrt
 
+// Algorithm from https://www.digikey.com/en/articles/using-an-accelerometer-for-inclination-sensing
 class DeviceOrientationSensor(context: Context) : AbstractSensor(), IOrientationSensor {
 
     override val orientation: Vector3
@@ -35,30 +38,16 @@ class DeviceOrientationSensor(context: Context) : AbstractSensor(), IOrientation
         // Gravity
         val gravity = accelerometer.acceleration
 
+        // TODO: Extract this logic
         _angle = Vector3(
-            calculate(gravity.x, -gravity.z),
-            -calculate(gravity.y, gravity.z),
-            calculate(gravity.y, gravity.x)
-
+            atan2(gravity.x, sqrt(gravity.y * gravity.y + gravity.z * gravity.z)).toDegrees(),
+            -atan2(gravity.y, sqrt(gravity.x * gravity.x + gravity.z * gravity.z)).toDegrees(),
+            atan2(sqrt(gravity.x * gravity.x + gravity.y * gravity.y), gravity.z).toDegrees(),
         )
 
         gotReading = true
         notifyListeners()
         return true
-    }
-
-    private fun calculate(y: Float, x: Float): Float {
-        var angle = Math.toDegrees(atan2(y.toDouble(), x.toDouble())).toFloat()
-
-        if (angle > 90) {
-            angle = 180 - angle
-        }
-
-        if (angle < -90) {
-            angle = -180 - angle
-        }
-
-        return angle
     }
 
     override fun startImpl() {

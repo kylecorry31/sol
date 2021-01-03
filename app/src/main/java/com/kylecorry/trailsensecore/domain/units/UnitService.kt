@@ -52,21 +52,8 @@ class UnitService {
      * @return The distance in the to units
      */
     fun convert(distance: Float, from: DistanceUnits, to: DistanceUnits): Float {
-        val m = when (from) {
-            DistanceUnits.Meters -> distance
-            DistanceUnits.Kilometers -> distance * 1000
-            DistanceUnits.Miles -> distance * 5280f / 3.28084f
-            DistanceUnits.Feet -> distance / 3.28084f
-            DistanceUnits.NauticalMiles -> distance * 1852f
-        }
-
-        return when (to) {
-            DistanceUnits.Meters -> m
-            DistanceUnits.Kilometers -> m / 1000f
-            DistanceUnits.Feet -> m * 3.28084f
-            DistanceUnits.Miles -> (m * 3.28084f) / 5280f
-            DistanceUnits.NauticalMiles -> m / 1852f
-        }
+        val m = distance * from.meters
+        return m / to.meters
     }
 
 }

@@ -79,14 +79,21 @@ internal class UnitServiceTest {
         @JvmStatic
         fun provideDistances(): Stream<Arguments> {
             return Stream.of(
+                Arguments.of(12f, DistanceUnits.Inches, DistanceUnits.Meters, 0.3048f),
+
+                Arguments.of(10f, DistanceUnits.Centimeters, DistanceUnits.Meters, 0.1f),
+
                 Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.Meters, 1500f),
                 Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.Feet, 4921.26f),
+                Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.Inches, 4921.26f * 12),
                 Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.Kilometers, 1.5f),
+                Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.Centimeters, 150000f),
                 Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.Miles, 0.9320568f),
                 Arguments.of(1500f, DistanceUnits.Meters, DistanceUnits.NauticalMiles, 0.8099352f),
 
                 Arguments.of(300f, DistanceUnits.Feet, DistanceUnits.Meters, 91.44f),
                 Arguments.of(300f, DistanceUnits.Feet, DistanceUnits.Feet, 300f),
+                Arguments.of(300f, DistanceUnits.Feet, DistanceUnits.Inches, 300f * 12),
                 Arguments.of(300f, DistanceUnits.Feet, DistanceUnits.Kilometers, 0.09144f),
                 Arguments.of(300f, DistanceUnits.Feet, DistanceUnits.Miles, 0.0568182f),
                 Arguments.of(300f, DistanceUnits.Feet, DistanceUnits.NauticalMiles, 0.0493737f),
