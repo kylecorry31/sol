@@ -4,6 +4,7 @@ import android.location.Location
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.math.*
+import com.kylecorry.trailsensecore.domain.units.Distance
 import java.time.Duration
 import kotlin.math.*
 
@@ -24,12 +25,20 @@ class NavigationService : INavigationService {
             )
         )
 
-        val initialBearing = acos((sinDegrees(pointB.latitude) - sinDegrees(pointA.latitude) * cos(angularDist)) / (sin(angularDist) * cosDegrees(pointA.latitude)))
-        val finalBearing = acos((sinDegrees(pointA.latitude) - sinDegrees(pointB.latitude) * cos(angularDist)) / (sin(angularDist) * cosDegrees(pointB.latitude)))
+        val initialBearing = acos(
+            (sinDegrees(pointB.latitude) - sinDegrees(pointA.latitude) * cos(angularDist)) / (sin(
+                angularDist
+            ) * cosDegrees(pointA.latitude))
+        )
+        val finalBearing = acos(
+            (sinDegrees(pointA.latitude) - sinDegrees(pointB.latitude) * cos(angularDist)) / (sin(
+                angularDist
+            ) * cosDegrees(pointB.latitude))
+        )
 
         val a1: Double
         val a2: Double
-        if (sinDegrees(pointB.longitude - pointA.longitude) > 0){
+        if (sinDegrees(pointB.longitude - pointA.longitude) > 0) {
             a1 = bearingA.inverse().value.toDouble().toRadians() - initialBearing
             a2 = 2 * Math.PI - finalBearing - bearingB.inverse().value.toDouble().toRadians()
         } else {
@@ -37,18 +46,25 @@ class NavigationService : INavigationService {
             a2 = finalBearing - bearingB.inverse().value.toDouble().toRadians()
         }
 
-        if (sin(a1) == 0.0 && sin(a2) == 0.0){
+        if (sin(a1) == 0.0 && sin(a2) == 0.0) {
             return null
         }
 
-        if (sin(a1) * sin(a2) < 0.0){
+        if (sin(a1) * sin(a2) < 0.0) {
             return null
         }
 
         val a3 = acos(-cos(a1) * cos(a2) + sin(a1) * sin(a2) * cos(angularDist))
         val angularDist13 = atan2(sin(angularDist) * sin(a1) * sin(a2), cos(a2) + cos(a1) * cos(a3))
-        val p3Lat = asin(sinDegrees(pointA.latitude) * cos(angularDist13) + cosDegrees(pointA.latitude) * sin(angularDist13) * cosDegrees(bearingA.inverse().value.toDouble()))
-        val deltaP3Long = atan2(sinDegrees(bearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(pointA.latitude), cos(angularDist13) - sinDegrees(pointA.latitude) * sin(p3Lat))
+        val p3Lat = asin(
+            sinDegrees(pointA.latitude) * cos(angularDist13) + cosDegrees(pointA.latitude) * sin(
+                angularDist13
+            ) * cosDegrees(bearingA.inverse().value.toDouble())
+        )
+        val deltaP3Long = atan2(
+            sinDegrees(bearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(pointA.latitude),
+            cos(angularDist13) - sinDegrees(pointA.latitude) * sin(p3Lat)
+        )
         val p3Lng = pointA.longitude.toRadians() + deltaP3Long
         return Coordinate(p3Lat.toDegrees(), p3Lng.toDegrees())
     }
@@ -123,5 +139,17 @@ class NavigationService : INavigationService {
             .sortedBy { it.second }
             .map { it.first }
             .toList()
+    }
+
+    override fun getPaceDistance(paces: Int, paceLength: Distance): Distance {
+        return Distance(paces * paceLength.distance, paceLength.units)
+    }
+
+    override fun getPaces(steps: Int): Int {
+        return steps / 2
+    }
+
+    override fun getPaceLength(paces: Int, distanceTravelled: Distance): Distance {
+        return Distance(paces / distanceTravelled.distance, distanceTravelled.units)
     }
 }

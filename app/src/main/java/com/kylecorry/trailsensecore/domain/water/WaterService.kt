@@ -1,11 +1,13 @@
 package com.kylecorry.trailsensecore.domain.water
 
+import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import java.time.Duration
 
-class WaterService {
+class WaterService : IWaterService {
 
-    fun getPurificationTime(altitude: Float?): Duration {
-        if (altitude == null || altitude >= 1000f){
+    override fun getPurificationTime(altitude: Distance?): Duration {
+        if (altitude == null || altitude.convertTo(DistanceUnits.Meters).distance >= 1000f){
             return Duration.ofMinutes(3)
         }
 

@@ -1,5 +1,7 @@
 package com.kylecorry.trailsensecore.domain.water
 
+import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -11,7 +13,7 @@ internal class WaterServiceTest {
 
     @ParameterizedTest
     @MethodSource("providePurificationTimes")
-    fun getPurificationTime(altitude: Float?, duration: Duration) {
+    fun getPurificationTime(altitude: Distance?, duration: Duration) {
         val service = WaterService()
         val time = service.getPurificationTime(altitude)
         assertEquals(time, duration)
@@ -21,10 +23,10 @@ internal class WaterServiceTest {
         @JvmStatic
         fun providePurificationTimes(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(0f, Duration.ofMinutes(1)),
-                Arguments.of(999f, Duration.ofMinutes(1)),
-                Arguments.of(1000f, Duration.ofMinutes(3)),
-                Arguments.of(2000f, Duration.ofMinutes(3)),
+                Arguments.of(Distance(0f, DistanceUnits.Meters), Duration.ofMinutes(1)),
+                Arguments.of(Distance(999f, DistanceUnits.Meters), Duration.ofMinutes(1)),
+                Arguments.of(Distance(1000f, DistanceUnits.Meters), Duration.ofMinutes(3)),
+                Arguments.of(Distance(2000f, DistanceUnits.Meters), Duration.ofMinutes(3)),
                 Arguments.of(null, Duration.ofMinutes(3)),
             )
         }

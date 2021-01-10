@@ -9,5 +9,6 @@ data class Beacon(
     val visible: Boolean = true,
     val comment: String? = null,
     val beaconGroupId: Long? = null,
-    val elevation: Float? = null
+    val elevation: Float? = null,
+    val temporary: Boolean = false
 ) : IBeacon

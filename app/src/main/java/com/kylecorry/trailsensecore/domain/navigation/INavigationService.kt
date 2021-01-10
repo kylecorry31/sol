@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.domain.navigation
 
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.units.Distance
 import java.time.Duration
 
 interface INavigationService {
@@ -28,5 +29,11 @@ interface INavigationService {
     fun eta(from: Position, to: Beacon, nonLinear: Boolean): Duration
 
     fun nearby(location: Coordinate, beacons: List<Beacon>, maxDistance: Float): List<Beacon>
+
+    fun getPaceDistance(paces: Int, paceLength: Distance): Distance
+
+    fun getPaces(steps: Int): Int
+
+    fun getPaceLength(paces: Int, distanceTravelled: Distance): Distance
 
 }

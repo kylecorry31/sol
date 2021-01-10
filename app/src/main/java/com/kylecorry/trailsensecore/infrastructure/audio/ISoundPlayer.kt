@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.audio
 
-interface IWhistle {
+interface ISoundPlayer {
     fun on()
     fun off()
     fun isOn(): Boolean

@@ -3,13 +3,13 @@ package com.kylecorry.trailsensecore.infrastructure.audio
 import android.media.AudioTrack
 import kotlin.math.sin
 
-class ToneGenerator {
+class WhiteNoiseGenerator {
 
     private val soundGenerator = SoundGenerator()
 
-    fun getTone(frequency: Int, sampleRate: Int = 64000, durationSeconds: Int = 1): AudioTrack {
+    fun getNoise(sampleRate: Int = 64000, durationSeconds: Int = 1): AudioTrack {
         return soundGenerator.getSound(sampleRate, durationSeconds) {
-            sin(frequency * 2 * Math.PI * it / sampleRate)
+            Math.random() * 2 - 1
         }
     }
 

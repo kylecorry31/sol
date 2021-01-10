@@ -1,13 +1,15 @@
 package com.kylecorry.trailsensecore.domain.physics
 
+import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import java.time.Duration
 import kotlin.math.pow
 
-class PhysicsService {
+class PhysicsService : IPhysicsService {
 
-    fun fallHeight(time: Duration): Float {
+    override fun fallHeight(time: Duration): Distance {
         val seconds = time.toMillis() / 1000f
-        return 0.5f * GRAVITY * seconds * seconds
+        return Distance(0.5f * GRAVITY * seconds * seconds, DistanceUnits.Meters)
     }
 
     companion object {
