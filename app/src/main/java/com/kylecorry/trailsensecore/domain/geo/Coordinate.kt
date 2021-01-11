@@ -2,11 +2,18 @@ package com.kylecorry.trailsensecore.domain.geo
 
 import android.location.Location
 import android.os.Parcelable
+import com.kylecorry.trailsensecore.domain.astronomy.Astro
 import com.kylecorry.trailsensecore.domain.math.cosDegrees
 import com.kylecorry.trailsensecore.domain.math.roundPlaces
 import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.toDegrees
+import gov.nasa.worldwind.avlist.AVKey
+import gov.nasa.worldwind.geom.Angle
+import gov.nasa.worldwind.geom.coords.MGRSCoord
+import gov.nasa.worldwind.geom.coords.UPSCoord
+import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.android.parcel.Parcelize
+import java.lang.Math.pow
 import java.util.*
 import kotlin.math.*
 
@@ -55,49 +62,39 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return Coordinate(newLat, normalLng)
     }
 
-    fun toUTM(): String {
-        // From https://stackoverflow.com/questions/176137/java-convert-lat-lon-to-utm
-        val zone = floor(longitude / 6 + 31).toInt()
-        val letter =
-            if (latitude < -72) 'C' else if (latitude < -64) 'D' else if (latitude < -56) 'E' else if (latitude < -48) 'F' else if (latitude < -40) 'G' else if (latitude < -32) 'H' else if (latitude < -24) 'J' else if (latitude < -16) 'K' else if (latitude < -8) 'L' else if (latitude < 0) 'M' else if (latitude < 8) 'N' else if (latitude < 16) 'P' else if (latitude < 24) 'Q' else if (latitude < 32) 'R' else if (latitude < 40) 'S' else if (latitude < 48) 'T' else if (latitude < 56) 'U' else if (latitude < 64) 'V' else if (latitude < 72) 'W' else 'X'
-        var easting = 0.5 * ln(
-            (1 + cos(latitude * Math.PI / 180) * sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)) / (1 - cos(
-                latitude * Math.PI / 180
-            ) * sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180))
-        ) * 0.9996 * 6399593.62 / (1 + 0.0820944379.pow(2.0) * cos(latitude * Math.PI / 180)
-            .pow(2.0)).pow(0.5) * (1 + 0.0820944379.pow(2.0) / 2 * (0.5 * Math.log(
-            (1 + cos(latitude * Math.PI / 180) * sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)) / (1 - cos(
-                latitude * Math.PI / 180
-            ) * sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180))
-        )).pow(2.0) * cos(latitude * Math.PI / 180).pow(2.0) / 3) + 500000
-        easting = (easting * 100).roundToInt() * 0.01
-        var northing = (atan(
-            tan(latitude * Math.PI / 180) / cos(
-                longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180
-            )
-        ) - latitude * Math.PI / 180) * 0.9996 * 6399593.625 / sqrt(
-            1 + 0.006739496742 * cos(latitude * Math.PI / 180).pow(2.0)
-        ) * (1 + 0.006739496742 / 2 * (0.5 * ln(
-            (1 + cos(latitude * Math.PI / 180) * sin(
-                longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180
-            )) / (1 - cos(latitude * Math.PI / 180) * sin(
-                longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180
-            ))
-        )).pow(2.0) * cos(latitude * Math.PI / 180).pow(2.0)) + 0.9996 * 6399593.625 * (latitude * Math.PI / 180 - 0.005054622556 * (latitude * Math.PI / 180 + sin(
-            2 * latitude * Math.PI / 180
-        ) / 2) + 4.258201531e-05 * (3 * (latitude * Math.PI / 180 + sin(2 * latitude * Math.PI / 180) / 2) + sin(
-            2 * latitude * Math.PI / 180
-        ) * cos(latitude * Math.PI / 180).pow(2.0)) / 4 - 1.674057895e-07 * (5 * (3 * (latitude * Math.PI / 180 + sin(
-            2 * latitude * Math.PI / 180
-        ) / 2) + sin(
-            2 * latitude * Math.PI / 180
-        ) * cos(latitude * Math.PI / 180).pow(2.0)) / 4 + sin(2 * latitude * Math.PI / 180) * cos(
-            latitude * Math.PI / 180
-        ).pow(2.0) * cos(latitude * Math.PI / 180).pow(2.0)) / 3)
-        if (letter < 'N') northing += 10000000
-        northing = (northing * 100).roundToInt() * 0.01
+    fun toUTM(precision: Int = 1): String {
+        val lat = Angle.fromDegreesLatitude(latitude)
+        val lng = Angle.fromDegreesLongitude(longitude)
+        val utm = UTMCoord.fromLatLon(lat, lng)
 
-        return "${zone.toString().padStart(2, '0')} $letter ${easting.toInt()} ${northing.toInt()}"
+        // TODO: Handle polar regions
+        val zone = utm.zone.toString().padStart(2, '0')
+
+        // TODO: Handle zone letters
+        val hemisphere = if (AVKey.NORTH == utm.hemisphere) "N" else "S"
+
+        
+        val easting = roundUTMPrecision(precision, utm.easting.toInt()).toString().padStart(6, '0') + "E"
+        val northing = roundUTMPrecision(precision, utm.northing.toInt()).toString().padStart(7, '0') + "N"
+
+        return "$zone$hemisphere $easting $northing"
+    }
+
+    private fun roundUTMPrecision(precision: Int, utmValue: Int): Int {
+        var places = 1
+        while (precision.absoluteValue / Astro.power(10.0, places) > 0){
+            places++
+        }
+
+        return (utmValue / Astro.power(10.0, places - 1)).toInt() * Astro.power(10.0, places - 1).toInt()
+    }
+
+
+    fun toMGRS(precision: Int = 5): String {
+        val lat = Angle.fromDegreesLatitude(latitude)
+        val lng = Angle.fromDegreesLongitude(longitude)
+        val mgrs = MGRSCoord.fromLatLon(lat, lng, precision)
+        return mgrs.toString()
     }
 
     /**
