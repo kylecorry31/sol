@@ -9,8 +9,6 @@ import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.toDegrees
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
-import gov.nasa.worldwind.geom.LatLon
-import gov.nasa.worldwind.geom.coords.MGRSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -33,7 +31,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         }
 
     override fun toString(): String {
-        return "$latitudeDMS, $longitudeDMS"
+        return toDegreeMinutesSeconds()
     }
 
 
@@ -61,6 +59,25 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return Coordinate(newLat, normalLng)
     }
 
+    fun toDecimalDegrees(precision: Int = 7): String {
+        return "${latitude.roundPlaces(precision)}°,  ${longitude.roundPlaces(precision)}°"
+    }
+
+    fun toDegreeDecimalMinutes(precision: Int = 3): String {
+        val latDir = if (latitude < 0) "S" else "N"
+        val lngDir = if (longitude < 0) "W" else "E"
+        return "${ddmString(latitude, precision)}$latDir    ${
+            ddmString(
+                longitude,
+                precision
+            )
+        }$lngDir"
+    }
+
+    fun toDegreeMinutesSeconds(precision: Int = 1): String {
+        return "$latitudeDMS    $longitudeDMS"
+    }
+
     fun toUTM(precision: Int = 7): String {
         try {
             val lat = Angle.fromDegreesLatitude(latitude)
@@ -79,7 +96,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
                 roundUTMPrecision(precision, utm.northing.toInt()).toString().padStart(7, '0') + "N"
 
             return "$zone$letter $easting $northing"
-        } catch (e: Exception){
+        } catch (e: Exception) {
             // TODO: Support UPS coordinate system
             return "?"
         }
@@ -98,6 +115,12 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return Bearing(results[1])
     }
 
+    private fun ddmString(degrees: Double, precision: Int = 3): String {
+        val deg = abs(degrees.toInt())
+        val minutes = abs((degrees % 1) * 60).roundPlaces(precision)
+        return "$deg°$minutes'"
+    }
+
     private fun dmsString(degrees: Double): String {
         val deg = abs(degrees.toInt())
         val minutes = abs((degrees % 1) * 60)
@@ -109,8 +132,86 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
         val zero = Coordinate(0.0, 0.0)
 
-        fun fromUTM(utm: String): Coordinate? {
-            val regex = Regex("(\\d+)\\s*([a-z,A-Z^ioIO])\\s*([\\d.]+)\\s*[mM]?\\s*[Ee]\\s*([\\d.]+)\\s*[mM]?\\s*[nN]\\s*")
+        fun parse(location: String, format: CoordinateFormat? = null): Coordinate? {
+            if (format == null) {
+                for (fmt in CoordinateFormat.values()) {
+                    val parsed = parse(location, fmt)
+                    if (parsed != null) {
+                        return parsed
+                    }
+                }
+                return null
+            }
+
+            return when (format) {
+                CoordinateFormat.DecimalDegrees -> fromDecimalDegrees(location)
+                CoordinateFormat.DegreesDecimalMinutes -> fromDegreesDecimalMinutes(location)
+                CoordinateFormat.DegreesMinutesSeconds -> fromDegreesMinutesSeconds(location)
+                CoordinateFormat.UTM -> fromUTM(location)
+            }
+        }
+
+        private fun fromDecimalDegrees(location: String): Coordinate? {
+            val regex = Regex("^(-?\\d+(?:\\.\\d+)?)°?[,\\s]+(-?\\d+(?:\\.\\d+)?)°?\$")
+            val matches = regex.find(location.trim()) ?: return null
+            val latitude = matches.groupValues[1].toDoubleOrNull() ?: return null
+            val longitude = matches.groupValues[2].toDoubleOrNull() ?: return null
+
+            if (isValidLatitude(latitude) && isValidLongitude(longitude)) {
+                return Coordinate(latitude, longitude)
+            }
+
+            return null
+        }
+
+        private fun fromDegreesDecimalMinutes(location: String): Coordinate? {
+            val ddmRegex = Regex("^(\\d+)°\\s*(\\d+(?:\\.\\d+)?)'\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+(?:\\.\\d+)?)'\\s*([wWeE])\$")
+            val matches = ddmRegex.find(location.trim()) ?: return null
+
+            var latitudeDecimal = 0.0
+            latitudeDecimal += matches.groupValues[1].toDouble()
+            latitudeDecimal += matches.groupValues[2].toDouble() / 60
+            latitudeDecimal *= if (matches.groupValues[3].toLowerCase(Locale.getDefault()) == "n") 1 else -1
+
+            var longitudeDecimal = 0.0
+            longitudeDecimal += matches.groupValues[4].toDouble()
+            longitudeDecimal += matches.groupValues[5].toDouble() / 60
+            longitudeDecimal *= if (matches.groupValues[6].toLowerCase(Locale.getDefault()) == "e") 1 else -1
+
+            if (isValidLatitude(latitudeDecimal) && isValidLongitude(longitudeDecimal)) {
+                return Coordinate(latitudeDecimal, longitudeDecimal)
+            }
+
+            return null
+        }
+
+        private fun fromDegreesMinutesSeconds(location: String): Coordinate? {
+            val dmsRegex =
+                Regex("^(\\d+)°\\s*(\\d+)'\\s*(\\d+(?:\\.\\d+)?)\"\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+)'\\s*(\\d+(?:\\.\\d+)?)\"\\s*([wWeE])\$")
+            val matches = dmsRegex.find(location.trim()) ?: return null
+
+            var latitudeDecimal = 0.0
+            latitudeDecimal += matches.groupValues[1].toDouble()
+            latitudeDecimal += matches.groupValues[2].toDouble() / 60
+            latitudeDecimal += matches.groupValues[3].toDouble() / (60 * 60)
+            latitudeDecimal *= if (matches.groupValues[4].toLowerCase(Locale.getDefault()) == "n") 1 else -1
+
+            var longitudeDecimal = 0.0
+            longitudeDecimal += matches.groupValues[5].toDouble()
+            longitudeDecimal += matches.groupValues[6].toDouble() / 60
+            longitudeDecimal += matches.groupValues[7].toDouble() / (60 * 60)
+            longitudeDecimal *= if (matches.groupValues[8].toLowerCase(Locale.getDefault()) == "e") 1 else -1
+
+            if (isValidLatitude(latitudeDecimal) && isValidLongitude(longitudeDecimal)) {
+                return Coordinate(latitudeDecimal, longitudeDecimal)
+            }
+
+            return null
+        }
+
+        private fun fromUTM(utm: String): Coordinate? {
+            val regex =
+                Regex("(\\d+)\\s*([a-z,A-Z^ioIO])\\s*([\\d.]+)\\s*[mM]?\\s*[Ee]?\\s*([\\d.]+)\\s*[mM]?\\s*[nN]?\\s*")
             val matches = regex.find(utm) ?: return null
 
             val zone = matches.groupValues[1].toInt()
@@ -121,7 +222,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             return fromUTM(zone, letter, easting, northing)
         }
 
-        fun fromUTM(zone: Int, letter: Char, easting: Double, northing: Double): Coordinate? {
+        private fun fromUTM(zone: Int, letter: Char, easting: Double, northing: Double): Coordinate? {
             return try {
                 val latLng = UTMCoord.locationFromUTMCoord(
                     zone,
@@ -133,152 +234,6 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
                     latLng.latitude.toDecimalDegreesString(10).replace("°", "").toDouble(),
                     latLng.longitude.toDecimalDegreesString(10).replace("°", "").toDouble()
                 )
-            } catch (e: Exception){
-                return null
-            }
-        }
-
-        fun parseLatitude(latitude: String): Double? {
-
-            val dms =
-                parseDMS(
-                    latitude,
-                    true
-                )
-            if (dms != null) {
-                return dms
-            }
-
-            val ddm =
-                parseDDM(
-                    latitude,
-                    true
-                )
-            if (ddm != null) {
-                return ddm
-            }
-
-            return parseDecimal(
-                latitude,
-                true
-            )
-        }
-
-        fun parseLongitude(longitude: String): Double? {
-            val dms =
-                parseDMS(
-                    longitude,
-                    false
-                )
-            if (dms != null) {
-                return dms
-            }
-
-            val ddm =
-                parseDDM(
-                    longitude,
-                    false
-                )
-            if (ddm != null) {
-                return ddm
-            }
-
-            return parseDecimal(
-                longitude,
-                false
-            )
-        }
-
-        private fun parseDecimal(latOrLng: String, isLatitude: Boolean): Double? {
-            try {
-                val number = latOrLng.toDoubleOrNull() ?: return null
-
-                return if (isLatitude && isValidLatitude(
-                        number
-                    )
-                ) {
-                    number
-                } else if (!isLatitude && isValidLongitude(
-                        number
-                    )
-                ) {
-                    number
-                } else {
-                    null
-                }
-            } catch (e: Exception) {
-                return null
-            }
-        }
-
-        private fun parseDMS(latOrLng: String, isLatitude: Boolean): Double? {
-            try {
-                val dmsRegex = if (isLatitude) {
-                    Regex("(\\d+)°\\s*(\\d+)'\\s*([\\d.]+)\"\\s*([nNsS])")
-                } else {
-                    Regex("(\\d+)°\\s*(\\d+)'\\s*([\\d.]+)\"\\s*([wWeE])")
-                }
-                val matches = dmsRegex.find(latOrLng) ?: return null
-
-                var decimal = 0.0
-                decimal += matches.groupValues[1].toDouble()
-                decimal += matches.groupValues[2].toDouble() / 60
-                decimal += matches.groupValues[3].toDouble() / (60 * 60)
-                decimal *= if (isLatitude) {
-                    if (matches.groupValues[4].toLowerCase(Locale.getDefault()) == "n") 1 else -1
-                } else {
-                    if (matches.groupValues[4].toLowerCase(Locale.getDefault()) == "e") 1 else -1
-                }
-
-                return if (isLatitude && isValidLatitude(
-                        decimal
-                    )
-                ) {
-                    decimal
-                } else if (!isLatitude && isValidLongitude(
-                        decimal
-                    )
-                ) {
-                    decimal
-                } else {
-                    null
-                }
-            } catch (e: Exception) {
-                return null
-            }
-        }
-
-        private fun parseDDM(latOrLng: String, isLatitude: Boolean): Double? {
-            try {
-                val dmsRegex = if (isLatitude) {
-                    Regex("(\\d+)°\\s*([\\d.]+)'\\s*([nNsS])")
-                } else {
-                    Regex("(\\d+)°\\s*([\\d.]+)'\\s*([wWeE])")
-                }
-                val matches = dmsRegex.find(latOrLng) ?: return null
-
-                var decimal = 0.0
-                decimal += matches.groupValues[1].toDouble()
-                decimal += matches.groupValues[2].toDouble() / 60
-                decimal *= if (isLatitude) {
-                    if (matches.groupValues[3].toLowerCase(Locale.getDefault()) == "n") 1 else -1
-                } else {
-                    if (matches.groupValues[3].toLowerCase(Locale.getDefault()) == "e") 1 else -1
-                }
-
-                return if (isLatitude && isValidLatitude(
-                        decimal
-                    )
-                ) {
-                    decimal
-                } else if (!isLatitude && isValidLongitude(
-                        decimal
-                    )
-                ) {
-                    decimal
-                } else {
-                    null
-                }
             } catch (e: Exception) {
                 return null
             }
