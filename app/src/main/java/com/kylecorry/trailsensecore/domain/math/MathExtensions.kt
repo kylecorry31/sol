@@ -130,3 +130,29 @@ fun slope(data: List<Pair<Float, Float>>): Float {
 
     return ssxy / ssxx
 }
+
+fun power(x: Int, power: Int): Int {
+    var total = 1
+    for (i in 0 until abs(power)) {
+        total *= x
+    }
+
+    if (power < 0) {
+        return 0
+    }
+
+    return total
+}
+
+fun power(x: Double, power: Int): Double {
+    var total = 1.0
+    for (i in 0 until abs(power)) {
+        total *= x
+    }
+
+    if (power < 0) {
+        return 1 / total
+    }
+
+    return total
+}

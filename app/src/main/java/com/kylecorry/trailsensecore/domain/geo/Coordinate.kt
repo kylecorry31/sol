@@ -2,18 +2,17 @@ package com.kylecorry.trailsensecore.domain.geo
 
 import android.location.Location
 import android.os.Parcelable
-import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.Astro.power
 import com.kylecorry.trailsensecore.domain.math.cosDegrees
 import com.kylecorry.trailsensecore.domain.math.roundPlaces
 import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.toDegrees
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
+import gov.nasa.worldwind.geom.LatLon
 import gov.nasa.worldwind.geom.coords.MGRSCoord
-import gov.nasa.worldwind.geom.coords.UPSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.android.parcel.Parcelize
-import java.lang.Math.pow
 import java.util.*
 import kotlin.math.*
 
@@ -62,39 +61,32 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return Coordinate(newLat, normalLng)
     }
 
-    fun toUTM(precision: Int = 1): String {
-        val lat = Angle.fromDegreesLatitude(latitude)
-        val lng = Angle.fromDegreesLongitude(longitude)
-        val utm = UTMCoord.fromLatLon(lat, lng)
+    fun toUTM(precision: Int = 7): String {
+        try {
+            val lat = Angle.fromDegreesLatitude(latitude)
+            val lng = Angle.fromDegreesLongitude(longitude)
+            val utm = UTMCoord.fromLatLon(lat, lng)
 
-        // TODO: Handle polar regions
-        val zone = utm.zone.toString().padStart(2, '0')
+            val zone = utm.zone.toString().padStart(2, '0')
 
-        // TODO: Handle zone letters
-        val hemisphere = if (AVKey.NORTH == utm.hemisphere) "N" else "S"
+            val letter =
+                if (latitude < -72) 'C' else if (latitude < -64) 'D' else if (latitude < -56) 'E' else if (latitude < -48) 'F' else if (latitude < -40) 'G' else if (latitude < -32) 'H' else if (latitude < -24) 'J' else if (latitude < -16) 'K' else if (latitude < -8) 'L' else if (latitude < 0) 'M' else if (latitude < 8) 'N' else if (latitude < 16) 'P' else if (latitude < 24) 'Q' else if (latitude < 32) 'R' else if (latitude < 40) 'S' else if (latitude < 48) 'T' else if (latitude < 56) 'U' else if (latitude < 64) 'V' else if (latitude < 72) 'W' else 'X'
 
-        
-        val easting = roundUTMPrecision(precision, utm.easting.toInt()).toString().padStart(6, '0') + "E"
-        val northing = roundUTMPrecision(precision, utm.northing.toInt()).toString().padStart(7, '0') + "N"
 
-        return "$zone$hemisphere $easting $northing"
+            val easting =
+                roundUTMPrecision(precision, utm.easting.toInt()).toString().padStart(7, '0') + "E"
+            val northing =
+                roundUTMPrecision(precision, utm.northing.toInt()).toString().padStart(7, '0') + "N"
+
+            return "$zone$letter $easting $northing"
+        } catch (e: Exception){
+            // TODO: Support UPS coordinate system
+            return "?"
+        }
     }
 
     private fun roundUTMPrecision(precision: Int, utmValue: Int): Int {
-        var places = 1
-        while (precision.absoluteValue / Astro.power(10.0, places) > 0){
-            places++
-        }
-
-        return (utmValue / Astro.power(10.0, places - 1)).toInt() * Astro.power(10.0, places - 1).toInt()
-    }
-
-
-    fun toMGRS(precision: Int = 5): String {
-        val lat = Angle.fromDegreesLatitude(latitude)
-        val lng = Angle.fromDegreesLongitude(longitude)
-        val mgrs = MGRSCoord.fromLatLon(lat, lng, precision)
-        return mgrs.toString()
+        return (utmValue / power(10.0, 7 - precision)).toInt() * power(10.0, 7 - precision).toInt()
     }
 
     /**
@@ -116,6 +108,35 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     companion object {
 
         val zero = Coordinate(0.0, 0.0)
+
+        fun fromUTM(utm: String): Coordinate? {
+            val regex = Regex("(\\d+)\\s*([a-z,A-Z^ioIO])\\s*([\\d.]+)\\s*[mM]?\\s*[Ee]\\s*([\\d.]+)\\s*[mM]?\\s*[nN]\\s*")
+            val matches = regex.find(utm) ?: return null
+
+            val zone = matches.groupValues[1].toInt()
+            val letter = matches.groupValues[2].toCharArray().first()
+            val easting = matches.groupValues[3].toDouble()
+            val northing = matches.groupValues[4].toDouble()
+
+            return fromUTM(zone, letter, easting, northing)
+        }
+
+        fun fromUTM(zone: Int, letter: Char, easting: Double, northing: Double): Coordinate? {
+            return try {
+                val latLng = UTMCoord.locationFromUTMCoord(
+                    zone,
+                    if (letter.toUpperCase() <= 'M') AVKey.SOUTH else AVKey.NORTH,
+                    easting,
+                    northing
+                )
+                Coordinate(
+                    latLng.latitude.toDecimalDegreesString(10).replace("°", "").toDouble(),
+                    latLng.longitude.toDecimalDegreesString(10).replace("°", "").toDouble()
+                )
+            } catch (e: Exception){
+                return null
+            }
+        }
 
         fun parseLatitude(latitude: String): Double? {
 

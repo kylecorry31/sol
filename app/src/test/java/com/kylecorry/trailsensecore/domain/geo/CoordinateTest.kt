@@ -27,17 +27,45 @@ class CoordinateTest {
 
     @Test
     fun canConvertToUTM(){
-        assertEquals("31 N 166021 0", Coordinate(0.0, 0.0).toUTM())
-        assertEquals("30 N 808084 14386", Coordinate(0.1300, -0.2324).toUTM())
-        assertEquals("34 S 683474 4942631", Coordinate(-45.6456, 23.3545).toUTM())
-        assertEquals("25 S 404859 8588691", Coordinate(-12.7650, -33.8765).toUTM())
-        assertEquals("02 S 506346 1057743", Coordinate(-80.5434, -170.6540).toUTM())
-//        assertEquals("60 N 500000 9997964", Coordinate(90.0000, 177.0000).toUTM())
-//        assertEquals("01 S 500000 2035", Coordinate(-90.0000, -177.0000).toUTM())
-//        assertEquals("31 N 500000 9997964", Coordinate(90.0000, 3.0000).toUTM())
-        assertEquals("08 N 453580 2594273", Coordinate(23.4578, -135.4545).toUTM())
-        assertEquals("57 N 450794 8586116", Coordinate(77.3450, 156.9876).toUTM())
-//        assertEquals("22 S 502639 75072", Coordinate(-89.3454, -48.9306).toUTM())
+        assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM())
+        assertEquals("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939).toUTM())
+        assertEquals("13R 0393008E 3051634N", Coordinate(27.5844, -106.0840).toUTM())
+        assertEquals("21L 0359923E 9098523N", Coordinate(-8.1534, -58.2715).toUTM())
+        assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
+        assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
+        assertEquals("34D 0528288E 2071725N", Coordinate(-71.4545, 21.7969).toUTM())
+        assertEquals("40X 0545559E 9051365N", Coordinate(81.5113, 59.7656).toUTM())
+        assertEquals("17M 0784692E 9999203N", Coordinate(-0.0072, -78.4424).toUTM())
+        assertEquals("09E 0353004E 3573063N", Coordinate(-57.9598, -131.4844).toUTM())
+
+        // Different precisions
+        assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM(7))
+        assertEquals("19T 0282880E 4674750N", Coordinate(42.1948, -71.6295).toUTM(6))
+        assertEquals("19T 0282800E 4674700N", Coordinate(42.1948, -71.6295).toUTM(5))
+        assertEquals("19T 0282000E 4674000N", Coordinate(42.1948, -71.6295).toUTM(4))
+        assertEquals("19T 0280000E 4670000N", Coordinate(42.1948, -71.6295).toUTM(3))
+        assertEquals("19T 0200000E 4600000N", Coordinate(42.1948, -71.6295).toUTM(2))
+        assertEquals("19T 0000000E 4000000N", Coordinate(42.1948, -71.6295).toUTM(1))
+
+    }
+
+    @Test
+    fun canConvertFromUTM(){
+        assertCoordinatesEqual(Coordinate.fromUTM("19T 0282888E 4674752N"), Coordinate(42.1948, -71.6295), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("14T 0328056E 5290773N"), Coordinate(47.7474, -101.2939), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("13R 0393008E 3051634N"), Coordinate(27.5844, -106.0840), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("21L 0359923E 9098523N"), Coordinate(-8.1534, -58.2715), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("34H 0674432E 6430470N"), Coordinate(-32.2489, 22.8516), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("34H 0674432E 6430470N"), Coordinate(-32.2489, 22.8516), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("34D 0528288E 2071725N"), Coordinate(-71.4545, 21.7969), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("40X 0545559E 9051365N"), Coordinate(81.5113, 59.7656), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("17M 0784692E 9999203N"), Coordinate(-0.0072, -78.4424), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("09E 0353004E 3573063N"), Coordinate(-57.9598, -131.4844), 0.0001)
+
+        // Different formatting
+        assertCoordinatesEqual(Coordinate.fromUTM("09e 0353004e 3573063n"), Coordinate(-57.9598, -131.4844), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("09 E 0353004 E 3573063 N"), Coordinate(-57.9598, -131.4844), 0.0001)
+        assertCoordinatesEqual(Coordinate.fromUTM("09E 0353004 E 3573063 N"), Coordinate(-57.9598, -131.4844), 0.0001)
     }
 
     @Test
@@ -160,6 +188,16 @@ class CoordinateTest {
         for (case in cases){
             assertNull(Coordinate.parseLatitude(case))
         }
+    }
+
+    private fun assertCoordinatesEqual(actual: Coordinate?, expected: Coordinate?, precision: Double){
+        if (actual == null){
+            assertNull(expected)
+            return
+        }
+        assertNotNull(expected)
+        assertEquals(actual.latitude, expected!!.latitude, precision)
+        assertEquals(actual.longitude, expected!!.longitude, precision)
     }
 
 }
