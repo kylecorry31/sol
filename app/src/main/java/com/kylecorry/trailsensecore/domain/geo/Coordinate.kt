@@ -18,22 +18,9 @@ import kotlin.math.*
 @Parcelize
 data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable {
 
-    private val latitudeDMS: String
-        get() {
-            val direction = if (latitude < 0) "S" else "N"
-            return "${dmsString(latitude)} $direction"
-        }
-
-    private val longitudeDMS: String
-        get() {
-            val direction = if (longitude < 0) "W" else "E"
-            return "${dmsString(longitude)} $direction"
-        }
-
     override fun toString(): String {
-        return toDegreeMinutesSeconds()
+        return toDecimalDegrees()
     }
-
 
     fun distanceTo(other: Coordinate): Float {
         val results = FloatArray(3)
@@ -75,7 +62,9 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     }
 
     fun toDegreeMinutesSeconds(precision: Int = 1): String {
-        return "$latitudeDMS    $longitudeDMS"
+        val latDir = if (latitude < 0) "S" else "N"
+        val lngDir = if (longitude < 0) "W" else "E"
+        return "${dmsString(latitude, precision)}${latDir}    ${dmsString(longitude, precision)}${lngDir}"
     }
 
     fun toUTM(precision: Int = 7): String {
@@ -121,10 +110,10 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return "$deg°$minutes'"
     }
 
-    private fun dmsString(degrees: Double): String {
+    private fun dmsString(degrees: Double, precision: Int = 1): String {
         val deg = abs(degrees.toInt())
         val minutes = abs((degrees % 1) * 60)
-        val seconds = abs(((minutes % 1) * 60).roundPlaces(1))
+        val seconds = abs(((minutes % 1) * 60).roundPlaces(precision))
         return "$deg°${minutes.toInt()}'$seconds\""
     }
 

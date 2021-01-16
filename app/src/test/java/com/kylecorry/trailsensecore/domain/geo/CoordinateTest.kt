@@ -2,7 +2,6 @@ package com.kylecorry.trailsensecore.domain.geo
 
 import org.junit.Assert
 import org.junit.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -11,27 +10,7 @@ import java.util.stream.Stream
 class CoordinateTest {
 
     @Test
-    fun canConvertToDMS() {
-        Assert.assertEquals(
-            "10°2'5.0\" N    77°30'30.0\" E",
-            Coordinate(10.03472, 77.508333).toDegreeMinutesSeconds()
-        )
-        Assert.assertEquals(
-            "10°2'5.0\" S    77°30'30.0\" E",
-            Coordinate(-10.03472, 77.508333).toDegreeMinutesSeconds()
-        )
-        Assert.assertEquals(
-            "10°2'5.0\" N    77°30'30.0\" W",
-            Coordinate(10.03472, -77.508333).toDegreeMinutesSeconds()
-        )
-        Assert.assertEquals(
-            "10°2'5.0\" S    77°30'30.0\" W",
-            Coordinate(-10.03472, -77.508333).toDegreeMinutesSeconds()
-        )
-    }
-
-    @Test
-    fun canConvertToUTM() {
+    fun toUTM() {
         Assert.assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM())
         Assert.assertEquals("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939).toUTM())
         Assert.assertEquals("13R 0393008E 3051634N", Coordinate(27.5844, -106.0840).toUTM())
@@ -66,6 +45,24 @@ class CoordinateTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideDDM")
+    fun toDDM(expected: String, coordinate: Coordinate, precision: Int) {
+        Assert.assertEquals(expected, coordinate.toDegreeDecimalMinutes(precision))
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDMS")
+    fun toDMS(expected: String, coordinate: Coordinate, precision: Int) {
+        Assert.assertEquals(expected, coordinate.toDegreeMinutesSeconds(precision))
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDD")
+    fun toDD(expected: String, coordinate: Coordinate, precision: Int) {
+        Assert.assertEquals(expected, coordinate.toDecimalDegrees(precision))
+    }
+
+    @ParameterizedTest
     @MethodSource("provideLocationStrings")
     fun parse(locationString: String, expected: Coordinate?) {
         assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.0001)
@@ -86,6 +83,37 @@ class CoordinateTest {
     }
 
     companion object {
+
+        @JvmStatic
+        fun provideDDM(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("10°2.1'N    77°30.5'E", Coordinate(10.03472, 77.508333), 1),
+                Arguments.of("10°2.1'S    77°30.5'E", Coordinate(-10.03472, 77.508333), 1),
+                Arguments.of("10°2.08'N    77°30.5'W", Coordinate(10.03472, -77.508333), 2),
+                Arguments.of("10°2.0832'S    77°30.5'W", Coordinate(-10.03472, -77.508333), 4),
+            )
+        }
+
+        @JvmStatic
+        fun provideDMS(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("10°2'5.0\"N    77°30'30.0\"E", Coordinate(10.03472, 77.508333), 1),
+                Arguments.of("10°2'5.0\"S    77°30'30.0\"E", Coordinate(-10.03472, 77.508333), 1),
+                Arguments.of("10°2'4.99\"N    77°30'30.0\"W", Coordinate(10.03472, -77.508333), 2),
+                Arguments.of("10°7'23.16\"S    77°7'23.232\"W", Coordinate(-10.1231, -77.12312), 3),
+            )
+        }
+
+        @JvmStatic
+        fun provideDD(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("42.1948°,  -71.6295°", Coordinate(42.1948, -71.6295), 4),
+                Arguments.of("-90.0°,  -180.0°", Coordinate(-90.0, -180.0), 0),
+                Arguments.of("-42.19°,  -71.63°", Coordinate(-42.1948, -71.6295), 2),
+                Arguments.of("1.2°,  1.4°", Coordinate(1.2, 1.4), 1),
+            )
+        }
+
         @JvmStatic
         fun provideLocationStrings(): Stream<Arguments> {
             return Stream.of(
