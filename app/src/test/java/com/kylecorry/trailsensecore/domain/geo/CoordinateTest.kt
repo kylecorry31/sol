@@ -89,20 +89,26 @@ class CoordinateTest {
         @JvmStatic
         fun provideLocationStrings(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of("1, 2", Coordinate(1.0, 2.0)),
+                // DDM
                 Arguments.of("10°2.083333' N, 77°30.5' E", Coordinate(10.03472, 77.508333)),
                 Arguments.of("10°2.083333' S, 77°30.5' E", Coordinate(-10.03472, 77.508333)),
                 Arguments.of("10°2.083333' N, 77°30.5' W", Coordinate(10.03472, -77.508333)),
                 Arguments.of("10°2.083333' S, 77°30.5' W", Coordinate(-10.03472, -77.508333)),
+                // DMS
                 Arguments.of("10°2'5.0\" N, 77°30'30.0\" E", Coordinate(10.03472, 77.508333)),
                 Arguments.of("10°2'5.0\" S, 77°30'30.0\" E", Coordinate(-10.03472, 77.508333)),
                 Arguments.of("10°2'5.0\" N, 77°30'30.0\" W", Coordinate(10.03472, -77.508333)),
                 Arguments.of("10°2'5.0\" S, 77°30'30.0\" W", Coordinate(-10.03472, -77.508333)),
+                Arguments.of("10°2'5\" S, 77°30'30\" W", Coordinate(-10.03472, -77.508333)),
+                // DD
                 Arguments.of("42.1948, -71.6295", Coordinate(42.1948, -71.6295)),
+                Arguments.of("-90, -180", Coordinate(-90.0, -180.0)),
+                Arguments.of("90, 180", Coordinate(90.0, 180.0)),
                 Arguments.of("-42.1948, -71.6295", Coordinate(-42.1948, -71.6295)),
                 Arguments.of("1.2,1.4", Coordinate(1.2, 1.4)),
                 Arguments.of("1.2°, 1.4°", Coordinate(1.2, 1.4)),
                 Arguments.of("1 8", Coordinate(1.0, 8.0)),
+                // UTM
                 Arguments.of("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295)),
                 Arguments.of("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939)),
                 Arguments.of("13R 0393008E 3051634N", Coordinate(27.5844, -106.0840)),
@@ -125,9 +131,21 @@ class CoordinateTest {
                 Arguments.of("test", null),
                 Arguments.of("1 1231E 1231N", null),
                 Arguments.of("1a 1231E 1231N", null),
+                Arguments.of("1b 1231E 1231N", null),
+                Arguments.of("1y 1231E 1231N", null),
+                Arguments.of("1z 1231E 1231N", null),
                 Arguments.of("12m1, 4m1", null),
-                Arguments.of("61T 1234E 1234N", null)
-            )
+                Arguments.of("61T 1234E 1234N", null),
+                Arguments.of("1", null),
+                Arguments.of("", null),
+                Arguments.of("10°2'5.0\", 77°30'30.0\"", null),
+                Arguments.of("10°2'5.0\" W, 77°30'30.0\" N", null),
+                Arguments.of("10°2'5.0 S, 77°30'30.0\" W", null),
+                Arguments.of("10°2'5.0 S\", 30'30.0\" W", null),
+                Arguments.of("10°2' S\", 77°30'30.0\" W", null),
+                Arguments.of("10°5\" S, 77°30'30.0\" W", null)
+
+                )
         }
     }
 

@@ -211,7 +211,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
         private fun fromUTM(utm: String): Coordinate? {
             val regex =
-                Regex("(\\d+)\\s*([a-z,A-Z^ioIO])\\s*([\\d.]+)\\s*[mM]?\\s*[Ee]?\\s*([\\d.]+)\\s*[mM]?\\s*[nN]?\\s*")
+                Regex("(\\d+)\\s*([c-x,C-X^ioIO])\\s*([\\d.]+)\\s*[mM]?\\s*[Ee]?\\s*([\\d.]+)\\s*[mM]?\\s*[nN]?\\s*")
             val matches = regex.find(utm) ?: return null
 
             val zone = matches.groupValues[1].toInt()
