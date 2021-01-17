@@ -9,4 +9,5 @@ interface IBattery : ISensor {
     val charging: Boolean
     val voltage: Float
     val current: Float
+    val chargingMethod: BatteryChargingMethod
 }

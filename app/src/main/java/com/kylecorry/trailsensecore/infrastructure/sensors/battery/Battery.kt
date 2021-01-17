@@ -12,9 +12,7 @@ import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 class Battery(private val context: Context) : IBattery, AbstractSensor() {
     override val percent: Float
         get() {
-            val pct =
-                (batteryManager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)?.toFloat()
-                    ?: 0f)
+            val pct = (getInt(BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: 0).toFloat()
             return if (pct <= 0f) {
                 _percent
             } else {
@@ -24,8 +22,7 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
     override val capacity: Float
         get() {
             val cap =
-                (batteryManager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
-                    ?.toFloat() ?: 0f) * 0.001f
+                (getInt(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER) ?: 0).toFloat() * 0.001f
             return if (cap <= 0f) {
                 0f
             } else {
@@ -40,10 +37,10 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
         get() = _voltage
     override val current: Float
         get() {
-            return (batteryManager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
-                ?.toFloat()
-                ?: 0f) * 0.001f
+            return (getInt(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW) ?: 0).toFloat() * 0.001f
         }
+    override val chargingMethod: BatteryChargingMethod
+        get() = _chargingMethod
     override val hasValidReading: Boolean
         get() = hasReading
 
@@ -54,6 +51,7 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
     private var _charging = false
     private var _voltage = 0f
     private var _health = BatteryHealth.Unknown
+    private var _chargingMethod = BatteryChargingMethod.Unknown
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -61,7 +59,14 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
             val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
             val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0)
             _percent = 100 * level / scale.toFloat()
-            _charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0
+            val chargingType = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+            _charging = chargingType != 0
+            _chargingMethod = when (chargingType) {
+                BatteryManager.BATTERY_PLUGGED_AC -> BatteryChargingMethod.AC
+                BatteryManager.BATTERY_PLUGGED_USB -> BatteryChargingMethod.USB
+                BatteryManager.BATTERY_PLUGGED_WIRELESS -> BatteryChargingMethod.Wireless
+                else -> BatteryChargingMethod.NotCharging
+            }
             _voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0).toFloat() / 1000f
             _health = when (intent.getIntExtra(
                 BatteryManager.EXTRA_HEALTH,
@@ -78,6 +83,14 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
             hasReading = true
             notifyListeners()
         }
+    }
+
+    private fun getInt(property: Int): Int? {
+        val value = batteryManager?.getIntProperty(property) ?: return null
+        if (value == Long.MIN_VALUE.toInt() || value == Int.MIN_VALUE) {
+            return null
+        }
+        return value
     }
 
     override fun startImpl() {
