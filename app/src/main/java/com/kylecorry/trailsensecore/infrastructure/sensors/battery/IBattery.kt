@@ -6,8 +6,8 @@ interface IBattery : ISensor {
     val percent: Float
     val capacity: Float
     val health: BatteryHealth
-    val charging: Boolean
     val voltage: Float
     val current: Float
     val chargingMethod: BatteryChargingMethod
+    val chargingStatus: BatteryChargingStatus
 }

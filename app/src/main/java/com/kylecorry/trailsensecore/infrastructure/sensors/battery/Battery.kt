@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.Build
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 
@@ -31,8 +32,6 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
         }
     override val health: BatteryHealth
         get() = _health
-    override val charging: Boolean
-        get() = _charging
     override val voltage: Float
         get() = _voltage
     override val current: Float
@@ -41,6 +40,8 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
         }
     override val chargingMethod: BatteryChargingMethod
         get() = _chargingMethod
+    override val chargingStatus: BatteryChargingStatus
+        get() = _chargingStatus
     override val hasValidReading: Boolean
         get() = hasReading
 
@@ -48,26 +49,36 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
 
     private var hasReading = false
     private var _percent = 0f
-    private var _charging = false
     private var _voltage = 0f
     private var _health = BatteryHealth.Unknown
     private var _chargingMethod = BatteryChargingMethod.Unknown
+    private var _chargingStatus = BatteryChargingStatus.Unknown
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
+
+            // Calculate battery percentage
             val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
             val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0)
             _percent = 100 * level / scale.toFloat()
+
+            // Determine charging type
             val chargingType = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
-            _charging = chargingType != 0
             _chargingMethod = when (chargingType) {
                 BatteryManager.BATTERY_PLUGGED_AC -> BatteryChargingMethod.AC
                 BatteryManager.BATTERY_PLUGGED_USB -> BatteryChargingMethod.USB
                 BatteryManager.BATTERY_PLUGGED_WIRELESS -> BatteryChargingMethod.Wireless
                 else -> BatteryChargingMethod.NotCharging
             }
+
+            // Determine charging status
+            _chargingStatus = toChargingStatus(intent.getIntExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_UNKNOWN))
+
+            // Determine the battery voltage
             _voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0).toFloat() / 1000f
+
+            // Get the battery health
             _health = when (intent.getIntExtra(
                 BatteryManager.EXTRA_HEALTH,
                 BatteryManager.BATTERY_HEALTH_UNKNOWN
@@ -82,6 +93,16 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
 
             hasReading = true
             notifyListeners()
+        }
+    }
+
+    private fun toChargingStatus(status: Int): BatteryChargingStatus {
+        return when(status){
+            BatteryManager.BATTERY_STATUS_CHARGING -> BatteryChargingStatus.Charging
+            BatteryManager.BATTERY_STATUS_DISCHARGING -> BatteryChargingStatus.Discharging
+            BatteryManager.BATTERY_STATUS_FULL -> BatteryChargingStatus.Full
+            BatteryManager.BATTERY_STATUS_NOT_CHARGING -> BatteryChargingStatus.NotCharging
+            else -> BatteryChargingStatus.Unknown
         }
     }
 
