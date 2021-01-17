@@ -4,5 +4,6 @@ enum class CoordinateFormat {
     DecimalDegrees,
     DegreesDecimalMinutes,
     DegreesMinutesSeconds,
-    UTM
+    UTM,
+    MGRS
 }

@@ -9,6 +9,7 @@ import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.toDegrees
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
+import gov.nasa.worldwind.geom.coords.MGRSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -65,6 +66,17 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         val latDir = if (latitude < 0) "S" else "N"
         val lngDir = if (longitude < 0) "W" else "E"
         return "${dmsString(latitude, precision)}${latDir}    ${dmsString(longitude, precision)}${lngDir}"
+    }
+
+    fun toMGRS(precision: Int = 5): String {
+        return try {
+            val lat = Angle.fromDegreesLatitude(latitude)
+            val lng = Angle.fromDegreesLongitude(longitude)
+            val mgrs = MGRSCoord.fromLatLon(lat, lng, precision)
+            mgrs.toString().trim()
+        } catch (e: Exception){
+            "?"
+        }
     }
 
     fun toUTM(precision: Int = 7): String {
@@ -137,6 +149,19 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
                 CoordinateFormat.DegreesDecimalMinutes -> fromDegreesDecimalMinutes(location)
                 CoordinateFormat.DegreesMinutesSeconds -> fromDegreesMinutesSeconds(location)
                 CoordinateFormat.UTM -> fromUTM(location)
+                CoordinateFormat.MGRS -> fromMGRS(location)
+            }
+        }
+
+        private fun fromMGRS(location: String): Coordinate? {
+            try {
+                val mgrs = MGRSCoord.fromString(location)
+                return Coordinate(
+                    mgrs.latitude.toDecimalDegreesString(10).replace("°", "").toDouble(),
+                    mgrs.longitude.toDecimalDegreesString(10).replace("°", "").toDouble()
+                )
+            } catch (e: Exception){
+                return null
             }
         }
 

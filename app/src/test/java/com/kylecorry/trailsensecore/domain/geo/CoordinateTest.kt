@@ -63,9 +63,15 @@ class CoordinateTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideMGRS")
+    fun toMGRS(expected: String, coordinate: Coordinate, precision: Int) {
+        Assert.assertEquals(expected, coordinate.toMGRS(precision))
+    }
+
+    @ParameterizedTest
     @MethodSource("provideLocationStrings")
     fun parse(locationString: String, expected: Coordinate?) {
-        assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.0001)
+        assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.001)
     }
 
     private fun assertCoordinatesEqual(
@@ -115,6 +121,21 @@ class CoordinateTest {
         }
 
         @JvmStatic
+        fun provideMGRS(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("27PXM 09601 05579", Coordinate(10.0, -20.0), 5),
+                Arguments.of("51DVC 65812 22723", Coordinate(-70.1, 122.1), 5),
+                Arguments.of("YZJ 98062 11010", Coordinate(89.0, -179.0), 5),
+
+                // Different precisions
+                Arguments.of("27PXM 0960 0558", Coordinate(10.0, -20.0), 4),
+                Arguments.of("27PXM 096 056", Coordinate(10.0, -20.0), 3),
+                Arguments.of("27PXM 10 06", Coordinate(10.0, -20.0), 2),
+                Arguments.of("27PXM 1 1", Coordinate(10.0, -20.0), 1),
+            )
+        }
+
+        @JvmStatic
         fun provideLocationStrings(): Stream<Arguments> {
             return Stream.of(
                 // DDM
@@ -150,6 +171,16 @@ class CoordinateTest {
                 Arguments.of("09e 0353004e 3573063n", Coordinate(-57.9598, -131.4844)),
                 Arguments.of("09 E 0353004 E 3573063 N", Coordinate(-57.9598, -131.4844)),
                 Arguments.of("09E 0353004 E 3573063 N", Coordinate(-57.9598, -131.4844)),
+                // MGRS
+                Arguments.of("27PXM 09601 05579", Coordinate(10.0, -20.0)),
+                Arguments.of("51DVC 65812 22723", Coordinate(-70.1, 122.1)),
+                Arguments.of("51DVC6581222723", Coordinate(-70.1, 122.1)),
+                Arguments.of("51 D VC 65812 22723", Coordinate(-70.1, 122.1)),
+//                Arguments.of("YZJ 98062 11010", Coordinate(89.0, -179.0)), // TODO: This can be generated, but not parsed
+                Arguments.of("27PXM 0960 0558", Coordinate(10.0, -20.0)),
+                Arguments.of("27PXM 096 056", Coordinate(10.0, -20.0)),
+                Arguments.of("27PXM 10 06", Coordinate(10.0038, -19.9963)),
+                Arguments.of("27PXM 1 1", Coordinate(10.0399725934, -19.9963)),
 
                 // Invalid formats / locations
                 Arguments.of("91 8", null),
@@ -174,7 +205,7 @@ class CoordinateTest {
                 Arguments.of("10°2' S\", 77°30'30.0\" W", null),
                 Arguments.of("10°5\" S, 77°30'30.0\" W", null)
 
-                )
+            )
         }
     }
 
