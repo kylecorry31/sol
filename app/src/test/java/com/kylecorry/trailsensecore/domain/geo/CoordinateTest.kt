@@ -162,7 +162,7 @@ class CoordinateTest {
                 Arguments.of("1b 1231E 1231N", null),
                 Arguments.of("1y 1231E 1231N", null),
                 Arguments.of("1z 1231E 1231N", null),
-                Arguments.of("1d 1231", null),
+                Arguments.of("1t 123", null),
                 Arguments.of("12m1, 4m1", null),
                 Arguments.of("61T 1234E 1234N", null),
                 Arguments.of("1", null),
