@@ -1,8 +1,9 @@
 package com.kylecorry.trailsensecore.domain.weather
 
+import com.kylecorry.trailsensecore.domain.weather.clouds.ICloudService
 import java.time.Instant
 
-interface IWeatherService {
+interface IWeatherService : ICloudService {
 
     /**
      * Calculates the tendency

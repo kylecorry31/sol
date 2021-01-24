@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.domain.geo
 
 import android.hardware.GeomagneticField
 import com.kylecorry.trailsensecore.domain.units.Distance
+import kotlin.math.absoluteValue
 
 class GeoService : IGeoService {
 
@@ -13,6 +14,14 @@ class GeoService : IGeoService {
             time
         )
         return geoField.declination
+    }
+
+    override fun getRegion(coordinate: Coordinate): Region {
+        return when {
+            coordinate.latitude.absoluteValue >= 66.5 -> Region.Polar
+            coordinate.latitude.absoluteValue >= 23.5 -> Region.Temperate
+            else -> Region.Tropical
+        }
     }
 
     override fun getMapDistance(

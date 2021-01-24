@@ -1,11 +1,16 @@
 package com.kylecorry.trailsensecore.domain.weather
 
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.weather.clouds.*
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.abs
 import kotlin.math.ln
 
 class WeatherService : IWeatherService {
+
+    private val cloudService = CloudService()
+
     override fun getTendency(
         last: PressureReading,
         current: PressureReading,
@@ -123,5 +128,13 @@ class WeatherService : IWeatherService {
             return null
         }
         return (temp0 * temp2 - temp1 * temp1) / (temp0 + temp2 - 2 * temp1)
+    }
+
+    override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {
+        return cloudService.getCloudPrecipitation(cloud)
+    }
+
+    override fun getCloudHeightRange(height: CloudHeight, location: Coordinate): HeightRange {
+        return cloudService.getCloudHeightRange(height, location)
     }
 }
