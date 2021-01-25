@@ -63,7 +63,7 @@ class CloudService : ICloudService {
     }
 
     override fun getCloudsByHeight(height: CloudHeight): List<CloudType> {
-        return CloudType.values().filter { it.height.contains(height) }
+        return CloudType.values().filter { it.height == height }
     }
 
     override fun getCloudsByColor(color: CloudColor): List<CloudType> {
