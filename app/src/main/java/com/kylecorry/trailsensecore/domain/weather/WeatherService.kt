@@ -137,4 +137,16 @@ class WeatherService : IWeatherService {
     override fun getCloudHeightRange(height: CloudHeight, location: Coordinate): HeightRange {
         return cloudService.getCloudHeightRange(height, location)
     }
+
+    override fun getCloudsByShape(shape: CloudShape): List<CloudType> {
+        return cloudService.getCloudsByShape(shape)
+    }
+
+    override fun getCloudsByHeight(height: CloudHeight): List<CloudType> {
+        return cloudService.getCloudsByHeight(height)
+    }
+
+    override fun getCloudsByColor(color: CloudColor): List<CloudType> {
+        return cloudService.getCloudsByColor(color)
+    }
 }
