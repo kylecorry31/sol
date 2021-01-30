@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.math
 
-internal class MovingAverageFilter(var size: Int) {
+class MovingAverageFilter(var size: Int) {
 
     private val window = mutableListOf<Double>()
 

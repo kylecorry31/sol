@@ -1,6 +1,5 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -15,6 +14,13 @@ class SensorChecker(private val context: Context) {
 
     fun hasBarometer(): Boolean {
         return hasSensor(Sensor.TYPE_PRESSURE)
+    }
+
+    fun hasCamera(): Boolean {
+        if (!PermissionUtils.isCameraEnabled(context)){
+            return false
+        }
+        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)
     }
 
     fun hasGPS(): Boolean {

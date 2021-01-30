@@ -26,6 +26,10 @@ object PermissionUtils {
         return hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    fun isCameraEnabled(context: Context): Boolean {
+        return hasPermission(context, Manifest.permission.CAMERA)
+    }
+
     fun hasPermission(context: Context, permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             context,

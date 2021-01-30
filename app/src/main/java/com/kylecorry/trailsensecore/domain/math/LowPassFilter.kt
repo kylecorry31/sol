@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.math
 
-internal class LowPassFilter(private val alpha: Float, initialValue: Float = 0f) {
+class LowPassFilter(private val alpha: Float, initialValue: Float = 0f) {
 
     private var estimate = initialValue
 
