@@ -6,6 +6,11 @@ import com.kylecorry.trailsensecore.domain.health.heart.HeartService
 import com.kylecorry.trailsensecore.domain.health.heart.PulseOxygenCategory
 import com.kylecorry.trailsensecore.domain.health.temperature.BodyTemperature
 import com.kylecorry.trailsensecore.domain.health.temperature.TemperatureService
+import com.kylecorry.trailsensecore.domain.health.weight.BMI
+import com.kylecorry.trailsensecore.domain.health.weight.Weight
+import com.kylecorry.trailsensecore.domain.health.weight.WeightUnits
+import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.units.Temperature
 import java.time.Duration
 
@@ -20,6 +25,12 @@ class HealthService : IHealthService {
         }
 
         return beats / (duration.toMillis() / 1000f / 60f)
+    }
+
+    override fun calculateBMI(weight: Weight, height: Distance): BMI {
+        val kg = weight.convertTo(WeightUnits.Kilograms).weight
+        val meters = height.convertTo(DistanceUnits.Meters).distance
+        return BMI(kg / (meters * meters))
     }
 
     override fun classifyBloodPressure(pressure: BloodPressure): BloodPressureCategory {
