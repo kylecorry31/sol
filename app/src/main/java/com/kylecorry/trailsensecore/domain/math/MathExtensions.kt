@@ -156,3 +156,35 @@ fun power(x: Double, power: Int): Double {
 
     return total
 }
+
+fun String.toDoubleCompat(): Double? {
+    return try {
+        this.replace(",", ".").toDoubleOrNull()
+    } catch (e: Exception){
+        null
+    }
+}
+
+fun String.toFloatCompat(): Float? {
+    return try {
+        this.replace(",", ".").toFloatOrNull()
+    } catch (e: Exception){
+        null
+    }
+}
+
+fun String.toIntCompat(): Int? {
+    return try {
+        this.replace(",", ".").toIntOrNull()
+    } catch (e: Exception){
+        null
+    }
+}
+
+fun String.toLongCompat(): Long? {
+    return try {
+        this.replace(",", ".").toLongOrNull()
+    } catch (e: Exception){
+        null
+    }
+}

@@ -3,10 +3,7 @@ package com.kylecorry.trailsensecore.domain.geo
 import android.location.Location
 import android.os.Parcelable
 import com.kylecorry.trailsensecore.domain.astronomy.Astro.power
-import com.kylecorry.trailsensecore.domain.math.cosDegrees
-import com.kylecorry.trailsensecore.domain.math.roundPlaces
-import com.kylecorry.trailsensecore.domain.math.sinDegrees
-import com.kylecorry.trailsensecore.domain.math.toDegrees
+import com.kylecorry.trailsensecore.domain.math.*
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
 import gov.nasa.worldwind.geom.coords.MGRSCoord
@@ -166,8 +163,8 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         private fun fromDecimalDegrees(location: String): Coordinate? {
             val regex = Regex("^(-?\\d+(?:[.,]\\d+)?)°?[,\\s]+(-?\\d+(?:[.,]\\d+)?)°?\$")
             val matches = regex.find(location.trim()) ?: return null
-            val latitude = matches.groupValues[1].replace(",", ".").toDoubleOrNull() ?: return null
-            val longitude = matches.groupValues[2].replace(",", ".").toDoubleOrNull() ?: return null
+            val latitude = matches.groupValues[1].toDoubleCompat() ?: return null
+            val longitude = matches.groupValues[2].toDoubleCompat() ?:  return null
 
             if (isValidLatitude(latitude) && isValidLongitude(longitude)) {
                 return Coordinate(latitude, longitude)
@@ -182,12 +179,12 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
             var latitudeDecimal = 0.0
             latitudeDecimal += matches.groupValues[1].toDouble()
-            latitudeDecimal += matches.groupValues[2].replace(",", ".").toDouble() / 60
+            latitudeDecimal += (matches.groupValues[2].toDoubleCompat() ?: 0.0) / 60
             latitudeDecimal *= if (matches.groupValues[3].toLowerCase(Locale.getDefault()) == "n") 1 else -1
 
             var longitudeDecimal = 0.0
             longitudeDecimal += matches.groupValues[4].toDouble()
-            longitudeDecimal += matches.groupValues[5].replace(",", ".").toDouble() / 60
+            longitudeDecimal += (matches.groupValues[5].toDoubleCompat() ?: 0.0) / 60
             longitudeDecimal *= if (matches.groupValues[6].toLowerCase(Locale.getDefault()) == "e") 1 else -1
 
             if (isValidLatitude(latitudeDecimal) && isValidLongitude(longitudeDecimal)) {
@@ -205,13 +202,13 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             var latitudeDecimal = 0.0
             latitudeDecimal += matches.groupValues[1].toDouble()
             latitudeDecimal += matches.groupValues[2].toDouble() / 60
-            latitudeDecimal += matches.groupValues[3].replace(",", ".").toDouble() / (60 * 60)
+            latitudeDecimal += (matches.groupValues[3].toDoubleCompat() ?: 0.0) / (60 * 60)
             latitudeDecimal *= if (matches.groupValues[4].toLowerCase(Locale.getDefault()) == "n") 1 else -1
 
             var longitudeDecimal = 0.0
             longitudeDecimal += matches.groupValues[5].toDouble()
             longitudeDecimal += matches.groupValues[6].toDouble() / 60
-            longitudeDecimal += matches.groupValues[7].replace(",", ".").toDouble() / (60 * 60)
+            longitudeDecimal += (matches.groupValues[7].toDoubleCompat() ?: 0.0) / (60 * 60)
             longitudeDecimal *= if (matches.groupValues[8].toLowerCase(Locale.getDefault()) == "e") 1 else -1
 
             if (isValidLatitude(latitudeDecimal) && isValidLongitude(longitudeDecimal)) {
@@ -228,8 +225,8 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
             val zone = matches.groupValues[1].toInt()
             val letter = matches.groupValues[2].toCharArray().first()
-            val easting = matches.groupValues[3].replace(",", ".").toDouble()
-            val northing = matches.groupValues[4].replace(",", ".").toDouble()
+            val easting = matches.groupValues[3].toDoubleCompat() ?: 0.0
+            val northing = matches.groupValues[4].toDoubleCompat() ?: 0.0
 
             return fromUTM(zone, letter, easting, northing)
         }

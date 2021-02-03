@@ -3,6 +3,7 @@ package com.kylecorry.trailsensecore.infrastructure.persistence
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.kylecorry.trailsensecore.domain.math.toDoubleCompat
 
 class Cache(context: Context) {
 
@@ -72,7 +73,7 @@ class Cache(context: Context) {
         if (!contains(key)) {
             return null
         }
-        return sharedPrefs?.getString(key, null)?.toDoubleOrNull()
+        return sharedPrefs?.getString(key, null)?.toDoubleCompat()
     }
 
     fun getLong(key: String): Long? {
