@@ -58,4 +58,18 @@ object IntentUtils {
         return intent
     }
 
+    fun file(context: Context, uri: Uri, authority: String, title: String, type: String = "text/plain"){
+        val shareIntent: Intent = Intent().apply {
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, uri)
+            this.type = type
+        }
+        openChooser(context, shareIntent, title)
+    }
+
+    fun openChooser(context: Context, intent: Intent, title: String){
+        context.startActivity(Intent.createChooser(intent, title))
+    }
+
 }
