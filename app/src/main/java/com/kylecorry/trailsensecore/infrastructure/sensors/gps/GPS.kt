@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
@@ -44,9 +46,24 @@ class GPS(private val context: Context) : AbstractSensor(), IGPS {
     override val altitude: Float
         get() = _altitude
 
+    override val mslAltitude: Float?
+        get() = _mslAltitude
+
     private val locationManager by lazy { context.getSystemService<LocationManager>() }
     private val sensorChecker by lazy { SensorChecker(context) }
     private val locationListener = SimpleLocationListener { updateLastLocation(it, true) }
+    private val nmeaListener by lazy {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            SimpleNmeaListener {
+                updateNmeaString(it)
+            }
+        } else {
+            null
+        }
+    }
+    private val legacyNmeaListener = SimpleLegacyNmeaListener {
+        updateNmeaString(it)
+    }
 
     private var _altitude = 0f
     private var _time = Instant.now()
@@ -56,6 +73,7 @@ class GPS(private val context: Context) : AbstractSensor(), IGPS {
     private var _satellites: Int = 0
     private var _speed: Float = 0f
     private var _location = Coordinate.zero
+    private var _mslAltitude: Float? = null
 
     private var lastLocation: Location? = null
 
@@ -90,10 +108,32 @@ class GPS(private val context: Context) : AbstractSensor(), IGPS {
             0f,
             locationListener
         )
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            nmeaListener?.let {
+                locationManager?.addNmeaListener(it, Handler(Looper.getMainLooper()))
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            locationManager?.addNmeaListener(legacyNmeaListener)
+        }
     }
 
     override fun stopImpl() {
         locationManager?.removeUpdates(locationListener)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            nmeaListener?.let { locationManager?.removeNmeaListener(it) }
+        } else {
+            @Suppress("DEPRECATION")
+            locationManager?.removeNmeaListener(legacyNmeaListener)
+        }
+    }
+
+    private fun updateNmeaString(message: String) {
+        val nmea = Nmea(message)
+        // TODO: Parse the entire nmea string
+        _mslAltitude = nmea.mslAltitude
+        notifyListeners()
     }
 
     private fun updateLastLocation(location: Location?, notify: Boolean = true) {
