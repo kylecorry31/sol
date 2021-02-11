@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.gps
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
@@ -10,13 +11,14 @@ import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import java.time.Duration
 import java.time.Instant
 
 
 @SuppressLint("MissingPermission")
-class GPS(private val context: Context, private val notifyNmeaChanges: Boolean = false) : AbstractSensor(), IGPS {
+class NetworkGPS(private val context: Context) : AbstractSensor(), IGPS {
 
     override val hasValidReading: Boolean
         get() = hadRecentValidReading()
@@ -50,18 +52,6 @@ class GPS(private val context: Context, private val notifyNmeaChanges: Boolean =
 
     private val locationManager by lazy { context.getSystemService<LocationManager>() }
     private val locationListener = SimpleLocationListener { updateLastLocation(it, true) }
-    private val nmeaListener by lazy {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            SimpleNmeaListener {
-                updateNmeaString(it)
-            }
-        } else {
-            null
-        }
-    }
-    private val legacyNmeaListener = SimpleLegacyNmeaListener {
-        updateNmeaString(it)
-    }
 
     private var _altitude = 0f
     private var _time = Instant.now()
@@ -75,9 +65,9 @@ class GPS(private val context: Context, private val notifyNmeaChanges: Boolean =
 
     init {
         try {
-            if (PermissionUtils.isLocationEnabled(context)) {
+            if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 updateLastLocation(
-                    locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER),
+                    locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
                     false
                 )
             }
@@ -87,48 +77,25 @@ class GPS(private val context: Context, private val notifyNmeaChanges: Boolean =
     }
 
     override fun startImpl() {
-        if (!PermissionUtils.isLocationEnabled(context)) {
+        if (!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             return
         }
 
         updateLastLocation(
-            locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER),
+            locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
             false
         )
 
         locationManager?.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
+            LocationManager.NETWORK_PROVIDER,
             20,
             0f,
             locationListener
         )
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            nmeaListener?.let {
-                locationManager?.addNmeaListener(it, Handler(Looper.getMainLooper()))
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            locationManager?.addNmeaListener(legacyNmeaListener)
-        }
     }
 
     override fun stopImpl() {
         locationManager?.removeUpdates(locationListener)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            nmeaListener?.let { locationManager?.removeNmeaListener(it) }
-        } else {
-            @Suppress("DEPRECATION")
-            locationManager?.removeNmeaListener(legacyNmeaListener)
-        }
-    }
-
-    private fun updateNmeaString(message: String) {
-        val nmea = Nmea(message)
-        if (nmea.mslAltitude != null) {
-            _mslAltitude = nmea.mslAltitude
-            if (notifyNmeaChanges) notifyListeners()
-        }
     }
 
     private fun updateLastLocation(location: Location?, notify: Boolean = true) {
