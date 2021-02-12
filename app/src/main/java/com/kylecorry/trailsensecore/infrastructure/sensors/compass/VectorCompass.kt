@@ -5,11 +5,11 @@ import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.Gravity
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.IAccelerometer
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.LowPassAccelerometer
 import com.kylecorry.trailsensecore.infrastructure.sensors.magnetometer.LowPassMagnetometer
-import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.geo.AzimuthCalculator
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.domain.math.deltaAngle
+import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import kotlin.math.max
@@ -22,9 +22,9 @@ class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueN
         get() = gotReading
     private var gotReading = false
 
-    override val accuracy: Accuracy
-        get() = _accuracy
-    private var _accuracy: Accuracy = Accuracy.Unknown
+    override val quality: Quality
+        get() = _quality
+    private var _quality = Quality.Unknown
 
     private val sensorChecker = SensorChecker(context)
     private val accelerometer: IAccelerometer =
@@ -66,9 +66,9 @@ class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueN
             AzimuthCalculator.calculate(accelerometer.acceleration, magnetometer.magneticField)
                 ?: return true
 
-        val accelAccuracy = accelerometer.accuracy
-        val magAccuracy = magnetometer.accuracy
-        _accuracy = Accuracy.values()[min(accelAccuracy.ordinal, magAccuracy.ordinal)]
+        val accelAccuracy = accelerometer.quality
+        val magAccuracy = magnetometer.quality
+        _quality = Quality.values()[min(accelAccuracy.ordinal, magAccuracy.ordinal)]
 
         updateBearing(newBearing.value)
         gotReading = true

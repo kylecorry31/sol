@@ -7,8 +7,7 @@ data class CellSignal(
     val strength: Float,
     val dbm: Int,
     val quality: Quality,
-    val network: CellNetwork,
-    val registered: Boolean
+    val network: CellNetwork
 )
 
 

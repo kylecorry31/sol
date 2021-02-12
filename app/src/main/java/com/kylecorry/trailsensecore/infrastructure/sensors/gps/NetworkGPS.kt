@@ -5,13 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
-import android.os.Handler
-import android.os.Looper
 import androidx.core.content.getSystemService
-import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
-import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import java.time.Duration
 import java.time.Instant
@@ -26,8 +23,8 @@ class NetworkGPS(private val context: Context) : AbstractSensor(), IGPS {
     override val satellites: Int
         get() = _satellites
 
-    override val accuracy: Accuracy
-        get() = _accuracy
+    override val quality: Quality
+        get() = _quality
 
     override val horizontalAccuracy: Float?
         get() = _horizontalAccuracy
@@ -55,7 +52,7 @@ class NetworkGPS(private val context: Context) : AbstractSensor(), IGPS {
 
     private var _altitude = 0f
     private var _time = Instant.now()
-    private var _accuracy: Accuracy = Accuracy.Unknown
+    private var _quality = Quality.Unknown
     private var _horizontalAccuracy: Float? = null
     private var _verticalAccuracy: Float? = null
     private var _satellites: Int = 0
@@ -109,11 +106,11 @@ class NetworkGPS(private val context: Context) : AbstractSensor(), IGPS {
             if (location.extras?.containsKey("satellites") == true) location.extras.getInt("satellites") else 0
         _altitude = if (location.hasAltitude()) location.altitude.toFloat() else 0f
         val accuracy = if (location.hasAccuracy()) location.accuracy else null
-        _accuracy = when {
-            accuracy != null && accuracy < 8 -> Accuracy.High
-            accuracy != null && accuracy < 16 -> Accuracy.Medium
-            accuracy != null -> Accuracy.Low
-            else -> Accuracy.Unknown
+        _quality = when {
+            accuracy != null && accuracy < 8 -> Quality.Good
+            accuracy != null && accuracy < 16 -> Quality.Moderate
+            accuracy != null -> Quality.Poor
+            else -> Quality.Unknown
         }
         _horizontalAccuracy = accuracy ?: 0f
         _verticalAccuracy =

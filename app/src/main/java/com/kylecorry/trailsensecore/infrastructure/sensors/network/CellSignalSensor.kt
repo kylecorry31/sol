@@ -14,6 +14,8 @@ import com.kylecorry.trailsensecore.domain.network.CellSignal
 import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
+import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
+import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.Executors
 
@@ -31,26 +33,39 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
     private var oldSignals = listOf<RawCellSignal>()
     private var hasReading = false
 
+    @SuppressLint("MissingPermission")
+    private val intervalometer = Intervalometer {
+        if (!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            return@Intervalometer
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            telephony?.requestCellInfoUpdate(
+                Executors.newSingleThreadExecutor(),
+                object : TelephonyManager.CellInfoCallback() {
+                    override fun onCellInfo(cellInfo: MutableList<CellInfo>) {
+                        Handler(Looper.getMainLooper()).post {
+                            updateCellInfo(cellInfo)
+                        }
+                    }
+
+                })
+        }
+    }
+
+
     private val listener = object : PhoneStateListener() {
+        override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
+            super.onCellInfoChanged(cellInfo)
+            cellInfo ?: return
+            updateCellInfo(cellInfo)
+        }
+
         @SuppressLint("MissingPermission")
         override fun onSignalStrengthsChanged(signalStrength: SignalStrength?) {
             super.onSignalStrengthsChanged(signalStrength)
             if (!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 return
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                telephony?.requestCellInfoUpdate(
-                    Executors.newSingleThreadExecutor(),
-                    object : TelephonyManager.CellInfoCallback() {
-                        override fun onCellInfo(cellInfo: MutableList<CellInfo>) {
-                            Handler(Looper.getMainLooper()).post {
-                                updateCellInfo(cellInfo)
-                            }
-                        }
-
-                    })
-            }
-
             val cells = telephony?.allCellInfo ?: return
             updateCellInfo(cells)
         }
@@ -60,7 +75,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
     private fun updateCellInfo(cells: List<CellInfo>) {
         synchronized(this) {
             hasReading = true
-            val newSignals = cells.mapNotNull {
+            val newSignals = cells.filter { it.isRegistered }.mapNotNull {
                 when {
                     it is CellInfoWcdma -> {
                         RawCellSignal(
@@ -68,8 +83,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                             Instant.ofEpochMilli(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) it.timestampMillis else (it.timeStamp / 1000000)),
                             it.cellSignalStrength.dbm,
                             it.cellSignalStrength.level,
-                            CellNetwork.Wcdma,
-                            it.isRegistered
+                            CellNetwork.Wcdma
                         )
                     }
                     it is CellInfoGsm -> {
@@ -78,8 +92,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                             Instant.ofEpochMilli(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) it.timestampMillis else (it.timeStamp / 1000000)),
                             it.cellSignalStrength.dbm,
                             it.cellSignalStrength.level,
-                            CellNetwork.Gsm,
-                            it.isRegistered
+                            CellNetwork.Gsm
                         )
                     }
                     it is CellInfoLte -> {
@@ -88,8 +101,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                             Instant.ofEpochMilli(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) it.timestampMillis else (it.timeStamp / 1000000)),
                             it.cellSignalStrength.dbm,
                             it.cellSignalStrength.level,
-                            CellNetwork.Lte,
-                            it.isRegistered
+                            CellNetwork.Lte
                         )
                     }
                     it is CellInfoCdma -> {
@@ -98,8 +110,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                             Instant.ofEpochMilli(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) it.timestampMillis else (it.timeStamp / 1000000)),
                             it.cellSignalStrength.dbm,
                             it.cellSignalStrength.level,
-                            CellNetwork.Cdma,
-                            it.isRegistered
+                            CellNetwork.Cdma
                         )
                     }
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && it is CellInfoNr -> {
@@ -108,8 +119,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                             Instant.ofEpochMilli(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) it.timestampMillis else (it.timeStamp / 1000000)),
                             it.cellSignalStrength.dbm,
                             it.cellSignalStrength.level,
-                            CellNetwork.Nr,
-                            it.isRegistered
+                            CellNetwork.Nr
                         )
                     }
                     else -> null
@@ -128,19 +138,26 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
             oldSignals = latestSignals
 
             _signals = latestSignals.map {
-                CellSignal(it.id, it.percent, it.dbm, it.quality, it.network, it.registered)
+                CellSignal(it.id, it.percent, it.dbm, it.quality, it.network)
             }
 
             notifyListeners()
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun startImpl() {
-        telephony?.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS)
+        telephony?.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS or PhoneStateListener.LISTEN_CELL_INFO)
+        if (PermissionUtils.isLocationEnabled(context)) {
+            updateCellInfo(telephony?.allCellInfo ?: listOf())
+        }
+        intervalometer.interval(Duration.ofSeconds(5))
+
     }
 
     override fun stopImpl() {
         telephony?.listen(listener, PhoneStateListener.LISTEN_NONE)
+        intervalometer.stop()
     }
 
     data class RawCellSignal(
@@ -148,8 +165,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
         val time: Instant,
         val dbm: Int,
         val level: Int,
-        val network: CellNetwork,
-        val registered: Boolean
+        val network: CellNetwork
     ) {
         val percent: Float
             get() {
@@ -162,10 +178,10 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
 
         val quality: Quality
             get() = when (level) {
-                3, 4 -> Quality.High
-                2 -> Quality.Medium
+                3, 4 -> Quality.Good
+                2 -> Quality.Moderate
                 0 -> Quality.Unknown
-                else -> Quality.Low
+                else -> Quality.Poor
             }
     }
 }

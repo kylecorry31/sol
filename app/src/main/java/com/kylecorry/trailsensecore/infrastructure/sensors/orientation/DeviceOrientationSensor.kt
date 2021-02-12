@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 
 import android.content.Context
-import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.domain.math.toDegrees
+import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.GravitySensor
@@ -23,9 +23,9 @@ class DeviceOrientationSensor(context: Context) : AbstractSensor(), IOrientation
 
     private var gotReading = false
 
-    override val accuracy: Accuracy
-        get() = _accuracy
-    private var _accuracy: Accuracy = Accuracy.Unknown
+    override val quality: Quality
+        get() = _quality
+    private var _quality = Quality.Unknown
 
     private val sensorChecker = SensorChecker(context)
     private val accelerometer: IAccelerometer =
@@ -44,6 +44,8 @@ class DeviceOrientationSensor(context: Context) : AbstractSensor(), IOrientation
             -atan2(gravity.y, sqrt(gravity.x * gravity.x + gravity.z * gravity.z)).toDegrees(),
             atan2(sqrt(gravity.x * gravity.x + gravity.y * gravity.y), gravity.z).toDegrees(),
         )
+
+        _quality = accelerometer.quality
 
         gotReading = true
         notifyListeners()

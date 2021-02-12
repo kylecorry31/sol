@@ -1,10 +1,10 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors
 
-import com.kylecorry.trailsensecore.domain.Accuracy
+import com.kylecorry.trailsensecore.domain.units.Quality
 
 abstract class AbstractSensor: ISensor {
 
-    override val accuracy = Accuracy.Unknown
+    override val quality = Quality.Unknown
 
     private val listeners = mutableSetOf<SensorListener>()
     private var started = false

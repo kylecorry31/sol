@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.domain.network
 
-enum class CellNetwork(val minDbm: Int, val maxDbm: Int) {
-    Nr(-140, -44),
-    Lte(-140, -44),
-    Cdma(-100, -75),
-    Wcdma(-113, -51),
-    Gsm(-113, -51)
+enum class CellNetwork(val id: Int, val minDbm: Int, val maxDbm: Int) {
+    Nr(1, -140, -44),
+    Lte(2, -140, -44),
+    Cdma(3, -100, -75),
+    Wcdma(4, -113, -51),
+    Gsm(5, -113, -51)
 }

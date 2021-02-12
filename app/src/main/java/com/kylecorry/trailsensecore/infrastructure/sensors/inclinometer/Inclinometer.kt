@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.inclinometer
 
 import android.content.Context
-import com.kylecorry.trailsensecore.domain.Accuracy
 import com.kylecorry.trailsensecore.domain.inclinometer.InclinationCalculator
+import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.GravitySensor
@@ -19,9 +19,9 @@ class Inclinometer(context: Context) : AbstractSensor(), IInclinometer {
 
     private var gotReading = false
 
-    override val accuracy: Accuracy
-        get() = _accuracy
-    private var _accuracy: Accuracy = Accuracy.Unknown
+    override val quality: Quality
+        get() = _quality
+    private var _quality = Quality.Unknown
 
     private val sensorChecker = SensorChecker(context)
     private val accelerometer: IAccelerometer =
@@ -33,7 +33,7 @@ class Inclinometer(context: Context) : AbstractSensor(), IInclinometer {
 
         // Gravity
         val gravity = accelerometer.acceleration
-
+        _quality = accelerometer.quality
         _angle = InclinationCalculator.calculate(gravity)
 
         gotReading = true
