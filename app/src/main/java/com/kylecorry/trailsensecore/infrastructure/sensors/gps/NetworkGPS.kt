@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
+import android.os.Looper
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.units.Quality
@@ -87,7 +88,8 @@ class NetworkGPS(private val context: Context) : AbstractSensor(), IGPS {
             LocationManager.NETWORK_PROVIDER,
             20,
             0f,
-            locationListener
+            locationListener,
+            Looper.getMainLooper()
         )
     }
 

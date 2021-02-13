@@ -100,7 +100,8 @@ class GPS(private val context: Context, private val notifyNmeaChanges: Boolean =
             LocationManager.GPS_PROVIDER,
             20,
             0f,
-            locationListener
+            locationListener,
+            Looper.getMainLooper()
         )
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -108,8 +109,10 @@ class GPS(private val context: Context, private val notifyNmeaChanges: Boolean =
                 locationManager?.addNmeaListener(it, Handler(Looper.getMainLooper()))
             }
         } else {
-            @Suppress("DEPRECATION")
-            locationManager?.addNmeaListener(legacyNmeaListener)
+            try {
+                @Suppress("DEPRECATION")
+                locationManager?.addNmeaListener(legacyNmeaListener)
+            } catch (e: Exception){}
         }
     }
 

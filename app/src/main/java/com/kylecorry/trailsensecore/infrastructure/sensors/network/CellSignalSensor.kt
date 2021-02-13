@@ -53,21 +53,27 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
     }
 
 
-    private val listener = object : PhoneStateListener() {
-        override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
-            super.onCellInfoChanged(cellInfo)
-            cellInfo ?: return
-            updateCellInfo(cellInfo)
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onSignalStrengthsChanged(signalStrength: SignalStrength?) {
-            super.onSignalStrengthsChanged(signalStrength)
-            if (!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                return
+    private val listener by lazy {
+        object : PhoneStateListener(Executors.newSingleThreadExecutor()) {
+            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
+                super.onCellInfoChanged(cellInfo)
+                cellInfo ?: return
+                updateCellInfo(cellInfo)
             }
-            val cells = telephony?.allCellInfo ?: return
-            updateCellInfo(cells)
+
+            @SuppressLint("MissingPermission")
+            override fun onSignalStrengthsChanged(signalStrength: SignalStrength?) {
+                super.onSignalStrengthsChanged(signalStrength)
+                if (!PermissionUtils.hasPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
+                    return
+                }
+                val cells = telephony?.allCellInfo ?: return
+                updateCellInfo(cells)
+            }
         }
     }
 
