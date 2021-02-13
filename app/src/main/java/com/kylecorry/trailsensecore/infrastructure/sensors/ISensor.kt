@@ -1,5 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kylecorry.trailsensecore.domain.units.Quality
@@ -20,9 +22,12 @@ interface ISensor {
 
 fun <T: ISensor> T.asLiveData(): LiveData<T> {
     lateinit var liveData: MutableLiveData<T>
+    val handler = Handler(Looper.getMainLooper())
 
     val callback: () -> Boolean = {
-        liveData.value = this
+        handler.post {
+            liveData.value = this
+        }
         true
     }
 
