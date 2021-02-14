@@ -119,6 +119,15 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                             CellNetwork.Cdma
                         )
                     }
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && it is CellInfoTdscdma -> {
+                        RawCellSignal(
+                            it.cellIdentity.cid.toString(),
+                            Instant.ofEpochMilli(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) it.timestampMillis else (it.timeStamp / 1000000)),
+                            it.cellSignalStrength.dbm,
+                            it.cellSignalStrength.level,
+                            CellNetwork.Tdscdma
+                        )
+                    }
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && it is CellInfoNr -> {
                         RawCellSignal(
                             it.cellIdentity.operatorAlphaLong.toString(),
@@ -153,16 +162,21 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
 
     @SuppressLint("MissingPermission")
     override fun startImpl() {
-        telephony?.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS or PhoneStateListener.LISTEN_CELL_INFO)
         if (PermissionUtils.isLocationEnabled(context)) {
-            updateCellInfo(telephony?.allCellInfo ?: listOf())
+            _signals = listOf()
+            notifyListeners()
+            return
         }
+        telephony?.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS or PhoneStateListener.LISTEN_CELL_INFO)
+        updateCellInfo(telephony?.allCellInfo ?: listOf())
         intervalometer.interval(Duration.ofSeconds(5))
 
     }
 
     override fun stopImpl() {
-        telephony?.listen(listener, PhoneStateListener.LISTEN_NONE)
+        try {
+            telephony?.listen(listener, PhoneStateListener.LISTEN_NONE)
+        } catch (e: Exception){}
         intervalometer.stop()
     }
 
