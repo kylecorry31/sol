@@ -162,7 +162,7 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
 
     @SuppressLint("MissingPermission")
     override fun startImpl() {
-        if (PermissionUtils.isLocationEnabled(context)) {
+        if (!PermissionUtils.isLocationEnabled(context)) {
             _signals = listOf()
             notifyListeners()
             return
