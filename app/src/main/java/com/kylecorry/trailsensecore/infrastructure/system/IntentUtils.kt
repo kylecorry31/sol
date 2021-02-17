@@ -58,14 +58,18 @@ object IntentUtils {
         return intent
     }
 
-    fun file(context: Context, uri: Uri, authority: String, title: String, type: String = "text/plain"){
-        val shareIntent: Intent = Intent().apply {
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, uri)
-            this.type = type
-        }
-        openChooser(context, shareIntent, title)
+    fun createFile(filename: String, type: String): Intent {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = type
+        intent.putExtra(Intent.EXTRA_TITLE, filename)
+        return intent
+    }
+
+    fun pickFile(type: String, message: String): Intent {
+        val requestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
+        requestFileIntent.type = type
+        return Intent.createChooser(requestFileIntent, message)
     }
 
     fun openChooser(context: Context, intent: Intent, title: String){
