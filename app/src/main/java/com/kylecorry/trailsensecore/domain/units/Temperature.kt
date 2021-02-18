@@ -7,4 +7,8 @@ data class Temperature(val temperature: Float, val units: TemperatureUnits) {
     fun convertTo(toUnits: TemperatureUnits): Temperature {
         return Temperature(unitService.convert(temperature, units, toUnits), toUnits)
     }
+
+    fun celsius(): Temperature {
+        return convertTo(TemperatureUnits.C)
+    }
 }

@@ -12,6 +12,10 @@ data class Pressure(val pressure: Float, val units: PressureUnits): Comparable<P
         return Pressure(unitService.convert(pressure, units, toUnits), toUnits)
     }
 
+    fun hpa(): Pressure {
+        return convertTo(PressureUnits.Hpa)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (other !is Pressure){
             return false
