@@ -1,6 +1,5 @@
 package com.kylecorry.trailsensecore.infrastructure.flashlight
 
-interface IFlashlight {
-    fun on()
-    fun off()
-}
+import com.kylecorry.trailsensecore.infrastructure.morse.ISignalingDevice
+
+interface IFlashlight: ISignalingDevice

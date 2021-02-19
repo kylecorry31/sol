@@ -12,6 +12,33 @@ class MorseService {
         return sos().map { it.toSignal(dotDuration) }
     }
 
+    fun fromMorse(morse: List<MorseSymbol>): String? {
+        val mapper = MorseLetterMapper()
+        val word = StringBuilder()
+        val currentLetter = mutableListOf<MorseSymbol>()
+
+        for (symbol in morse){
+            if (currentLetter.isNotEmpty() && (symbol == MorseSymbol.LetterSpace || symbol == MorseSymbol.WordSpace)){
+                val mapped = mapper.map(currentLetter) ?: return null
+                word.append(mapped)
+                currentLetter.clear()
+            } else {
+                currentLetter.add(symbol)
+            }
+
+            if (symbol == MorseSymbol.WordSpace){
+                word.append(' ')
+            }
+        }
+
+        if (currentLetter.isNotEmpty()){
+            val mapped = mapper.map(currentLetter) ?: return null
+            word.append(mapped)
+        }
+
+        return word.toString()
+    }
+
     @Suppress("RedundantNullableReturnType")
     fun toMorse(text: String): List<MorseSymbol>? {
         val letterMapper = MorseLetterMapper()

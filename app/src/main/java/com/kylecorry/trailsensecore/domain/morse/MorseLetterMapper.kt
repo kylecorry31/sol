@@ -6,6 +6,13 @@ import com.kylecorry.trailsensecore.domain.morse.MorseSymbol.Space
 
 internal class MorseLetterMapper {
 
+    fun map(morse: List<MorseSymbol>): Char? {
+        if (!letterMap.containsValue(morse)){
+            return null
+        }
+        return letterMap.filterValues { it == morse }.keys.firstOrNull()
+    }
+
     fun map(letter: Char): List<MorseSymbol>? {
         if (!letterMap.containsKey(letter.toLowerCase())) {
             return null

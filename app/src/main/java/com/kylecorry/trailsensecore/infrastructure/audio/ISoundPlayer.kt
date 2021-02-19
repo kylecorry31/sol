@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.infrastructure.audio
 
-interface ISoundPlayer {
-    fun on()
-    fun off()
+import com.kylecorry.trailsensecore.infrastructure.morse.ISignalingDevice
+
+interface ISoundPlayer: ISignalingDevice {
     fun isOn(): Boolean
     fun release()
 }

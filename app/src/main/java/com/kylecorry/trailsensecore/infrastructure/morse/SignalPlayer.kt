@@ -6,7 +6,7 @@ import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
 class SignalPlayer(private val device: ISignalingDevice) {
 
     private var intervalometer: Intervalometer? = null
-    private var isOn = false;
+    private var isOn = false
 
     fun play(signals: List<Signal>, loop: Boolean, onComplete: (() -> Any)? = null){
         cancel()
