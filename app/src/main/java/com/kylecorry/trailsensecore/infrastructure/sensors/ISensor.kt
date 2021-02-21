@@ -23,10 +23,13 @@ interface ISensor {
 fun <T: ISensor> T.asLiveData(): LiveData<T> {
     lateinit var liveData: MutableLiveData<T>
     val handler = Handler(Looper.getMainLooper())
+    val lock = Object()
 
     val callback: () -> Boolean = {
         handler.post {
-            liveData.value = this
+            synchronized(lock) {
+                liveData.value = this
+            }
         }
         true
     }

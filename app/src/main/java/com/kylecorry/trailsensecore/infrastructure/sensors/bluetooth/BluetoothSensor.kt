@@ -45,7 +45,7 @@ class BluetoothSensor(
     override val isConnected: Boolean
         get() = socket?.isConnected == true
 
-    private val _messages = mutableListOf<BluetoothMessage>()
+    private var _messages = listOf<BluetoothMessage>()
     private val handler = Handler(Looper.getMainLooper())
 
     @SuppressLint("MissingPermission")
@@ -111,10 +111,12 @@ class BluetoothSensor(
                     try {
                         val recv = reader.readLine()
                         val message = BluetoothMessage(recv, Instant.now())
-                        _messages.add(message)
-                        while (_messages.size > messageHistoryLength) {
-                            _messages.removeAt(0)
+                        val lastMessages = _messages.toMutableList()
+                        lastMessages.add(message)
+                        while (lastMessages.size > messageHistoryLength) {
+                            lastMessages.removeAt(0)
                         }
+                        _messages = lastMessages
                         handler.post { notifyListeners() }
                     } catch (e: Exception) {
                         e.printStackTrace()
