@@ -49,31 +49,8 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                     }
 
                 })
-        }
-    }
-
-
-    private val listener by lazy {
-        object : PhoneStateListener(Executors.newSingleThreadExecutor()) {
-            override fun onCellInfoChanged(cellInfo: MutableList<CellInfo>?) {
-                super.onCellInfoChanged(cellInfo)
-                cellInfo ?: return
-                updateCellInfo(cellInfo)
-            }
-
-            @SuppressLint("MissingPermission")
-            override fun onSignalStrengthsChanged(signalStrength: SignalStrength?) {
-                super.onSignalStrengthsChanged(signalStrength)
-                if (!PermissionUtils.hasPermission(
-                        context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                ) {
-                    return
-                }
-                val cells = telephony?.allCellInfo ?: return
-                updateCellInfo(cells)
-            }
+        } else {
+            updateCellInfo(telephony?.allCellInfo ?: listOf())
         }
     }
 
@@ -167,16 +144,11 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
             notifyListeners()
             return
         }
-        telephony?.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS or PhoneStateListener.LISTEN_CELL_INFO)
         updateCellInfo(telephony?.allCellInfo ?: listOf())
         intervalometer.interval(Duration.ofSeconds(5))
-
     }
 
     override fun stopImpl() {
-        try {
-            telephony?.listen(listener, PhoneStateListener.LISTEN_NONE)
-        } catch (e: Exception){}
         intervalometer.stop()
     }
 
