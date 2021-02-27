@@ -786,6 +786,180 @@ internal object Astro {
         return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
     }
 
+    fun mercuryCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(252.250906, 149474.0722491, 0.00030350, 0.000000018),
+            listOf(0.387098310),
+            listOf(0.20563175, 0.000020407, -0.0000000283, -0.00000000018),
+            listOf(7.004986, 0.00018215, -0.00001810, 0.000000056),
+            listOf(48.330893, 1.1861883, 0.00017542, 0.000000215),
+            listOf(77.456119, 1.5564776, 0.00029544, 0.000000009)
+        )
+    }
+
+    fun venusCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(181.979801, 58519.2130302, 0.00031014, 0.000000015),
+            listOf(0.723329820),
+            listOf(0.00677192, -0.000047765, 0.0000000981, 0.00000000046),
+            listOf(3.394662, 0.0010037, -0.00000088, -0.000000007),
+            listOf(76.679920, 0.9011206, 0.00040618, -0.000000093),
+            listOf(131.563703, 1.4022288, -0.00107618, -0.000005678)
+        )
+    }
+
+    fun marsCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(355.433000, 19141.6964471, 0.00031052, 0.000000016),
+            listOf(1.523679342),
+            listOf(0.09340065, 0.000090484, -0.0000000806, -0.00000000025),
+            listOf(1.849726, -0.0006011, 0.00001276, -0.000000007),
+            listOf(49.558093, 0.7720959, 0.00001557, 0.000002267),
+            listOf(336.060234, 1.8410449, 0.00013477, 0.000000536)
+        )
+    }
+
+    fun jupiterCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(34.351519, 3036.3027748, 0.00022330, 0.000000037),
+            listOf(5.202603209, 0.0000001913),
+            listOf(0.04849793, 0.000163255, -0.0000004714, -0.00000000201),
+            listOf(1.303267, -0.0054965, 0.00000466, -0.000000002),
+            listOf(100.464407, 1.0209774, 0.00040315, 0.000000404),
+            listOf(14.331207, 1.6126352, 0.00103042, -0.00000464)
+        )
+    }
+
+    fun saturnCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(50.077444, 1223.5110686, 0.00051908, -0.000000030),
+            listOf(9.554909192, -0.0000021390, 0.000000004),
+            listOf(0.05554814, -0.000346641, -0.0000006436, 0.00000000340),
+            listOf(2.488879, -0.0037362, -0.00001519, 0.000000087),
+            listOf(113.665503, 0.8770880, -0.00012176, -0.000002249),
+            listOf(93.057237, 1.9637613, 0.00083753, 0.000004928)
+        )
+    }
+
+    fun uranusCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(314.055005, 429.8640561, 0.00030390, 0.000000026),
+            listOf(19.218446062, -0.0000000372, 0.00000000098),
+            listOf(0.04638122, -0.000027293, 0.0000000789, 0.00000000024),
+            listOf(0.773197, 0.0007744, 0.00003749, -0.000000092),
+            listOf(74.005957, 0.5211278, 0.00133947, 0.000018484),
+            listOf(173.005291, 1.4863790, 0.00021406, 0.000000434)
+        )
+    }
+
+    fun neptuneCoordinates(julianDay: Double): AstroCoordinates {
+        return planetCoordinates(
+            julianDay,
+            listOf(304.348665, 219.8333092, 0.00030882, 0.000000018),
+            listOf(30.110386869, -0.0000001663, 0.00000000069),
+            listOf(0.00945575, 0.000006033, 0.0, -0.00000000005),
+            listOf(1.769953, -0.0093082, -0.00000708, 0.000000027),
+            listOf(131.784057, 1.1022039, 0.00025952, -0.000000637),
+            listOf(48.120276, 1.4262957, 0.00038434, 0.000000020)
+        )
+    }
+
+    fun planetCoordinates(
+        julianDay: Double,
+        meanLongitude: List<Double>,
+        semimajorAxis: List<Double>,
+        eccentricity: List<Double>,
+        inclination: List<Double>,
+        ascendingNodeLongitude: List<Double>,
+        perihelionLongitude: List<Double>,
+        includesSpeedOfLight: Boolean = false
+    ): AstroCoordinates {
+        val t = julianCenturies(julianDay)
+        val l = reduceAngleDegrees(polynomial(t, *meanLongitude.toDoubleArray()))
+        val a = polynomial(t, *semimajorAxis.toDoubleArray())
+        val e = polynomial(t, *eccentricity.toDoubleArray())
+        val i = wrap(polynomial(t, *inclination.toDoubleArray()), 0.0, 180.0)
+        val omega = reduceAngleDegrees(polynomial(t, *ascendingNodeLongitude.toDoubleArray()))
+        val pi = reduceAngleDegrees(polynomial(t, *perihelionLongitude.toDoubleArray()))
+        val m = reduceAngleDegrees(l - pi)
+        val w = pi - omega
+
+        val eclipticObliquity = meanObliquityOfEcliptic(julianDay)
+
+        val F = cosDegrees(omega)
+        val G = sinDegrees(omega) * cosDegrees(eclipticObliquity)
+        val H = sinDegrees(omega) * sinDegrees(eclipticObliquity)
+        val P = -sinDegrees(omega) * cosDegrees(i)
+        val Q =
+            cosDegrees(omega) * cosDegrees(i) * cosDegrees(eclipticObliquity) - sinDegrees(i) * sinDegrees(
+                eclipticObliquity
+            )
+        val R =
+            cosDegrees(omega) * cosDegrees(i) * sinDegrees(eclipticObliquity) + sinDegrees(i) * cosDegrees(
+                eclipticObliquity
+            )
+
+
+        val A = atan2(F, P).toDegrees()
+        val B = atan2(G, Q).toDegrees()
+        val C = atan2(H, R).toDegrees()
+
+        val a2 = sqrt(F * F + P * P)
+        val b2 = sqrt(G * G + Q * Q)
+        val c2 = sqrt(H * H + R * R)
+
+        var E = m
+        for (i in 0..10) {
+            E += (m + e.toDegrees() * sinDegrees(E) - E) / (1 - e * cosDegrees(E))
+        }
+        E = reduceAngleDegrees(E)
+        val v = reduceAngleDegrees(2 * atan(sqrt((1 + e) / (1 - e)) * tanDegrees(E / 2)).toDegrees())
+        val r = a * (1 - e * cosDegrees(E))
+
+        val x = r * a2 * sinDegrees(A + w + v)
+        val y = r * b2 * sinDegrees(B + w + v)
+        val z = r * c2 * sinDegrees(C + w + v)
+
+        val sunLongitude = sunGeometricLongitude(julianDay)
+        val meanObliquity = meanObliquityOfEcliptic(julianDay)
+        val sunRadius = sunRadiusVector(julianDay)
+
+        val X = sunRadius * cosDegrees(sunLongitude)
+        val Y = sunRadius * (sinDegrees(sunLongitude) * cosDegrees(meanObliquity))
+        val Z = sunRadius * (sinDegrees(sunLongitude) * sinDegrees(meanObliquity))
+
+        val xDiff = X + x
+        val yDiff = Y + y
+        val zDiff = Z + z
+
+        if (!includesSpeedOfLight){
+            val dist = Vector3(xDiff.toFloat(), yDiff.toFloat(), zDiff.toFloat()).magnitude()
+            val speedOfLight = 299792458.0
+            val secondsBefore = dist / speedOfLight
+            return planetCoordinates(
+                julianDay - secondsBefore,
+                meanLongitude,
+                semimajorAxis,
+                eccentricity,
+                inclination,
+                ascendingNodeLongitude,
+                perihelionLongitude,
+                true
+            )
+        }
+
+        val ascension = reduceAngleDegrees(atan2(yDiff, xDiff).toDegrees())
+        val declination = wrap(atan2(zDiff, sqrt(xDiff * xDiff + yDiff * yDiff)).toDegrees(), -90.0, 90.0)
+
+        return AstroCoordinates(declination, ascension)
+    }
+
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {
         val ra1 = rightAscensions.first
         val ra2 = if (rightAscensions.second < ra1){
