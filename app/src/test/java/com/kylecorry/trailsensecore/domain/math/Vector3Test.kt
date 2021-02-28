@@ -1,9 +1,8 @@
 package com.kylecorry.trailsensecore.domain.math
 
-import com.kylecorry.trailsensecore.domain.math.Vector3
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 import kotlin.math.sqrt
 
 class Vector3Test {

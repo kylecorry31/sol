@@ -9,7 +9,6 @@ import gov.nasa.worldwind.geom.Angle
 import gov.nasa.worldwind.geom.coords.MGRSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.android.parcel.Parcelize
-import java.text.NumberFormat
 import java.util.*
 import kotlin.math.*
 

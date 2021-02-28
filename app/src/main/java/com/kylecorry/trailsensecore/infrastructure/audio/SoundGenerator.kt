@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.infrastructure.audio
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
-import kotlin.math.sin
 
 class SoundGenerator {
 

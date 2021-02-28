@@ -1,9 +1,7 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.math.toDegrees
-import java.lang.Math.atan
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime

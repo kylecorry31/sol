@@ -66,8 +66,8 @@ internal object Astro {
         y2: Double,
         y3: Double
     ): Double {
-        var a = y2 - y1
-        var b = y3 - y2
+        val a = y2 - y1
+        val b = y3 - y2
         val c = b - a
 
         return y2 + (n / 2.0) * (a + b + n * c)

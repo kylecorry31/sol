@@ -1,7 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.audio
 
 import android.media.AudioTrack
-import kotlin.math.sin
 
 class WhiteNoiseGenerator {
 

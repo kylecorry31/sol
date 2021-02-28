@@ -158,19 +158,29 @@ fun power(x: Double, power: Int): Double {
 }
 
 fun String.toDoubleCompat(): Double? {
-    return try {
+    val asDouble = try {
         this.replace(",", ".").toDoubleOrNull()
     } catch (e: Exception){
         null
     }
+    asDouble ?: return null
+    if (asDouble.isNaN() || asDouble.isInfinite()) {
+        return null
+    }
+    return asDouble
 }
 
 fun String.toFloatCompat(): Float? {
-    return try {
+    val asFloat = try {
         this.replace(",", ".").toFloatOrNull()
     } catch (e: Exception){
         null
     }
+    asFloat ?: return null
+    if (asFloat.isNaN() || asFloat.isInfinite()) {
+        return null
+    }
+    return asFloat
 }
 
 fun String.toIntCompat(): Int? {

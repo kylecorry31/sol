@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.domain.physics
 import com.kylecorry.trailsensecore.domain.units.Distance
 import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import java.time.Duration
-import kotlin.math.pow
 
 class PhysicsService : IPhysicsService {
 

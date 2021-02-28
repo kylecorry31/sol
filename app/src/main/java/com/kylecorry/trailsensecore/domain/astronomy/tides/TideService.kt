@@ -2,8 +2,6 @@ package com.kylecorry.trailsensecore.domain.astronomy.tides
 
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
-import com.kylecorry.trailsensecore.domain.astronomy.tides.ITideService
-import com.kylecorry.trailsensecore.domain.astronomy.tides.Tide
 import java.time.ZonedDateTime
 
 class TideService : ITideService {

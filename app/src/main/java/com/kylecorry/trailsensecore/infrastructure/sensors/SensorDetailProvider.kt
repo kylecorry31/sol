@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.infrastructure.sensors
 import android.content.Context
 import android.hardware.Sensor
 import com.kylecorry.trailsensecore.infrastructure.flashlight.Flashlight
-import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 
 class SensorDetailProvider {

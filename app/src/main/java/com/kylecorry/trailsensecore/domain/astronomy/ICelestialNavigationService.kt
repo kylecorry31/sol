@@ -1,7 +1,5 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.geo.Bearing
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import java.time.Instant
 import java.time.LocalTime
 
