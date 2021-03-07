@@ -435,18 +435,18 @@ internal object Astro {
             getTransitTimesHelper(date.plusDays(1), coordinate, standardAltitude, withRefraction, coordinateFn)
 
         val rise = listOfNotNull(
-            yesterday.rise,
             today.rise,
+            yesterday.rise,
             tomorrow.rise
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
         val transit = listOfNotNull(
-            yesterday.transit,
             today.transit,
+            yesterday.transit,
             tomorrow.transit
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
         val set = listOfNotNull(
-            yesterday.set,
             today.set,
+            yesterday.set,
             tomorrow.set
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
 

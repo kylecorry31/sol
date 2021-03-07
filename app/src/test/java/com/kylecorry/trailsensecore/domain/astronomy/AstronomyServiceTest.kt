@@ -295,6 +295,12 @@ class AstronomyServiceTest {
                 null,
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
+            ),
+            RiseSetTransetTestInput(
+                LocalDate.of(2021, Month.FEBRUARY, 28),
+                LocalTime.of(19, 28),
+                LocalTime.of(1, 1),
+                LocalTime.of(7, 35)
             )
         )
 

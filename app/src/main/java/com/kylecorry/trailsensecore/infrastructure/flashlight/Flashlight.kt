@@ -42,31 +42,7 @@ class Flashlight(private val context: Context) : IFlashlight {
         }
 
         fun hasFlashlight(context: Context): Boolean {
-
-            try {
-                if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-                    return false
-                }
-            } catch (e: Exception) {
-                // Could not check the package manager - do nothing
-            }
-
-            try {
-                val cs = getCameraManager(context)
-                val rearCamera = getRearCameraId(context)
-                if (rearCamera.isEmpty() || cs == null) {
-                    return false
-                }
-
-                val hasFlash = cs.getCameraCharacteristics(rearCamera)
-                    .get(CameraCharacteristics.FLASH_INFO_AVAILABLE)
-                val facing = cs.getCameraCharacteristics(rearCamera)
-                    .get(CameraCharacteristics.LENS_FACING)
-
-                return hasFlash != null && hasFlash && facing != null && facing == CameraMetadata.LENS_FACING_BACK
-            } catch (e: Exception) {
-                return false
-            }
+            return HasFlashlightSpecification().isSatisfiedBy(context)
         }
 
         private fun getRearCameraId(context: Context): String {
