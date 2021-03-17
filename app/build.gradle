@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 group = 'com.kylecorry'
-version = '2.9.2'
+version = '2.10.0'
 
 android {
     compileSdkVersion 30
@@ -12,7 +12,7 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 36
+        versionCode 37
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
