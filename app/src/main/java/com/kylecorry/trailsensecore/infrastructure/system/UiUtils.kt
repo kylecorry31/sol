@@ -1,17 +1,22 @@
 package com.kylecorry.trailsensecore.infrastructure.system
 
 import android.R
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.annotation.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import java.time.LocalDate
+import java.time.LocalTime
 
 
 object UiUtils {
@@ -216,6 +221,50 @@ object UiUtils {
         theme.resolveAttribute(attrRes, typedValue, true)
         val colorRes = if (typedValue.resourceId != 0) typedValue.resourceId else typedValue.data
         return ContextCompat.getColor(context, colorRes)
+    }
+
+
+    fun pickTime(
+        context: Context,
+        use24Hours: Boolean,
+        default: LocalTime = LocalTime.now(),
+        onTimePick: (time: LocalTime?) -> Unit
+    ) {
+        val timePickerDialog = TimePickerDialog(
+            context,
+            { timePicker: TimePicker, hour: Int, minute: Int ->
+                val time = LocalTime.of(hour, minute)
+                onTimePick.invoke(time)
+            },
+            default.hour,
+            default.minute,
+            use24Hours
+        )
+        timePickerDialog.setOnCancelListener {
+            onTimePick.invoke(null)
+        }
+        timePickerDialog.show()
+    }
+
+    fun pickDate(
+        context: Context,
+        default: LocalDate = LocalDate.now(),
+        onDatePick: (date: LocalDate?) -> Unit
+    ) {
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { view, year, month, dayOfMonth ->
+                val date = LocalDate.of(year, month + 1, dayOfMonth)
+                onDatePick.invoke(date)
+            },
+            default.year,
+            default.monthValue - 1,
+            default.dayOfMonth
+        )
+        datePickerDialog.setOnCancelListener {
+            onDatePick.invoke(null)
+        }
+        datePickerDialog.show()
     }
 
 }
