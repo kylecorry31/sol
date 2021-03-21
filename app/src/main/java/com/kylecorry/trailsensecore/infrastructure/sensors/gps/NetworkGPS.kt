@@ -8,7 +8,10 @@ import android.location.LocationManager
 import android.os.Looper
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.units.Quality
+import com.kylecorry.trailsensecore.domain.units.Speed
+import com.kylecorry.trailsensecore.domain.units.TimeUnits
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import java.time.Duration
@@ -36,8 +39,8 @@ class NetworkGPS(private val context: Context) : AbstractSensor(), IGPS {
     override val location: Coordinate
         get() = _location
 
-    override val speed: Float
-        get() = _speed
+    override val speed: Speed
+        get() = Speed(_speed, DistanceUnits.Meters, TimeUnits.Seconds)
 
     override val time: Instant
         get() = _time
