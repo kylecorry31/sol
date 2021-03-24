@@ -4,6 +4,7 @@ import android.location.Location
 import android.os.Parcelable
 import com.kylecorry.trailsensecore.domain.astronomy.Astro.power
 import com.kylecorry.trailsensecore.domain.math.*
+import com.kylecorry.trailsensecore.domain.units.Distance
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
 import gov.nasa.worldwind.geom.coords.MGRSCoord
@@ -24,6 +25,10 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         val results = FloatArray(3)
         Location.distanceBetween(latitude, longitude, other.latitude, other.longitude, results)
         return results[0]
+    }
+
+    fun plus(distance: Distance, bearing: Bearing): Coordinate {
+        return plus(distance.meters().distance.toDouble(), bearing)
     }
 
     fun plus(meters: Double, bearing: Bearing): Coordinate {
