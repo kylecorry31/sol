@@ -5,6 +5,7 @@ import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.geo.CompassDirection
 import com.kylecorry.trailsensecore.domain.time.DateUtils
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.max
 
@@ -272,6 +273,10 @@ class AstronomyService : IAstronomyService {
         return Bearing(
             Astro.azimuth(hourAngle, location.latitude, coords.declination).toFloat()
         )
+    }
+
+    override fun getMeteorShower(date: ZonedDateTime): MeteorShower? {
+        return MeteorShower.values().firstOrNull { it.peak.toLocalDate() == date.toLocalDate() }
     }
 
     private fun getCoordinateMethod(celestialObject: CelestialObject): (julianDate: Double) -> AstroCoordinates {

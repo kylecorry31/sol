@@ -3,9 +3,13 @@ package com.kylecorry.trailsensecore.infrastructure.system
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
+import androidx.annotation.DrawableRes
+import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
+import androidx.core.graphics.drawable.toBitmap
 
 object NotificationUtils {
 
@@ -60,6 +64,7 @@ object NotificationUtils {
             this.description = description
             if (muteSound) {
                 setSound(null, null)
+                enableVibration(false)
             }
         }
         getNotificationManager(context)?.createNotificationChannel(channel)
@@ -67,6 +72,187 @@ object NotificationUtils {
 
     private fun getNotificationManager(context: Context): NotificationManager? {
         return context.getSystemService()
+    }
+
+    /**
+     * Used for alerts which require the user's attention
+     */
+    fun alert(
+        context: Context,
+        channel: String,
+        title: String,
+        contents: String?,
+        @DrawableRes icon: Int,
+        autoCancel: Boolean = false,
+        alertOnlyOnce: Boolean = false,
+        showBigIcon: Boolean = false,
+        group: String? = null,
+        intent: PendingIntent? = null,
+        actions: List<NotificationCompat.Action> = listOf()
+    ): Notification {
+
+        val builder = NotificationCompat.Builder(context, channel)
+            .setContentTitle(title)
+            .setSmallIcon(icon)
+            .setAutoCancel(autoCancel)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setOnlyAlertOnce(alertOnlyOnce)
+
+        if (contents != null){
+            builder.setContentText(contents)
+        }
+
+        if (showBigIcon) {
+            val drawable = UiUtils.drawable(context, icon)
+            val bitmap = drawable?.toBitmap()
+            builder.setLargeIcon(bitmap)
+        }
+
+        if (group != null) {
+            builder.setGroup(group)
+        }
+
+        if (intent != null) {
+            builder.setContentIntent(intent)
+        }
+
+        for (action in actions) {
+            builder.addAction(action)
+        }
+
+        return builder.build()
+    }
+
+    /**
+     * Used to convey a status message
+     *
+     * Basically alerts that don't require the user's immediate attention
+     */
+    fun status(
+        context: Context,
+        channel: String,
+        title: String,
+        contents: String?,
+        @DrawableRes icon: Int,
+        autoCancel: Boolean = false,
+        alertOnlyOnce: Boolean = false,
+        showBigIcon: Boolean = false,
+        group: String? = null,
+        intent: PendingIntent? = null,
+        actions: List<NotificationCompat.Action> = listOf()
+    ): Notification {
+        val builder = NotificationCompat.Builder(context, channel)
+            .setContentTitle(title)
+            .setSmallIcon(icon)
+            .setAutoCancel(autoCancel)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setNotificationSilent()
+            .setOnlyAlertOnce(alertOnlyOnce)
+
+        if (contents != null){
+            builder.setContentText(contents)
+        }
+
+        if (showBigIcon) {
+            val drawable = UiUtils.drawable(context, icon)
+            val bitmap = drawable?.toBitmap()
+            builder.setLargeIcon(bitmap)
+        }
+
+        if (group != null) {
+            builder.setGroup(group)
+        }
+
+        if (intent != null) {
+            builder.setContentIntent(intent)
+        }
+
+        for (action in actions) {
+            builder.addAction(action)
+        }
+
+        return builder.build()
+    }
+
+
+    /**
+     * Used for notifications connected to a process which give the user useful information
+     */
+    fun persistent(
+        context: Context,
+        channel: String,
+        title: String,
+        contents: String?,
+        @DrawableRes icon: Int,
+        autoCancel: Boolean = false,
+        alertOnlyOnce: Boolean = true,
+        showBigIcon: Boolean = false,
+        group: String? = null,
+        intent: PendingIntent? = null,
+        actions: List<NotificationCompat.Action> = listOf()
+    ): Notification {
+        val builder = NotificationCompat.Builder(context, channel)
+            .setContentTitle(title)
+            .setSmallIcon(icon)
+            .setAutoCancel(autoCancel)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setNotificationSilent()
+            .setOnlyAlertOnce(alertOnlyOnce)
+
+        if (contents != null){
+            builder.setContentText(contents)
+        }
+
+        if (showBigIcon) {
+            val drawable = UiUtils.drawable(context, icon)
+            val bitmap = drawable?.toBitmap()
+            builder.setLargeIcon(bitmap)
+        }
+
+        if (group != null) {
+            builder.setGroup(group)
+        }
+
+        if (intent != null) {
+            builder.setContentIntent(intent)
+        }
+
+        for (action in actions) {
+            builder.addAction(action)
+        }
+
+        return builder.build()
+    }
+
+    /**
+     * Used for notifications which are connected to a process (aka required) but the user doesn't care about them
+     */
+    fun background(
+        context: Context,
+        channel: String,
+        title: String,
+        contents: String?,
+        @DrawableRes icon: Int
+    ): Notification {
+        val builder = NotificationCompat.Builder(context, channel)
+            .setContentTitle(title)
+            .setSmallIcon(icon)
+            .setAutoCancel(false)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setNotificationSilent()
+            .setOnlyAlertOnce(true)
+
+        if (contents != null){
+            builder.setContentText(contents)
+        }
+
+        return builder.build()
+    }
+
+    fun action(name: String, intent: PendingIntent, @DrawableRes icon: Int? = null): NotificationCompat.Action {
+        return NotificationCompat.Action(icon ?: 0, name, intent)
     }
 
 }
