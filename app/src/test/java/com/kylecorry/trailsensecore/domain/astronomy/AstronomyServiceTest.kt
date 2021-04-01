@@ -3,6 +3,7 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.time.Season
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.parametrized
 import org.junit.Assert.*
@@ -550,6 +551,72 @@ class AstronomyServiceTest {
                 ), ny
             )
         )
+    }
+
+    @Test
+    fun getMeteorShower(){
+        val service = AstronomyService()
+        val location = Coordinate(40.7128, -74.0060)
+
+        listOf<Pair<MeteorShower?, LocalDate>>(
+            MeteorShower.Quadrantids to LocalDate.of(2021, 1, 3),
+            MeteorShower.Lyrids to LocalDate.of(2021, 4, 22),
+            MeteorShower.EtaAquariids to LocalDate.of(2021, 5, 6),
+            MeteorShower.DeltaAquariids to LocalDate.of(2021, 7, 30),
+            MeteorShower.Perseids to LocalDate.of(2021, 8, 12),
+            MeteorShower.Orionids to LocalDate.of(2021, 10, 20),
+            MeteorShower.Leonids to LocalDate.of(2021, 11, 18),
+            MeteorShower.Geminids to LocalDate.of(2021, 12, 14),
+            MeteorShower.Ursids to LocalDate.of(2021, 12, 21),
+            null to LocalDate.of(2021, 1, 1)
+        ).forEach {
+            val shower = service.getMeteorShower(location, getDate(LocalDateTime.of(it.second, LocalTime.MIN)))
+            assertEquals(it.first, shower?.shower)
+        }
+    }
+
+    @Test
+    fun getAstronomicalSeasonNorthern(){
+        val service = AstronomyService()
+        val location = Coordinate(40.7128, -74.0060)
+
+        listOf<Pair<Season, LocalDate>>(
+            Season.Winter to LocalDate.of(2021, 1, 1),
+            Season.Winter to LocalDate.of(2021, 3, 19),
+            Season.Spring to LocalDate.of(2021, 3, 20),
+            Season.Spring to LocalDate.of(2021, 6, 19),
+            Season.Summer to LocalDate.of(2021, 6, 20),
+            Season.Summer to LocalDate.of(2021, 9, 21),
+            Season.Fall to LocalDate.of(2021, 9, 22),
+            Season.Fall to LocalDate.of(2021, 12, 20),
+            Season.Winter to LocalDate.of(2021, 12, 21),
+            Season.Winter to LocalDate.of(2021, 12, 31),
+        ).forEach {
+            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MIN)))
+            assertEquals(it.first, season)
+        }
+    }
+
+    @Test
+    fun getAstronomicalSeasonSouthern(){
+        val service = AstronomyService()
+        val location = Coordinate(-40.7128, -74.0060)
+
+        listOf<Pair<Season, LocalDate>>(
+            Season.Summer to LocalDate.of(2021, 1, 1),
+            Season.Summer to LocalDate.of(2021, 3, 19),
+            Season.Fall to LocalDate.of(2021, 3, 20),
+            Season.Fall to LocalDate.of(2021, 6, 19),
+            Season.Winter to LocalDate.of(2021, 6, 20),
+            Season.Winter to LocalDate.of(2021, 9, 21),
+            Season.Spring to LocalDate.of(2021, 9, 22),
+            Season.Spring to LocalDate.of(2021, 12, 20),
+            Season.Summer to LocalDate.of(2021, 12, 21),
+            Season.Summer to LocalDate.of(2021, 12, 31),
+        ).forEach {
+            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MIN)))
+            assertEquals(it.first, season)
+        }
     }
 
     @Test

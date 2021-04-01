@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
-import java.time.LocalDate
+import com.kylecorry.trailsensecore.domain.time.Season
 import java.time.ZonedDateTime
 
 interface IAstronomyService {
@@ -55,6 +55,9 @@ interface IAstronomyService {
     fun getCelestialObjectAzimuth(body: CelestialObject, time: ZonedDateTime, location: Coordinate): Bearing
 
     // Meteor showers
-    fun getMeteorShower(date: ZonedDateTime): MeteorShower?
+    fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak?
+
+    // Seasons
+    fun getAstronomicalSeason(location: Coordinate, date: ZonedDateTime): Season
 
 }

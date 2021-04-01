@@ -17,6 +17,8 @@ import kotlin.math.*
 @Parcelize
 data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable {
 
+    val isNorthernHemisphere = latitude > 0
+
     override fun toString(): String {
         return toDecimalDegrees()
     }

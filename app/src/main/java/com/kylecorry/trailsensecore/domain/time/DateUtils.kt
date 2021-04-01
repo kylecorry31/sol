@@ -21,6 +21,13 @@ internal object DateUtils {
             .minByOrNull { Duration.between(it, currentTime).abs() }
     }
 
+    fun getClosestTime(
+        currentTime: ZonedDateTime,
+        times: List<ZonedDateTime?>
+    ): ZonedDateTime? {
+        return times.filterNotNull().minByOrNull { Duration.between(it, currentTime).abs() }
+    }
+
     fun getClosestFutureTime(
         currentTime: ZonedDateTime,
         times: List<ZonedDateTime?>

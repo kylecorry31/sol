@@ -1,11 +1,12 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.math.deltaAngle
+import com.kylecorry.trailsensecore.domain.time.DateUtils
 import org.junit.Assert.*
 import org.junit.Test
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
+import kotlin.math.absoluteValue
 
 class AstroTest {
 
@@ -250,4 +251,6 @@ class AstroTest {
         assertEquals(13.768368, coords.declination, 0.001)
         assertEquals(134.688470, coords.rightAscension, 0.001)
     }
+
+
 }

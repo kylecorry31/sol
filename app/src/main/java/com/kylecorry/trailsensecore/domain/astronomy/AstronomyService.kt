@@ -4,9 +4,14 @@ import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.geo.CompassDirection
+import com.kylecorry.trailsensecore.domain.math.deltaAngle
+import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.time.DateUtils
-import java.time.LocalDate
+import com.kylecorry.trailsensecore.domain.time.Season
+import java.time.LocalTime
 import java.time.ZonedDateTime
+import kotlin.math.absoluteValue
+import kotlin.math.ceil
 import kotlin.math.max
 
 class AstronomyService : IAstronomyService {
@@ -275,8 +280,130 @@ class AstronomyService : IAstronomyService {
         )
     }
 
-    override fun getMeteorShower(date: ZonedDateTime): MeteorShower? {
-        return MeteorShower.values().firstOrNull { it.peak.toLocalDate() == date.toLocalDate() }
+    override fun getAstronomicalSeason(location: Coordinate, date: ZonedDateTime): Season {
+        val sl = ceil(getSolarLongitude(date)).toInt()
+        val rounded = (sl - (sl % 90)) % 360
+        val lastOrbitalPosition = OrbitalPosition.values().first { it.solarLongitude == rounded }
+        return when (lastOrbitalPosition){
+            OrbitalPosition.WinterSolstice -> if (location.isNorthernHemisphere) Season.Winter else Season.Summer
+            OrbitalPosition.VernalEquinox -> if (location.isNorthernHemisphere) Season.Spring else Season.Fall
+            OrbitalPosition.SummerSolstice -> if (location.isNorthernHemisphere) Season.Summer else Season.Winter
+            OrbitalPosition.AutumnalEquinox -> if (location.isNorthernHemisphere) Season.Fall else Season.Spring
+        }
+    }
+
+    override fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {
+        val startOfDay = ZonedDateTime.of(date.toLocalDate(), LocalTime.MIN, date.zone)
+
+        val solarLongitude = getSolarLongitude(date)
+
+        for (shower in MeteorShower.values()){
+            if (deltaAngle(solarLongitude, shower.solarLongitude).absoluteValue > 1){
+                continue
+            }
+
+            val peak = getNextMeteorShowerPeak(shower, location, startOfDay)
+
+            if (peak?.toLocalDate() == date.toLocalDate()){
+                return MeteorShowerPeak(shower, peak!!)
+            }
+        }
+
+        return null
+    }
+
+    private fun getNextMeteorShowerPeak(shower: MeteorShower, location: Coordinate, now: ZonedDateTime): ZonedDateTime? {
+        val time = getNextTimeAtSolarLongitude(shower.solarLongitude, now)
+        val today = getMeteorShowerTimes(shower, location, time)
+        val yesterday = getMeteorShowerTimes(shower, location, time.plusDays(1))
+        val tomorrow = getMeteorShowerTimes(shower, location, time.minusDays(1))
+
+        val closest = DateUtils.getClosestTime(time, listOf(today.transit, yesterday.transit, tomorrow.transit))
+
+        if (closest == null && isMeteorShowerVisible(shower, location, time)){
+            // Doesn't set
+            val sun = getSunEvents(time, location, SunTimesMode.Astronomical)
+            return if (!isSunUp(time, location, false)){
+                time
+            } else if (sun.rise != null && isMeteorShowerVisible(shower, location, sun.rise.minusHours(1))){
+                sun.rise.minusHours(1)
+            } else {
+                null
+            }
+        } else if (closest != null) {
+            // Sets, use the transit point
+            val sun = getSunEvents(closest, location, SunTimesMode.Astronomical)
+            return if (!isSunUp(closest, location, false)){
+                closest
+            } else if (sun.rise != null && isMeteorShowerVisible(shower, location, sun.rise.minusHours(1))){
+                sun.rise.minusHours(1)
+            } else {
+                null
+            }
+        }
+
+        return null
+    }
+
+    private fun isMeteorShowerVisible(shower: MeteorShower, location: Coordinate, time: ZonedDateTime): Boolean {
+        val showerAltitude = getMeteorShowerAltitude(shower, location, time)
+        return showerAltitude > 0
+    }
+
+    private fun getMeteorShowerTimes(shower: MeteorShower, location: Coordinate, date: ZonedDateTime): RiseSetTransitTimes {
+        return Astro.getTransitEvents(
+            date,
+            location,
+            0.0,
+            false
+        ) {
+            shower.radiant
+        }
+    }
+
+    private fun getMeteorShowerAltitude(shower: MeteorShower, location: Coordinate, time: ZonedDateTime): Float {
+        val ut = Astro.ut(time)
+        val jd = Astro.julianDay(ut)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            shower.radiant.rightAscension
+        )
+        return Astro.altitude(
+            hourAngle,
+            location.latitude,
+            shower.radiant.declination,
+            false
+        )
+            .toFloat()
+    }
+
+    private fun getNextTimeAtSolarLongitude(longitude: Float, today: ZonedDateTime): ZonedDateTime {
+        val threshold = 1f
+        var d = today
+        for (i in 0..365){
+            val date = today.plusDays(i.toLong())
+            val sl = getSolarLongitude(date)
+            if (deltaAngle(	longitude, sl).absoluteValue < threshold){
+                d = date
+                break
+            }
+        }
+
+        var jd = Astro.julianDay(Astro.ut(d))
+        var correction: Double
+
+        do {
+            correction = 58 * sinDegrees(longitude - Astro.sunTrueLongitude(jd))
+            jd += correction
+        } while (correction > 0.00001)
+
+        return Astro.utToLocal(Astro.utFromJulianDay(jd), today.zone)
+    }
+
+    private fun getSolarLongitude(date: ZonedDateTime): Float {
+        val jd = Astro.julianDay(Astro.ut(date))
+        return Astro.sunTrueLongitude(jd).toFloat()
     }
 
     private fun getCoordinateMethod(celestialObject: CelestialObject): (julianDate: Double) -> AstroCoordinates {
@@ -292,6 +419,5 @@ class AstronomyService : IAstronomyService {
             CelestialObject.Neptune -> Astro::neptuneCoordinates
         }
     }
-
 
 }

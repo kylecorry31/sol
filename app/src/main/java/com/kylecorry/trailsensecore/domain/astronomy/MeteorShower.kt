@@ -1,48 +1,17 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
-enum class MeteorShower(val peak: LocalDateTime, val rate: Int) {
-    Quadrantids(
-        LocalDateTime.of(2021, 1, 3, 5, 0),
-        120
-    ),
-    Lyrids(
-        LocalDateTime.of(2021, 4, 22, 4, 0),
-        18
-    ),
-    EtaAquariids(
-        LocalDateTime.of(2021, 5, 5, 4, 0),
-        60
-    ),
-    DeltaAquariids(
-        LocalDateTime.of(2021, 7, 30, 3, 0),
-        20
-    ),
-    Perseids(
-        LocalDateTime.of(2021, 8, 12, 4, 0),
-        100
-    ),
-    Orionids(
-        LocalDateTime.of(2021, 10, 21, 5, 0),
-        23
-    ),
-    Leonids(
-        LocalDateTime.of(2021, 11, 18, 5, 0),
-        15
-    ),
-    Geminids(
-        LocalDateTime.of(2021, 12, 14, 1, 0),
-        120
-    ),
-    Ursids(
-        LocalDateTime.of(2021, 12, 22, 5, 0),
-        10
-    ),
+enum class MeteorShower(val solarLongitude: Float, val radiant: AstroCoordinates, val rate: Int) {
+    Quadrantids(283.3f, AstroCoordinates(49.7, Astro.timeToAngle(15, 20, 0)), 120),
+    Lyrids(32.5f, AstroCoordinates(33.3, Astro.timeToAngle(18, 10, 0)), 18),
+    EtaAquariids(46.2f, AstroCoordinates(-1.1, Astro.timeToAngle(22, 30, 0)), 60),
+    DeltaAquariids(126.9f, AstroCoordinates(-16.4, Astro.timeToAngle(22, 42, 0)), 20),
+    Perseids(140.0f, AstroCoordinates(58.0, Astro.timeToAngle(3, 13, 0)), 100),
+    Orionids(207.5f, AstroCoordinates(15.6, Astro.timeToAngle(6, 19, 0)), 23),
+    Leonids(236.0f, AstroCoordinates(21.6, Astro.timeToAngle(10, 16, 0)), 15),
+    Geminids(262.5f, AstroCoordinates(32.2, Astro.timeToAngle(7, 36, 0)), 120),
+    Ursids(270.5f, AstroCoordinates(75.3, Astro.timeToAngle(14, 36, 0)), 10)
 }
 
-
-// Get meteor showers for today
-// Determine when radiant is above horizon (if already above horizon, go backwards to when it rises)
-// Visibility = Radiant rise to dawn
-// Direction = Get bearing to radiant at the halfway point and convert to compass direction
+data class MeteorShowerPeak(val shower: MeteorShower, val peak: ZonedDateTime)

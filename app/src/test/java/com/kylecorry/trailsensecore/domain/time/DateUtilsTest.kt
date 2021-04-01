@@ -5,6 +5,8 @@ import org.junit.Test
 import org.junit.Assert.*
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class DateUtilsTest {
 
@@ -22,6 +24,23 @@ class DateUtilsTest {
 
         assertEquals(dt(2020, Month.JANUARY, 10, 1), actual)
     }
+
+    @Test
+    fun canGetClosestTime() {
+        val now = zdt(2020, Month.JANUARY, 10, 2)
+        val times = listOf(
+            zdt(2020, Month.JANUARY, 10, 0),
+            zdt(2020, Month.JANUARY, 11, 0),
+            zdt(2020, Month.JANUARY, 10, 1),
+            zdt(2020, Month.JANUARY, 10, 2, 30),
+            null
+        )
+
+        val actual = DateUtils.getClosestTime(now, times)
+
+        assertEquals(zdt(2020, Month.JANUARY, 10, 2, 30), actual)
+    }
+
 
     @Test
     fun canGetClosestFutureTime() {
@@ -70,5 +89,9 @@ class DateUtilsTest {
 
     private fun dt(year: Int, month: Month, day: Int, hour: Int, minute: Int = 0): LocalDateTime {
         return LocalDateTime.of(year, month, day, hour, minute)
+    }
+
+    private fun zdt(year: Int, month: Month, day: Int, hour: Int, minute: Int = 0, zone: ZoneId = ZoneId.systemDefault()): ZonedDateTime {
+        return ZonedDateTime.of(dt(year, month, day, hour, minute), zone)
     }
 }

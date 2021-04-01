@@ -10,6 +10,13 @@ import java.util.stream.Stream
 class CoordinateTest {
 
     @Test
+    fun isNorthernHemisphere(){
+        Assert.assertTrue(Coordinate(1.0, 0.0).isNorthernHemisphere)
+        Assert.assertFalse(Coordinate(-1.0, 0.0).isNorthernHemisphere)
+        Assert.assertFalse(Coordinate(0.0, 0.0).isNorthernHemisphere)
+    }
+
+    @Test
     fun toUTM() {
         Assert.assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM())
         Assert.assertEquals("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939).toUTM())
