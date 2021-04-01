@@ -592,7 +592,7 @@ class AstronomyServiceTest {
             Season.Winter to LocalDate.of(2021, 12, 21),
             Season.Winter to LocalDate.of(2021, 12, 31),
         ).forEach {
-            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MIN)))
+            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MAX)))
             assertEquals(it.first, season)
         }
     }
@@ -614,7 +614,7 @@ class AstronomyServiceTest {
             Season.Summer to LocalDate.of(2021, 12, 21),
             Season.Summer to LocalDate.of(2021, 12, 31),
         ).forEach {
-            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MIN)))
+            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MAX)))
             assertEquals(it.first, season)
         }
     }

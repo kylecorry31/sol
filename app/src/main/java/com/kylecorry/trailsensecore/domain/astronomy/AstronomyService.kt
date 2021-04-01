@@ -6,6 +6,7 @@ import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.geo.CompassDirection
 import com.kylecorry.trailsensecore.domain.math.deltaAngle
 import com.kylecorry.trailsensecore.domain.math.sinDegrees
+import com.kylecorry.trailsensecore.domain.math.wrap
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import com.kylecorry.trailsensecore.domain.time.Season
 import java.time.LocalTime
@@ -281,14 +282,12 @@ class AstronomyService : IAstronomyService {
     }
 
     override fun getAstronomicalSeason(location: Coordinate, date: ZonedDateTime): Season {
-        val sl = ceil(getSolarLongitude(date)).toInt()
-        val rounded = (sl - (sl % 90)) % 360
-        val lastOrbitalPosition = OrbitalPosition.values().first { it.solarLongitude == rounded }
-        return when (lastOrbitalPosition){
-            OrbitalPosition.WinterSolstice -> if (location.isNorthernHemisphere) Season.Winter else Season.Summer
-            OrbitalPosition.VernalEquinox -> if (location.isNorthernHemisphere) Season.Spring else Season.Fall
-            OrbitalPosition.SummerSolstice -> if (location.isNorthernHemisphere) Season.Summer else Season.Winter
-            OrbitalPosition.AutumnalEquinox -> if (location.isNorthernHemisphere) Season.Fall else Season.Spring
+        val sl = wrap(getSolarLongitude(date), 0f, 360f)
+        return when {
+            sl >= OrbitalPosition.WinterSolstice.solarLongitude -> if (location.isNorthernHemisphere) Season.Winter else Season.Summer
+            sl >= OrbitalPosition.AutumnalEquinox.solarLongitude -> if (location.isNorthernHemisphere) Season.Fall else Season.Spring
+            sl >= OrbitalPosition.SummerSolstice.solarLongitude -> if (location.isNorthernHemisphere) Season.Summer else Season.Winter
+            else -> if (location.isNorthernHemisphere) Season.Spring else Season.Fall
         }
     }
 
