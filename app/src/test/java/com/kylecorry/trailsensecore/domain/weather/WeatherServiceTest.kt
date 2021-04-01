@@ -1,11 +1,14 @@
 package com.kylecorry.trailsensecore.domain.weather
 
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.time.Season
+import org.junit.Assert
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.time.Instant
+import java.time.*
 import java.util.stream.Stream
 
 class WeatherServiceTest {
@@ -65,6 +68,13 @@ class WeatherServiceTest {
     fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float){
         val distance = weatherService.getLightningStrikeDistance(lightning, thunder)
         assertEquals(expected, distance, 0.5f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSeasons")
+    fun seasons(expected: Season, isNorth: Boolean, date: LocalDate){
+        val season = weatherService.getMeteorologicalSeason(Coordinate(if (isNorth) 1.0 else -1.0, 0.0), ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault()))
+        Assert.assertEquals(expected, season)
     }
 
     @Test
@@ -245,6 +255,33 @@ class WeatherServiceTest {
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(10), 3430f),
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(0), 0f),
                 Arguments.of(Instant.ofEpochSecond(1), Instant.ofEpochSecond(0), 0f),
+            )
+        }
+
+        @JvmStatic
+        fun provideSeasons(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(Season.Summer, false, LocalDate.of(2021, 1, 1)),
+                Arguments.of(Season.Summer, false, LocalDate.of(2021, 2, 28)),
+                Arguments.of(Season.Fall, false, LocalDate.of(2021, 3, 1)),
+                Arguments.of(Season.Fall, false, LocalDate.of(2021, 5, 31)),
+                Arguments.of(Season.Winter, false, LocalDate.of(2021, 6, 1)),
+                Arguments.of(Season.Winter, false, LocalDate.of(2021, 8, 31)),
+                Arguments.of(Season.Spring, false, LocalDate.of(2021, 9, 1)),
+                Arguments.of(Season.Spring, false, LocalDate.of(2021, 11, 30)),
+                Arguments.of(Season.Summer, false, LocalDate.of(2021, 12, 1)),
+                Arguments.of(Season.Summer, false, LocalDate.of(2021, 12, 31)),
+
+                Arguments.of(Season.Winter, true, LocalDate.of(2021, 1, 1)),
+                Arguments.of(Season.Winter, true, LocalDate.of(2021, 2, 28)),
+                Arguments.of(Season.Spring, true, LocalDate.of(2021, 3, 1)),
+                Arguments.of(Season.Spring, true, LocalDate.of(2021, 5, 31)),
+                Arguments.of(Season.Summer, true, LocalDate.of(2021, 6, 1)),
+                Arguments.of(Season.Summer, true, LocalDate.of(2021, 8, 31)),
+                Arguments.of(Season.Fall, true, LocalDate.of(2021, 9, 1)),
+                Arguments.of(Season.Fall, true, LocalDate.of(2021, 11, 30)),
+                Arguments.of(Season.Winter, true, LocalDate.of(2021, 12, 1)),
+                Arguments.of(Season.Winter, true, LocalDate.of(2021, 12, 31)),
             )
         }
     }

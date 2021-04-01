@@ -1,9 +1,12 @@
 package com.kylecorry.trailsensecore.domain.weather
 
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.time.Season
 import com.kylecorry.trailsensecore.domain.weather.clouds.*
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.ln
 
@@ -128,6 +131,18 @@ class WeatherService : IWeatherService {
             return null
         }
         return (temp0 * temp2 - temp1 * temp1) / (temp0 + temp2 - 2 * temp1)
+    }
+
+    override fun getMeteorologicalSeason(location: Coordinate, date: ZonedDateTime): Season {
+        val north = location.isNorthernHemisphere
+        val d = date.toLocalDate()
+        return when {
+            d >= LocalDate.of(d.year, 12, 1) -> if (north) Season.Winter else Season.Summer
+            d >= LocalDate.of(d.year, 9, 1) -> if (north) Season.Fall else Season.Spring
+            d >= LocalDate.of(d.year, 6, 1) -> if (north) Season.Summer else Season.Winter
+            d >= LocalDate.of(d.year, 3, 1) -> if (north) Season.Spring else Season.Fall
+            else -> if (north) Season.Winter else Season.Summer
+        }
     }
 
     override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {
