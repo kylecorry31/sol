@@ -655,8 +655,8 @@ class AstronomyServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideDayLengths")
-    fun getDayLength(date: ZonedDateTime, location: Coordinate, expected: Duration){
-        val length = service.getLengthOfDay(date, location)
+    fun getDaylightLength(date: ZonedDateTime, location: Coordinate, expected: Duration){
+        val length = service.getDaylightLength(date, location)
         assertDuration(expected, length, Duration.ofSeconds(30))
     }
 

@@ -14,7 +14,6 @@ import java.time.Duration
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
-import kotlin.math.ceil
 import kotlin.math.max
 
 class AstronomyService : IAstronomyService {
@@ -107,7 +106,7 @@ class AstronomyService : IAstronomyService {
         return getSunAltitude(time, location, withRefraction) > 0
     }
 
-    override fun getLengthOfDay(date: ZonedDateTime, location: Coordinate): Duration {
+    override fun getDaylightLength(date: ZonedDateTime, location: Coordinate): Duration {
         val startOfDay = date.atStartOfDay()
         val sunrise = getNextSunrise(startOfDay, location)
         val sunset = getNextSunset(startOfDay, location)
