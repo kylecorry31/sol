@@ -4,6 +4,7 @@ import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.time.Season
+import java.time.Duration
 import java.time.ZonedDateTime
 
 interface IAstronomyService {
@@ -34,6 +35,8 @@ interface IAstronomyService {
     ): ZonedDateTime?
 
     fun isSunUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
+
+    fun getLengthOfDay(date: ZonedDateTime, location: Coordinate): Duration
 
     // SOLAR PANELS
     fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition

@@ -9,6 +9,8 @@ import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.wrap
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import com.kylecorry.trailsensecore.domain.time.Season
+import com.kylecorry.trailsensecore.domain.time.atStartOfDay
+import java.time.Duration
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
@@ -103,6 +105,29 @@ class AstronomyService : IAstronomyService {
         withRefraction: Boolean
     ): Boolean {
         return getSunAltitude(time, location, withRefraction) > 0
+    }
+
+    override fun getLengthOfDay(date: ZonedDateTime, location: Coordinate): Duration {
+        val startOfDay = date.atStartOfDay()
+        val sunrise = getNextSunrise(startOfDay, location)
+        val sunset = getNextSunset(startOfDay, location)
+
+        if (sunrise != null && sunset != null && sunset > sunrise){
+            // Rise in morning, set at night
+            return Duration.between(sunrise, sunset)
+        } else if (sunrise == null && sunset == null){
+            // Sun doesn't rise or set
+            return if (isSunUp(startOfDay, location)) Duration.between(startOfDay, startOfDay.plusDays(1)) else Duration.ZERO
+        } else if (sunrise != null && sunset == null) {
+            // Sun rises but doesn't set
+            return Duration.between(sunrise, startOfDay.plusDays(1))
+        } else if (sunset != null && sunrise == null){
+            // Sun sets but doesn't rise
+            return Duration.between(startOfDay, sunset)
+        } else {
+            // Sun sets in morning, rises at night
+            return Duration.between(startOfDay, sunset).plus(Duration.between(sunrise, startOfDay.plusDays(1)))
+        }
     }
 
 

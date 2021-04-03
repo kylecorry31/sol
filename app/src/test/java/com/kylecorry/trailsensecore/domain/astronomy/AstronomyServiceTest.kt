@@ -4,11 +4,17 @@ import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.time.Season
+import com.kylecorry.trailsensecore.domain.time.duration
 import com.kylecorry.trailsensecore.tests.assertDate
+import com.kylecorry.trailsensecore.tests.assertDuration
 import com.kylecorry.trailsensecore.tests.parametrized
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
+import java.util.stream.Stream
 
 class AstronomyServiceTest {
 
@@ -647,6 +653,13 @@ class AstronomyServiceTest {
         assertRst(e, actual)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideDayLengths")
+    fun getDayLength(date: ZonedDateTime, location: Coordinate, expected: Duration){
+        val length = service.getLengthOfDay(date, location)
+        assertDuration(expected, length, Duration.ofSeconds(30))
+    }
+
 
     private fun getDate(time: LocalDateTime): ZonedDateTime {
         return time.atZone(ZoneId.of("America/New_York"))
@@ -675,4 +688,24 @@ class AstronomyServiceTest {
             val location: Coordinate = Coordinate(40.7128, -74.0060),
         val zone: String = "America/New_York"
     )
+
+
+    companion object {
+        @JvmStatic
+        fun provideDayLengths(): Stream<Arguments> {
+            val ny = Coordinate(40.7128, -74.0060)
+            val zoneNy = ZoneId.of("America/New_York")
+            val greenland = Coordinate(76.7667, -18.6667)
+            val zoneGreenland = ZoneId.of("America/Danmarkshavn")
+            return Stream.of(
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 4, 3), LocalTime.MIN, zoneNy), ny, duration(12, 47)),
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 3, 13), LocalTime.MIN, zoneNy), ny, duration(11, 50)),
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 3, 14), LocalTime.MIN, zoneNy), ny, duration(11, 53)),
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 1, 10), LocalTime.MIN, zoneGreenland), greenland, duration(0)),
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 2, 17), LocalTime.MIN, zoneGreenland), greenland, duration(4, 37)),
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 4, 22), LocalTime.MIN, zoneGreenland), greenland, duration(22, 42)),
+                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 5, 22), LocalTime.MIN, zoneGreenland), greenland, duration(24)),
+            )
+        }
+    }
 }
