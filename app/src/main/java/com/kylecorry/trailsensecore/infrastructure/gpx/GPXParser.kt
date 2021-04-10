@@ -1,10 +1,12 @@
 package com.kylecorry.trailsensecore.infrastructure.gpx
 
+import android.text.TextUtils
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.math.toDoubleCompat
 import com.kylecorry.trailsensecore.domain.math.toFloatCompat
 import com.kylecorry.trailsensecore.infrastructure.xml.XMLConvert
 import com.kylecorry.trailsensecore.infrastructure.xml.XMLNode
+import java.time.Instant
 
 class GPXParser {
 
@@ -20,7 +22,8 @@ class GPXParser {
                 "creator" to creator,
                 "xmlns:xsi" to "http://www.w3.org/2001/XMLSchema-instance",
                 "xmlns" to "http://www.topografix.com/GPX/1/1",
-                "xsi:schemaLocation" to "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+                "xmlns:trailsense" to "https://kylecorry.com/Trail-Sense",
+                "xsi:schemaLocation" to "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd https://kylecorry.com/Trail-Sense https://kylecorry.com/Trail-Sense/trailsense.xsd"
             ),
             null,
             children
@@ -42,15 +45,26 @@ class GPXParser {
                 if (it.attributes.containsKey("lon")) it.attributes["lon"]?.toDoubleCompat() else null
             val name = it.children.firstOrNull { it.tag == "name" }?.text
             val desc = it.children.firstOrNull { it.tag == "desc" }?.text
+            val time = it.children.firstOrNull { it.tag == "time" }?.text
             val ele = it.children.firstOrNull { it.tag == "ele" }?.text?.toFloatCompat()
             val extensions = it.children.firstOrNull { it.tag == "extensions" }
             val group = extensions?.children?.firstOrNull { it.tag == "trailsense:group" }?.text
 
-            if (lat == null || lon == null || name == null) {
+            if (lat == null || lon == null) {
                 return@map null
             }
 
-            return@map GPXWaypoint(Coordinate(lat, lon), name, ele, desc, group)
+            val instant = try {
+                if (time == null){
+                    null
+                } else {
+                    Instant.parse(time)
+                }
+            } catch (e: Exception) {
+                null
+            }
+
+            return@map GPXWaypoint(Coordinate(lat, lon), name, ele, desc, instant, group)
         }.filterNotNull()
     }
 
@@ -59,9 +73,14 @@ class GPXParser {
         if (waypoint.elevation != null){
             children.add(XMLNode.text("ele", waypoint.elevation.toString()))
         }
-        children.add(XMLNode.text("name", waypoint.name))
+        if (waypoint.time != null){
+            children.add(XMLNode.text("time", waypoint.time.toString()))
+        }
+        if (waypoint.name != null) {
+            children.add(XMLNode.text("name", TextUtils.htmlEncode(waypoint.name)))
+        }
         if (waypoint.comment != null){
-            children.add(XMLNode.text("desc", waypoint.comment))
+            children.add(XMLNode.text("desc", TextUtils.htmlEncode(waypoint.comment)))
         }
         if (waypoint.group != null){
             children.add(XMLNode("extensions", mapOf(), null, listOf(
