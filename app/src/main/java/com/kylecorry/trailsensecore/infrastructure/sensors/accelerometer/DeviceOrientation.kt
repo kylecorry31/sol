@@ -1,15 +1,19 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer
 
 import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import kotlin.math.abs
 import kotlin.math.withSign
 
-class DeviceOrientation(context: Context) :
-    BaseSensor(context, Sensor.TYPE_GRAVITY, SensorManager.SENSOR_DELAY_UI) {
+class DeviceOrientation(private val context: Context) : AbstractSensor() {
+    override fun startImpl() {
+        accelerometer.start(this::onAccelerometer)
+    }
+
+    override fun stopImpl() {
+        accelerometer.stop(this::onAccelerometer)
+    }
 
     override val hasValidReading: Boolean
         get() = gotReading
@@ -17,10 +21,16 @@ class DeviceOrientation(context: Context) :
     var orientation: Orientation = Orientation.Flat
         private set
 
+    private val sensorChecker by lazy { SensorChecker(context) }
+
+    private val accelerometer: IAccelerometer by lazy {
+        if (sensorChecker.hasGravity()) GravitySensor(context) else LowPassAccelerometer(context)
+    }
+
     private var gotReading = false
 
-    override fun handleSensorEvent(event: SensorEvent) {
-        val acceleration = event.values
+    private fun onAccelerometer(): Boolean {
+        val acceleration = accelerometer.acceleration.toFloatArray()
         var largestAccelAxis = 0
         for (i in acceleration.indices) {
             if (abs(acceleration[i]) > abs(acceleration[largestAccelAxis])) {
@@ -41,6 +51,8 @@ class DeviceOrientation(context: Context) :
         }
 
         gotReading = true
+
+        return true
     }
 
     enum class Orientation {
