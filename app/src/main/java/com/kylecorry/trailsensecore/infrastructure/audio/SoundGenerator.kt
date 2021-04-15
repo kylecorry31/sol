@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.audio
 
+import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
@@ -18,15 +19,27 @@ class SoundGenerator {
             sound[i * 2 + 1] = ((pcmSound and 0xff00) shr 8).toByte()
         }
 
-        val audioTrack = AudioTrack(
-            AudioManager.STREAM_MUSIC,
-            sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.ENCODING_PCM_16BIT, sound.size,
-            AudioTrack.MODE_STATIC
-        )
-        audioTrack.write(sound, 0, sound.size)
-        audioTrack.setLoopPoints(0, size, Int.MAX_VALUE)
-        return audioTrack
+        val track = AudioTrack.Builder()
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+            )
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .build()
+            )
+            .setBufferSizeInBytes(sound.size)
+            .setTransferMode(AudioTrack.MODE_STATIC)
+            .build()
+
+        track.write(sound, 0, sound.size)
+        track.setLoopPoints(0, size, Int.MAX_VALUE)
+        return track
     }
 
 }
