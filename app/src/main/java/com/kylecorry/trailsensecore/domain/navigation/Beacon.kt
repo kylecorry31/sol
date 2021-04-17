@@ -10,5 +10,6 @@ data class Beacon(
     val comment: String? = null,
     val beaconGroupId: Long? = null,
     val elevation: Float? = null,
-    val temporary: Boolean = false
+    val temporary: Boolean = false,
+    val owner: BeaconOwner = BeaconOwner.User
 ) : IBeacon

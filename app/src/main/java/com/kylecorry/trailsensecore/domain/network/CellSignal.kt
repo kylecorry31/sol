@@ -10,6 +10,10 @@ data class CellSignal(
     val network: CellNetwork
 )
 
+data class CellNetworkQuality(
+    val network: CellNetwork,
+    val quality: Quality
+)
 
 
 
