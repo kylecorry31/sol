@@ -20,15 +20,6 @@ data class Map(val id: Long, val name: String, val filename: String, val calibra
         val distanceEast = cosDegrees(bearing.toDouble()).toFloat() * distance
         val x = calibrationPixels.x + distanceEast / metersPerPixel
         val y = calibrationPixels.y - distanceNorth / metersPerPixel
-
-        if (x < 0 || x > width){
-            return null
-        }
-
-        if (y < 0 || y > height){
-            return null
-        }
-
         return PixelCoordinate(x, y)
     }
 
