@@ -3,7 +3,9 @@ package com.kylecorry.trailsensecore.infrastructure.persistence
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.math.toDoubleCompat
+import java.time.Instant
 
 class Cache(context: Context) {
 
@@ -13,8 +15,17 @@ class Cache(context: Context) {
         sharedPrefs?.edit { remove(key) }
     }
 
+    fun removeCoordinate(key: String) {
+        remove(key + "_latitude")
+        remove(key + "_longitude")
+    }
+
     fun contains(key: String): Boolean {
         return sharedPrefs?.contains(key) ?: false
+    }
+
+    fun containsCoordinate(key: String): Boolean {
+        return contains(key + "_latitude") && contains(key + "_longitude")
     }
 
     fun putInt(key: String, value: Int) {
@@ -81,5 +92,26 @@ class Cache(context: Context) {
             return null
         }
         return sharedPrefs?.getLong(key, 0L)
+    }
+
+    fun putCoordinate(key: String, value: Coordinate){
+        putDouble(key + "_latitude", value.latitude)
+        putDouble(key + "_longitude", value.longitude)
+    }
+
+    fun getCoordinate(key: String): Coordinate? {
+        val latitude = getDouble(key + "_latitude") ?: return null
+        val longitude = getDouble(key + "_longitude") ?: return null
+
+        return Coordinate(latitude, longitude)
+    }
+
+    fun putInstant(key: String, value: Instant){
+        putLong(key, value.toEpochMilli())
+    }
+
+    fun getInstant(key: String): Instant? {
+        val time = getLong(key) ?: return null
+        return Instant.ofEpochMilli(time)
     }
 }

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.annotation.*
@@ -265,6 +266,54 @@ object UiUtils {
             onDatePick.invoke(null)
         }
         datePickerDialog.show()
+    }
+
+    fun openMenu(anchorView: View, @MenuRes menu: Int, onSelection: (itemId: Int) -> Boolean) {
+        val popup = PopupMenu(anchorView.context, anchorView)
+        val inflater = popup.menuInflater
+        inflater.inflate(menu, popup.menu)
+        popup.setOnMenuItemClickListener {
+            onSelection.invoke(it.itemId)
+        }
+        popup.show()
+    }
+
+    fun alertView(
+        context: Context,
+        title: String?,
+        view: View,
+        buttonOk: String,
+        onClose: (() -> Unit)? = null
+    ): AlertDialog {
+        val builder = AlertDialog.Builder(context)
+        builder.apply {
+            setView(view)
+            setTitle(title)
+            setPositiveButton(
+                buttonOk
+            ) { dialog, _ ->
+                onClose?.invoke()
+                dialog.dismiss()
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+        return dialog
+    }
+
+    fun dp(context: Context, size: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, size,
+            context.resources.displayMetrics
+        )
+    }
+
+    fun sp(context: Context, size: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_SP, size,
+            context.resources.displayMetrics
+        )
     }
 
 }

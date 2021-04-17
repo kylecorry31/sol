@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 group = 'com.kylecorry'
-version = '2.15.2'
+version = '2.16.0'
 
 android {
     compileSdkVersion 30
@@ -22,6 +22,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        viewBinding = true
     }
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -75,6 +78,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation "androidx.work:work-runtime-ktx:2.5.0"
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation "io.noties.markwon:core:4.6.2"
     implementation 'com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
     testImplementation 'junit:junit:4.13.2'
