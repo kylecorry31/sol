@@ -72,6 +72,13 @@ object IntentUtils {
         return Intent.createChooser(requestFileIntent, message)
     }
 
+    fun pickFile(types: List<String>, message: String): Intent {
+        val requestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
+        requestFileIntent.type = "*/*"
+        requestFileIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toTypedArray())
+        return Intent.createChooser(requestFileIntent, message)
+    }
+
     fun openChooser(context: Context, intent: Intent, title: String){
         context.startActivity(Intent.createChooser(intent, title))
     }
