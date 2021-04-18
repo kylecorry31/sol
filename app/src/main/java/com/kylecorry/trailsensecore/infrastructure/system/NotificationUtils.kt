@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
@@ -120,7 +121,9 @@ object NotificationUtils {
             builder.addAction(action)
         }
 
-        return builder.build()
+        val notification = builder.build()
+        notification.smallIcon.setTint(Color.WHITE)
+        return notification
     }
 
     /**
@@ -171,7 +174,9 @@ object NotificationUtils {
             builder.addAction(action)
         }
 
-        return builder.build()
+        val notification = builder.build()
+        notification.smallIcon.setTint(Color.WHITE)
+        return notification
     }
 
 
@@ -222,7 +227,9 @@ object NotificationUtils {
             builder.addAction(action)
         }
 
-        return builder.build()
+        val notification = builder.build()
+        notification.smallIcon.setTint(Color.WHITE)
+        return notification
     }
 
     /**
@@ -248,7 +255,9 @@ object NotificationUtils {
             builder.setContentText(contents)
         }
 
-        return builder.build()
+        val notification = builder.build()
+        notification.smallIcon.setTint(Color.WHITE)
+        return notification
     }
 
     fun action(name: String, intent: PendingIntent, @DrawableRes icon: Int? = null): NotificationCompat.Action {
