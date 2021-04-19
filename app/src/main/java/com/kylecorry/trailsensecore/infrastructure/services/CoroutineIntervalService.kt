@@ -1,0 +1,35 @@
+package com.kylecorry.trailsensecore.infrastructure.services
+
+import android.content.Intent
+import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.time.Duration
+
+abstract class CoroutineIntervalService(val period: Duration, val tag: String): ForegroundService() {
+
+    private val serviceJob = Job()
+    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+
+    private val intervalometer = Intervalometer {
+        serviceScope.launch {
+            doWork()
+        }
+    }
+
+    override fun onServiceStarted(intent: Intent?, flags: Int, startId: Int): Int {
+        acquireWakelock(tag)
+        intervalometer.interval(period)
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        intervalometer.stop()
+        serviceJob.cancel()
+        super.onDestroy()
+    }
+
+    abstract suspend fun doWork()
+}

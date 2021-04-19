@@ -20,11 +20,19 @@ abstract class CustomService: Service() {
 
     private var wakelock: PowerManager.WakeLock? = null
 
-    fun acquireWakelock(tag: String, duration: Duration){
+    fun acquireWakelock(tag: String, duration: Duration? = null){
         try {
-            wakelock = PowerUtils.getWakelock(this, tag)
-            releaseWakelock()
-            wakelock?.acquire(duration.toMillis())
+            if (wakelock?.isHeld != true) {
+                wakelock = PowerUtils.getWakelock(this, tag)
+                releaseWakelock()
+                if (wakelock?.isHeld == false) {
+                    if (duration == null) {
+                        wakelock?.acquire()
+                    } else {
+                        wakelock?.acquire(duration.toMillis())
+                    }
+                }
+            }
         } catch (e: Exception) {
             // DO NOTHING
         }
