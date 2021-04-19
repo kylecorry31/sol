@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.time.Duration
 
-abstract class CoroutineIntervalService(val period: Duration, val tag: String): ForegroundService() {
+abstract class CoroutineIntervalService(val tag: String): ForegroundService() {
 
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
@@ -32,4 +32,6 @@ abstract class CoroutineIntervalService(val period: Duration, val tag: String): 
     }
 
     abstract suspend fun doWork()
+
+    abstract val period: Duration
 }

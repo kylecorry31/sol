@@ -4,7 +4,7 @@ import android.content.Intent
 import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
 import java.time.Duration
 
-abstract class IntervalService(val period: Duration, val tag: String): ForegroundService() {
+abstract class IntervalService(val tag: String): ForegroundService() {
 
     private val intervalometer = Intervalometer {
         doWork()
@@ -22,4 +22,6 @@ abstract class IntervalService(val period: Duration, val tag: String): Foregroun
     }
 
     abstract fun doWork()
+
+    abstract val period: Duration
 }
