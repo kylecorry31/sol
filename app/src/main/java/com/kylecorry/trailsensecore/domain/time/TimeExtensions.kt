@@ -41,3 +41,10 @@ fun LocalDateTime.plusHours(hours: Double): LocalDateTime {
 fun duration(hours: Long = 0L, minutes: Long = 0L, seconds: Long = 0L): Duration {
     return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
 }
+
+fun hours(hours: Float): Duration {
+    val h = hours.toLong()
+    val m = ((hours * 60) % 60).toLong()
+    val s = ((hours * 3600) % 3600).toLong()
+    return Duration.ofHours(h).plusMinutes(m).plusSeconds(s)
+}
