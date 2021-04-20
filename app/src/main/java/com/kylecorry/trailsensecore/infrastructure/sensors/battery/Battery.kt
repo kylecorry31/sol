@@ -29,6 +29,15 @@ class Battery(private val context: Context) : IBattery, AbstractSensor() {
                 cap
             }
         }
+    override val maxCapacity: Float
+        get(){
+            return if (capacity != 0f && percent != 0f){
+                capacity / percent * 100
+            } else {
+                0f
+            }
+        }
+
     override val health: BatteryHealth
         get() = _health
     override val voltage: Float
