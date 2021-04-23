@@ -3,6 +3,7 @@ package com.kylecorry.trailsensecore.domain.pixels
 import androidx.annotation.ColorInt
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.geo.Path
+import com.kylecorry.trailsensecore.domain.geo.PathStyle
 import com.kylecorry.trailsensecore.domain.pixels.PixelCoordinate
 import java.time.Duration
 import java.time.Instant
@@ -13,7 +14,7 @@ data class PixelLine(
     val end: PixelCoordinate,
     @ColorInt val color: Int,
     val alpha: Int = 255,
-    val dotted: Boolean = false
+    val style: PixelLineStyle
 )
 
 fun Path.toPixelLines(
@@ -39,9 +40,17 @@ fun Path.toPixelLines(
             color,
             if (!hasTime) 255 else (255 * (1 - timeAgo / fadeDuration.seconds)).toInt()
                 .coerceIn(60, 255),
-            dotted
+            mapPixelLineStyle(style)
         )
         lines.add(line)
     }
     return lines
+}
+
+private fun mapPixelLineStyle(style: PathStyle): PixelLineStyle {
+    return when (style){
+        PathStyle.Solid -> PixelLineStyle.Solid
+        PathStyle.Dotted -> PixelLineStyle.Dotted
+        PathStyle.Arrow -> PixelLineStyle.Arrow
+    }
 }
