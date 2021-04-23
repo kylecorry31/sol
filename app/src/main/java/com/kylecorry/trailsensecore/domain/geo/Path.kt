@@ -7,5 +7,5 @@ data class Path(
     val name: String,
     val points: List<PathPoint>,
     @ColorInt val color: Int,
-    val dotted: Boolean = false
+    val style: PathStyle = PathStyle.Solid
 )
