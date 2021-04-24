@@ -5,15 +5,12 @@ import android.content.Context
 import android.graphics.*
 import android.media.Image
 import android.util.Size
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
+import com.kylecorry.trailsensecore.infrastructure.sensors.camera.Camera
 import java.io.ByteArrayOutputStream
 import java.time.Duration
 import java.time.Instant
@@ -34,7 +31,9 @@ class CameraHeartRateSensor(
 
     private var startUpTime = Instant.MIN
 
-    private var cameraProvider: ProcessCameraProvider? = null
+    private val camera by lazy {
+        Camera(context, lifecycleOwner, targetResolution = Size(200, 200))
+    }
 
     override val pulseWave: List<Pair<Instant, Float>>
         get() = readings.toList()
@@ -54,33 +53,20 @@ class CameraHeartRateSensor(
             return
         }
 
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-        cameraProviderFuture.addListener({
-            cameraProvider = cameraProviderFuture.get()
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(200, 200))
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-
-            imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context), { image ->
-                analyzeImage(image)
-                image.close()
-            })
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            startUpTime = Instant.now()
-            val camera =
-                cameraProvider?.bindToLifecycle(lifecycleOwner, cameraSelector, imageAnalysis)
-            val controls = camera?.cameraControl
-            controls?.enableTorch(true)
-            controls?.setExposureCompensationIndex(0)
-            controls?.cancelFocusAndMetering()
-
-        }, ContextCompat.getMainExecutor(context))
+        camera.start(this::onCameraUpdate)
+        camera.setTorch(true)
+        camera.setExposure(0)
+        camera.stopFocusAndMetering()
+        startUpTime = Instant.now()
     }
 
-    @SuppressLint("UnsafeExperimentalUsageError")
+    private fun onCameraUpdate(): Boolean {
+        val image = camera.image ?: return true
+        analyzeImage(image)
+        return true
+    }
+
+    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
     private fun analyzeImage(image: ImageProxy) {
         if (Duration.between(startUpTime, Instant.now()) < WARMUP_TIME) {
             return
@@ -214,8 +200,7 @@ class CameraHeartRateSensor(
     }
 
     override fun stopImpl() {
-        cameraProvider?.unbindAll()
-        cameraProvider = null
+        camera.stop(this::onCameraUpdate)
         readings.clear()
         _heartBeats.clear()
     }
