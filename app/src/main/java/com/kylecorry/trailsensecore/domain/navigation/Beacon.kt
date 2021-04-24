@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.navigation
 
+import androidx.annotation.ColorInt
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 
 data class Beacon(
@@ -11,5 +12,6 @@ data class Beacon(
     val beaconGroupId: Long? = null,
     val elevation: Float? = null,
     val temporary: Boolean = false,
-    val owner: BeaconOwner = BeaconOwner.User
+    val owner: BeaconOwner = BeaconOwner.User,
+    @ColorInt val color: Int
 ) : IBeacon
