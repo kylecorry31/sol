@@ -15,6 +15,7 @@ import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
+import java.lang.Exception
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.Executors
@@ -35,22 +36,10 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
 
     @SuppressLint("MissingPermission")
     private val intervalometer = Intervalometer {
-        if (!PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            return@Intervalometer
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            telephony?.requestCellInfoUpdate(
-                Executors.newSingleThreadExecutor(),
-                object : TelephonyManager.CellInfoCallback() {
-                    override fun onCellInfo(cellInfo: MutableList<CellInfo>) {
-                        Handler(Looper.getMainLooper()).post {
-                            updateCellInfo(cellInfo)
-                        }
-                    }
-
-                })
-        } else {
-            updateCellInfo(telephony?.allCellInfo ?: listOf())
+        if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            try {
+                updateCellInfo(telephony?.allCellInfo ?: listOf())
+            } catch (e: Exception){}
         }
     }
 
@@ -144,8 +133,10 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
             notifyListeners()
             return
         }
-        updateCellInfo(telephony?.allCellInfo ?: listOf())
-        intervalometer.interval(Duration.ofSeconds(5))
+        try {
+            updateCellInfo(telephony?.allCellInfo ?: listOf())
+        } catch (e: Exception){}
+        intervalometer.interval(Duration.ofSeconds(5), Duration.ofSeconds(5))
     }
 
     override fun stopImpl() {
