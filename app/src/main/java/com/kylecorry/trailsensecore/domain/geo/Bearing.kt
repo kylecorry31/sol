@@ -30,5 +30,9 @@ class Bearing(_value: Float){
         fun from(direction: CompassDirection): Bearing {
             return Bearing(direction.azimuth)
         }
+
+        fun getBearing(degrees: Float): Float {
+            return if (degrees.isNaN() || !degrees.isFinite()) 0f else normalizeAngle(degrees)
+        }
     }
 }

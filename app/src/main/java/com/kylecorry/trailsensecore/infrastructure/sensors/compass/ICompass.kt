@@ -5,5 +5,6 @@ import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
 
 interface ICompass: ISensor {
     val bearing: Bearing
+    val rawBearing: Float
     var declination: Float
 }

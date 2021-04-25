@@ -34,6 +34,15 @@ class LegacyCompass(context: Context, smoothingAmount: Int, private val useTrueN
             }
         }
 
+    override val rawBearing: Float
+        get(){
+            return if (useTrueNorth) {
+                Bearing.getBearing(Bearing.getBearing(_filteredBearing) + declination)
+            } else {
+                Bearing.getBearing(_filteredBearing)
+            }
+        }
+
     private var _bearing = 0f
     private var _filteredBearing = 0f
 
