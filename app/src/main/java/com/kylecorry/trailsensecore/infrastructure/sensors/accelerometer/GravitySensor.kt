@@ -9,7 +9,7 @@ import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
 class GravitySensor(context: Context) :
-    BaseSensor(context, Sensor.TYPE_GRAVITY, SensorManager.SENSOR_DELAY_GAME), IAccelerometer {
+    BaseSensor(context, Sensor.TYPE_GRAVITY, SensorManager.SENSOR_DELAY_FASTEST), IAccelerometer {
 
     override val hasValidReading: Boolean
         get() = gotReading

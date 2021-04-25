@@ -7,7 +7,7 @@ import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
 class Hygrometer(context: Context) :
-    BaseSensor(context, Sensor.TYPE_RELATIVE_HUMIDITY, SensorManager.SENSOR_DELAY_GAME),
+    BaseSensor(context, Sensor.TYPE_RELATIVE_HUMIDITY, SensorManager.SENSOR_DELAY_FASTEST),
     IHygrometer {
 
     override val hasValidReading: Boolean
