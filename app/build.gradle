@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 group = 'com.kylecorry'
-version = '2.19.3'
+version = '2.19.4'
 
 android {
     compileSdkVersion 30
