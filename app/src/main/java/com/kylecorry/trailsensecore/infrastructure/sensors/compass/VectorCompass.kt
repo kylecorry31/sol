@@ -63,7 +63,7 @@ class VectorCompass(context: Context, smoothingFactor: Int, private val useTrueN
         }
 
         val newBearing =
-            AzimuthCalculator.calculate(accelerometer.acceleration, magnetometer.magneticField)
+            AzimuthCalculator.calculate(accelerometer.rawAcceleration, magnetometer.rawMagneticField)
                 ?: return true
 
         val accelAccuracy = accelerometer.quality

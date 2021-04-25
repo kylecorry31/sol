@@ -23,17 +23,30 @@ class LowPassAccelerometer(context: Context) :
         LowPassFilter(filterSize)
     )
 
-    private var _acceleration = Vector3.zero
+    private val lock = Object()
 
-    override val acceleration
-        get() = _acceleration
+    private var _acceleration = floatArrayOf(0f, 0f, 0f)
+
+    override val acceleration: Vector3
+        get(){
+            return synchronized(lock) {
+                Vector3(_acceleration[0], _acceleration[1], _acceleration[2])
+            }
+        }
+
+    override val rawAcceleration: FloatArray
+        get(){
+            return synchronized(lock){
+                _acceleration.clone()
+            }
+        }
 
     override fun handleSensorEvent(event: SensorEvent) {
-        _acceleration = Vector3(
-            filters[0].filter(event.values[0]),
-            filters[1].filter(event.values[1]),
-            filters[2].filter(event.values[2])
-        )
+        synchronized(lock){
+            _acceleration[0] = filters[0].filter(event.values[0])
+            _acceleration[1] = filters[1].filter(event.values[1])
+            _acceleration[2] = filters[2].filter(event.values[2])
+        }
         gotReading = true
     }
 

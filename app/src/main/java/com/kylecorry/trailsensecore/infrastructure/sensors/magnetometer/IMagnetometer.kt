@@ -5,4 +5,5 @@ import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
 
 interface IMagnetometer: ISensor {
     val magneticField: Vector3
+    val rawMagneticField: FloatArray
 }

@@ -5,4 +5,5 @@ import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
 
 interface IAccelerometer: ISensor {
     val acceleration: Vector3
+    val rawAcceleration: FloatArray
 }

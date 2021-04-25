@@ -30,7 +30,7 @@ class DeviceOrientation(private val context: Context) : AbstractSensor() {
     private var gotReading = false
 
     private fun onAccelerometer(): Boolean {
-        val acceleration = accelerometer.acceleration.toFloatArray()
+        val acceleration = accelerometer.rawAcceleration
         var largestAccelAxis = 0
         for (i in acceleration.indices) {
             if (abs(acceleration[i]) > abs(acceleration[largestAccelAxis])) {

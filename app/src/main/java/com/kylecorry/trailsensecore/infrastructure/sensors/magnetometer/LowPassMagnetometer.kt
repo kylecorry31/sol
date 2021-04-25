@@ -8,7 +8,8 @@ import com.kylecorry.trailsensecore.domain.math.LowPassFilter
 import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
-class LowPassMagnetometer(context: Context): BaseSensor(context, Sensor.TYPE_MAGNETIC_FIELD, SensorManager.SENSOR_DELAY_FASTEST),
+class LowPassMagnetometer(context: Context) :
+    BaseSensor(context, Sensor.TYPE_MAGNETIC_FIELD, SensorManager.SENSOR_DELAY_FASTEST),
     IMagnetometer {
 
     override val hasValidReading: Boolean
@@ -22,17 +23,29 @@ class LowPassMagnetometer(context: Context): BaseSensor(context, Sensor.TYPE_MAG
         LowPassFilter(filterSize)
     )
 
-    override val magneticField
-        get() = _magField
+    private val lock = Object()
 
-    private var _magField = Vector3.zero
+    private var _magField = floatArrayOf(0f, 0f, 0f)
+
+    override val magneticField: Vector3
+        get() {
+            return synchronized(lock) {
+                Vector3(_magField[0], _magField[1], _magField[2])
+            }
+        }
+    override val rawMagneticField: FloatArray
+        get() {
+            return synchronized(lock) {
+                _magField.clone()
+            }
+        }
 
     override fun handleSensorEvent(event: SensorEvent) {
-        _magField = Vector3(
-            filters[0].filter(event.values[0]),
-            filters[1].filter(event.values[1]),
-            filters[2].filter(event.values[2])
-        )
+        synchronized(lock) {
+            _magField[0] = filters[0].filter(event.values[0])
+            _magField[1] = filters[1].filter(event.values[1])
+            _magField[2] = filters[2].filter(event.values[2])
+        }
         gotReading = true
     }
 

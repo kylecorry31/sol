@@ -1,6 +1,7 @@
 package com.kylecorry.trailsensecore.domain.geo
 
 import com.kylecorry.trailsensecore.domain.math.Vector3
+import com.kylecorry.trailsensecore.domain.math.Vector3Utils
 import com.kylecorry.trailsensecore.domain.math.toDegrees
 import kotlin.math.atan2
 
@@ -8,32 +9,32 @@ import kotlin.math.atan2
 
 internal object AzimuthCalculator {
 
-    fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
+    fun calculate(gravity: FloatArray, magneticField: FloatArray): Bearing? {
         // Gravity
-        val normGravity = gravity.normalize()
-        val normMagField = magneticField.normalize()
+        val normGravity = Vector3Utils.normalize(gravity)
+        val normMagField = Vector3Utils.normalize(magneticField)
 
         // East vector
-        val east = normMagField.cross(normGravity)
-        val normEast = east.normalize()
+        val east = Vector3Utils.cross(normMagField, normGravity)
+        val normEast = Vector3Utils.normalize(east)
 
         // Magnitude check
-        val eastMagnitude = east.magnitude()
-        val gravityMagnitude = gravity.magnitude()
-        val magneticMagnitude = magneticField.magnitude()
+        val eastMagnitude = Vector3Utils.magnitude(east)
+        val gravityMagnitude = Vector3Utils.magnitude(gravity)
+        val magneticMagnitude = Vector3Utils.magnitude(magneticField)
         if (gravityMagnitude * magneticMagnitude * eastMagnitude < 0.1f) {
             return null
         }
 
         // North vector
-        val dotProduct = normGravity.dot(normMagField)
-        val north = normMagField.minus(normGravity * dotProduct)
-        val normNorth = north.normalize()
+        val dotProduct = Vector3Utils.dot(normGravity, normMagField)
+        val north = Vector3Utils.minus(normMagField, Vector3Utils.times(normGravity, dotProduct))
+        val normNorth = Vector3Utils.normalize(north)
 
         // Azimuth
         // NB: see https://math.stackexchange.com/questions/381649/whats-the-best-3d-angular-co-ordinate-system-for-working-with-smartfone-apps
-        val sin = normEast.y - normNorth.x
-        val cos = normEast.x + normNorth.y
+        val sin = normEast[1] - normNorth[0]
+        val cos = normEast[0] + normNorth[1]
         val azimuth = if (!(sin == 0f && sin == cos)) atan2(sin, cos) else 0f
 
         if (azimuth.isNaN()){
@@ -41,6 +42,11 @@ internal object AzimuthCalculator {
         }
 
         return Bearing(azimuth.toDegrees())
+    }
+
+
+    fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
+       return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
     }
 
 }

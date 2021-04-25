@@ -7,24 +7,38 @@ import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
-class Magnetometer(context: Context): BaseSensor(context, Sensor.TYPE_MAGNETIC_FIELD, SensorManager.SENSOR_DELAY_FASTEST),
+class Magnetometer(context: Context) :
+    BaseSensor(context, Sensor.TYPE_MAGNETIC_FIELD, SensorManager.SENSOR_DELAY_FASTEST),
     IMagnetometer {
 
     override val hasValidReading: Boolean
         get() = gotReading
     private var gotReading = false
 
-    override val magneticField
-        get() = _magField
+    override val rawMagneticField: FloatArray
+        get() {
+            return synchronized(lock) {
+                _magField.clone()
+            }
+        }
 
-    private var _magField = Vector3.zero
+    private val lock = Object()
+
+    private var _magField = floatArrayOf(0f, 0f, 0f)
+
+    override val magneticField: Vector3
+        get() {
+            return synchronized(lock) {
+                Vector3(_magField[0], _magField[1], _magField[2])
+            }
+        }
 
     override fun handleSensorEvent(event: SensorEvent) {
-        _magField = Vector3(
-            event.values[0],
-            event.values[1],
-            event.values[2]
-        )
+        synchronized(lock) {
+            _magField[0] = event.values[0]
+            _magField[1] = event.values[1]
+            _magField[2] = event.values[2]
+        }
         gotReading = true
     }
 
