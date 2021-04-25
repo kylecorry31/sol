@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
-class LightSensor(context: Context): BaseSensor(context, Sensor.TYPE_LIGHT, SensorManager.SENSOR_DELAY_FASTEST), ILightSensor {
+class LightSensor(context: Context): BaseSensor(context, Sensor.TYPE_LIGHT, SensorManager.SENSOR_DELAY_GAME), ILightSensor {
 
     override val illuminance: Float
         get() = _illuminance

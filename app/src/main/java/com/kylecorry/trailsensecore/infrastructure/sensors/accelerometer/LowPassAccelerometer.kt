@@ -9,7 +9,7 @@ import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
 class LowPassAccelerometer(context: Context) :
-    BaseSensor(context, Sensor.TYPE_ACCELEROMETER, SensorManager.SENSOR_DELAY_FASTEST),
+    BaseSensor(context, Sensor.TYPE_ACCELEROMETER, SensorManager.SENSOR_DELAY_GAME),
     IAccelerometer {
 
     override val hasValidReading: Boolean

@@ -7,7 +7,7 @@ import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
 
 class Thermometer(context: Context, sensorCode: Int = Sensor.TYPE_AMBIENT_TEMPERATURE) :
-    BaseSensor(context, sensorCode, SensorManager.SENSOR_DELAY_FASTEST),
+    BaseSensor(context, sensorCode, SensorManager.SENSOR_DELAY_GAME),
     IThermometer {
 
     override val hasValidReading: Boolean

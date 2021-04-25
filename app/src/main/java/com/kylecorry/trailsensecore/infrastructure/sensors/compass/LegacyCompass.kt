@@ -13,7 +13,7 @@ import kotlin.math.max
 
 @Suppress("DEPRECATION")
 class LegacyCompass(context: Context, smoothingAmount: Int, private val useTrueNorth: Boolean) :
-    BaseSensor(context, Sensor.TYPE_ORIENTATION, SensorManager.SENSOR_DELAY_FASTEST),
+    BaseSensor(context, Sensor.TYPE_ORIENTATION, SensorManager.SENSOR_DELAY_GAME),
     ICompass {
 
     override val hasValidReading: Boolean
