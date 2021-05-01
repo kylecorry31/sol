@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.infrastructure.audio
 
 import android.media.AudioTrack
 import kotlin.math.abs
+import kotlin.random.Random
 
 class PinkNoiseGenerator {
 
@@ -16,10 +17,11 @@ class PinkNoiseGenerator {
         var b5 = 0.0
         var b6 = 0.0
 
+        val random = Random(0)
         var noise = mutableListOf<Double>()
         val size = (durationSeconds + 1) * sampleRate
         for (i in 0 until size){
-            val white = Math.random()
+            val white = random.nextDouble()
             b0 = 0.99886 * b0 + white * 0.0555179
             b1 = 0.99332 * b1 + white * 0.0750759
             b2 = 0.96900 * b2 + white * 0.1538520
