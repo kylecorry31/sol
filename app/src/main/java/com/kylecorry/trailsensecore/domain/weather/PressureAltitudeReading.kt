@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.domain.weather
 import java.time.Instant
 import kotlin.math.pow
 
-data class PressureAltitudeReading(val time: Instant, val pressure: Float, val altitude: Float, val temperature: Float){
+data class PressureAltitudeReading(val time: Instant, val pressure: Float, val altitude: Float, val temperature: Float, val altitudeError: Float? = null){
     fun seaLevel(useTemperature: Boolean = true): PressureReading {
         val pressure = if (useTemperature) {
             pressure * (1 - ((0.0065f * altitude) / (temperature + 0.0065f * altitude + 273.15f))).pow(

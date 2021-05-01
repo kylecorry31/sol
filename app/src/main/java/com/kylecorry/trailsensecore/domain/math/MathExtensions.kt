@@ -160,7 +160,7 @@ fun power(x: Double, power: Int): Double {
 fun String.toDoubleCompat(): Double? {
     val asDouble = try {
         this.replace(",", ".").toDoubleOrNull()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         null
     }
     asDouble ?: return null
@@ -173,7 +173,7 @@ fun String.toDoubleCompat(): Double? {
 fun String.toFloatCompat(): Float? {
     val asFloat = try {
         this.replace(",", ".").toFloatOrNull()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         null
     }
     asFloat ?: return null
@@ -186,7 +186,7 @@ fun String.toFloatCompat(): Float? {
 fun String.toIntCompat(): Int? {
     return try {
         this.replace(",", ".").toIntOrNull()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         null
     }
 }
@@ -194,7 +194,34 @@ fun String.toIntCompat(): Int? {
 fun String.toLongCompat(): Long? {
     return try {
         this.replace(",", ".").toLongOrNull()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         null
     }
+}
+
+fun removeOutliers(measurements: List<Double>, threshold: Double): List<Double> {
+    if (measurements.size < 3) {
+        return measurements
+    }
+
+    val filtered = mutableListOf(measurements.first())
+
+    for (i in 1 until measurements.lastIndex) {
+        val before = measurements[i - 1]
+        val current = measurements[i]
+        val after = measurements[i + 1]
+
+        val last = (before + after) / 2
+
+        if (current - before > threshold && current - after > threshold) {
+            filtered.add(last)
+        } else if (current - before < -threshold && current - after < -threshold) {
+            filtered.add(last)
+        } else {
+            filtered.add(current)
+        }
+    }
+
+    filtered.add(measurements.last())
+    return filtered
 }
