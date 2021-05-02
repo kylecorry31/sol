@@ -199,7 +199,12 @@ fun String.toLongCompat(): Long? {
     }
 }
 
-fun removeOutliers(measurements: List<Double>, threshold: Double): List<Double> {
+fun removeOutliers(
+    measurements: List<Double>,
+    threshold: Double,
+    replaceWithAverage: Boolean = false,
+    replaceLast: Boolean = false
+): List<Double> {
     if (measurements.size < 3) {
         return measurements
     }
@@ -211,7 +216,7 @@ fun removeOutliers(measurements: List<Double>, threshold: Double): List<Double> 
         val current = measurements[i]
         val after = measurements[i + 1]
 
-        val last = (before + after) / 2
+        val last = if (replaceWithAverage) (before + after) / 2 else filtered.last()
 
         if (current - before > threshold && current - after > threshold) {
             filtered.add(last)
@@ -222,6 +227,10 @@ fun removeOutliers(measurements: List<Double>, threshold: Double): List<Double> 
         }
     }
 
-    filtered.add(measurements.last())
+    if (replaceLast && abs(filtered.last() - measurements.last()) > threshold){
+        filtered.add(filtered.last())
+    } else {
+        filtered.add(measurements.last())
+    }
     return filtered
 }

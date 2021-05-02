@@ -4,12 +4,15 @@ import com.kylecorry.trailsensecore.domain.math.KalmanFilter
 import com.kylecorry.trailsensecore.domain.math.removeOutliers
 
 class KalmanSeaLevelPressureConverter(
-    private val defaultGPSError: Float = 30f,
+    private val defaultGPSError: Float = 10f,
     private val altitudeOutlierThreshold: Float = defaultGPSError,
-    private val altitudeProcessError: Float = 1f,
-    private val defaultPressureError: Float = 0.5f,
+    private val altitudeProcessError: Float = 0.1f,
+    private val defaultPressureError: Float = 2f,
     private val pressureOutlierThreshold: Float = defaultPressureError,
     private val pressureProcessError: Float = 0.01f,
+    private val adjustWithTime: Boolean = true,
+    private val replaceOutliersWithAverage: Boolean = false,
+    private val replaceLastOutlier: Boolean = false,
 ) : ISeaLevelPressureConverter {
 
     override fun convert(
@@ -20,15 +23,27 @@ class KalmanSeaLevelPressureConverter(
         val altitudeErrors =
             readings.map { if (it.altitudeError == null || it.altitudeError == 0f) defaultGPSError.toDouble() else it.altitudeError.toDouble() }
         val pressures = readings.map { it.pressure.toDouble() }
+        val times = readings.map { it.time.toEpochMilli() / (1000.0 * 60.0) }
 
-        val altitudesNoOutliers = removeOutliers(altitudes, altitudeOutlierThreshold.toDouble())
+        val altitudesNoOutliers = removeOutliers(
+            altitudes,
+            altitudeOutlierThreshold.toDouble(),
+            replaceOutliersWithAverage,
+            replaceLastOutlier
+        )
         val filteredAltitudes = KalmanFilter.filter(
             altitudesNoOutliers,
             altitudeErrors,
-            altitudeProcessError.toDouble()
+            altitudeProcessError.toDouble(),
+            if (adjustWithTime) times else null
         )
 
-        val filteredPressures = removeOutliers(pressures, pressureOutlierThreshold.toDouble())
+        val filteredPressures = removeOutliers(
+            pressures,
+            pressureOutlierThreshold.toDouble(),
+            replaceOutliersWithAverage,
+            replaceLastOutlier
+        )
         val seaLevel = mutableListOf<PressureReading>()
 
         for (i in readings.indices) {
@@ -49,7 +64,8 @@ class KalmanSeaLevelPressureConverter(
         val kalmanSeaLevel = KalmanFilter.filter(
             seaLevel.map { it.value.toDouble() },
             defaultPressureError.toDouble(),
-            pressureProcessError.toDouble()
+            pressureProcessError.toDouble(),
+            if (adjustWithTime) times else null
         )
 
         return kalmanSeaLevel.mapIndexed { index, pressure ->
