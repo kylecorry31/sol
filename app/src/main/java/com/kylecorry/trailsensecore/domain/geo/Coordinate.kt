@@ -51,7 +51,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return Coordinate(newLat, normalLng)
     }
 
-    fun toDecimalDegrees(precision: Int = 7): String {
+    fun toDecimalDegrees(precision: Int = 6): String {
         return "${latitude.roundPlaces(precision)}°,  ${longitude.roundPlaces(precision)}°"
     }
 
