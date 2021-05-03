@@ -121,7 +121,7 @@ class CoordinateTest {
         fun provideDD(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of("42.1948°,  -71.6295°", Coordinate(42.1948, -71.6295), 4),
-                Arguments.of("-90.0°,  -180.0°", Coordinate(-90.0, -180.0), 0),
+                Arguments.of("-90°,  -180°", Coordinate(-90.0, -180.0), 0),
                 Arguments.of("-42.19°,  -71.63°", Coordinate(-42.1948, -71.6295), 2),
                 Arguments.of("1.2°,  1.4°", Coordinate(1.2, 1.4), 1),
             )
@@ -161,6 +161,8 @@ class CoordinateTest {
                 Arguments.of("-90, -180", Coordinate(-90.0, -180.0)),
                 Arguments.of("90, 180", Coordinate(90.0, 180.0)),
                 Arguments.of("-42.1948, -71.6295", Coordinate(-42.1948, -71.6295)),
+                Arguments.of("-42,1948, -71,6295", Coordinate(-42.1948, -71.6295)),
+                Arguments.of("-42,1948°, -71,6295°", Coordinate(-42.1948, -71.6295)),
                 Arguments.of("1.2,1.4", Coordinate(1.2, 1.4)),
                 Arguments.of("1.2°, 1.4°", Coordinate(1.2, 1.4)),
                 Arguments.of("1 8", Coordinate(1.0, 8.0)),

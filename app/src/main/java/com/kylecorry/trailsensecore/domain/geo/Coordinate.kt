@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.kylecorry.trailsensecore.domain.astronomy.Astro.power
 import com.kylecorry.trailsensecore.domain.math.*
 import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.infrastructure.text.DecimalFormatter
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
 import gov.nasa.worldwind.geom.coords.MGRSCoord
@@ -52,7 +53,9 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     }
 
     fun toDecimalDegrees(precision: Int = 6): String {
-        return "${latitude.roundPlaces(precision)}°,  ${longitude.roundPlaces(precision)}°"
+        val formattedLatitude = DecimalFormatter.format(latitude, precision)
+        val formattedLongitude = DecimalFormatter.format(longitude, precision)
+        return "$formattedLatitude°,  $formattedLongitude°"
     }
 
     fun toDegreeDecimalMinutes(precision: Int = 3): String {
