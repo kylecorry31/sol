@@ -23,6 +23,10 @@ internal class DecimalFormatterTest {
                 Arguments.of(1.155, 4, false, "1.155"),
                 Arguments.of(1.155, 4, true, "1.1550"),
                 Arguments.of(1.155, 0, true, "1"),
+                Arguments.of(0.155, 2, true, "0.16"),
+                Arguments.of(100.155, 2, true, "100.16"),
+                Arguments.of(100, 2, true, "100.00"),
+                Arguments.of(100, 2, false, "100"),
                 )
         }
     }
