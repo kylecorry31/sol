@@ -27,6 +27,9 @@ internal class DecimalFormatterTest {
                 Arguments.of(100.155, 2, true, "100.16"),
                 Arguments.of(100, 2, true, "100.00"),
                 Arguments.of(100, 2, false, "100"),
+                Arguments.of(Double.NaN, 2, true, "-"),
+                Arguments.of(Double.NEGATIVE_INFINITY, 2, true, "-"),
+                Arguments.of(Double.POSITIVE_INFINITY, 2, true, "-"),
                 )
         }
     }

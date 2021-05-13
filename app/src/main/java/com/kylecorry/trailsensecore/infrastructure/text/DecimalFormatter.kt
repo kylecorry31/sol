@@ -10,6 +10,9 @@ object DecimalFormatter {
     private val strictFormatterMap = ConcurrentHashMap<Int, DecimalFormat>()
 
     fun format(number: Number, decimalPlaces: Int, strict: Boolean = true): String {
+        if (number.toDouble().isNaN() || number.toDouble().isInfinite()){
+            return "-"
+        }
         val n = number.toDouble().roundPlaces(decimalPlaces)
         val cache = if (strict) strictFormatterMap else formatterMap
         val existing = cache[decimalPlaces]
