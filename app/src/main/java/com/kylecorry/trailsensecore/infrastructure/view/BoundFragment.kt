@@ -14,6 +14,9 @@ abstract class BoundFragment<T: ViewBinding>: Fragment() {
     protected val binding: T
         get() = _binding!!
 
+    protected val isBound: Boolean
+        get() = context != null && _binding != null
+
     private var _binding: T? = null
 
     override fun onCreateView(

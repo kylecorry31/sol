@@ -1,13 +1,16 @@
 package com.kylecorry.trailsensecore.infrastructure.system
 
 import android.R
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.TypedValue
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TimePicker
@@ -314,6 +317,21 @@ object UiUtils {
             TypedValue.COMPLEX_UNIT_SP, size,
             context.resources.displayMetrics
         )
+    }
+
+    @Suppress("DEPRECATION")
+    fun setShowWhenLocked(activity: Activity, showWhenLocked: Boolean){
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 -> {
+                activity.setShowWhenLocked(showWhenLocked)
+            }
+            showWhenLocked -> {
+                activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+            }
+            else -> {
+                activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+            }
+        }
     }
 
 }
