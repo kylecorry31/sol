@@ -1,6 +1,5 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.network
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
@@ -14,13 +13,14 @@ import com.kylecorry.trailsensecore.domain.network.CellSignal
 import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
+import com.kylecorry.trailsensecore.infrastructure.system.tryOrNothing
 import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
-import java.lang.Exception
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.Executors
 
-class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSignalSensor {
+class CellSignalSensor(private val context: Context, private val updateCellCache: Boolean) :
+    AbstractSensor(), ICellSignalSensor {
 
     private val telephony by lazy { context.getSystemService<TelephonyManager>() }
 
@@ -34,17 +34,44 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
     private var oldSignals = listOf<RawCellSignal>()
     private var hasReading = false
 
-    @SuppressLint("MissingPermission")
     private val intervalometer = Intervalometer {
-        if (PermissionUtils.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            try {
-                updateCellInfo(telephony?.allCellInfo ?: listOf())
-            } catch (e: Exception){}
+        tryOrNothing {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && updateCellCache) {
+                updateCellInfoCache()
+            } else {
+                loadFromCache()
+            }
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private fun updateCellInfoCache() {
+        tryOrNothing {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                return@tryOrNothing
+            }
+
+            if (!PermissionUtils.isLocationEnabled(context)) {
+                return@tryOrNothing
+            }
+            telephony?.requestCellInfoUpdate(
+                Executors.newSingleThreadExecutor(),
+                @SuppressLint("NewApi")
+                object : TelephonyManager.CellInfoCallback() {
+                    override fun onCellInfo(cellInfo: MutableList<CellInfo>) {
+                        tryOrNothing {
+                            Handler(Looper.getMainLooper()).post {
+                                updateCellInfo(cellInfo)
+                            }
+                        }
+                    }
+                })
+        }
+
+    }
+
     @Suppress("DEPRECATION")
-    private fun updateCellInfo(cells: List<CellInfo>) {
+    private fun updateCellInfo(cells: List<CellInfo>, notify: Boolean = true) {
         synchronized(this) {
             hasReading = true
             val newSignals = cells.filter { it.isRegistered }.mapNotNull {
@@ -122,7 +149,9 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
                 CellSignal(it.id, it.percent, it.dbm, it.quality, it.network)
             }
 
-            notifyListeners()
+            if (notify) {
+                notifyListeners()
+            }
         }
     }
 
@@ -133,11 +162,18 @@ class CellSignalSensor(private val context: Context) : AbstractSensor(), ICellSi
             notifyListeners()
             return
         }
-        try {
-            updateCellInfo(telephony?.allCellInfo ?: listOf())
-        } catch (e: Exception){}
-        intervalometer.interval(Duration.ofSeconds(5), Duration.ofSeconds(5))
+        loadFromCache(false)
+        intervalometer.interval(Duration.ofSeconds(5))
     }
+
+    @SuppressLint("MissingPermission")
+    private fun loadFromCache(notify: Boolean = true) {
+        if (!PermissionUtils.isLocationEnabled(context)) return
+        tryOrNothing {
+            updateCellInfo(telephony?.allCellInfo ?: listOf(), notify)
+        }
+    }
+
 
     override fun stopImpl() {
         intervalometer.stop()
