@@ -1,6 +1,7 @@
 package com.kylecorry.trailsensecore.domain.geo
 
 import android.hardware.GeomagneticField
+import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.domain.units.Distance
 import kotlin.math.absoluteValue
 
@@ -14,6 +15,14 @@ class GeoService : IGeoService {
             time
         )
         return geoField.declination
+    }
+
+    override fun getAzimuth(gravity: FloatArray, magneticField: FloatArray): Bearing? {
+        return AzimuthCalculator.calculate(gravity, magneticField)
+    }
+
+    override fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing? {
+        return AzimuthCalculator.calculate(gravity, magneticField)
     }
 
     override fun getRegion(coordinate: Coordinate): Region {
@@ -30,7 +39,10 @@ class GeoService : IGeoService {
         scaleTo: Distance
     ): Distance {
         val scaledMeasurement = measurement.convertTo(scaleFrom.units)
-        return Distance(scaleTo.distance * scaledMeasurement.distance / scaleFrom.distance, scaleTo.units)
+        return Distance(
+            scaleTo.distance * scaledMeasurement.distance / scaleFrom.distance,
+            scaleTo.units
+        )
     }
 
     override fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {

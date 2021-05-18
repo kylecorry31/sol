@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -16,8 +17,13 @@ class SensorChecker(private val context: Context) {
         return hasSensor(Sensor.TYPE_PRESSURE)
     }
 
+    fun hasGyroscope(): Boolean {
+        return hasSensor(Sensor.TYPE_GYROSCOPE)
+    }
+
+    @SuppressLint("UnsupportedChromeOsCameraSystemFeature")
     fun hasCamera(): Boolean {
-        if (!PermissionUtils.isCameraEnabled(context)){
+        if (!PermissionUtils.isCameraEnabled(context)) {
             return false
         }
         return context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)

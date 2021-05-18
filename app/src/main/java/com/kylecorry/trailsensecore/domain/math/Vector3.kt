@@ -45,12 +45,17 @@ data class Vector3(val x: Float, val y: Float, val z: Float) {
 
     companion object {
         val zero = Vector3(0f, 0f, 0f)
+
+        fun from(arr: FloatArray): Vector3 {
+            return Vector3(arr[0], arr[1], arr[2])
+        }
+
     }
 
 }
 
 
-internal object Vector3Utils {
+object Vector3Utils {
     fun cross(first: FloatArray, second: FloatArray): FloatArray {
         return floatArrayOf(
             first[1] * second[2] - first[2] * second[1],
