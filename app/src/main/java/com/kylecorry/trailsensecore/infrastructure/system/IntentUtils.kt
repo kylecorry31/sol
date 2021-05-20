@@ -58,6 +58,13 @@ object IntentUtils {
         return intent
     }
 
+    fun batteryOptimizationSettings(context: Context): Intent {
+        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        val uri = Uri.fromParts("package", PackageUtils.getPackageName(context), null)
+        intent.data = uri
+        return intent
+    }
+
     fun createFile(filename: String, type: String): Intent {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
