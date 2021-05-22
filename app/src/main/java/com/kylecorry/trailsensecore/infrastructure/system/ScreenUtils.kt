@@ -25,4 +25,12 @@ object ScreenUtils {
         window.attributes = layoutParams
     }
 
+    fun setAllowScreenshots(window: Window, allowed: Boolean) {
+        if (allowed) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+
 }
