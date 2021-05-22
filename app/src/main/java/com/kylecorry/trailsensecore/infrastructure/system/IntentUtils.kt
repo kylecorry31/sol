@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 
@@ -17,7 +18,7 @@ object IntentUtils {
     }
 
     fun startService(context: Context, intent: Intent, foreground: Boolean = false) {
-        if (foreground && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (foreground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)
         } else {
             context.startService(intent)
@@ -28,7 +29,8 @@ object IntentUtils {
         return PendingIntent.getBroadcast(
             context, requestCode,
             intent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_NO_CREATE or
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         ) != null
     }
 
@@ -86,7 +88,7 @@ object IntentUtils {
         return Intent.createChooser(requestFileIntent, message)
     }
 
-    fun openChooser(context: Context, intent: Intent, title: String){
+    fun openChooser(context: Context, intent: Intent, title: String) {
         context.startActivity(Intent.createChooser(intent, title))
     }
 
