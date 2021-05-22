@@ -33,8 +33,12 @@ object PermissionUtils {
     }
 
     fun isIgnoringBatteryOptimizations(context: Context): Boolean {
-        return context.getSystemService<PowerManager>()
-            ?.isIgnoringBatteryOptimizations(PackageUtils.getPackageName(context)) ?: false
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            context.getSystemService<PowerManager>()
+                ?.isIgnoringBatteryOptimizations(PackageUtils.getPackageName(context)) ?: false
+        } else {
+            true
+        }
     }
 
     fun hasPermission(context: Context, permission: String): Boolean {

@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.time.toEpochMillis
@@ -27,7 +28,7 @@ object AlarmUtils {
     ) {
         val alarmManager = getAlarmManager(context)
 
-        if (!allowWhileIdle) {
+        if (!allowWhileIdle || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             if (exact) {
                 alarmManager?.setExact(AlarmManager.RTC_WAKEUP, time.toEpochMillis(), pendingIntent)
             } else {

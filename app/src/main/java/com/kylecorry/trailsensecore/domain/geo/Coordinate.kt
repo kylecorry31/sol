@@ -10,7 +10,8 @@ import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
 import gov.nasa.worldwind.geom.coords.MGRSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import java.util.*
 import kotlin.math.*
 
@@ -18,6 +19,7 @@ import kotlin.math.*
 @Parcelize
 data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable {
 
+    @IgnoredOnParcel
     val isNorthernHemisphere = latitude > 0
 
     override fun toString(): String {

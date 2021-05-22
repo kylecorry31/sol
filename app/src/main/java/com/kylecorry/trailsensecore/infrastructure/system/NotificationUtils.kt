@@ -122,7 +122,9 @@ object NotificationUtils {
         }
 
         val notification = builder.build()
-        notification.smallIcon.setTint(Color.WHITE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notification.smallIcon.setTint(Color.WHITE)
+        }
         return notification
     }
 
@@ -175,7 +177,9 @@ object NotificationUtils {
         }
 
         val notification = builder.build()
-        notification.smallIcon.setTint(Color.WHITE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notification.smallIcon.setTint(Color.WHITE)
+        }
         return notification
     }
 
@@ -228,7 +232,9 @@ object NotificationUtils {
         }
 
         val notification = builder.build()
-        notification.smallIcon.setTint(Color.WHITE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notification.smallIcon.setTint(Color.WHITE)
+        }
         return notification
     }
 
@@ -256,7 +262,9 @@ object NotificationUtils {
         }
 
         val notification = builder.build()
-        notification.smallIcon.setTint(Color.WHITE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notification.smallIcon.setTint(Color.WHITE)
+        }
         return notification
     }
 
