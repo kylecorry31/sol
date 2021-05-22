@@ -1,18 +1,14 @@
 package com.kylecorry.trailsensecore.infrastructure.flashlight
 
 import android.view.Window
-import android.view.WindowManager
+import com.kylecorry.trailsensecore.infrastructure.system.ScreenUtils
 
 class ScreenFlashlight(private val window: Window): IFlashlight {
     override fun on() {
-        val layoutParams = window.attributes
-        layoutParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
-        window.attributes = layoutParams
+        ScreenUtils.setBrightness(window, 1f)
     }
 
     override fun off() {
-        val layoutParams = window.attributes
-        layoutParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-        window.attributes = layoutParams
+        ScreenUtils.resetBrightness(window)
     }
 }
