@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.navigation
 
+import android.graphics.Color
 import android.location.Location
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
@@ -56,9 +57,9 @@ class NavigationServiceTest {
     fun nearby() {
         val mtWashington = Coordinate(44.2706, -71.3036)
         val beacons = listOf(
-            Beacon(0, "Tip top house", Coordinate(44.2705, -71.3036)),
-            Beacon(1, "Crawford", Coordinate(44.2709, -71.3056)),
-            Beacon(2, "Pinkham", Coordinate(44.2571, -71.2530))
+            Beacon(0, "Tip top house", Coordinate(44.2705, -71.3036), color = Color.BLACK),
+            Beacon(1, "Crawford", Coordinate(44.2709, -71.3056), color = Color.BLACK),
+            Beacon(2, "Pinkham", Coordinate(44.2571, -71.2530), color = Color.BLACK)
         )
 
         val near5km = service.nearby(mtWashington, beacons, 5000f).map { it.id }
@@ -76,7 +77,7 @@ class NavigationServiceTest {
 
         val destination = Coordinate(44.2706, -71.3036)
         val destinationAltitude = 1900f
-        val beacon = Beacon(0, "", destination, elevation = destinationAltitude)
+        val beacon = Beacon(0, "", destination, elevation = destinationAltitude, color = Color.BLACK)
 
         val linearEta = service.eta(Position(location, altitude, Bearing(0f), speed), beacon, false)
         val nonLinearEta = service.eta(Position(location, altitude, Bearing(0f), speed), beacon, true)
