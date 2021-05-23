@@ -33,7 +33,15 @@ class GameRotationSensor(context: Context) :
 
     override fun handleSensorEvent(event: SensorEvent) {
         synchronized(lock) {
-            event.values.copyInto(_quaternion)
+            SensorManager.getQuaternionFromVector(_quaternion, event.values)
+            val w = _quaternion[0]
+            val x = _quaternion[1]
+            val y = _quaternion[2]
+            val z = _quaternion[3]
+            _quaternion[0] = x
+            _quaternion[1] = y
+            _quaternion[2] = z
+            _quaternion[3] = w
             QuaternionMath.inverse(_quaternion, _quaternion)
         }
         _hasReading = true

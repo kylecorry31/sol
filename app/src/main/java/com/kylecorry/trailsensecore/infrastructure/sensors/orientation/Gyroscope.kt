@@ -64,8 +64,8 @@ class Gyroscope(context: Context, private val threshold: Float = 0.00001f) :
         lastTime = event.timestamp
 
 
-        var axisX = -event.values[0]
-        var axisY = -event.values[1]
+        var axisX = -event.values[1]
+        var axisY = -event.values[0]
         var axisZ = -event.values[2]
 
         val omegaMagnitude = sqrt(axisX * axisX + axisY * axisY + axisZ * axisZ)
@@ -81,8 +81,8 @@ class Gyroscope(context: Context, private val threshold: Float = 0.00001f) :
         val cosThetaOverTwo = cos(thetaOverTwo)
 
         synchronized(lock) {
-            _angularRate[0] = axisY.toDegrees() * dt
-            _angularRate[1] = axisX.toDegrees() * dt
+            _angularRate[0] = axisX.toDegrees() * dt
+            _angularRate[1] = axisY.toDegrees() * dt
             _angularRate[2] = axisZ.toDegrees() * dt
             deltaRotationVector[0] = sinThetaOverTwo * axisX
             deltaRotationVector[1] = sinThetaOverTwo * axisY
