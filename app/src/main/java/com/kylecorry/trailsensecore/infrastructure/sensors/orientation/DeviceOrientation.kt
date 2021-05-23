@@ -8,7 +8,7 @@ import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.IAccele
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.LowPassAccelerometer
 import kotlin.math.abs
 import kotlin.math.withSign
-
+// TODO: Use the quaternions from the other sensors
 class DeviceOrientation(private val context: Context) : AbstractSensor() {
     override fun startImpl() {
         accelerometer.start(this::onAccelerometer)

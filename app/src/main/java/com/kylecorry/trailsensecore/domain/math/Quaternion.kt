@@ -16,6 +16,12 @@ data class Quaternion(val x: Float, val y: Float, val z: Float, val w: Float) {
         return from(out)
     }
 
+    fun subtractRotation(other: Quaternion): Quaternion {
+        val out = FloatArray(4)
+        QuaternionMath.subtractRotation(arr, other.arr, out)
+        return from(out)
+    }
+
     operator fun plus(other: Quaternion): Quaternion {
         val out = FloatArray(4)
         QuaternionMath.add(arr, other.arr, out)
@@ -70,19 +76,9 @@ data class Quaternion(val x: Float, val y: Float, val z: Float, val w: Float) {
         }
 
         fun from(euler: Euler): Quaternion {
-            val cosY = cosDegrees(euler.yaw / 2.0)
-            val sinY = sinDegrees(euler.yaw / 2.0)
-            val cosP = cosDegrees(euler.pitch / 2.0)
-            val sinP = sinDegrees(euler.pitch / 2.0)
-            val cosR = cosDegrees(euler.roll / 2.0)
-            val sinR = sinDegrees(euler.roll / 2.0)
-
-            val w = cosR * cosP * cosY + sinR * sinP * sinY
-            val x = sinR * cosP * cosY - cosR * sinP * sinY
-            val y = cosR * sinP * cosY + sinR * cosP * sinY
-            val z = cosR * cosP * sinY - sinR * sinP * cosY
-
-            return Quaternion(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+            val out = FloatArray(4)
+            QuaternionMath.fromEuler(euler.toFloatArray(), out)
+            return from(out)
         }
     }
 
@@ -94,6 +90,25 @@ object QuaternionMath {
     const val Y = 1
     const val Z = 2
     const val W = 3
+
+    fun fromEuler(euler: FloatArray, out: FloatArray){
+        val cosY = cosDegrees(euler[2] / 2.0)
+        val sinY = sinDegrees(euler[2] / 2.0)
+        val cosP = cosDegrees(euler[1] / 2.0)
+        val sinP = sinDegrees(euler[1] / 2.0)
+        val cosR = cosDegrees(euler[0] / 2.0)
+        val sinR = sinDegrees(euler[0] / 2.0)
+
+        val w = cosR * cosP * cosY + sinR * sinP * sinY
+        val x = sinR * cosP * cosY - cosR * sinP * sinY
+        val y = cosR * sinP * cosY + sinR * cosP * sinY
+        val z = cosR * cosP * sinY - sinR * sinP * cosY
+
+        out[X] = x.toFloat()
+        out[Y] = y.toFloat()
+        out[Z] = z.toFloat()
+        out[W] = w.toFloat()
+    }
 
     fun rotate(point: FloatArray, quat: FloatArray, out: FloatArray) {
         val u = floatArrayOf(quat[X], quat[Y], quat[Z])
@@ -145,6 +160,13 @@ object QuaternionMath {
         out[Y] = a[Y] + b[Y]
         out[Z] = a[Z] + b[Z]
         out[W] = a[W] + b[W]
+    }
+
+    fun subtractRotation(a: FloatArray, b: FloatArray, out: FloatArray){
+        val inverse = FloatArray(4)
+        inverse(b, inverse)
+        multiply(inverse, a, out)
+        normalize(out, out)
     }
 
     fun subtract(a: FloatArray, b: FloatArray, out: FloatArray) {

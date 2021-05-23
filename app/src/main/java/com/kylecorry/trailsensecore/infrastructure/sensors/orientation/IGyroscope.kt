@@ -1,5 +1,8 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 
-interface IGyroscope: IRotationSensor {
-    fun calibrate()
+import com.kylecorry.trailsensecore.domain.math.Euler
+
+interface IGyroscope: IOrientationSensor {
+    val angularRate: Euler
+    val rawAngularRate: FloatArray
 }

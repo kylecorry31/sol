@@ -14,22 +14,22 @@ class Gyroscope(context: Context, private val threshold: Float = 0.00001f) :
     BaseSensor(context, Sensor.TYPE_GYROSCOPE, SensorManager.SENSOR_DELAY_FASTEST),
     IGyroscope {
 
-    override val rawEuler: FloatArray
+    override val angularRate: Euler
         get() {
             return synchronized(lock) {
-                val euler = FloatArray(3)
-                QuaternionMath.toEuler(_quaternion, euler)
-                euler
+                Euler.from(_angularRate)
             }
         }
 
-    override val euler: Euler
-        get() = Euler.from(rawEuler)
+    override val rawAngularRate: FloatArray
+        get() = synchronized(lock) {
+            _angularRate.clone()
+        }
 
-    override val quaternion: Quaternion
-        get() = Quaternion.from(rawQuaternion)
+    override val orientation: Quaternion
+        get() = Quaternion.from(rawOrientation)
 
-    override val rawQuaternion: FloatArray
+    override val rawOrientation: FloatArray
         get() {
             return synchronized(lock) {
                 _quaternion.clone()
@@ -37,6 +37,7 @@ class Gyroscope(context: Context, private val threshold: Float = 0.00001f) :
         }
 
     private val _quaternion = Quaternion.zero.toFloatArray()
+    private val _angularRate = FloatArray(3)
 
     private val NS2S = 1.0f / 1000000000.0f
 
@@ -80,6 +81,9 @@ class Gyroscope(context: Context, private val threshold: Float = 0.00001f) :
         val cosThetaOverTwo = cos(thetaOverTwo)
 
         synchronized(lock) {
+            _angularRate[0] = axisY.toDegrees() * dt
+            _angularRate[1] = axisX.toDegrees() * dt
+            _angularRate[2] = axisZ.toDegrees() * dt
             deltaRotationVector[0] = sinThetaOverTwo * axisX
             deltaRotationVector[1] = sinThetaOverTwo * axisY
             deltaRotationVector[2] = sinThetaOverTwo * axisZ
@@ -90,16 +94,4 @@ class Gyroscope(context: Context, private val threshold: Float = 0.00001f) :
 
         _hasReading = true
     }
-
-
-    override fun calibrate() {
-        synchronized(lock) {
-            _quaternion[0] = 0f
-            _quaternion[1] = 0f
-            _quaternion[2] = 0f
-            _quaternion[3] = 1f
-        }
-    }
-
-
 }

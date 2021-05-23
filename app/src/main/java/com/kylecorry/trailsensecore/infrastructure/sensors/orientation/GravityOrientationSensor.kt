@@ -1,8 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 
 import android.content.Context
-import com.kylecorry.trailsensecore.domain.math.Vector3
-import com.kylecorry.trailsensecore.domain.math.toDegrees
+import com.kylecorry.trailsensecore.domain.math.*
 import com.kylecorry.trailsensecore.domain.units.Quality
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
@@ -13,10 +12,7 @@ import kotlin.math.atan2
 import kotlin.math.sqrt
 
 // Algorithm from https://www.digikey.com/en/articles/using-an-accelerometer-for-inclination-sensing
-class DeviceOrientationSensor(context: Context) : AbstractSensor(), IOrientationSensor {
-
-    override val orientation: Vector3
-        get() = _angle
+class GravityOrientationSensor(context: Context) : AbstractSensor(), IOrientationSensor {
 
     override val hasValidReading: Boolean
         get() = gotReading
@@ -25,25 +21,36 @@ class DeviceOrientationSensor(context: Context) : AbstractSensor(), IOrientation
 
     override val quality: Quality
         get() = _quality
+
+    private val lock = Object()
+
+    override val orientation: Quaternion
+        get() = Quaternion.from(rawOrientation)
+
+    override val rawOrientation: FloatArray
+        get() = synchronized(lock){
+            _quaternion.clone()
+        }
+
+    private val _quaternion = Quaternion.zero.toFloatArray()
+
     private var _quality = Quality.Unknown
 
     private val sensorChecker = SensorChecker(context)
     private val accelerometer: IAccelerometer =
         if (sensorChecker.hasGravity()) GravitySensor(context) else LowPassAccelerometer(context)
 
-    private var _angle = Vector3.zero
-
     private fun updateSensor(): Boolean {
 
         // Gravity
-        val gravity = accelerometer.acceleration
+        val gravity = accelerometer.rawAcceleration
 
-        // TODO: Extract this logic
-        _angle = Vector3(
-            atan2(gravity.x, sqrt(gravity.y * gravity.y + gravity.z * gravity.z)).toDegrees(),
-            -atan2(gravity.y, sqrt(gravity.x * gravity.x + gravity.z * gravity.z)).toDegrees(),
-            atan2(sqrt(gravity.x * gravity.x + gravity.y * gravity.y), gravity.z).toDegrees(),
-        )
+        val roll = atan2(gravity[0], sqrt(gravity[1] * gravity[1] + gravity[2] * gravity[2])).toDegrees()
+        val pitch = -atan2(gravity[1], sqrt(gravity[0] * gravity[0] + gravity[2] * gravity[2])).toDegrees()
+
+        synchronized(lock) {
+            QuaternionMath.fromEuler(floatArrayOf(roll, pitch, 0f), _quaternion)
+        }
 
         _quality = accelerometer.quality
 
