@@ -17,6 +17,30 @@ class GeoService : IGeoService {
         return geoField.declination
     }
 
+    override fun getInclination(coordinate: Coordinate, altitude: Float?, time: Long): Float {
+        val geoField = GeomagneticField(
+            coordinate.latitude.toFloat(),
+            coordinate.longitude.toFloat(),
+            altitude ?: 0f,
+            time
+        )
+        return geoField.inclination
+    }
+
+    override fun getGeomagneticField(
+        coordinate: Coordinate,
+        altitude: Float?,
+        time: Long
+    ): Vector3 {
+        val geoField = GeomagneticField(
+            coordinate.latitude.toFloat(),
+            coordinate.longitude.toFloat(),
+            altitude ?: 0f,
+            time
+        )
+        return Vector3(geoField.x * 0.001f, geoField.y * 0.001f, geoField.z * 0.001f)
+    }
+
     override fun getAzimuth(gravity: FloatArray, magneticField: FloatArray): Bearing? {
         return AzimuthCalculator.calculate(gravity, magneticField)
     }

@@ -18,6 +18,10 @@ fun ZonedDateTime.atStartOfDay(): ZonedDateTime {
     return ZonedDateTime.of(this.toLocalDate(), LocalTime.MIN, this.zone)
 }
 
+fun ZonedDateTime.atEndOfDay(): ZonedDateTime {
+    return ZonedDateTime.of(this.toLocalDate(), LocalTime.MAX, this.zone)
+}
+
 fun LocalDateTime.roundNearestMinute(minutes: Long): LocalDateTime {
     val minute = this.minute
     val newMinute = (minute / minutes) * minutes

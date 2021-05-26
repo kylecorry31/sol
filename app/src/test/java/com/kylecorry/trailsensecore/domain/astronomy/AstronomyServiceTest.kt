@@ -2,8 +2,14 @@ package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
+import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.trailsensecore.domain.math.Euler
+import com.kylecorry.trailsensecore.domain.math.Quaternion
+import com.kylecorry.trailsensecore.domain.math.Vector3
+import com.kylecorry.trailsensecore.domain.math.deltaAngle
 import com.kylecorry.trailsensecore.domain.time.Season
+import com.kylecorry.trailsensecore.domain.time.atStartOfDay
 import com.kylecorry.trailsensecore.domain.time.duration
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.assertDuration
@@ -15,6 +21,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
+import kotlin.math.absoluteValue
 
 class AstronomyServiceTest {
 
@@ -128,44 +135,43 @@ class AstronomyServiceTest {
     }
 
     @Test
-    fun getBestSolarPanelPositionForDay(){
-        // TODO: Test in southern hemisphere
+    fun getBestSolarPanelPositionForDayNorthern(){
         val ny = Coordinate(40.7128, -74.0060)
+
         parametrized(
             listOf(
-                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 180f, 20.43502f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 180f, 61.01094f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 180f, 61.01094f),
+                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 179f, 22.5f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 180f, 65.7f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 180f, 65.7f),
             )
         ) {
             val position = service.getBestSolarPanelPositionForDay(
                 ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
                 ny
             )
-            assertEquals(it.second, position.bearing.value, 0.05f)
-            assertEquals(it.third, position.angle, 0.05f)
+            assertEquals(it.second, position.bearing.value, 0.5f)
+            assertEquals(it.third, position.tilt, 0.5f)
         }
     }
 
-//    @Test
-//    fun getBestSolarPanelPositionForTime(){
-//        // TODO: Test in southern hemisphere
-//        val ny = Coordinate(40.7128, -74.0060)
-//        parametrized(
-//            listOf(
-//                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 180f, 20.43502f),
-//                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 180f, 61.01094f),
-//                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 180f, 61.01094f),
-//            )
-//        ) {
-//            val position = service.getBestSolarPanelPositionForTime(
-//                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-//                ny
-//            )
-//            assertEquals(it.second, position.bearing.value, 0.05f)
-//            assertEquals(it.third, position.angle, 0.05f)
-//        }
-//    }
+    @Test
+    fun getBestSolarPanelPositionForDaySouthern(){
+        val ny = Coordinate(-40.7128, -74.0060)
+        parametrized(
+            listOf(
+                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 359f, 60.96f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 2f, 20.39f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 2f, 20.39f),
+            )
+        ) {
+            val position = service.getBestSolarPanelPositionForDay(
+                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
+                ny
+            )
+            assertEquals(it.second, position.bearing.value, 0.5f)
+            assertEquals(it.third, position.tilt, 0.05f)
+        }
+    }
 
     @Test
     fun getSunAzimuth() {

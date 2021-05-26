@@ -14,7 +14,6 @@ import java.time.Duration
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
-import kotlin.math.max
 
 class AstronomyService : IAstronomyService {
 
@@ -138,23 +137,58 @@ class AstronomyService : IAstronomyService {
         }
     }
 
-    override fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition {
-        var maximum = 0f
+    override fun getBestSolarPanelPositionForRestOfDay(start: ZonedDateTime, location: Coordinate): SolarPanelPosition {
         val interval = 5L
 
-        var time = date.withHour(0).withMinute(0).withSecond(0)
+        var time = start
 
-        while(time.toLocalDate() == date.toLocalDate()){
+        var averageAzimuth = 0f
+        var averageAltitude = 0f
+        var count = 0
+
+        while(time.toLocalDate() == start.toLocalDate()){
             val altitude = getSunAltitude(time, location, true)
+
             if (altitude >= 0){
-                maximum = max(altitude, maximum)
+                averageAzimuth += getSunAzimuth(time, location).value
+                count++
             }
             time = time.plusMinutes(interval)
         }
 
-        val angle = 90f - maximum
-        val direction = getOptimalSolarDirection(location)
+        if (count != 0){
+            averageAzimuth /= count
+        }
+
+        // Only get altitudes close to the average azimuth
+        time = start
+        count = 0
+        while(time.toLocalDate() == start.toLocalDate()){
+            val altitude = getSunAltitude(time, location, true)
+
+            if (altitude >= 0){
+                val azimuth = getSunAzimuth(time, location).value
+                if (deltaAngle(azimuth, averageAzimuth).absoluteValue < 45f){
+                    averageAltitude += altitude
+                    count++
+                }
+            }
+            time = time.plusMinutes(interval)
+        }
+
+        if (count != 0){
+            averageAltitude /= count
+        }
+
+        val angle = 90f - averageAltitude
+        val direction = Bearing(averageAzimuth)
         return SolarPanelPosition(angle, direction)
+    }
+
+
+    override fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition {
+        val start = date.withHour(0).withMinute(0).withSecond(0)
+        return getBestSolarPanelPositionForRestOfDay(start, location)
     }
 
     override fun getBestSolarPanelPositionForTime(time: ZonedDateTime, location: Coordinate): SolarPanelPosition {

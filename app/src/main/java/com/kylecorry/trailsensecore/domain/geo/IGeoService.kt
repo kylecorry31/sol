@@ -7,6 +7,10 @@ interface IGeoService {
 
     fun getDeclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
 
+    fun getInclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
+
+    fun getGeomagneticField(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Vector3
+
     fun getAzimuth(gravity: FloatArray, magneticField: FloatArray): Bearing?
 
     fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing?

@@ -7,8 +7,8 @@ import com.kylecorry.trailsensecore.domain.health.heart.PulseOxygenCategory
 import com.kylecorry.trailsensecore.domain.health.temperature.BodyTemperature
 import com.kylecorry.trailsensecore.domain.health.temperature.TemperatureService
 import com.kylecorry.trailsensecore.domain.health.weight.BMI
-import com.kylecorry.trailsensecore.domain.health.weight.Weight
-import com.kylecorry.trailsensecore.domain.health.weight.WeightUnits
+import com.kylecorry.trailsensecore.domain.units.Weight
+import com.kylecorry.trailsensecore.domain.units.WeightUnits
 import com.kylecorry.trailsensecore.domain.units.Distance
 import com.kylecorry.trailsensecore.domain.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.units.Temperature

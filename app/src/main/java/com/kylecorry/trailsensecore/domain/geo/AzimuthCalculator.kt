@@ -9,7 +9,7 @@ import kotlin.math.atan2
 
 internal object AzimuthCalculator {
 
-    fun calculate(gravity: FloatArray, magneticField: FloatArray): Bearing? {
+    fun calculate(gravity: FloatArray, magneticField: FloatArray, includeMagnitudeCheck: Boolean = true): Bearing? {
         // Gravity
         val normGravity = Vector3Utils.normalize(gravity)
         val normMagField = Vector3Utils.normalize(magneticField)
@@ -22,7 +22,7 @@ internal object AzimuthCalculator {
         val eastMagnitude = Vector3Utils.magnitude(east)
         val gravityMagnitude = Vector3Utils.magnitude(gravity)
         val magneticMagnitude = Vector3Utils.magnitude(magneticField)
-        if (gravityMagnitude * magneticMagnitude * eastMagnitude < 0.1f) {
+        if (includeMagnitudeCheck && gravityMagnitude * magneticMagnitude * eastMagnitude < 0.1f) {
             return null
         }
 
@@ -45,8 +45,8 @@ internal object AzimuthCalculator {
     }
 
 
-    fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
-       return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
+    fun calculate(gravity: Vector3, magneticField: Vector3, includeMagnitudeCheck: Boolean = true): Bearing? {
+       return calculate(gravity.toFloatArray(), magneticField.toFloatArray(), includeMagnitudeCheck)
     }
 
 }

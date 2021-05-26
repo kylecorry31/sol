@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain.health.weight
+package com.kylecorry.trailsensecore.domain.units
 
 data class Weight(val weight: Float, val units: WeightUnits){
     fun convertTo(newUnits: WeightUnits): Weight {

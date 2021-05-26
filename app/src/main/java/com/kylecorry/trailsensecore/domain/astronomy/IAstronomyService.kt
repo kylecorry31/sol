@@ -39,6 +39,7 @@ interface IAstronomyService {
     fun getDaylightLength(date: ZonedDateTime, location: Coordinate): Duration
 
     // SOLAR PANELS
+    fun getBestSolarPanelPositionForRestOfDay(start: ZonedDateTime, location: Coordinate): SolarPanelPosition
     fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition
     fun getBestSolarPanelPositionForTime(time: ZonedDateTime, location: Coordinate): SolarPanelPosition
 
