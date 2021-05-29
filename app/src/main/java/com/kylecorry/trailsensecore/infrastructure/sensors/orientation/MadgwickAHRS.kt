@@ -16,18 +16,18 @@ import kotlin.math.absoluteValue
 class MadgwickAHRS(
     private val context: Context,
     gain: Float = 2f,
-    private val useLowPass: Boolean = true
+    private val accelerometer: IAccelerometer? = null,
+    private val gyro: IGyroscope? = null,
+    private val magnetometer: IMagnetometer? = null
 ) : AbstractSensor(),
     IOrientationSensor {
 
-    private val accelerometer: IAccelerometer by lazy {
-        if (useLowPass) LowPassAccelerometer(context)
-        else Accelerometer(context)
+    private val _accelerometer: IAccelerometer by lazy {
+        accelerometer ?: LowPassAccelerometer(context)
     }
-    private val gyro by lazy { Gyroscope(context) }
-    private val magnetometer: IMagnetometer by lazy {
-        if (useLowPass) LowPassMagnetometer(context)
-        else Magnetometer(context)
+    private val _gyro by lazy { gyro ?: Gyroscope(context) }
+    private val _magnetometer: IMagnetometer by lazy {
+        magnetometer ?: LowPassMagnetometer(context)
     }
 
     private val lock = Object()
@@ -64,16 +64,16 @@ class MadgwickAHRS(
         }
 
         madgwick.update(
-            Euler(-gyro.angularRate.pitch, -gyro.angularRate.roll, gyro.angularRate.yaw),
+            Euler(-_gyro.angularRate.pitch, -_gyro.angularRate.roll, _gyro.angularRate.yaw),
             Vector3(
-                magnetometer.magneticField.y,
-                magnetometer.magneticField.x,
-                magnetometer.magneticField.z
+                _magnetometer.magneticField.y,
+                _magnetometer.magneticField.x,
+                _magnetometer.magneticField.z
             ),
             Vector3(
-                accelerometer.acceleration.y,
-                accelerometer.acceleration.x,
-                accelerometer.acceleration.z
+                _accelerometer.acceleration.y,
+                _accelerometer.acceleration.x,
+                _accelerometer.acceleration.z
             ),
             dt
         )
@@ -111,15 +111,15 @@ class MadgwickAHRS(
     }
 
     override fun startImpl() {
-        accelerometer.start(this::onAccelUpdate)
-        magnetometer.start(this::onMagUpdate)
-        gyro.start(this::onGyroUpdate)
+        _accelerometer.start(this::onAccelUpdate)
+        _magnetometer.start(this::onMagUpdate)
+        _gyro.start(this::onGyroUpdate)
     }
 
     override fun stopImpl() {
-        accelerometer.stop(this::onAccelUpdate)
-        magnetometer.stop(this::onMagUpdate)
-        gyro.stop(this::onGyroUpdate)
+        _accelerometer.stop(this::onAccelUpdate)
+        _magnetometer.stop(this::onMagUpdate)
+        _gyro.stop(this::onGyroUpdate)
     }
 
     private class Madgwick(private val gain: Float = 0.1f) {
