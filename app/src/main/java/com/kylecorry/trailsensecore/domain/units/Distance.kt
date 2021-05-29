@@ -39,6 +39,10 @@ data class Distance(val distance: Float, val units: DistanceUnits) {
             return Distance(distance, DistanceUnits.NauticalMiles)
         }
 
+        fun yards(distance: Float): Distance {
+            return Distance(distance, DistanceUnits.Yards)
+        }
+
     }
 
 }
