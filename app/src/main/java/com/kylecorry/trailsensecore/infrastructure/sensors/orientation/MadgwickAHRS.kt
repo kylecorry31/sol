@@ -22,6 +22,8 @@ class MadgwickAHRS(
 ) : AbstractSensor(),
     IOrientationSensor {
 
+    private val _orientation = Quaternion.zero.toFloatArray()
+
     private val _accelerometer: IAccelerometer by lazy {
         accelerometer ?: LowPassAccelerometer(context)
     }
@@ -41,7 +43,6 @@ class MadgwickAHRS(
             }
         }
 
-    private val _orientation = Quaternion.zero.toFloatArray()
 
     private var hasMag = false
     private var hasAcc = false
