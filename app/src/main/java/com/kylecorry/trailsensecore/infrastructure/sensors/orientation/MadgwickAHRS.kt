@@ -34,7 +34,8 @@ class MadgwickAHRS(
 
     private val lock = Object()
 
-    override val orientation = Quaternion.from(rawOrientation)
+    override val orientation
+        get() = Quaternion.from(rawOrientation)
 
     override val rawOrientation: FloatArray
         get() {
