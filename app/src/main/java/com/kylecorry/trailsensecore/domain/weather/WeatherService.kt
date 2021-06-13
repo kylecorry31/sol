@@ -2,6 +2,9 @@ package com.kylecorry.trailsensecore.domain.weather
 
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.time.Season
+import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.domain.units.Temperature
+import com.kylecorry.trailsensecore.domain.units.TemperatureUnits
 import com.kylecorry.trailsensecore.domain.weather.clouds.*
 import java.time.Duration
 import java.time.Instant
@@ -143,6 +146,18 @@ class WeatherService : IWeatherService {
             d >= LocalDate.of(d.year, 3, 1) -> if (north) Season.Spring else Season.Fall
             else -> if (north) Season.Winter else Season.Summer
         }
+    }
+
+    override fun getTemperatureAtElevation(
+        temperature: Temperature,
+        baseElevation: Distance,
+        destElevation: Distance
+    ): Temperature {
+        val celsius = temperature.celsius().temperature
+        val baseMeters = baseElevation.meters().distance
+        val destMeters = destElevation.meters().distance
+        val temp = celsius - 0.0065f * (destMeters - baseMeters)
+        return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
     }
 
     override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {

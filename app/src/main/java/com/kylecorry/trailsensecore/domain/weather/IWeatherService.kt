@@ -2,6 +2,8 @@ package com.kylecorry.trailsensecore.domain.weather
 
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.time.Season
+import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.trailsensecore.domain.units.Temperature
 import com.kylecorry.trailsensecore.domain.weather.clouds.ICloudService
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -75,4 +77,13 @@ interface IWeatherService : ICloudService {
     fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float?
 
     fun getMeteorologicalSeason(location: Coordinate, date: ZonedDateTime): Season
+
+    /**
+     * Calculates the temperature at an elevation
+     * @param temperature the temperature at the base elevation
+     * @param baseElevation the elevation in which the temperature reading was taken
+     * @param destElevation the elevation of the destination
+     * @return the temperature at the destination
+     */
+    fun getTemperatureAtElevation(temperature: Temperature, baseElevation: Distance, destElevation: Distance): Temperature
 }
