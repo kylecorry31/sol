@@ -105,10 +105,10 @@ class AstronomyService : IAstronomyService {
         return getSunAltitude(time, location, withRefraction) > 0
     }
 
-    override fun getDaylightLength(date: ZonedDateTime, location: Coordinate): Duration {
+    override fun getDaylightLength(date: ZonedDateTime, location: Coordinate, sunTimesMode: SunTimesMode): Duration {
         val startOfDay = date.atStartOfDay()
-        val sunrise = getNextSunrise(startOfDay, location)
-        val sunset = getNextSunset(startOfDay, location)
+        val sunrise = getNextSunrise(startOfDay, location, sunTimesMode)
+        val sunset = getNextSunset(startOfDay, location, sunTimesMode)
 
         if (sunrise != null && sunset != null && sunset > sunrise){
             // Rise in morning, set at night
