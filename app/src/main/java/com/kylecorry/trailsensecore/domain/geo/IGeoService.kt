@@ -22,6 +22,6 @@ interface IGeoService {
 
     fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance
 
-    fun getMapUrl(coordinate: Coordinate, map: MapSite)
+    fun getMapUrl(coordinate: Coordinate, map: MapSite): String
 
 }

@@ -77,7 +77,7 @@ class GeoService : IGeoService {
         return Distance(ratioTo * measurement.distance / ratioFrom, measurement.units)
     }
 
-    override fun getMapUrl(coordinate: Coordinate, map: MapSite) {
-        return mapU
+    override fun getMapUrl(coordinate: Coordinate, map: MapSite): String {
+        return mapUrlGenerator.getUrl(coordinate, map)
     }
 }
