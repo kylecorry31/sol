@@ -55,6 +55,7 @@ class DeviceOrientation(private val context: Context) : AbstractSensor() {
 
         gotReading = true
 
+        notifyListeners()
         return true
     }
 
