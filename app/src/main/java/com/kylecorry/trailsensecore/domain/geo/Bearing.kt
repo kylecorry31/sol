@@ -18,6 +18,8 @@ class Bearing(_value: Float){
                 return CompassDirection.North
             }
 
+    val mils: Float = value * 17.7777778f
+
     fun withDeclination(declination: Float): Bearing {
         return Bearing(value + declination)
     }
