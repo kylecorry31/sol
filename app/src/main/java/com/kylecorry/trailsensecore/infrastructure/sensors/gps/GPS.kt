@@ -14,15 +14,13 @@ import com.kylecorry.trailsensecore.domain.units.Speed
 import com.kylecorry.trailsensecore.domain.units.TimeUnits
 import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
-import java.time.Duration
 import java.time.Instant
-
 
 @SuppressLint("MissingPermission")
 class GPS(private val context: Context, private val notifyNmeaChanges: Boolean = false) : AbstractSensor(), IGPS {
 
     override val hasValidReading: Boolean
-        get() = hadRecentValidReading()
+        get() = location != Coordinate.zero
 
     override val satellites: Int
         get() = _satellites
@@ -177,12 +175,5 @@ class GPS(private val context: Context, private val notifyNmeaChanges: Boolean =
         }
 
         if (notify) notifyListeners()
-    }
-
-    private fun hadRecentValidReading(): Boolean {
-        val last = time
-        val now = Instant.now()
-        val recentThreshold = Duration.ofMinutes(2)
-        return Duration.between(last, now) <= recentThreshold && location != Coordinate.zero
     }
 }
