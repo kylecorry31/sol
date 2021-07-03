@@ -159,9 +159,9 @@ class AstronomyServiceTest {
         val ny = Coordinate(-40.7128, -74.0060)
         parametrized(
             listOf(
-                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 359f, 60.96f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 2f, 20.39f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 2f, 20.39f),
+                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 360f, 65.68f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 360f, 22.54f),
+                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 360f, 22.54f),
             )
         ) {
             val position = service.getBestSolarPanelPositionForDay(

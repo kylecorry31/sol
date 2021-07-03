@@ -149,8 +149,13 @@ class AstronomyService : IAstronomyService {
         while(time.toLocalDate() == start.toLocalDate()){
             val altitude = getSunAltitude(time, location, true)
 
+            val wrapAzimuth = !location.isNorthernHemisphere
             if (altitude >= 0){
-                averageAzimuth += getSunAzimuth(time, location).value
+                var azimuth = getSunAzimuth(time, location).value
+                if (wrapAzimuth && azimuth < 180f){
+                    azimuth += 360f
+                }
+                averageAzimuth += azimuth
                 count++
             }
             time = time.plusMinutes(interval)
