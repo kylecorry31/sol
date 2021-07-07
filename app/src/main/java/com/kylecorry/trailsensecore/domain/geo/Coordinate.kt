@@ -9,6 +9,7 @@ import com.kylecorry.trailsensecore.infrastructure.text.DecimalFormatter
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
 import gov.nasa.worldwind.geom.coords.MGRSCoord
+import gov.nasa.worldwind.geom.coords.UPSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -74,7 +75,12 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     fun toDegreeMinutesSeconds(precision: Int = 1): String {
         val latDir = if (latitude < 0) "S" else "N"
         val lngDir = if (longitude < 0) "W" else "E"
-        return "${dmsString(latitude, precision)}${latDir}    ${dmsString(longitude, precision)}${lngDir}"
+        return "${dmsString(latitude, precision)}${latDir}    ${
+            dmsString(
+                longitude,
+                precision
+            )
+        }${lngDir}"
     }
 
     fun toMGRS(precision: Int = 5): String {
@@ -83,7 +89,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             val lng = Angle.fromDegreesLongitude(longitude)
             val mgrs = MGRSCoord.fromLatLon(lat, lng, precision)
             mgrs.toString().trim()
-        } catch (e: Exception){
+        } catch (e: Exception) {
             "?"
         }
     }
@@ -107,7 +113,37 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
             return "$zone$letter $easting $northing"
         } catch (e: Exception) {
-            // TODO: Support UPS coordinate system
+            return toUPS(precision)
+        }
+    }
+
+    private fun toUPS(precision: Int = 7): String {
+        try {
+            val lat = Angle.fromDegreesLatitude(latitude)
+            val lng = Angle.fromDegreesLongitude(longitude)
+            val ups = UPSCoord.fromLatLon(lat, lng)
+
+            val easting =
+                roundUTMPrecision(precision, ups.easting.toInt()).toString().padStart(7, '0') + "E"
+            val northing =
+                roundUTMPrecision(precision, ups.northing.toInt()).toString().padStart(7, '0') + "N"
+
+            val letter = if (isNorthernHemisphere) {
+                if (latitude == 90.0 || longitude >= 0) {
+                    'Z'
+                } else {
+                    'Y'
+                }
+            } else {
+                if (latitude == -90.0 || longitude >= 0) {
+                    'B'
+                } else {
+                    'A'
+                }
+            }
+
+            return "$letter $easting $northing"
+        } catch (e: Exception) {
             return "?"
         }
     }
@@ -166,7 +202,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             return try {
                 val mgrs = MGRSCoord.fromString(location)
                 Coordinate(mgrs.latitude.degrees, mgrs.longitude.degrees)
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 null
             }
         }
@@ -175,7 +211,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             val regex = Regex("^(-?\\d+(?:[.,]\\d+)?)°?[,\\s]+(-?\\d+(?:[.,]\\d+)?)°?\$")
             val matches = regex.find(location.trim()) ?: return null
             val latitude = matches.groupValues[1].toDoubleCompat() ?: return null
-            val longitude = matches.groupValues[2].toDoubleCompat() ?:  return null
+            val longitude = matches.groupValues[2].toDoubleCompat() ?: return null
 
             if (isValidLatitude(latitude) && isValidLongitude(longitude)) {
                 return Coordinate(latitude, longitude)
@@ -185,7 +221,8 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         }
 
         private fun fromDegreesDecimalMinutes(location: String): Coordinate? {
-            val ddmRegex = Regex("^(\\d+)°\\s*(\\d+(?:[.,]\\d+)?)'\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+(?:[.,]\\d+)?)'\\s*([wWeE])\$")
+            val ddmRegex =
+                Regex("^(\\d+)°\\s*(\\d+(?:[.,]\\d+)?)'\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+(?:[.,]\\d+)?)'\\s*([wWeE])\$")
             val matches = ddmRegex.find(location.trim()) ?: return null
 
             var latitudeDecimal = 0.0
@@ -231,10 +268,10 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
         private fun fromUTM(utm: String): Coordinate? {
             val regex =
-                Regex("(\\d+)\\s*([c-x,C-X^ioIO])\\s*(\\d+(?:[.,]\\d+)?)[\\smMeE]+(\\d+(?:[.,]\\d+)?)[\\smMnN]*")
+                Regex("(\\d*)\\s*([a-z,A-Z^ioIO])\\s*(\\d+(?:[.,]\\d+)?)[\\smMeE]+(\\d+(?:[.,]\\d+)?)[\\smMnN]*")
             val matches = regex.find(utm) ?: return null
 
-            val zone = matches.groupValues[1].toInt()
+            val zone = matches.groupValues[1].toIntOrNull() ?: 0
             val letter = matches.groupValues[2].toCharArray().first()
             val easting = matches.groupValues[3].toDoubleCompat() ?: 0.0
             val northing = matches.groupValues[4].toDoubleCompat() ?: 0.0
@@ -242,17 +279,40 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             return fromUTM(zone, letter, easting, northing)
         }
 
-        private fun fromUTM(zone: Int, letter: Char, easting: Double, northing: Double): Coordinate? {
+        private fun fromUTM(
+            zone: Int,
+            letter: Char,
+            easting: Double,
+            northing: Double
+        ): Coordinate? {
+            val polarLetters = listOf('A', 'B', 'Y', 'Z')
             return try {
+                if (polarLetters.contains(letter.uppercaseChar())){
+                    // Get it into the catch block
+                    throw Exception()
+                }
                 val latLng = UTMCoord.locationFromUTMCoord(
                     zone,
-                    if (letter.toUpperCase() <= 'M') AVKey.SOUTH else AVKey.NORTH,
+                    if (letter.uppercaseChar() <= 'M') AVKey.SOUTH else AVKey.NORTH,
                     easting,
                     northing
                 )
                 Coordinate(latLng.latitude.degrees, latLng.longitude.degrees)
             } catch (e: Exception) {
-                null
+                val letters = listOf('A', 'B', 'Y', 'Z')
+                if (zone != 0 || !letters.contains(letter.uppercaseChar())){
+                    return null
+                }
+                try {
+                    val latLng = UPSCoord.fromUPS(
+                        if (letter.uppercaseChar() <= 'M') AVKey.SOUTH else AVKey.NORTH,
+                        easting,
+                        northing
+                    )
+                    Coordinate(latLng.latitude.degrees, latLng.longitude.degrees)
+                } catch (e2: Exception) {
+                    null
+                }
             }
         }
 

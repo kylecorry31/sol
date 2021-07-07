@@ -10,7 +10,7 @@ import java.util.stream.Stream
 class CoordinateTest {
 
     @Test
-    fun isNorthernHemisphere(){
+    fun isNorthernHemisphere() {
         Assert.assertTrue(Coordinate(1.0, 0.0).isNorthernHemisphere)
         Assert.assertFalse(Coordinate(-1.0, 0.0).isNorthernHemisphere)
         Assert.assertFalse(Coordinate(0.0, 0.0).isNorthernHemisphere)
@@ -37,6 +37,21 @@ class CoordinateTest {
         Assert.assertEquals("19T 0280000E 4670000N", Coordinate(42.1948, -71.6295).toUTM(3))
         Assert.assertEquals("19T 0200000E 4600000N", Coordinate(42.1948, -71.6295).toUTM(2))
         Assert.assertEquals("19T 0000000E 4000000N", Coordinate(42.1948, -71.6295).toUTM(1))
+
+        // Polar zones
+        Assert.assertEquals("A 1998062E 1888990N", Coordinate(-89.0, -179.0).toUTM())
+        Assert.assertEquals("A 1998062E 2111009N", Coordinate(-89.0, -1.0).toUTM())
+        Assert.assertEquals("B 2019279E 2109339N", Coordinate(-89.0, 10.0).toUTM())
+        Assert.assertEquals("B 2000000E 2111026N", Coordinate(-89.0, 0.0).toUTM())
+        Assert.assertEquals("B 2000000E 2000000N", Coordinate(-90.0, 0.0).toUTM())
+        Assert.assertEquals("B 2000000E 2000000N", Coordinate(-90.0, -80.0).toUTM())
+
+        Assert.assertEquals("Y 1998062E 2111009N", Coordinate(89.0, -179.0).toUTM())
+        Assert.assertEquals("Y 1998062E 1888990N", Coordinate(89.0, -1.0).toUTM())
+        Assert.assertEquals("Z 2019279E 1890660N", Coordinate(89.0, 10.0).toUTM())
+        Assert.assertEquals("Z 2000000E 1888973N", Coordinate(89.0, 0.0).toUTM())
+        Assert.assertEquals("Z 2000000E 2000000N", Coordinate(90.0, 0.0).toUTM())
+        Assert.assertEquals("Z 2000000E 2000000N", Coordinate(90.0, -80.0).toUTM())
     }
 
     @Test
@@ -180,6 +195,17 @@ class CoordinateTest {
                 Arguments.of("09e 0353004e 3573063n", Coordinate(-57.9598, -131.4844)),
                 Arguments.of("09 E 0353004 E 3573063 N", Coordinate(-57.9598, -131.4844)),
                 Arguments.of("09E 0353004 E 3573063 N", Coordinate(-57.9598, -131.4844)),
+                // Polar zones UTM
+                Arguments.of("A 1998062E 1888990N", Coordinate(-89.0, -179.0)),
+                Arguments.of("A 1998062E 2111009N", Coordinate(-89.0, -1.0)),
+                Arguments.of("B 2019279E 2109339N", Coordinate(-89.0, 10.0)),
+                Arguments.of("B 2000000E 2111026N", Coordinate(-89.0, 0.0)),
+                Arguments.of("B 2000000E 2000000N", Coordinate(-90.0, 0.0)),
+                Arguments.of("Y 1998062E 2111009N", Coordinate(89.0, -179.0)),
+                Arguments.of("Y 1998062E 1888990N", Coordinate(89.0, -1.0)),
+                Arguments.of("Z 2019279E 1890660N", Coordinate(89.0, 10.0)),
+                Arguments.of("Z 2000000E 1888973N", Coordinate(89.0, 0.0)),
+                Arguments.of("Z 2000000E 2000000N", Coordinate(90.0, 0.0)),
                 // MGRS
                 Arguments.of("27PXM 09601 05579", Coordinate(10.0, -20.0)),
                 Arguments.of("51DVC 65812 22723", Coordinate(-70.1, 122.1)),
