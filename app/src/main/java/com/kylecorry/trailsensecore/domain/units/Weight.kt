@@ -5,7 +5,7 @@ data class Weight(val weight: Float, val units: WeightUnits){
         if (units == newUnits){
             return this
         }
-        val kg = weight * units.kilograms
-        return Weight(kg / newUnits.kilograms, newUnits)
+        val grams = weight * units.grams
+        return Weight(grams / newUnits.grams, newUnits)
     }
 }
