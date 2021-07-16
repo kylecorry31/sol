@@ -84,7 +84,11 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     }
 
     fun toUSNG(precision: Int = 5): String {
-        return toMGRS(precision)
+        val mgrs = toMGRS(precision)
+        if (mgrs.length > 3) {
+            return mgrs.substring(0, 3) + " " + mgrs.substring(3)
+        }
+        return mgrs
     }
 
     fun toMGRS(precision: Int = 5): String {
@@ -292,7 +296,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         ): Coordinate? {
             val polarLetters = listOf('A', 'B', 'Y', 'Z')
             return try {
-                if (polarLetters.contains(letter.uppercaseChar())){
+                if (polarLetters.contains(letter.uppercaseChar())) {
                     // Get it into the catch block
                     throw Exception()
                 }
@@ -305,7 +309,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
                 Coordinate(latLng.latitude.degrees, latLng.longitude.degrees)
             } catch (e: Exception) {
                 val letters = listOf('A', 'B', 'Y', 'Z')
-                if (zone != 0 || !letters.contains(letter.uppercaseChar())){
+                if (zone != 0 || !letters.contains(letter.uppercaseChar())) {
                     return null
                 }
                 try {
