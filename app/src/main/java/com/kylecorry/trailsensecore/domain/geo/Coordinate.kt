@@ -83,6 +83,10 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         }${lngDir}"
     }
 
+    fun toUSNG(precision: Int = 5): String {
+        return toMGRS(precision)
+    }
+
     fun toMGRS(precision: Int = 5): String {
         return try {
             val lat = Angle.fromDegreesLatitude(latitude)
@@ -195,6 +199,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
                 CoordinateFormat.DegreesMinutesSeconds -> fromDegreesMinutesSeconds(location)
                 CoordinateFormat.UTM -> fromUTM(location)
                 CoordinateFormat.MGRS -> fromMGRS(location)
+                CoordinateFormat.USNG -> fromMGRS(location)
             }
         }
 

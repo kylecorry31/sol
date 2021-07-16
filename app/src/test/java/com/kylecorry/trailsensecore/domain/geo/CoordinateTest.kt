@@ -91,6 +91,12 @@ class CoordinateTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideUSNG")
+    fun toUSNG(expected: String, coordinate: Coordinate, precision: Int) {
+        Assert.assertEquals(expected, coordinate.toUSNG(precision))
+    }
+
+    @ParameterizedTest
     @MethodSource("provideLocationStrings")
     fun parse(locationString: String, expected: Coordinate?) {
         assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.001)
@@ -158,6 +164,16 @@ class CoordinateTest {
         }
 
         @JvmStatic
+        fun provideUSNG(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("14SNJ 39521 41744", Coordinate(39.2240867222, -98.5421515000), 5),
+                Arguments.of("18SUJ 23246 05745", Coordinate(38.8828019136, -77.0377807680), 5),
+                Arguments.of("17RKL 70903 50491", Coordinate(27.5589270380, -83.3203125000), 5),
+                Arguments.of("05QKC 72828 79387", Coordinate(20.5998824479, -155.1796880364), 5),
+            )
+        }
+
+        @JvmStatic
         fun provideLocationStrings(): Stream<Arguments> {
             return Stream.of(
                 // DDM
@@ -216,6 +232,16 @@ class CoordinateTest {
                 Arguments.of("27PXM 096 056", Coordinate(10.0, -20.0)),
                 Arguments.of("27PXM 10 06", Coordinate(10.0038, -19.9963)),
                 Arguments.of("27PXM 1 1", Coordinate(10.0399725934, -19.9963)),
+
+                // USNG
+                Arguments.of("14SNJ 39521 41744", Coordinate(39.2240867222, -98.5421515000)),
+                Arguments.of("18SUJ 23246 05745", Coordinate(38.8828019136, -77.0377807680)),
+                Arguments.of("17RKL 70903 50491", Coordinate(27.5589270380, -83.3203125000)),
+                Arguments.of("05QKC 72828 79387", Coordinate(20.5998824479, -155.1796880364)),
+                Arguments.of("14SNJ3952141744", Coordinate(39.2240867222, -98.5421515000)),
+                Arguments.of("18SUJ2324605745", Coordinate(38.8828019136, -77.0377807680)),
+                Arguments.of("17RKL7090350491", Coordinate(27.5589270380, -83.3203125000)),
+                Arguments.of("5QKC7282879387", Coordinate(20.5998824479, -155.1796880364)),
 
                 // Invalid formats / locations
                 Arguments.of("91 8", null),
