@@ -6,5 +6,6 @@ enum class CoordinateFormat {
     DegreesMinutesSeconds,
     UTM,
     MGRS,
-    USNG
+    USNG,
+    OSNG_OSGB36
 }

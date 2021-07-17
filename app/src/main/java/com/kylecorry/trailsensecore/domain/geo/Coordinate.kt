@@ -13,6 +13,10 @@ import gov.nasa.worldwind.geom.coords.UPSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import uk.gov.dstl.geo.osgb.Constants
+import uk.gov.dstl.geo.osgb.EastingNorthingConversion
+import uk.gov.dstl.geo.osgb.NationalGrid
+import uk.gov.dstl.geo.osgb.OSGB36
 import java.util.*
 import kotlin.math.*
 
@@ -125,6 +129,30 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         }
     }
 
+    // TODO: Support precision
+    fun toOSNG(precision: Int = 5): String {
+        try {
+            val osgb36 = OSGB36.fromWGS84(latitude, longitude)
+            val en = EastingNorthingConversion.fromLatLon(
+                osgb36,
+                Constants.ELLIPSOID_AIRY1830_MAJORAXIS,
+                Constants.ELLIPSOID_AIRY1830_MINORAXIS,
+                Constants.NATIONALGRID_N0,
+                Constants.NATIONALGRID_E0,
+                Constants.NATIONALGRID_F0,
+                Constants.NATIONALGRID_LAT0,
+                Constants.NATIONALGRID_LON0
+            )
+            val ng = NationalGrid.toNationalGrid(en)
+            if (ng.isPresent) {
+                return ng.get()
+            }
+        } catch (e: Exception) {
+            return "?"
+        }
+        return "?"
+    }
+
     private fun toUPS(precision: Int = 7): String {
         try {
             val lat = Angle.fromDegreesLatitude(latitude)
@@ -204,6 +232,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
                 CoordinateFormat.UTM -> fromUTM(location)
                 CoordinateFormat.MGRS -> fromMGRS(location)
                 CoordinateFormat.USNG -> fromMGRS(location)
+                CoordinateFormat.OSNG_OSGB36 -> fromOSNG(location)
             }
         }
 
@@ -211,6 +240,33 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
             return try {
                 val mgrs = MGRSCoord.fromString(location)
                 Coordinate(mgrs.latitude.degrees, mgrs.longitude.degrees)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        private fun fromOSNG(location: String): Coordinate? {
+            return try {
+                val eastingNorthing = try {
+                    NationalGrid.fromNationalGrid(location)
+                } catch (e: Exception){
+                    val split = location.split(",")
+                    val en = split.mapNotNull { it.toDoubleCompat() }.toDoubleArray()
+                    NationalGrid.toNationalGrid(en)
+                    en
+                }
+                val latlonOSGB = EastingNorthingConversion.toLatLon(
+                    eastingNorthing,
+                    Constants.ELLIPSOID_AIRY1830_MAJORAXIS,
+                    Constants.ELLIPSOID_AIRY1830_MINORAXIS,
+                    Constants.NATIONALGRID_N0,
+                    Constants.NATIONALGRID_E0,
+                    Constants.NATIONALGRID_F0,
+                    Constants.NATIONALGRID_LAT0,
+                    Constants.NATIONALGRID_LON0
+                )
+                val latlonWGS84 = OSGB36.toWGS84(latlonOSGB[0], latlonOSGB[1])
+                return Coordinate(latlonWGS84[0], latlonWGS84[1])
             } catch (e: Exception) {
                 null
             }

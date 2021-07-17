@@ -170,6 +170,12 @@ fun String.toDoubleCompat(): Double? {
     return asDouble
 }
 
+fun List<Double>.toDoubleArray(): DoubleArray {
+    return DoubleArray(size) {
+        get(it)
+    }
+}
+
 fun String.toFloatCompat(): Float? {
     val asFloat = try {
         this.replace(",", ".").toFloatOrNull()

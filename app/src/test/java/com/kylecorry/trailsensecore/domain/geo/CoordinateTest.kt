@@ -97,6 +97,12 @@ class CoordinateTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideOSNG")
+    fun toOSNG(expected: String, coordinate: Coordinate, precision: Int) {
+        Assert.assertEquals(expected, coordinate.toOSNG(precision))
+    }
+
+    @ParameterizedTest
     @MethodSource("provideLocationStrings")
     fun parse(locationString: String, expected: Coordinate?) {
         assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.001)
@@ -174,6 +180,15 @@ class CoordinateTest {
         }
 
         @JvmStatic
+        fun provideOSNG(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038), 5),
+                Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029), 5),
+                Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038), 5),
+            )
+        }
+
+        @JvmStatic
         fun provideLocationStrings(): Stream<Arguments> {
             return Stream.of(
                 // DDM
@@ -242,6 +257,13 @@ class CoordinateTest {
                 Arguments.of("18SUJ2324605745", Coordinate(38.8828019136, -77.0377807680)),
                 Arguments.of("17RKL7090350491", Coordinate(27.5589270380, -83.3203125000)),
                 Arguments.of("5QKC7282879387", Coordinate(20.5998824479, -155.1796880364)),
+
+                // OSNG (OSGB-36)
+                Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038)),
+                Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029)),
+                Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038)),
+                Arguments.of("651409,313177", Coordinate(52.657977, 1.716038)),
+                Arguments.of("696706,650582", Coordinate(55.657977, 2.716029)),
 
                 // Invalid formats / locations
                 Arguments.of("91 8", null),
