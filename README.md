@@ -8,6 +8,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.kylecorry31:Trail-Sense-Core:2.6.1'
+    implementation 'com.github.kylecorry31:Trail-Sense-Core:3.5.0'
 }
 ```
