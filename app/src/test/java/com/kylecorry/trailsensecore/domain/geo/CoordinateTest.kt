@@ -185,6 +185,7 @@ class CoordinateTest {
                 Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038), 5),
                 Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029), 5),
                 Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038), 5),
+                Arguments.of("?", Coordinate(42.1948, -71.6295), 5)
             )
         }
 
