@@ -9,9 +9,11 @@ class WeightPackItemSort(private val ascending: Boolean = true) : IPackItemSort 
             compareBy(
                 {
                     val weight = it.packedWeight?.convertTo(WeightUnits.Grams)?.weight
-                    val defaultWeight = if (ascending) Float.POSITIVE_INFINITY else 0f
-                    val sortableWeight = weight ?: defaultWeight
-                    if (ascending) sortableWeight else -sortableWeight
+                    when {
+                        weight == null -> Float.POSITIVE_INFINITY
+                        ascending -> weight
+                        else -> -weight
+                    }
                 },
                 { it.category.name },
                 { it.name },

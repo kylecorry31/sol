@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 group = 'com.kylecorry'
-version = '3.6.0'
+version = '3.6.1'
 
 android {
     compileSdkVersion 30
