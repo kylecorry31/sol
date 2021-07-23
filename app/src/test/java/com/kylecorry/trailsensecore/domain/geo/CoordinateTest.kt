@@ -185,6 +185,8 @@ class CoordinateTest {
                 Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038), 5),
                 Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029), 5),
                 Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038), 5),
+                Arguments.of("SK 87290 68571", Coordinate(53.2070530000, -0.6945160000), 5),
+                Arguments.of("TQ 22069 82537", Coordinate(51.5285582,-0.241681), 5),
                 Arguments.of("?", Coordinate(42.1948, -71.6295), 5)
             )
         }
@@ -265,6 +267,8 @@ class CoordinateTest {
                 Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038)),
                 Arguments.of("651409,313177", Coordinate(52.657977, 1.716038)),
                 Arguments.of("696706,650582", Coordinate(55.657977, 2.716029)),
+                Arguments.of("487289,368568", Coordinate(53.2070530000, -0.6945160000)),
+                Arguments.of("522067,182536", Coordinate(51.5285582,-0.241681)),
 
                 // Invalid formats / locations
                 Arguments.of("91 8", null),
