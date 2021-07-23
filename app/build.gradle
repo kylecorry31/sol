@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 group = 'com.kylecorry'
-version = '3.6.1'
+version = '3.7.0'
 
 android {
     compileSdkVersion 30
@@ -16,7 +16,9 @@ android {
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    packagingOptions {
+        exclude 'META-INF/*'
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -73,7 +75,7 @@ dependencies {
     def camerax_version = "1.0.0"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-    implementation 'com.github.kylecorry31:osgb:v1.0.3'
+    implementation 'com.github.kylecorry31:osgb:v1.0.4'
     implementation "androidx.camera:camera-view:1.0.0-alpha26"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
