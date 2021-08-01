@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
 
 object PermissionUtils {
 
@@ -61,6 +62,23 @@ object PermissionUtils {
         }
         ActivityCompat.requestPermissions(
             activity,
+            notGrantedPermissions.toTypedArray(),
+            requestCode
+        )
+    }
+
+    fun requestPermissions(fragment: Fragment, permissions: List<String>, requestCode: Int) {
+        // TODO: Use the registerForActivityResult method instead
+        val notGrantedPermissions = permissions.filterNot { hasPermission(fragment.requireContext(), it) }
+        if (notGrantedPermissions.isEmpty()) {
+            fragment.onRequestPermissionsResult(
+                requestCode,
+                permissions.toTypedArray(),
+                intArrayOf(PackageManager.PERMISSION_GRANTED)
+            )
+            return
+        }
+        fragment.requestPermissions(
             notGrantedPermissions.toTypedArray(),
             requestCode
         )
