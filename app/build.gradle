@@ -27,7 +27,7 @@ android {
         }
     }
     buildFeatures {
-        viewBinding = true
+        viewBinding true
     }
     compileOptions {
         coreLibraryDesugaringEnabled true
