@@ -1,12 +1,11 @@
 package com.kylecorry.trailsensecore.infrastructure.flashlight
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
+import android.os.Build
 import androidx.core.content.getSystemService
-import java.lang.Exception
 
 class Flashlight(private val context: Context) : IFlashlight {
 
@@ -17,7 +16,9 @@ class Flashlight(private val context: Context) : IFlashlight {
             return
         }
         try {
-            cameraService?.setTorchMode(getRearCameraId(context), true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                cameraService?.setTorchMode(getRearCameraId(context), true)
+            }
         } catch (e: Exception) {
             // No flash, ignoring
         }
@@ -25,7 +26,9 @@ class Flashlight(private val context: Context) : IFlashlight {
 
     override fun off() {
         try {
-            cameraService?.setTorchMode(getRearCameraId(context), false)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                cameraService?.setTorchMode(getRearCameraId(context), false)
+            }
         } catch (e: Exception) {
             // No flash, ignoring
         }

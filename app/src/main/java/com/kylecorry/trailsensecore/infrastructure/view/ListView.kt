@@ -40,6 +40,13 @@ class ListView<T>(
         view.addItemDecoration(dividerItemDecoration)
     }
 
+    fun scrollToPosition(position: Int, smooth: Boolean = true){
+        if (smooth) {
+            view.smoothScrollToPosition(position)
+        } else {
+            view.scrollToPosition(position)
+        }
+    }
 
     inner class Adapter(mData: List<T>) : RecyclerView.Adapter<Holder>() {
 
