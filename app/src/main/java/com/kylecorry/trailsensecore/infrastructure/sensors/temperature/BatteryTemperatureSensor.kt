@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.AbstractSensor
 
 class BatteryTemperatureSensor(private val context: Context) : AbstractSensor(), IThermometer {
 

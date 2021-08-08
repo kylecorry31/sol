@@ -7,7 +7,7 @@ import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.math.Quaternion
 import com.kylecorry.trailsensecore.domain.math.QuaternionMath
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.compass.ICompass
 
 class GeomagneticRotationSensor(context: Context, private val useTrueNorth: Boolean) :

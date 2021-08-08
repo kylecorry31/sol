@@ -6,7 +6,7 @@ import android.media.*
 import android.media.audiofx.AcousticEchoCanceler
 import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import kotlin.math.abs
 

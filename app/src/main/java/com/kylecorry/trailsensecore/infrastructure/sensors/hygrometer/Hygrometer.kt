@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class Hygrometer(context: Context) :
     BaseSensor(context, Sensor.TYPE_RELATIVE_HUMIDITY, SensorManager.SENSOR_DELAY_FASTEST),

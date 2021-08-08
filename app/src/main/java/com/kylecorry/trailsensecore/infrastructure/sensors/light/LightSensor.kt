@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class LightSensor(context: Context): BaseSensor(context, Sensor.TYPE_LIGHT, SensorManager.SENSOR_DELAY_FASTEST), ILightSensor {
 

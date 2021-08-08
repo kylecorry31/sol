@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.heartrate
 
-import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
+import com.kylecorry.sense.ISensor
 import java.time.Instant
 
 interface IHeartRateSensor: ISensor {

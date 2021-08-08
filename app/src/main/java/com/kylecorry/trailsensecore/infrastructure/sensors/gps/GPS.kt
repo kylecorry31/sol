@@ -9,10 +9,10 @@ import android.os.Looper
 import androidx.core.content.getSystemService
 import com.kylecorry.trailsensecore.domain.geo.Coordinate
 import com.kylecorry.trailsensecore.domain.units.DistanceUnits
-import com.kylecorry.trailsensecore.domain.units.Quality
+import com.kylecorry.sense.Quality
 import com.kylecorry.trailsensecore.domain.units.Speed
 import com.kylecorry.trailsensecore.domain.units.TimeUnits
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import java.time.Instant
 

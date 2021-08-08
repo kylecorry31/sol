@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.domain.math.LowPassFilter
 import com.kylecorry.trailsensecore.domain.math.Vector3
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class LowPassAccelerometer(context: Context) :
     BaseSensor(context, Sensor.TYPE_ACCELEROMETER, SensorManager.SENSOR_DELAY_FASTEST),

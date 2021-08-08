@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class Thermometer(context: Context, sensorCode: Int = Sensor.TYPE_AMBIENT_TEMPERATURE) :
     BaseSensor(context, sensorCode, SensorManager.SENSOR_DELAY_FASTEST),

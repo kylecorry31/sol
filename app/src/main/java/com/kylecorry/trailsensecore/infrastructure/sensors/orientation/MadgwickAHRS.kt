@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 import android.content.Context
 import android.os.SystemClock
 import com.kylecorry.trailsensecore.domain.math.*
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.Accelerometer
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.IAccelerometer
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.LowPassAccelerometer

@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.declination
 
-import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
+import com.kylecorry.sense.ISensor
 
 interface IDeclinationProvider: ISensor {
 

@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.battery
 
-import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
+import com.kylecorry.sense.ISensor
 
 interface IBattery : ISensor {
     val percent: Float

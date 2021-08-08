@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class Pedometer(context: Context): IPedometer, BaseSensor(context, Sensor.TYPE_STEP_COUNTER, SensorManager.SENSOR_DELAY_NORMAL) {
 

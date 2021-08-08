@@ -14,7 +14,7 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.kylecorry.trailsensecore.domain.pixels.PixelCoordinate
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import com.kylecorry.trailsensecore.infrastructure.system.tryOrNothing
 import kotlin.math.atan

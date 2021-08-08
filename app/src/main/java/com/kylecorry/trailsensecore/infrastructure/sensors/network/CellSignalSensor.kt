@@ -10,8 +10,8 @@ import androidx.core.content.getSystemService
 import androidx.core.math.MathUtils
 import com.kylecorry.trailsensecore.domain.network.CellNetwork
 import com.kylecorry.trailsensecore.domain.network.CellSignal
-import com.kylecorry.trailsensecore.domain.units.Quality
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.Quality
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import com.kylecorry.trailsensecore.infrastructure.system.tryOrNothing
 import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer

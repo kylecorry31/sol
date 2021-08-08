@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max

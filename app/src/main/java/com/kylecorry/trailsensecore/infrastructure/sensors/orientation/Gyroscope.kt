@@ -5,7 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.domain.math.*
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt

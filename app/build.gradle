@@ -87,6 +87,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation "io.noties.markwon:core:4.6.2"
     implementation 'com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master'
+    implementation 'com.github.kylecorry31:Sense:1.0.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.junit.platform:junit-platform-runner:1.7.2"

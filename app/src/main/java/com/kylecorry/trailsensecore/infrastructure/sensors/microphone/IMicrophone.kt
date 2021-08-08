@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.microphone
 
-import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
+import com.kylecorry.sense.ISensor
 
 interface IMicrophone: ISensor {
     val audio: ShortArray?

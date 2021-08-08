@@ -6,7 +6,7 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 import java.io.*
 import java.time.Instant

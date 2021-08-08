@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import com.kylecorry.trailsensecore.domain.math.Quaternion
 import com.kylecorry.trailsensecore.domain.math.QuaternionMath
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class GameRotationSensor(context: Context) :
     BaseSensor(context, Sensor.TYPE_GAME_ROTATION_VECTOR, SensorManager.SENSOR_DELAY_FASTEST),

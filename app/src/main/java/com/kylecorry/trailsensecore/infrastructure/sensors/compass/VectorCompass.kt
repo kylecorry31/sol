@@ -9,8 +9,8 @@ import com.kylecorry.trailsensecore.domain.geo.AzimuthCalculator
 import com.kylecorry.trailsensecore.domain.geo.Bearing
 import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.domain.math.deltaAngle
-import com.kylecorry.trailsensecore.domain.units.Quality
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.Quality
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import kotlin.math.max
 import kotlin.math.min

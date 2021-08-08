@@ -2,8 +2,8 @@ package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 
 import android.content.Context
 import com.kylecorry.trailsensecore.domain.math.*
-import com.kylecorry.trailsensecore.domain.units.Quality
-import com.kylecorry.trailsensecore.infrastructure.sensors.AbstractSensor
+import com.kylecorry.sense.Quality
+import com.kylecorry.sense.AbstractSensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.GravitySensor
 import com.kylecorry.trailsensecore.infrastructure.sensors.accelerometer.LowPassAccelerometer

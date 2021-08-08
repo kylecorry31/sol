@@ -4,7 +4,7 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import com.kylecorry.trailsensecore.infrastructure.sensors.BaseSensor
+import com.kylecorry.sense.BaseSensor
 
 class Barometer(context: Context): BaseSensor(context, Sensor.TYPE_PRESSURE, SensorManager.SENSOR_DELAY_NORMAL),
     IBarometer {

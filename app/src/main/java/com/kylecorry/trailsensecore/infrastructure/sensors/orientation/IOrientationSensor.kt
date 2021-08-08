@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.orientation
 
 import com.kylecorry.trailsensecore.domain.math.Quaternion
-import com.kylecorry.trailsensecore.infrastructure.sensors.ISensor
+import com.kylecorry.sense.ISensor
 
 interface IOrientationSensor: ISensor {
     val orientation: Quaternion
