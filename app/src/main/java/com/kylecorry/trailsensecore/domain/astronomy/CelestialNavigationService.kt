@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.andromeda.core.math.toDegrees
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.trailsensecore.domain.math.toDegrees
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime

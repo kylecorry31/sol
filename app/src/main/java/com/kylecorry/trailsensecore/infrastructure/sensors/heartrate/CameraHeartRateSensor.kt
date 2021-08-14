@@ -8,7 +8,7 @@ import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LifecycleOwner
 import com.kylecorry.andromeda.camera.Camera
 import com.kylecorry.andromeda.core.sensors.AbstractSensor
-import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
+import com.kylecorry.andromeda.core.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.infrastructure.images.BitmapUtils.toBitmap
 import java.time.Duration
 import java.time.Instant

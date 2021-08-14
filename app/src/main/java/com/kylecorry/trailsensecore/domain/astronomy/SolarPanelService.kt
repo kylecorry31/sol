@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.trailsensecore.domain.math.*
+import com.kylecorry.andromeda.core.math.*
 import java.time.Duration
 import java.time.ZonedDateTime
 import kotlin.math.*

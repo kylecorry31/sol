@@ -1,13 +1,14 @@
 package com.kylecorry.trailsensecore.domain.geo
 
+import com.kylecorry.andromeda.core.math.Vector3
+import com.kylecorry.andromeda.core.math.Vector3Utils
+import com.kylecorry.andromeda.core.math.toDegrees
 import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.trailsensecore.domain.math.Vector3
-import com.kylecorry.trailsensecore.domain.math.Vector3Utils
-import com.kylecorry.trailsensecore.domain.math.toDegrees
 import kotlin.math.atan2
 
 // From https://stackoverflow.com/questions/16317599/android-compass-that-can-compensate-for-tilt-and-pitch
 
+// TODO: Expose this via Andromeda or do compass math here
 internal object AzimuthCalculator {
 
     fun calculate(gravity: FloatArray, magneticField: FloatArray, includeMagnitudeCheck: Boolean = true): Bearing? {

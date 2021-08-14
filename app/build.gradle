@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 group = 'com.kylecorry'
-version = '4.0.0'
+version = '4.0.1'
 
 android {
     compileSdkVersion 30
@@ -90,6 +90,7 @@ dependencies {
     def andromeda_version = "1.0.0-beta12"
     implementation "com.github.kylecorry31.andromeda:core:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:sound:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:signal:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:files:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:sense:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:gps:${andromeda_version}"

@@ -1,10 +1,9 @@
 package com.kylecorry.trailsensecore.domain.geo
 
-import com.kylecorry.andromeda.core.units.Bearing
+import com.kylecorry.andromeda.core.math.Vector3
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.geo.cartography.MapSite
-import com.kylecorry.trailsensecore.domain.math.Vector3
 
 interface IGeoService {
 
@@ -13,10 +12,6 @@ interface IGeoService {
     fun getInclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
 
     fun getGeomagneticField(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Vector3
-
-    fun getAzimuth(gravity: FloatArray, magneticField: FloatArray): Bearing?
-
-    fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing?
 
     fun getRegion(coordinate: Coordinate): Region
 

@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.inclinometer
 
-import com.kylecorry.trailsensecore.domain.math.Vector3
+import com.kylecorry.andromeda.core.math.Vector3
 import kotlin.math.atan2
 
 internal object InclinationCalculator {

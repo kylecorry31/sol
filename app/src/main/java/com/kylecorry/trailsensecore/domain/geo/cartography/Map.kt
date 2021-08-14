@@ -1,9 +1,7 @@
 package com.kylecorry.trailsensecore.domain.geo.cartography
 
 import com.kylecorry.andromeda.core.units.*
-import com.kylecorry.trailsensecore.domain.math.cosDegrees
-import com.kylecorry.trailsensecore.domain.math.sinDegrees
-import com.kylecorry.trailsensecore.domain.math.wrap
+import com.kylecorry.andromeda.core.math.*
 
 data class Map(val id: Long, val name: String, val filename: String, val calibrationPoints: List<MapCalibrationPoint>){
 

@@ -5,8 +5,8 @@ import android.net.Uri
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.files.ExternalFileService
 import com.kylecorry.trailsensecore.domain.geo.cartography.MapCalibrationPoint
-import com.kylecorry.trailsensecore.domain.math.toDoubleCompat
-import com.kylecorry.trailsensecore.domain.math.toFloatCompat
+import com.kylecorry.andromeda.core.math.toDoubleCompat
+import com.kylecorry.andromeda.core.math.toFloatCompat
 import com.kylecorry.trailsensecore.domain.pixels.PercentCoordinate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

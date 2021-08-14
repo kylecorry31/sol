@@ -1,12 +1,13 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
-import com.kylecorry.trailsensecore.domain.math.*
 import com.kylecorry.trailsensecore.domain.time.plusHours
 import com.kylecorry.trailsensecore.domain.time.toUTCLocal
 import java.time.*
+import kotlin.collections.toDoubleArray
 import kotlin.math.*
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)

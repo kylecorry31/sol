@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.inclinometer
 
-import com.kylecorry.trailsensecore.domain.math.tanDegrees
+import com.kylecorry.andromeda.core.math.tanDegrees
 
 internal class HeightCalculator {
 

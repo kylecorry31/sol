@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.weather
 
-import com.kylecorry.trailsensecore.domain.math.KalmanFilter
-import com.kylecorry.trailsensecore.domain.math.removeOutliers
+import com.kylecorry.andromeda.core.math.KalmanFilter
+import com.kylecorry.andromeda.core.math.removeOutliers
 
 class KalmanSeaLevelPressureConverter(
     private val defaultGPSError: Float = 10f,
