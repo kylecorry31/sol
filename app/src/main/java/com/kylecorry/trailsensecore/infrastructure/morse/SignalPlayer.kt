@@ -1,11 +1,11 @@
 package com.kylecorry.trailsensecore.infrastructure.morse
 
+import com.kylecorry.andromeda.core.time.Timer
 import com.kylecorry.trailsensecore.domain.morse.Signal
-import com.kylecorry.trailsensecore.infrastructure.time.Intervalometer
 
 class SignalPlayer(private val device: ISignalingDevice) {
 
-    private var intervalometer: Intervalometer? = null
+    private var intervalometer: Timer? = null
     private var isOn = false
 
     fun play(signals: List<Signal>, loop: Boolean, onComplete: (() -> Any)? = null){
@@ -15,11 +15,11 @@ class SignalPlayer(private val device: ISignalingDevice) {
         }
         var idx = 0
         isOn = true
-        intervalometer = Intervalometer {
+        intervalometer = Timer {
             synchronized(this) {
                 if (!isOn){
                     intervalometer = null
-                    return@Intervalometer
+                    return@Timer
                 }
                 if (idx >= signals.size && loop){
                     idx = 0

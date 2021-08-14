@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.infrastructure.system
 
 import android.net.Uri
 import android.os.Parcelable
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
 import kotlinx.parcelize.Parcelize
 
 class GeoUriParser {

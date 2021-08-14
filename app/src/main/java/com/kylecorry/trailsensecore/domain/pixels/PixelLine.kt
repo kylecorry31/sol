@@ -1,10 +1,10 @@
 package com.kylecorry.trailsensecore.domain.pixels
 
 import androidx.annotation.ColorInt
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.andromeda.core.units.PixelCoordinate
 import com.kylecorry.trailsensecore.domain.geo.Path
 import com.kylecorry.trailsensecore.domain.geo.PathStyle
-import com.kylecorry.trailsensecore.domain.pixels.PixelCoordinate
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.abs

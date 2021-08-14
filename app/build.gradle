@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 group = 'com.kylecorry'
-version = '3.8.1'
+version = '4.0.0'
 
 android {
     compileSdkVersion 30
@@ -87,7 +87,14 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation "io.noties.markwon:core:4.6.2"
     implementation 'com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master'
-    implementation 'com.github.kylecorry31:Sense:1.0.0'
+    def andromeda_version = "1.0.0-beta12"
+    implementation "com.github.kylecorry31.andromeda:core:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:sound:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:files:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:sense:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:gps:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:camera:${andromeda_version}"
+    implementation "com.github.kylecorry31.andromeda:permissions:${andromeda_version}"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.junit.platform:junit-platform-runner:1.7.2"

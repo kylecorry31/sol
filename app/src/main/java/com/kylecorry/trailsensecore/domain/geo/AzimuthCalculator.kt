@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.geo
 
+import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.trailsensecore.domain.math.Vector3
 import com.kylecorry.trailsensecore.domain.math.Vector3Utils
 import com.kylecorry.trailsensecore.domain.math.toDegrees

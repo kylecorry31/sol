@@ -1,88 +1,16 @@
 package com.kylecorry.trailsensecore.infrastructure.system
 
-import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.PowerManager
 import android.text.method.LinkMovementMethod
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
-import androidx.fragment.app.Fragment
+import com.kylecorry.andromeda.permissions.PermissionService
+import com.kylecorry.andromeda.permissions.requestPermissions
 
 object PermissionUtils {
-
-    fun isBackgroundLocationEnabled(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            isLocationEnabled(context)
-        } else {
-            hasPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }
-    }
-
-    fun isLocationEnabled(context: Context): Boolean {
-        return hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    fun isCameraEnabled(context: Context): Boolean {
-        return hasPermission(context, Manifest.permission.CAMERA)
-    }
-
-    fun isIgnoringBatteryOptimizations(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            context.getSystemService<PowerManager>()
-                ?.isIgnoringBatteryOptimizations(PackageUtils.getPackageName(context)) ?: false
-        } else {
-            true
-        }
-    }
-
-    fun hasPermission(context: Context, permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun requestPermissions(activity: Activity, permissions: List<String>, requestCode: Int) {
-        val notGrantedPermissions = permissions.filterNot { hasPermission(activity, it) }
-        if (notGrantedPermissions.isEmpty()) {
-            activity.onRequestPermissionsResult(
-                requestCode,
-                permissions.toTypedArray(),
-                intArrayOf(PackageManager.PERMISSION_GRANTED)
-            )
-            return
-        }
-        ActivityCompat.requestPermissions(
-            activity,
-            notGrantedPermissions.toTypedArray(),
-            requestCode
-        )
-    }
-
-    fun requestPermissions(fragment: Fragment, permissions: List<String>, requestCode: Int) {
-        // TODO: Use the registerForActivityResult method instead
-        val notGrantedPermissions = permissions.filterNot { hasPermission(fragment.requireContext(), it) }
-        if (notGrantedPermissions.isEmpty()) {
-            fragment.onRequestPermissionsResult(
-                requestCode,
-                permissions.toTypedArray(),
-                intArrayOf(PackageManager.PERMISSION_GRANTED)
-            )
-            return
-        }
-        fragment.requestPermissions(
-            notGrantedPermissions.toTypedArray(),
-            requestCode
-        )
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun requestPermissionsWithRationale(
@@ -93,7 +21,8 @@ object PermissionUtils {
         buttonGrant: String,
         buttonDeny: String
     ) {
-        val notGrantedPermissions = permissions.filterNot { hasPermission(activity, it) }
+        val permissionService = PermissionService(activity)
+        val notGrantedPermissions = permissions.filterNot { permissionService.hasPermission(it) }
         if (notGrantedPermissions.isEmpty()) {
             activity.onRequestPermissionsResult(
                 requestCode,
@@ -118,7 +47,7 @@ object PermissionUtils {
             buttonDeny
         ) { cancelled ->
             if (!cancelled) {
-                requestPermissions(activity, notGrantedPermissions, requestCode)
+                activity.requestPermissions(notGrantedPermissions, requestCode)
             } else {
                 activity.onRequestPermissionsResult(
                     requestCode,

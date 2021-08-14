@@ -1,6 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.audio
 
 import android.media.AudioTrack
+import com.kylecorry.andromeda.sound.SoundGenerator
 
 class WhiteNoiseGenerator {
 

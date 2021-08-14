@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.light
 
-import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.andromeda.core.units.Distance
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.sqrt

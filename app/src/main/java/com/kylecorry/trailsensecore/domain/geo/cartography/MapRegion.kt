@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.geo.cartography
 
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
 
 data class MapRegion(val north: Double, val east: Double, val south: Double, val west: Double){
 

@@ -2,12 +2,12 @@ package com.kylecorry.trailsensecore.infrastructure.pdf
 
 import android.content.Context
 import android.net.Uri
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.andromeda.files.ExternalFileService
 import com.kylecorry.trailsensecore.domain.geo.cartography.MapCalibrationPoint
 import com.kylecorry.trailsensecore.domain.math.toDoubleCompat
 import com.kylecorry.trailsensecore.domain.math.toFloatCompat
 import com.kylecorry.trailsensecore.domain.pixels.PercentCoordinate
-import com.kylecorry.trailsensecore.infrastructure.persistence.ExternalFileService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

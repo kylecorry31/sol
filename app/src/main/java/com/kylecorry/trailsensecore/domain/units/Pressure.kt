@@ -1,15 +1,27 @@
 package com.kylecorry.trailsensecore.domain.units
 
-data class Pressure(val pressure: Float, val units: PressureUnits): Comparable<Pressure> {
-
-    private val unitService = UnitService()
+data class Pressure(val pressure: Float, val units: PressureUnits) : Comparable<Pressure> {
 
     fun convertTo(toUnits: PressureUnits): Pressure {
-        if (units == toUnits){
+        if (units == toUnits) {
             return Pressure(pressure, units)
         }
 
-        return Pressure(unitService.convert(pressure, units, toUnits), toUnits)
+        val hpa = when (units) {
+            PressureUnits.Hpa -> pressure
+            PressureUnits.Mbar -> pressure
+            PressureUnits.Inhg -> pressure / 0.02953f
+            PressureUnits.Psi -> pressure / 0.0145037738f
+        }
+
+        val newPressure = when (toUnits) {
+            PressureUnits.Hpa -> hpa
+            PressureUnits.Inhg -> 0.02953f * hpa
+            PressureUnits.Mbar -> hpa
+            PressureUnits.Psi -> 0.0145037738f * hpa
+        }
+
+        return Pressure(newPressure, toUnits)
     }
 
     fun hpa(): Pressure {
@@ -17,7 +29,7 @@ data class Pressure(val pressure: Float, val units: PressureUnits): Comparable<P
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Pressure){
+        if (other !is Pressure) {
             return false
         }
 

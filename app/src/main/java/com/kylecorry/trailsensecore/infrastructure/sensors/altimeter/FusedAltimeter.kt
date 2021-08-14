@@ -1,8 +1,9 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.altimeter
 
-import com.kylecorry.trailsensecore.infrastructure.sensors.gps.IGPS
-import com.kylecorry.sense.AbstractSensor
-import com.kylecorry.trailsensecore.infrastructure.sensors.barometer.IBarometer
+import com.kylecorry.andromeda.core.sensors.AbstractSensor
+import com.kylecorry.andromeda.core.sensors.IAltimeter
+import com.kylecorry.andromeda.location.IGPS
+import com.kylecorry.andromeda.sense.barometer.IBarometer
 
 class FusedAltimeter(private val gps: IGPS, private val barometer: IBarometer) : AbstractSensor(),
     IAltimeter {

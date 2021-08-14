@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.metaldetection
 
-import com.kylecorry.trailsensecore.domain.geo.Bearing
+import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.trailsensecore.domain.math.Quaternion
 import com.kylecorry.trailsensecore.domain.math.Vector3
 

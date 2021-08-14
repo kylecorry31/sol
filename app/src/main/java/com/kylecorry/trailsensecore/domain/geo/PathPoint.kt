@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.geo
 
+import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.network.CellNetworkQuality
 import java.time.Instant
 

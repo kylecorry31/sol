@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.sensors.odometer
 
-import com.kylecorry.trailsensecore.domain.units.Distance
-import com.kylecorry.sense.ISensor
+import com.kylecorry.andromeda.core.sensors.ISensor
+import com.kylecorry.andromeda.core.units.Distance
 
 interface IOdometer: ISensor {
     val distance: Distance

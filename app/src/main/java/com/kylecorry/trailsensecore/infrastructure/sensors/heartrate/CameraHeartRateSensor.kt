@@ -6,11 +6,10 @@ import android.graphics.Color
 import android.util.Size
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LifecycleOwner
+import com.kylecorry.andromeda.camera.Camera
+import com.kylecorry.andromeda.core.sensors.AbstractSensor
 import com.kylecorry.trailsensecore.domain.math.MovingAverageFilter
 import com.kylecorry.trailsensecore.infrastructure.images.BitmapUtils.toBitmap
-import com.kylecorry.sense.AbstractSensor
-import com.kylecorry.trailsensecore.infrastructure.sensors.SensorChecker
-import com.kylecorry.trailsensecore.infrastructure.sensors.camera.Camera
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.abs
@@ -48,7 +47,7 @@ class CameraHeartRateSensor(
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun startImpl() {
-        if (!SensorChecker(context).hasCamera()) {
+        if (!Camera.isAvailable(context)) {
             return
         }
 

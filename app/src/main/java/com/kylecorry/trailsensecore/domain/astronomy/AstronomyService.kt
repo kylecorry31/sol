@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.geo.Bearing
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Bearing
+import com.kylecorry.andromeda.core.units.CompassDirection
+import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
-import com.kylecorry.trailsensecore.domain.geo.CompassDirection
 import com.kylecorry.trailsensecore.domain.math.deltaAngle
 import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.wrap

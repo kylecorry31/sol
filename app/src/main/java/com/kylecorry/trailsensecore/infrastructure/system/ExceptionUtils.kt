@@ -3,6 +3,8 @@ package com.kylecorry.trailsensecore.infrastructure.system
 import android.content.Context
 import android.os.Build
 import android.os.Looper
+import com.kylecorry.andromeda.core.system.IntentUtils
+import com.kylecorry.andromeda.core.system.PackageUtils
 import com.kylecorry.trailsensecore.infrastructure.sensors.SensorDetailProvider
 import java.time.Duration
 import kotlin.concurrent.thread

@@ -1,13 +1,9 @@
 package com.kylecorry.trailsensecore.domain.geo.cartography
 
-import com.kylecorry.trailsensecore.domain.geo.Bearing
-import com.kylecorry.trailsensecore.domain.geo.CompassDirection
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.*
 import com.kylecorry.trailsensecore.domain.math.cosDegrees
 import com.kylecorry.trailsensecore.domain.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.math.wrap
-import com.kylecorry.trailsensecore.domain.pixels.PixelCoordinate
-import com.kylecorry.trailsensecore.domain.units.Distance
 
 data class Map(val id: Long, val name: String, val filename: String, val calibrationPoints: List<MapCalibrationPoint>){
 
@@ -65,7 +61,8 @@ data class Map(val id: Long, val name: String, val filename: String, val calibra
         val firstPixels = first.imageLocation.toPixels(width, height)
         val metersPerPixel = distancePerPixel(width, height)?.meters()?.distance ?: return null
 
-        val north = first.location.plus(Distance.meters(firstPixels.y * metersPerPixel), Bearing.from(CompassDirection.North)).latitude
+        val north = first.location.plus(Distance.meters(firstPixels.y * metersPerPixel), Bearing.from(
+            CompassDirection.North)).latitude
         val south = first.location.plus(Distance.meters((height - firstPixels.y) * metersPerPixel), Bearing.from(CompassDirection.South)).latitude
         val east = first.location.plus(Distance.meters((width - firstPixels.x) * metersPerPixel), Bearing.from(CompassDirection.East)).longitude
         val west = first.location.plus(Distance.meters(firstPixels.x * metersPerPixel), Bearing.from(CompassDirection.West)).longitude

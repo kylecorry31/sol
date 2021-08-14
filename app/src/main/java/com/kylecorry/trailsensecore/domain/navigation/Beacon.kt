@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.navigation
 
 import androidx.annotation.ColorInt
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
 
 data class Beacon(
     override val id: Long,

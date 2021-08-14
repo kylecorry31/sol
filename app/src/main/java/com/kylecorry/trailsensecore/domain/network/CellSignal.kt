@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.network
 
-import com.kylecorry.sense.Quality
+import com.kylecorry.andromeda.core.sensors.Quality
 
 data class CellSignal(
     val id: String,

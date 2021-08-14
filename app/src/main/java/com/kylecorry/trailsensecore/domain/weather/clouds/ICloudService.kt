@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.weather.clouds
 
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
 
 interface ICloudService {
     fun getCloudPrecipitation(cloud: CloudType): CloudWeather

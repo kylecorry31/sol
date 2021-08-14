@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.physics
 
-import com.kylecorry.trailsensecore.domain.units.Distance
+import com.kylecorry.andromeda.core.units.Distance
 import java.time.Duration
 
 interface IPhysicsService {

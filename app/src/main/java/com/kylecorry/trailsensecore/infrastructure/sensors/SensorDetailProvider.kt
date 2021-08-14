@@ -2,15 +2,19 @@ package com.kylecorry.trailsensecore.infrastructure.sensors
 
 import android.content.Context
 import android.hardware.Sensor
+import com.kylecorry.andromeda.location.GPS
+import com.kylecorry.andromeda.permissions.PermissionService
+import com.kylecorry.andromeda.sense.SensorChecker
 import com.kylecorry.trailsensecore.infrastructure.system.PermissionUtils
 
 class SensorDetailProvider {
 
     fun getSensorDetails(context: Context): String {
+        val permissions = PermissionService(context)
         val sensorChecker = SensorChecker(context)
-        val locationPermission = PermissionUtils.isLocationEnabled(context)
-        val backgroundLocationPermission = PermissionUtils.isLocationEnabled(context)
-        val gps = sensorChecker.hasGPS()
+        val locationPermission = permissions.canGetFineLocation()
+        val backgroundLocationPermission = permissions.isBackgroundLocationEnabled()
+        val gps = GPS.isAvailable(context)
         val barometer = sensorChecker.hasBarometer()
         val gravity =  sensorChecker.hasGravity()
         val hygrometer = sensorChecker.hasHygrometer()
