@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.persistence
 
-import com.kylecorry.trailsensecore.domain.time.isInPast
-import com.kylecorry.trailsensecore.domain.time.isOlderThan
+import com.kylecorry.andromeda.core.time.isInPast
+import com.kylecorry.andromeda.core.time.isOlderThan
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.Duration

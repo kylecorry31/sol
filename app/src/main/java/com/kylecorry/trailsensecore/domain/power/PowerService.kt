@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.power
 
-import com.kylecorry.trailsensecore.domain.time.hours
+import com.kylecorry.andromeda.core.time.hours
 import java.time.Duration
 
 class PowerService {

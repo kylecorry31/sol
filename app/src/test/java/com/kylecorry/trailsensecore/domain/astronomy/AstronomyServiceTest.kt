@@ -1,10 +1,10 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.andromeda.core.time.duration
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.time.Season
-import com.kylecorry.trailsensecore.domain.time.duration
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.assertDuration
 import com.kylecorry.trailsensecore.tests.parametrized
