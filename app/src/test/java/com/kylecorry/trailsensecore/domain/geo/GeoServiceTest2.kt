@@ -1,10 +1,9 @@
 package com.kylecorry.trailsensecore.domain.geo
 
-import com.kylecorry.trailsensecore.domain.units.Distance
-import com.kylecorry.trailsensecore.domain.units.DistanceUnits
+import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.DistanceUnits
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 
 internal class GeoServiceTest2 {
 

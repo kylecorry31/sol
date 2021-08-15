@@ -1,12 +1,11 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
-import com.kylecorry.trailsensecore.domain.math.deltaAngle
-import com.kylecorry.trailsensecore.domain.time.DateUtils
 import org.junit.Assert.*
 import org.junit.Test
-import java.time.*
-import kotlin.math.absoluteValue
+import java.time.LocalDateTime
+import java.time.Month
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class AstroTest {
 

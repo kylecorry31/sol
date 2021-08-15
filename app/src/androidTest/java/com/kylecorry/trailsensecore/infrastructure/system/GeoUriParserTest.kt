@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.infrastructure.system
 
 import android.net.Uri
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.stream.Stream

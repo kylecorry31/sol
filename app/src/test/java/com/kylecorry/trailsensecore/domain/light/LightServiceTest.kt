@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.light
 
-import com.kylecorry.trailsensecore.domain.units.Distance
-import com.kylecorry.trailsensecore.domain.units.DistanceUnits
+import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.domain.geo.specifications
 
+import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.geo.ApproximateCoordinate
-import com.kylecorry.trailsensecore.domain.units.Distance
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class LocationChangedSpecificationTest {

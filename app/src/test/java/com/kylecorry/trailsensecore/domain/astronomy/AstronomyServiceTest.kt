@@ -1,15 +1,9 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
-import com.kylecorry.trailsensecore.domain.geo.Bearing
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
-import com.kylecorry.trailsensecore.domain.math.Euler
-import com.kylecorry.trailsensecore.domain.math.Quaternion
-import com.kylecorry.trailsensecore.domain.math.Vector3
-import com.kylecorry.trailsensecore.domain.math.deltaAngle
 import com.kylecorry.trailsensecore.domain.time.Season
-import com.kylecorry.trailsensecore.domain.time.atStartOfDay
 import com.kylecorry.trailsensecore.domain.time.duration
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.assertDuration
@@ -21,7 +15,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
-import kotlin.math.absoluteValue
 
 class AstronomyServiceTest {
 

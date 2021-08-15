@@ -2,11 +2,11 @@ package com.kylecorry.trailsensecore.domain.navigation
 
 import android.graphics.Color
 import android.location.Location
-import com.kylecorry.trailsensecore.domain.geo.Bearing
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Bearing
+import com.kylecorry.andromeda.core.units.Coordinate
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class NavigationServiceTest {
 

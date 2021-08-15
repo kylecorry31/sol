@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.weather
 
-import com.kylecorry.trailsensecore.domain.geo.Coordinate
+import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.time.Season
 import org.junit.Assert
 import org.junit.Test

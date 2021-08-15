@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.metaldetection
 
-import com.kylecorry.trailsensecore.domain.math.Vector3
+import com.kylecorry.andromeda.core.math.Vector3
 
 import org.junit.Assert.*
 import org.junit.jupiter.params.ParameterizedTest
