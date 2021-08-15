@@ -7,7 +7,8 @@ import android.text.method.LinkMovementMethod
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import com.kylecorry.andromeda.permissions.PermissionService
+import com.kylecorry.andromeda.alerts.Alerts
+import com.kylecorry.andromeda.permissions.Permissions
 import com.kylecorry.andromeda.permissions.requestPermissions
 
 object PermissionUtils {
@@ -21,8 +22,7 @@ object PermissionUtils {
         buttonGrant: String,
         buttonDeny: String
     ) {
-        val permissionService = PermissionService(activity)
-        val notGrantedPermissions = permissions.filterNot { permissionService.hasPermission(it) }
+        val notGrantedPermissions = permissions.filterNot { Permissions.hasPermission(activity, it) }
         if (notGrantedPermissions.isEmpty()) {
             activity.onRequestPermissionsResult(
                 requestCode,
@@ -39,12 +39,12 @@ object PermissionUtils {
         message.movementMethod = LinkMovementMethod.getInstance()
         layout.addView(message)
 
-        UiUtils.alertViewWithCancel(
+        Alerts.dialog(
             activity,
             rationale.title,
-            layout,
-            buttonGrant,
-            buttonDeny
+            contentView = layout,
+            okText = buttonGrant,
+            cancelText = buttonDeny
         ) { cancelled ->
             if (!cancelled) {
                 activity.requestPermissions(notGrantedPermissions, requestCode)

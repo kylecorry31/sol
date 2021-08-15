@@ -3,10 +3,10 @@ package com.kylecorry.trailsensecore.infrastructure.pdf
 import android.content.Context
 import android.net.Uri
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.files.ExternalFileService
 import com.kylecorry.trailsensecore.domain.geo.cartography.MapCalibrationPoint
 import com.kylecorry.andromeda.core.math.toDoubleCompat
 import com.kylecorry.andromeda.core.math.toFloatCompat
+import com.kylecorry.andromeda.files.ExternalFiles
 import com.kylecorry.trailsensecore.domain.pixels.PercentCoordinate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,7 +16,7 @@ object GeospatialPDFParser {
     suspend fun getCalibrationPoints(context: Context, uri: Uri): List<MapCalibrationPoint> {
         return withContext(Dispatchers.IO) {
             // TODO: Only load the heading
-            val text = ExternalFileService(context).read(uri) ?: return@withContext listOf<MapCalibrationPoint>()
+            val text = ExternalFiles.read(context, uri) ?: return@withContext listOf<MapCalibrationPoint>()
             val geoMatches = Regex("/GPTS\\s*\\[(.*)]").find(text)
             val viewportMatches = Regex("/BBox\\s*\\[(.*)]").find(text)
             val mediaBox = Regex("/MediaBox\\s*\\[(.*)]").find(text)

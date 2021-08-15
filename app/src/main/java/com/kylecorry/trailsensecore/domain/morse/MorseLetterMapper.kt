@@ -14,10 +14,10 @@ internal class MorseLetterMapper {
     }
 
     fun map(letter: Char): List<MorseSymbol>? {
-        if (!letterMap.containsKey(letter.toLowerCase())) {
+        if (!letterMap.containsKey(letter.lowercaseChar())) {
             return null
         }
-        return letterMap[letter.toLowerCase()]
+        return letterMap[letter.lowercaseChar()]
     }
 
     fun sos(): List<MorseSymbol> {

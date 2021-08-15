@@ -955,7 +955,7 @@ internal object Astro {
         val c2 = sqrt(H * H + R * R)
 
         var E = m
-        for (i in 0..10) {
+        for (iter in 0..10) {
             E += (m + e.toDegrees() * sinDegrees(E) - E) / (1 - e * cosDegrees(E))
         }
         E = reduceAngleDegrees(E)
