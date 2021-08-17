@@ -87,7 +87,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation "io.noties.markwon:core:4.6.2"
     implementation 'com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master'
-    def andromeda_version = "1.0.0-beta13"
+    def andromeda_version = "1.0.0-beta17"
     implementation "com.github.kylecorry31.andromeda:core:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:alerts:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:sound:${andromeda_version}"
