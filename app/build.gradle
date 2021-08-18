@@ -89,7 +89,6 @@ dependencies {
     implementation 'com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master'
     def andromeda_version = "1.0.3"
     implementation "com.github.kylecorry31.andromeda:core:${andromeda_version}"
-    implementation "com.github.kylecorry31.andromeda:alerts:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:sound:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:signal:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:files:${andromeda_version}"
