@@ -1,6 +1,7 @@
 package com.kylecorry.trailsensecore.domain.weather
 
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.time.Season
 import org.junit.Assert
 import org.junit.Test
@@ -44,7 +45,7 @@ class WeatherServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideHeatIndex")
-    fun heatIndex(temperature: Float, humidity: Float, expected: Float){
+    fun heatIndex(temperature: Float, humidity: Float, expected: Float) {
         val hi = weatherService.getHeatIndex(temperature, humidity)
         assertEquals(expected, hi, 0.5f)
     }
@@ -58,27 +59,37 @@ class WeatherServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideDewPoint")
-    fun dewPoint(temperature: Float, humidity: Float, expected: Float){
+    fun dewPoint(temperature: Float, humidity: Float, expected: Float) {
         val dew = weatherService.getDewPoint(temperature, humidity)
         assertEquals(expected, dew, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikes")
-    fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float){
+    fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float) {
         val distance = weatherService.getLightningStrikeDistance(lightning, thunder)
         assertEquals(expected, distance, 0.5f)
     }
 
     @ParameterizedTest
+    @MethodSource("provideLightningStrikeDistances")
+    fun lightningStrikeDanger(distance: Distance, expected: Boolean) {
+        val danger = weatherService.isLightningStrikeDangerous(distance)
+        assertEquals(expected, danger)
+    }
+
+    @ParameterizedTest
     @MethodSource("provideSeasons")
-    fun seasons(expected: Season, isNorth: Boolean, date: LocalDate){
-        val season = weatherService.getMeteorologicalSeason(Coordinate(if (isNorth) 1.0 else -1.0, 0.0), ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault()))
+    fun seasons(expected: Season, isNorth: Boolean, date: LocalDate) {
+        val season = weatherService.getMeteorologicalSeason(
+            Coordinate(if (isNorth) 1.0 else -1.0, 0.0),
+            ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault())
+        )
         Assert.assertEquals(expected, season)
     }
 
     @Test
-    fun ambientTemperature(){
+    fun ambientTemperature() {
         val temp = weatherService.getAmbientTemperature(170f, 125f, 100f)
         assertEquals(68.75f, temp)
     }
@@ -217,7 +228,7 @@ class WeatherServiceTest {
         }
 
         @JvmStatic
-        fun provideHeatAlert(): Stream<Arguments>{
+        fun provideHeatAlert(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(-26f, HeatAlert.FrostbiteDanger),
                 Arguments.of(-25f, HeatAlert.FrostbiteDanger),
@@ -255,6 +266,16 @@ class WeatherServiceTest {
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(10), 3430f),
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(0), 0f),
                 Arguments.of(Instant.ofEpochSecond(1), Instant.ofEpochSecond(0), 0f),
+            )
+        }
+
+        @JvmStatic
+        fun provideLightningStrikeDistances(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(Distance.kilometers(1f), true),
+                Arguments.of(Distance.kilometers(1.1f), false),
+                Arguments.of(Distance.meters(1000f), true),
+                Arguments.of(Distance.meters(100f), true),
             )
         }
 

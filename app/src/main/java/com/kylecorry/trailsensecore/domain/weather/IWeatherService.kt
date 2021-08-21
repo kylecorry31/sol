@@ -68,6 +68,13 @@ interface IWeatherService : ICloudService {
     fun getLightningStrikeDistance(lightning: Instant, thunder: Instant): Float
 
     /**
+     * Determines if the lightning strike is close enough for concern
+     * @param distance The distance to the lightning strike
+     * @return true if the strike is dangerous, false otherwise
+     */
+    fun isLightningStrikeDangerous(distance: Distance): Boolean
+
+    /**
      * Calculates the ambient temperature from sequential temperature readings
      * @param temp0 the initial temperature (celsius)
      * @param temp1 the temperature occurring 1 time unit after temp0
@@ -85,5 +92,9 @@ interface IWeatherService : ICloudService {
      * @param destElevation the elevation of the destination
      * @return the temperature at the destination
      */
-    fun getTemperatureAtElevation(temperature: Temperature, baseElevation: Distance, destElevation: Distance): Temperature
+    fun getTemperatureAtElevation(
+        temperature: Temperature,
+        baseElevation: Distance,
+        destElevation: Distance
+    ): Temperature
 }
