@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.health.temperature
 
-import com.kylecorry.trailsensecore.domain.units.Temperature
-import com.kylecorry.trailsensecore.domain.units.TemperatureUnits
+import com.kylecorry.andromeda.core.units.Temperature
+import com.kylecorry.andromeda.core.units.TemperatureUnits
 
 class TemperatureService : ITemperatureService {
 

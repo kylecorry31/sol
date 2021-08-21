@@ -4,7 +4,7 @@ import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.health.heart.IHeartService
 import com.kylecorry.trailsensecore.domain.health.temperature.ITemperatureService
 import com.kylecorry.trailsensecore.domain.health.weight.BMI
-import com.kylecorry.trailsensecore.domain.units.Weight
+import com.kylecorry.andromeda.core.units.Weight
 import java.time.Duration
 
 interface IHealthService: IHeartService, ITemperatureService {

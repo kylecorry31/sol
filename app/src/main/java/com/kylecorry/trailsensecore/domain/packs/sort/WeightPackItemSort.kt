@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.packs.sort
 
 import com.kylecorry.trailsensecore.domain.packs.PackItem
-import com.kylecorry.trailsensecore.domain.units.WeightUnits
+import com.kylecorry.andromeda.core.units.WeightUnits
 
 class WeightPackItemSort(private val ascending: Boolean = true) : IPackItemSort {
     override fun sort(items: List<PackItem>): List<PackItem> {

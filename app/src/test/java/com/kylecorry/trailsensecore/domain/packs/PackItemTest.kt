@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.packs
 
-import com.kylecorry.trailsensecore.domain.units.Weight
-import com.kylecorry.trailsensecore.domain.units.WeightUnits
+import com.kylecorry.andromeda.core.units.Weight
+import com.kylecorry.andromeda.core.units.WeightUnits
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

@@ -9,9 +9,9 @@ import com.kylecorry.trailsensecore.domain.health.heart.PulseOxygenCategory
 import com.kylecorry.trailsensecore.domain.health.temperature.BodyTemperature
 import com.kylecorry.trailsensecore.domain.health.temperature.TemperatureService
 import com.kylecorry.trailsensecore.domain.health.weight.BMI
-import com.kylecorry.trailsensecore.domain.units.Weight
-import com.kylecorry.trailsensecore.domain.units.WeightUnits
-import com.kylecorry.trailsensecore.domain.units.Temperature
+import com.kylecorry.andromeda.core.units.Weight
+import com.kylecorry.andromeda.core.units.WeightUnits
+import com.kylecorry.andromeda.core.units.Temperature
 import java.time.Duration
 
 class HealthService : IHealthService {

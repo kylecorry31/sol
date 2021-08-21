@@ -2,8 +2,8 @@ package com.kylecorry.trailsensecore.domain.depth
 
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
-import com.kylecorry.trailsensecore.domain.units.Pressure
-import com.kylecorry.trailsensecore.domain.units.PressureUnits
+import com.kylecorry.andromeda.core.units.Pressure
+import com.kylecorry.andromeda.core.units.PressureUnits
 
 class DepthService {
 

@@ -2,8 +2,8 @@ package com.kylecorry.trailsensecore.domain.packs.sort
 
 import com.kylecorry.trailsensecore.domain.packs.ItemCategory
 import com.kylecorry.trailsensecore.domain.packs.PackItem
-import com.kylecorry.trailsensecore.domain.units.Weight
-import com.kylecorry.trailsensecore.domain.units.WeightUnits
+import com.kylecorry.andromeda.core.units.Weight
+import com.kylecorry.andromeda.core.units.WeightUnits
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
