@@ -272,9 +272,9 @@ class WeatherServiceTest {
         @JvmStatic
         fun provideLightningStrikeDistances(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Distance.kilometers(1f), true),
-                Arguments.of(Distance.kilometers(1.1f), false),
-                Arguments.of(Distance.meters(1000f), true),
+                Arguments.of(Distance.kilometers(10f), true),
+                Arguments.of(Distance.kilometers(10.1f), false),
+                Arguments.of(Distance.meters(10000f), true),
                 Arguments.of(Distance.meters(100f), true),
             )
         }

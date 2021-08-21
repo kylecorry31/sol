@@ -131,7 +131,7 @@ class WeatherService : IWeatherService {
 
     override fun isLightningStrikeDangerous(distance: Distance): Boolean {
         // https://www.weather.gov/media/zhu/ZHU_Training_Page/lightning_stuff/lightning/lightning_facts.pdf
-        return distance.meters().distance <= 1000
+        return distance.meters().distance <= 10000
     }
 
     override fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
