@@ -36,4 +36,5 @@ interface INavigationService {
 
     fun getPaceLength(paces: Int, distanceTravelled: Distance): Distance
 
+    fun getPathDistance(points: List<Coordinate>): Distance
 }
