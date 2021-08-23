@@ -152,4 +152,17 @@ class NavigationService : INavigationService {
     override fun getPaceLength(paces: Int, distanceTravelled: Distance): Distance {
         return Distance(paces / distanceTravelled.distance, distanceTravelled.units)
     }
+
+    override fun distance(points: List<Coordinate>): Distance {
+        if (points.size < 2) {
+            return Distance.meters(0f)
+        }
+
+        var distance = 0f
+        for (i in 0 until points.lastIndex) {
+            distance += points[i].distanceTo(points[i + 1])
+        }
+
+        return Distance.meters(distance)
+    }
 }

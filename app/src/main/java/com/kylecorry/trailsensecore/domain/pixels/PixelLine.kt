@@ -4,6 +4,7 @@ import androidx.annotation.ColorInt
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.PixelCoordinate
 import com.kylecorry.trailsensecore.domain.geo.Path
+import com.kylecorry.trailsensecore.domain.geo.PathPoint
 import com.kylecorry.trailsensecore.domain.geo.PathStyle
 import java.time.Duration
 import java.time.Instant
@@ -17,12 +18,14 @@ data class PixelLine(
     val style: PixelLineStyle
 )
 
-fun Path.toPixelLines(
+fun List<PathPoint>.toPixelLines(
     fadeDuration: Duration,
+    @ColorInt color: Int,
+    lineStyle: PathStyle,
     toPixelCoordinate: (coordinate: Coordinate) -> PixelCoordinate
 ): List<PixelLine> {
     val lines = mutableListOf<PixelLine>()
-    val pixelWaypoints = points.map {
+    val pixelWaypoints = map {
         Pair(toPixelCoordinate(it.coordinate), it.time)
     }
     val now = Instant.now().toEpochMilli()
@@ -40,7 +43,7 @@ fun Path.toPixelLines(
             color,
             if (!hasTime) 255 else (255 * (1 - timeAgo / fadeDuration.seconds)).toInt()
                 .coerceIn(60, 255),
-            mapPixelLineStyle(style)
+            mapPixelLineStyle(lineStyle)
         )
         lines.add(line)
     }
@@ -48,7 +51,7 @@ fun Path.toPixelLines(
 }
 
 private fun mapPixelLineStyle(style: PathStyle): PixelLineStyle {
-    return when (style){
+    return when (style) {
         PathStyle.Solid -> PixelLineStyle.Solid
         PathStyle.Dotted -> PixelLineStyle.Dotted
         PathStyle.Arrow -> PixelLineStyle.Arrow
