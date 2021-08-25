@@ -49,7 +49,7 @@ data class Map(val id: Long, val name: String, val filename: String, val calibra
         return Distance.meters(meters / pixels)
     }
 
-    fun boundary(width: Float, height: Float): MapRegion? {
+    fun boundary(width: Float, height: Float): CoordinateBounds? {
         if (calibrationPoints.isEmpty()){
             // Or throw, not enough calibration points
             return null
@@ -65,7 +65,7 @@ data class Map(val id: Long, val name: String, val filename: String, val calibra
         val east = first.location.plus(Distance.meters((width - firstPixels.x) * metersPerPixel), Bearing.from(CompassDirection.East)).longitude
         val west = first.location.plus(Distance.meters(firstPixels.x * metersPerPixel), Bearing.from(CompassDirection.West)).longitude
 
-        return MapRegion(north, east, south, west)
+        return CoordinateBounds(north, east, south, west)
     }
 
 }

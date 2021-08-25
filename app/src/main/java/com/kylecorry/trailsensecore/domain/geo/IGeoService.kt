@@ -3,6 +3,7 @@ package com.kylecorry.trailsensecore.domain.geo
 import com.kylecorry.andromeda.core.math.Vector3
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.domain.geo.cartography.CoordinateBounds
 import com.kylecorry.trailsensecore.domain.geo.cartography.MapSite
 
 interface IGeoService {
@@ -20,5 +21,7 @@ interface IGeoService {
     fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance
 
     fun getMapUrl(coordinate: Coordinate, map: MapSite): String
+
+    fun getBounds(points: List<Coordinate>): CoordinateBounds
 
 }
