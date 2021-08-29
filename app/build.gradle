@@ -29,14 +29,15 @@ android {
         viewBinding true
     }
     testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests.all {
             useJUnitPlatform()
         }
     }
     compileOptions {
         coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     afterEvaluate {
@@ -53,7 +54,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
         useIR = true
     }
 
@@ -78,7 +79,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation "io.noties.markwon:core:4.6.2"
     implementation 'com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master'
-    def andromeda_version = "1.2.0"
+    def andromeda_version = "1.3.1"
     implementation "com.github.kylecorry31.andromeda:core:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:sound:${andromeda_version}"
     implementation "com.github.kylecorry31.andromeda:signal:${andromeda_version}"
