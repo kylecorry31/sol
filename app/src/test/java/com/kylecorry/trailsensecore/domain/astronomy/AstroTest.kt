@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.ZoneId
@@ -241,7 +241,7 @@ class AstroTest {
     fun solarCoordinates() {
         val coords = Astro.solarCoordinates(2448908.5)
         assertEquals(-7.78507, coords.declination, 0.0001)
-        assertEquals(360-161.61917, coords.rightAscension, 0.0001)
+        assertEquals(360 - 161.61917, coords.rightAscension, 0.0001)
     }
 
     @Test

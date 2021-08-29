@@ -4,6 +4,7 @@ import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.LunarEclipseParameters
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import java.time.*
@@ -118,7 +119,8 @@ internal object Astro {
     fun julianDay(date: LocalDateTime): Double {
         var Y = date.year.toDouble()
         var M = date.month.value.toDouble()
-        val D = date.dayOfMonth.toDouble() + timeToAngle(date.hour, date.minute, date.second) / 360.0
+        val D =
+            date.dayOfMonth.toDouble() + timeToAngle(date.hour, date.minute, date.second) / 360.0
 
         if (M <= 2) {
             Y--
@@ -135,7 +137,7 @@ internal object Astro {
         val f = (jd + 0.5) % 1
         val z = (jd + 0.5) - f
 
-        val a = if (z < 2299161){
+        val a = if (z < 2299161) {
             z
         } else {
             val alpha = floor((z - 1867216.25) / 36524.25)
@@ -154,13 +156,13 @@ internal object Astro {
         val minutes = (hours - hour) * 60
         val minute = floor(minutes).toInt()
         val seconds = floor((minutes - minute) * 60).toInt()
-        val month = if (e < 14){
+        val month = if (e < 14) {
             e - 1
         } else {
             e - 13
         }.toInt()
 
-        val year = if (month > 2){
+        val year = if (month > 2) {
             c - 4716
         } else {
             c - 4715
@@ -260,7 +262,12 @@ internal object Astro {
         )
     }
 
-    fun altitude(hourAngle: Double, latitude: Double, declination: Double, withRefraction: Boolean = false): Double {
+    fun altitude(
+        hourAngle: Double,
+        latitude: Double,
+        declination: Double,
+        withRefraction: Boolean = false
+    ): Double {
         val altitude = wrap(
             Math.toDegrees(
                 asin(
@@ -271,7 +278,7 @@ internal object Astro {
             ), -90.0, 90.0
         )
 
-        return if (withRefraction){
+        return if (withRefraction) {
             val refract = wrap(refraction(altitude), -90.0, 90.0)
             wrap(altitude + refract, -90.0, 90.0)
         } else {
@@ -294,17 +301,17 @@ internal object Astro {
     }
 
     fun refraction(elevation: Double): Double {
-        if (elevation > 85.0){
+        if (elevation > 85.0) {
             return 0.0
         }
 
         val tanElev = tanDegrees(elevation)
 
-        if (elevation > 5.0){
+        if (elevation > 5.0) {
             return (58.1 / tanElev - 0.07 / cube(tanElev) + 0.000086 / power(tanElev, 5)) / 3600.0
         }
 
-        if (elevation > -0.575){
+        if (elevation > -0.575) {
             return polynomial(elevation, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
         }
 
@@ -355,25 +362,31 @@ internal object Astro {
             val normalizedRas = normalizeRightAscensions(rightAscensions)
 
             val ra0 =
-                reduceAngleDegrees(interpolate(
-                    n0,
-                    normalizedRas.first,
-                    normalizedRas.second,
-                    normalizedRas.third
-                ))
+                reduceAngleDegrees(
+                    interpolate(
+                        n0,
+                        normalizedRas.first,
+                        normalizedRas.second,
+                        normalizedRas.third
+                    )
+                )
             val ra1 =
-                reduceAngleDegrees(interpolate(
-                    n1,
+                reduceAngleDegrees(
+                    interpolate(
+                        n1,
+                        normalizedRas.first,
+                        normalizedRas.second,
+                        normalizedRas.third
+                    )
+                )
+            val ra2 = reduceAngleDegrees(
+                interpolate(
+                    n2,
                     normalizedRas.first,
                     normalizedRas.second,
                     normalizedRas.third
-                ))
-            val ra2 = reduceAngleDegrees(interpolate(
-                n2,
-                normalizedRas.first,
-                normalizedRas.second,
-                normalizedRas.third
-            ))
+                )
+            )
             val declination1 =
                 interpolate(n1, declinations.first, declinations.second, declinations.third)
             val declination2 =
@@ -463,16 +476,29 @@ internal object Astro {
         val ld = date.toLocalDate()
 
         // Get today's times
-        val today = getTransitTimesHelper(date, coordinate, standardAltitude, withRefraction, coordinateFn)
+        val today =
+            getTransitTimesHelper(date, coordinate, standardAltitude, withRefraction, coordinateFn)
         if (today.rise?.toLocalDate() == ld && today.transit?.toLocalDate() == ld && today.set?.toLocalDate() == ld) {
             return today
         }
 
         // Today's times didn't contain all the events / were on the wrong day, check the surrounding days
         val yesterday =
-            getTransitTimesHelper(date.minusDays(1), coordinate, standardAltitude, withRefraction, coordinateFn)
+            getTransitTimesHelper(
+                date.minusDays(1),
+                coordinate,
+                standardAltitude,
+                withRefraction,
+                coordinateFn
+            )
         val tomorrow =
-            getTransitTimesHelper(date.plusDays(1), coordinate, standardAltitude, withRefraction, coordinateFn)
+            getTransitTimesHelper(
+                date.plusDays(1),
+                coordinate,
+                standardAltitude,
+                withRefraction,
+                coordinateFn
+            )
 
         val rise = listOfNotNull(
             today.rise,
@@ -499,7 +525,13 @@ internal object Astro {
         standardAltitude: Double = -0.8333,
         withRefraction: Boolean = false
     ): RiseSetTransitTimes {
-        return getTransitEvents(date, coordinate, standardAltitude, withRefraction, this::solarCoordinates)
+        return getTransitEvents(
+            date,
+            coordinate,
+            standardAltitude,
+            withRefraction,
+            this::solarCoordinates
+        )
     }
 
     fun getMoonTimes(
@@ -508,7 +540,13 @@ internal object Astro {
         standardAltitude: Double = 0.125,
         withRefraction: Boolean = false
     ): RiseSetTransitTimes {
-        return getTransitEvents(date, coordinate, standardAltitude, withRefraction, this::lunarCoordinates)
+        return getTransitEvents(
+            date,
+            coordinate,
+            standardAltitude,
+            withRefraction,
+            this::lunarCoordinates
+        )
     }
 
     fun sunMeanAnomaly(julianDay: Double): Double {
@@ -826,6 +864,147 @@ internal object Astro {
         return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
     }
 
+    fun getJDEOfMeanMoonPhase(k: Double): Double {
+        val T = k / 1236.85
+        return 2451550.09766 + 29.530588861 * k + 0.00015437 * power(T, 2) - 0.00000015 * power(
+            T,
+            3
+        ) + 0.00000000074 * power(T, 4)
+    }
+
+    fun getJDEOfTrueMoonPhase(k: Double): Double {
+        val T = k / 1236.85
+        val mean = getJDEOfMeanMoonPhase(k)
+        val M = 2.5534 + 29.1053567 * k - 0.0000014 * power(T, 2) - 0.00000011 * power(T, 3)
+        val MPrime = 201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
+            T,
+            3
+        ) - 0.000000058 * power(T, 4)
+        val F = 160.7108 + 390.6705084 * k - 0.0016118 * power(T, 2) - 0.0000027 * power(
+            T,
+            3
+        ) + 0.000000011 * power(T, 4)
+        val omega = 124.7746 - 1.56375588 * k + 0.0020672 * power(T, 2) + 0.00000215 * power(T, 3)
+        TODO("CORRECTION")
+    }
+
+    fun getNextLunarEclipse(ut: LocalDateTime): LunarEclipseParameters {
+        var k = getNextMoonPhaseK(ut, MoonTruePhase.Full)
+        var T: Double
+        var F: Double
+        do {
+            T = k / 1236.85
+            F = reduceAngleDegrees(
+                160.7108 + 390.67050284 * k - 0.0016118 * power(T, 2) - 0.00000227 * power(
+                    T,
+                    3
+                ) + 0.000000011 * power(T, 4)
+            )
+            if (sinDegrees(F).absoluteValue > 0.36) {
+                k += 1
+            }
+        } while (sinDegrees(F).absoluteValue > 0.36)
+
+        val mean = getJDEOfMeanMoonPhase(k)
+        val M = reduceAngleDegrees(
+            2.5534 + 29.1053567 * k - 0.0000014 * power(
+                T,
+                2
+            ) - 0.00000011 * power(T, 3)
+        )
+        val MPrime = reduceAngleDegrees(
+            201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
+                T,
+                3
+            ) - 0.000000058 * power(T, 4)
+        )
+        val omega = reduceAngleDegrees(
+            124.7746 - 1.56375588 * k + 0.0020672 * power(
+                T,
+                2
+            ) + 0.00000215 * power(T, 3)
+        )
+        val E = polynomial(T, 1.0, -0.002516, -0.0000074)
+
+        val F1 = F - 0.02665 * sinDegrees(omega)
+        val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)
+
+        var correction = 0.0
+        val table = table54_1()
+        for (row in table) {
+            correction += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * sinDegrees(
+                row[2] * M + row[3] * MPrime + row[4] * F1 + row[5] * A1 + row[6] * omega
+            )
+        }
+
+        val correctedJD = mean + correction
+
+        var p = 0.0
+        val tableP = table54_P()
+        for (row in tableP) {
+            p += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * sinDegrees(
+                row[2] * M + row[3] * MPrime + row[4] * F1
+            )
+        }
+
+        var q = 0.0
+        val tableQ = table54_Q()
+        for (row in tableQ) {
+            q += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * cosDegrees(
+                row[2] * M + row[3] * MPrime
+            )
+        }
+
+        val W = cosDegrees(F1).absoluteValue
+
+        val gamma = (p * cosDegrees(F1) + q * sinDegrees(F1)) * (1 - 0.0048 * W)
+        val u =
+            0.0059 + 0.0046 * E * cosDegrees(M) - 0.0182 * cosDegrees(MPrime) + 0.0004 * cosDegrees(
+                2 * MPrime
+            ) - 0.0005 * cosDegrees(M + MPrime)
+
+        val n = 0.5458 + 0.04 * cosDegrees(MPrime)
+
+        val datetime = ZonedDateTime.of(utFromJulianDay(correctedJD), ZoneId.of("UTC"))
+
+        return LunarEclipseParameters(
+            datetime.toInstant().minusSeconds(deltaT(datetime.year).toLong()),
+            gamma,
+            u,
+            n
+        )
+
+    }
+
+    fun getNextMoonPhaseK(date: LocalDateTime, moonTruePhase: MoonTruePhase): Double {
+        val year = date.year
+        val day = date.dayOfYear / 365.25
+        val hour = (date.hour / 24.0) / 365.25
+        val minute = (((date.minute / 60.0) / 24.0) / 365.25)
+        val y = year + day + hour + minute
+        val k = (y - 2000) * 12.3685
+
+        val ending = when (moonTruePhase) {
+            MoonTruePhase.New -> 0.0
+            MoonTruePhase.WaningCrescent -> 0.125
+            MoonTruePhase.ThirdQuarter -> 0.25
+            MoonTruePhase.WaningGibbous -> 0.375
+            MoonTruePhase.Full -> 0.5
+            MoonTruePhase.WaxingGibbous -> 0.625
+            MoonTruePhase.FirstQuarter -> 0.75
+            MoonTruePhase.WaxingCrescent -> 0.875
+        }
+
+        val intK = floor(k)
+        val remainder = k % 1
+
+        return if (remainder > ending) {
+            intK + 1.0 + ending
+        } else {
+            intK + ending
+        }
+    }
+
     fun mercuryCoordinates(julianDay: Double): AstroCoordinates {
         return planetCoordinates(
             julianDay,
@@ -959,7 +1138,8 @@ internal object Astro {
             E += (m + e.toDegrees() * sinDegrees(E) - E) / (1 - e * cosDegrees(E))
         }
         E = reduceAngleDegrees(E)
-        val v = reduceAngleDegrees(2 * atan(sqrt((1 + e) / (1 - e)) * tanDegrees(E / 2)).toDegrees())
+        val v =
+            reduceAngleDegrees(2 * atan(sqrt((1 + e) / (1 - e)) * tanDegrees(E / 2)).toDegrees())
         val r = a * (1 - e * cosDegrees(E))
 
         val x = r * a2 * sinDegrees(A + w + v)
@@ -978,7 +1158,7 @@ internal object Astro {
         val yDiff = Y + y
         val zDiff = Z + z
 
-        if (!includesSpeedOfLight){
+        if (!includesSpeedOfLight) {
             val dist = Vector3(xDiff.toFloat(), yDiff.toFloat(), zDiff.toFloat()).magnitude()
             val speedOfLight = 299792458.0
             val secondsBefore = dist / speedOfLight
@@ -995,19 +1175,20 @@ internal object Astro {
         }
 
         val ascension = reduceAngleDegrees(atan2(yDiff, xDiff).toDegrees())
-        val declination = wrap(atan2(zDiff, sqrt(xDiff * xDiff + yDiff * yDiff)).toDegrees(), -90.0, 90.0)
+        val declination =
+            wrap(atan2(zDiff, sqrt(xDiff * xDiff + yDiff * yDiff)).toDegrees(), -90.0, 90.0)
 
         return AstroCoordinates(declination, ascension)
     }
 
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {
         val ra1 = rightAscensions.first
-        val ra2 = if (rightAscensions.second < ra1){
+        val ra2 = if (rightAscensions.second < ra1) {
             rightAscensions.second + 360
         } else {
             rightAscensions.second
         }
-        val ra3 = if (rightAscensions.third < ra2){
+        val ra3 = if (rightAscensions.third < ra2) {
             rightAscensions.third + 360
         } else {
             rightAscensions.third
@@ -1036,6 +1217,53 @@ internal object Astro {
         }
 
         return ut(date).toLocalDate().atStartOfDay()
+    }
+
+    private fun table54_1(): List<List<Int>> {
+        return listOf(
+            // [term, E bool, M, Mprime, F prime, A prime, omega]
+            listOf(-4065, 0, 0, 1, 0, 0, 0),
+            listOf(1727, 1, 1, 0, 0, 0, 0),
+            listOf(161, 0, 0, 2, 0, 0, 0),
+            listOf(-97, 0, 0, 0, 2, 0, 0),
+            listOf(73, 1, -1, 1, 0, 0, 0),
+            listOf(-50, 1, 1, 1, 0, 0, 0),
+            listOf(-23, 0, 0, 1, -2, 0, 0),
+            listOf(21, 1, 2, 0, 0, 0, 0),
+            listOf(12, 0, 0, 1, 2, 0, 0),
+            listOf(6, 1, 1, 2, 0, 0, 0),
+            listOf(-4, 0, 0, 3, 0, 0, 0),
+            listOf(-3, 1, 1, 0, 2, 0, 0),
+            listOf(3, 0, 0, 0, 0, 1, 0),
+            listOf(-2, 1, 1, 0, -2, 0, 0),
+            listOf(-2, 1, -1, 2, 0, 0, 0),
+            listOf(-2, 0, 0, 0, 0, 0, 1),
+        )
+    }
+
+    private fun table54_P(): List<List<Int>> {
+        return listOf(
+            // [term, E bool, M, Mprime, F prime]
+            listOf(2070, 1, 1, 0, 0),
+            listOf(24, 1, 2, 0, 0),
+            listOf(-392, 0, 0, 1, 0),
+            listOf(116, 0, 0, 2, 0),
+            listOf(-73, 1, 1, 1, 0),
+            listOf(67, 1, -1, 1, 0),
+            listOf(118, 0, 0, 0, 2),
+        )
+    }
+
+    private fun table54_Q(): List<List<Int>> {
+        return listOf(
+            // [term, E bool, M, Mprime]
+            listOf(52207, 0, 0, 0),
+            listOf(-48, 1, 1, 0),
+            listOf(20, 1, 2, 0),
+            listOf(-3299, 0, 0, 1),
+            listOf(-60, 1, 1, 1),
+            listOf(41, 1, -1, 1),
+        )
     }
 
     private fun table47a(): List<List<Int>> {
