@@ -872,22 +872,6 @@ internal object Astro {
         ) + 0.00000000074 * power(T, 4)
     }
 
-    fun getJDEOfTrueMoonPhase(k: Double): Double {
-        val T = k / 1236.85
-        val mean = getJDEOfMeanMoonPhase(k)
-        val M = 2.5534 + 29.1053567 * k - 0.0000014 * power(T, 2) - 0.00000011 * power(T, 3)
-        val MPrime = 201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
-            T,
-            3
-        ) - 0.000000058 * power(T, 4)
-        val F = 160.7108 + 390.6705084 * k - 0.0016118 * power(T, 2) - 0.0000027 * power(
-            T,
-            3
-        ) + 0.000000011 * power(T, 4)
-        val omega = 124.7746 - 1.56375588 * k + 0.0020672 * power(T, 2) + 0.00000215 * power(T, 3)
-        TODO("CORRECTION")
-    }
-
     fun getNextLunarEclipse(ut: LocalDateTime): LunarEclipseParameters {
         var k = getNextMoonPhaseK(ut, MoonTruePhase.Full)
         var T: Double
