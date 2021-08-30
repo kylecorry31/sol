@@ -54,11 +54,6 @@ interface IAstronomyService: IEclipseService {
 
     fun isMoonUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
 
-    // Other bodies
-    fun getCelestialObjectEvents(body: CelestialObject, date: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): RiseSetTransitTimes
-    fun getCelestialObjectAltitude(body: CelestialObject, time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Float
-    fun getCelestialObjectAzimuth(body: CelestialObject, time: ZonedDateTime, location: Coordinate): Bearing
-
     // Meteor showers
     fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak?
 

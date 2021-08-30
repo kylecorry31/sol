@@ -826,7 +826,7 @@ internal object Astro {
     }
 
     fun getMoonPhaseAngle(time: ZonedDateTime): Double {
-        val JDE = JulianDayCalculator.calculate(time.toUTCLocal()) //Julian Ephemeris Day
+        val JDE = julianDay(time.toUTCLocal())
 
         val T = (JDE - 2451545) / 36525.0
 
@@ -989,182 +989,6 @@ internal object Astro {
         }
     }
 
-    fun mercuryCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(252.250906, 149474.0722491, 0.00030350, 0.000000018),
-            listOf(0.387098310),
-            listOf(0.20563175, 0.000020407, -0.0000000283, -0.00000000018),
-            listOf(7.004986, 0.00018215, -0.00001810, 0.000000056),
-            listOf(48.330893, 1.1861883, 0.00017542, 0.000000215),
-            listOf(77.456119, 1.5564776, 0.00029544, 0.000000009)
-        )
-    }
-
-    fun venusCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(181.979801, 58519.2130302, 0.00031014, 0.000000015),
-            listOf(0.723329820),
-            listOf(0.00677192, -0.000047765, 0.0000000981, 0.00000000046),
-            listOf(3.394662, 0.0010037, -0.00000088, -0.000000007),
-            listOf(76.679920, 0.9011206, 0.00040618, -0.000000093),
-            listOf(131.563703, 1.4022288, -0.00107618, -0.000005678)
-        )
-    }
-
-    fun marsCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(355.433000, 19141.6964471, 0.00031052, 0.000000016),
-            listOf(1.523679342),
-            listOf(0.09340065, 0.000090484, -0.0000000806, -0.00000000025),
-            listOf(1.849726, -0.0006011, 0.00001276, -0.000000007),
-            listOf(49.558093, 0.7720959, 0.00001557, 0.000002267),
-            listOf(336.060234, 1.8410449, 0.00013477, 0.000000536)
-        )
-    }
-
-    fun jupiterCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(34.351519, 3036.3027748, 0.00022330, 0.000000037),
-            listOf(5.202603209, 0.0000001913),
-            listOf(0.04849793, 0.000163255, -0.0000004714, -0.00000000201),
-            listOf(1.303267, -0.0054965, 0.00000466, -0.000000002),
-            listOf(100.464407, 1.0209774, 0.00040315, 0.000000404),
-            listOf(14.331207, 1.6126352, 0.00103042, -0.00000464)
-        )
-    }
-
-    fun saturnCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(50.077444, 1223.5110686, 0.00051908, -0.000000030),
-            listOf(9.554909192, -0.0000021390, 0.000000004),
-            listOf(0.05554814, -0.000346641, -0.0000006436, 0.00000000340),
-            listOf(2.488879, -0.0037362, -0.00001519, 0.000000087),
-            listOf(113.665503, 0.8770880, -0.00012176, -0.000002249),
-            listOf(93.057237, 1.9637613, 0.00083753, 0.000004928)
-        )
-    }
-
-    fun uranusCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(314.055005, 429.8640561, 0.00030390, 0.000000026),
-            listOf(19.218446062, -0.0000000372, 0.00000000098),
-            listOf(0.04638122, -0.000027293, 0.0000000789, 0.00000000024),
-            listOf(0.773197, 0.0007744, 0.00003749, -0.000000092),
-            listOf(74.005957, 0.5211278, 0.00133947, 0.000018484),
-            listOf(173.005291, 1.4863790, 0.00021406, 0.000000434)
-        )
-    }
-
-    fun neptuneCoordinates(julianDay: Double): AstroCoordinates {
-        return planetCoordinates(
-            julianDay,
-            listOf(304.348665, 219.8333092, 0.00030882, 0.000000018),
-            listOf(30.110386869, -0.0000001663, 0.00000000069),
-            listOf(0.00945575, 0.000006033, 0.0, -0.00000000005),
-            listOf(1.769953, -0.0093082, -0.00000708, 0.000000027),
-            listOf(131.784057, 1.1022039, 0.00025952, -0.000000637),
-            listOf(48.120276, 1.4262957, 0.00038434, 0.000000020)
-        )
-    }
-
-    fun planetCoordinates(
-        julianDay: Double,
-        meanLongitude: List<Double>,
-        semimajorAxis: List<Double>,
-        eccentricity: List<Double>,
-        inclination: List<Double>,
-        ascendingNodeLongitude: List<Double>,
-        perihelionLongitude: List<Double>,
-        includesSpeedOfLight: Boolean = false
-    ): AstroCoordinates {
-        val t = julianCenturies(julianDay)
-        val l = reduceAngleDegrees(polynomial(t, *meanLongitude.toDoubleArray()))
-        val a = polynomial(t, *semimajorAxis.toDoubleArray())
-        val e = polynomial(t, *eccentricity.toDoubleArray())
-        val i = wrap(polynomial(t, *inclination.toDoubleArray()), 0.0, 180.0)
-        val omega = reduceAngleDegrees(polynomial(t, *ascendingNodeLongitude.toDoubleArray()))
-        val pi = reduceAngleDegrees(polynomial(t, *perihelionLongitude.toDoubleArray()))
-        val m = reduceAngleDegrees(l - pi)
-        val w = pi - omega
-
-        val eclipticObliquity = meanObliquityOfEcliptic(julianDay)
-
-        val F = cosDegrees(omega)
-        val G = sinDegrees(omega) * cosDegrees(eclipticObliquity)
-        val H = sinDegrees(omega) * sinDegrees(eclipticObliquity)
-        val P = -sinDegrees(omega) * cosDegrees(i)
-        val Q =
-            cosDegrees(omega) * cosDegrees(i) * cosDegrees(eclipticObliquity) - sinDegrees(i) * sinDegrees(
-                eclipticObliquity
-            )
-        val R =
-            cosDegrees(omega) * cosDegrees(i) * sinDegrees(eclipticObliquity) + sinDegrees(i) * cosDegrees(
-                eclipticObliquity
-            )
-
-
-        val A = atan2(F, P).toDegrees()
-        val B = atan2(G, Q).toDegrees()
-        val C = atan2(H, R).toDegrees()
-
-        val a2 = sqrt(F * F + P * P)
-        val b2 = sqrt(G * G + Q * Q)
-        val c2 = sqrt(H * H + R * R)
-
-        var E = m
-        for (iter in 0..10) {
-            E += (m + e.toDegrees() * sinDegrees(E) - E) / (1 - e * cosDegrees(E))
-        }
-        E = reduceAngleDegrees(E)
-        val v =
-            reduceAngleDegrees(2 * atan(sqrt((1 + e) / (1 - e)) * tanDegrees(E / 2)).toDegrees())
-        val r = a * (1 - e * cosDegrees(E))
-
-        val x = r * a2 * sinDegrees(A + w + v)
-        val y = r * b2 * sinDegrees(B + w + v)
-        val z = r * c2 * sinDegrees(C + w + v)
-
-        val sunLongitude = sunGeometricLongitude(julianDay)
-        val meanObliquity = meanObliquityOfEcliptic(julianDay)
-        val sunRadius = sunRadiusVector(julianDay)
-
-        val X = sunRadius * cosDegrees(sunLongitude)
-        val Y = sunRadius * (sinDegrees(sunLongitude) * cosDegrees(meanObliquity))
-        val Z = sunRadius * (sinDegrees(sunLongitude) * sinDegrees(meanObliquity))
-
-        val xDiff = X + x
-        val yDiff = Y + y
-        val zDiff = Z + z
-
-        if (!includesSpeedOfLight) {
-            val dist = Vector3(xDiff.toFloat(), yDiff.toFloat(), zDiff.toFloat()).magnitude()
-            val speedOfLight = 299792458.0
-            val secondsBefore = dist / speedOfLight
-            return planetCoordinates(
-                julianDay - secondsBefore,
-                meanLongitude,
-                semimajorAxis,
-                eccentricity,
-                inclination,
-                ascendingNodeLongitude,
-                perihelionLongitude,
-                true
-            )
-        }
-
-        val ascension = reduceAngleDegrees(atan2(yDiff, xDiff).toDegrees())
-        val declination =
-            wrap(atan2(zDiff, sqrt(xDiff * xDiff + yDiff * yDiff)).toDegrees(), -90.0, 90.0)
-
-        return AstroCoordinates(declination, ascension)
-    }
-
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {
         val ra1 = rightAscensions.first
         val ra2 = if (rightAscensions.second < ra1) {
@@ -1203,180 +1027,180 @@ internal object Astro {
         return ut(date).toLocalDate().atStartOfDay()
     }
 
-    private fun table54_1(): List<List<Int>> {
-        return listOf(
+    private fun table54_1(): Array<Array<Int>> {
+        return arrayOf(
             // [term, E bool, M, Mprime, F prime, A prime, omega]
-            listOf(-4065, 0, 0, 1, 0, 0, 0),
-            listOf(1727, 1, 1, 0, 0, 0, 0),
-            listOf(161, 0, 0, 2, 0, 0, 0),
-            listOf(-97, 0, 0, 0, 2, 0, 0),
-            listOf(73, 1, -1, 1, 0, 0, 0),
-            listOf(-50, 1, 1, 1, 0, 0, 0),
-            listOf(-23, 0, 0, 1, -2, 0, 0),
-            listOf(21, 1, 2, 0, 0, 0, 0),
-            listOf(12, 0, 0, 1, 2, 0, 0),
-            listOf(6, 1, 1, 2, 0, 0, 0),
-            listOf(-4, 0, 0, 3, 0, 0, 0),
-            listOf(-3, 1, 1, 0, 2, 0, 0),
-            listOf(3, 0, 0, 0, 0, 1, 0),
-            listOf(-2, 1, 1, 0, -2, 0, 0),
-            listOf(-2, 1, -1, 2, 0, 0, 0),
-            listOf(-2, 0, 0, 0, 0, 0, 1),
+            arrayOf(-4065, 0, 0, 1, 0, 0, 0),
+            arrayOf(1727, 1, 1, 0, 0, 0, 0),
+            arrayOf(161, 0, 0, 2, 0, 0, 0),
+            arrayOf(-97, 0, 0, 0, 2, 0, 0),
+            arrayOf(73, 1, -1, 1, 0, 0, 0),
+            arrayOf(-50, 1, 1, 1, 0, 0, 0),
+            arrayOf(-23, 0, 0, 1, -2, 0, 0),
+            arrayOf(21, 1, 2, 0, 0, 0, 0),
+            arrayOf(12, 0, 0, 1, 2, 0, 0),
+            arrayOf(6, 1, 1, 2, 0, 0, 0),
+            arrayOf(-4, 0, 0, 3, 0, 0, 0),
+            arrayOf(-3, 1, 1, 0, 2, 0, 0),
+            arrayOf(3, 0, 0, 0, 0, 1, 0),
+            arrayOf(-2, 1, 1, 0, -2, 0, 0),
+            arrayOf(-2, 1, -1, 2, 0, 0, 0),
+            arrayOf(-2, 0, 0, 0, 0, 0, 1),
         )
     }
 
-    private fun table54_P(): List<List<Int>> {
-        return listOf(
+    private fun table54_P(): Array<Array<Int>> {
+        return arrayOf(
             // [term, E bool, M, Mprime, F prime]
-            listOf(2070, 1, 1, 0, 0),
-            listOf(24, 1, 2, 0, 0),
-            listOf(-392, 0, 0, 1, 0),
-            listOf(116, 0, 0, 2, 0),
-            listOf(-73, 1, 1, 1, 0),
-            listOf(67, 1, -1, 1, 0),
-            listOf(118, 0, 0, 0, 2),
+            arrayOf(2070, 1, 1, 0, 0),
+            arrayOf(24, 1, 2, 0, 0),
+            arrayOf(-392, 0, 0, 1, 0),
+            arrayOf(116, 0, 0, 2, 0),
+            arrayOf(-73, 1, 1, 1, 0),
+            arrayOf(67, 1, -1, 1, 0),
+            arrayOf(118, 0, 0, 0, 2),
         )
     }
 
-    private fun table54_Q(): List<List<Int>> {
-        return listOf(
+    private fun table54_Q(): Array<Array<Int>> {
+        return arrayOf(
             // [term, E bool, M, Mprime]
-            listOf(52207, 0, 0, 0),
-            listOf(-48, 1, 1, 0),
-            listOf(20, 1, 2, 0),
-            listOf(-3299, 0, 0, 1),
-            listOf(-60, 1, 1, 1),
-            listOf(41, 1, -1, 1),
+            arrayOf(52207, 0, 0, 0),
+            arrayOf(-48, 1, 1, 0),
+            arrayOf(20, 1, 2, 0),
+            arrayOf(-3299, 0, 0, 1),
+            arrayOf(-60, 1, 1, 1),
+            arrayOf(41, 1, -1, 1),
         )
     }
 
-    private fun table47a(): List<List<Int>> {
-        return listOf(
-            listOf(0, 0, 1, 0, 6288774, -20905355),
-            listOf(2, 0, -1, 0, 1274027, -3699111),
-            listOf(2, 0, 0, 0, 658314, -2955968),
-            listOf(0, 0, 2, 0, 213618, -569925),
-            listOf(0, 1, 0, 0, -185116, 48888),
-            listOf(0, 0, 0, 2, -114332, -3149),
-            listOf(2, 0, -2, 0, 58793, 246158),
-            listOf(2, -1, -1, 0, 57066, -152138),
-            listOf(2, 0, 1, 0, 53322, -170733),
-            listOf(2, -1, 0, 0, 45758, -204586),
-            listOf(0, 1, -1, 0, -40923, -129620),
-            listOf(1, 0, 0, 0, -34720, 108743),
-            listOf(0, 1, 1, 0, -30383, 104755),
-            listOf(2, 0, 0, -2, 15327, 10321),
-            listOf(0, 0, 1, 2, -12528, 0),
-            listOf(0, 0, 1, -2, 10980, 79661),
-            listOf(4, 0, -1, 0, 10675, -34782),
-            listOf(0, 0, 3, 0, 10034, -23210),
-            listOf(4, 0, -2, 0, 8548, -21636),
-            listOf(2, 1, -1, 0, -7888, 24208),
-            listOf(2, 1, 0, 0, -6766, 30824),
-            listOf(1, 0, -1, 0, -5163, -8379),
-            listOf(1, 1, 0, 0, 4987, -16675),
-            listOf(2, -1, 1, 0, 4036, -12831),
-            listOf(2, 0, 2, 0, 3994, -10445),
-            listOf(4, 0, 0, 0, 3861, -11650),
-            listOf(2, 0, -3, 0, 3665, 14403),
-            listOf(0, 1, -2, 0, -2689, -7003),
-            listOf(2, 0, -1, 2, -2602, 0),
-            listOf(2, -1, -2, 0, 2390, 10056),
-            listOf(1, 0, 1, 0, -2348, 6322),
-            listOf(2, -2, 0, 0, 2236, -9884),
-            listOf(0, 1, 2, 0, -2120, 5751),
-            listOf(0, 2, 0, 0, -2069, 0),
-            listOf(2, -2, -1, 0, 2048, -4950),
-            listOf(2, 0, 1, -2, -1773, 4130),
-            listOf(2, 0, 0, 2, -1595, 0),
-            listOf(4, -1, -1, 0, 1215, -3958),
-            listOf(0, 0, 2, 2, -1110, 0),
-            listOf(3, 0, -1, 0, -892, 3258),
-            listOf(2, 1, 1, 0, -810, 2616),
-            listOf(4, -1, -2, 0, 759, -1897),
-            listOf(0, 2, -1, 0, -713, -2117),
-            listOf(2, 2, -1, 0, -700, 2354),
-            listOf(2, 1, -2, 0, 691, 0),
-            listOf(2, -1, 0, -2, 596, 0),
-            listOf(4, 0, 1, 0, 549, -1423),
-            listOf(0, 0, 4, 0, 537, -1117),
-            listOf(4, -1, 0, 0, 520, -1571),
-            listOf(1, 0, -2, 0, -487, -1739),
-            listOf(2, 1, 0, -2, -399, 0),
-            listOf(0, 0, 2, -2, -381, -4421),
-            listOf(1, 1, 1, 0, 351, 0),
-            listOf(3, 0, -2, 0, -340, 0),
-            listOf(4, 0, -3, 0, 330, 0),
-            listOf(2, -1, 2, 0, 327, 0),
-            listOf(0, 2, 1, 0, -323, 1165),
-            listOf(1, 1, -1, 0, 299, 0),
-            listOf(2, 0, 3, 0, 294, 0),
-            listOf(2, 0, -1, -2, 0, 8752)
+    private fun table47a(): Array<Array<Int>> {
+        return arrayOf(
+            arrayOf(0, 0, 1, 0, 6288774, -20905355),
+            arrayOf(2, 0, -1, 0, 1274027, -3699111),
+            arrayOf(2, 0, 0, 0, 658314, -2955968),
+            arrayOf(0, 0, 2, 0, 213618, -569925),
+            arrayOf(0, 1, 0, 0, -185116, 48888),
+            arrayOf(0, 0, 0, 2, -114332, -3149),
+            arrayOf(2, 0, -2, 0, 58793, 246158),
+            arrayOf(2, -1, -1, 0, 57066, -152138),
+            arrayOf(2, 0, 1, 0, 53322, -170733),
+            arrayOf(2, -1, 0, 0, 45758, -204586),
+            arrayOf(0, 1, -1, 0, -40923, -129620),
+            arrayOf(1, 0, 0, 0, -34720, 108743),
+            arrayOf(0, 1, 1, 0, -30383, 104755),
+            arrayOf(2, 0, 0, -2, 15327, 10321),
+            arrayOf(0, 0, 1, 2, -12528, 0),
+            arrayOf(0, 0, 1, -2, 10980, 79661),
+            arrayOf(4, 0, -1, 0, 10675, -34782),
+            arrayOf(0, 0, 3, 0, 10034, -23210),
+            arrayOf(4, 0, -2, 0, 8548, -21636),
+            arrayOf(2, 1, -1, 0, -7888, 24208),
+            arrayOf(2, 1, 0, 0, -6766, 30824),
+            arrayOf(1, 0, -1, 0, -5163, -8379),
+            arrayOf(1, 1, 0, 0, 4987, -16675),
+            arrayOf(2, -1, 1, 0, 4036, -12831),
+            arrayOf(2, 0, 2, 0, 3994, -10445),
+            arrayOf(4, 0, 0, 0, 3861, -11650),
+            arrayOf(2, 0, -3, 0, 3665, 14403),
+            arrayOf(0, 1, -2, 0, -2689, -7003),
+            arrayOf(2, 0, -1, 2, -2602, 0),
+            arrayOf(2, -1, -2, 0, 2390, 10056),
+            arrayOf(1, 0, 1, 0, -2348, 6322),
+            arrayOf(2, -2, 0, 0, 2236, -9884),
+            arrayOf(0, 1, 2, 0, -2120, 5751),
+            arrayOf(0, 2, 0, 0, -2069, 0),
+            arrayOf(2, -2, -1, 0, 2048, -4950),
+            arrayOf(2, 0, 1, -2, -1773, 4130),
+            arrayOf(2, 0, 0, 2, -1595, 0),
+            arrayOf(4, -1, -1, 0, 1215, -3958),
+            arrayOf(0, 0, 2, 2, -1110, 0),
+            arrayOf(3, 0, -1, 0, -892, 3258),
+            arrayOf(2, 1, 1, 0, -810, 2616),
+            arrayOf(4, -1, -2, 0, 759, -1897),
+            arrayOf(0, 2, -1, 0, -713, -2117),
+            arrayOf(2, 2, -1, 0, -700, 2354),
+            arrayOf(2, 1, -2, 0, 691, 0),
+            arrayOf(2, -1, 0, -2, 596, 0),
+            arrayOf(4, 0, 1, 0, 549, -1423),
+            arrayOf(0, 0, 4, 0, 537, -1117),
+            arrayOf(4, -1, 0, 0, 520, -1571),
+            arrayOf(1, 0, -2, 0, -487, -1739),
+            arrayOf(2, 1, 0, -2, -399, 0),
+            arrayOf(0, 0, 2, -2, -381, -4421),
+            arrayOf(1, 1, 1, 0, 351, 0),
+            arrayOf(3, 0, -2, 0, -340, 0),
+            arrayOf(4, 0, -3, 0, 330, 0),
+            arrayOf(2, -1, 2, 0, 327, 0),
+            arrayOf(0, 2, 1, 0, -323, 1165),
+            arrayOf(1, 1, -1, 0, 299, 0),
+            arrayOf(2, 0, 3, 0, 294, 0),
+            arrayOf(2, 0, -1, -2, 0, 8752)
         )
     }
 
-    private fun table47b(): List<List<Int>> {
-        return listOf(
-            listOf(0, 0, 0, 1, 5128122),
-            listOf(0, 0, 1, 1, 280602),
-            listOf(0, 0, 1, -1, 277693),
-            listOf(2, 0, 0, -1, 173237),
-            listOf(2, 0, -1, 1, 55413),
-            listOf(2, 0, -1, -1, 46271),
-            listOf(2, 0, 0, 1, 32573),
-            listOf(0, 0, 2, 1, 17198),
-            listOf(2, 0, 1, -1, 9266),
-            listOf(0, 0, 2, -1, 8822),
-            listOf(2, -1, 0, -1, 8216),
-            listOf(2, 0, -2, -1, 4324),
-            listOf(2, 0, 1, 1, 4200),
-            listOf(2, 1, 0, -1, -3359),
-            listOf(2, -1, -1, 1, 2463),
-            listOf(2, -1, 0, 1, 2211),
-            listOf(2, -1, -1, -1, 2065),
-            listOf(0, 1, -1, -1, -1870),
-            listOf(4, 0, -1, -1, 1828),
-            listOf(0, 1, 0, 1, -1794),
-            listOf(0, 0, 0, 3, -1749),
-            listOf(0, 1, -1, 1, -1565),
-            listOf(1, 0, 0, 1, -1491),
-            listOf(0, 1, 1, 1, -1475),
-            listOf(0, 1, 1, -1, -1410),
-            listOf(0, 1, 0, -1, -1344),
-            listOf(1, 0, 0, -1, -1335),
-            listOf(0, 0, 3, 1, 1107),
-            listOf(4, 0, 0, -1, 1021),
-            listOf(4, 0, -1, 1, 833),
-            listOf(0, 0, 1, -3, 777),
-            listOf(4, 0, -2, 1, 671),
-            listOf(2, 0, 0, -3, 607),
-            listOf(2, 0, 2, -1, 596),
-            listOf(2, -1, 1, -1, 491),
-            listOf(2, 0, -2, 1, -451),
-            listOf(0, 0, 3, -1, 439),
-            listOf(2, 0, 2, 1, 422),
-            listOf(2, 0, -3, -1, 421),
-            listOf(2, 1, -1, 1, -366),
-            listOf(2, 1, 0, 1, -351),
-            listOf(4, 0, 0, 1, 331),
-            listOf(2, -1, 1, 1, 315),
-            listOf(2, -2, 0, -1, 302),
-            listOf(0, 0, 1, 3, -283),
-            listOf(2, 1, 1, -1, -229),
-            listOf(1, 1, 0, -1, 223),
-            listOf(1, 1, 0, 1, 223),
-            listOf(0, 1, -2, -1, -220),
-            listOf(2, 1, -1, -1, -220),
-            listOf(1, 0, 1, 1, -185),
-            listOf(2, -1, -2, -1, 181),
-            listOf(0, 1, 2, 1, -177),
-            listOf(4, 0, -2, -1, 176),
-            listOf(4, -1, -1, -1, 166),
-            listOf(1, 0, 1, -1, -164),
-            listOf(4, 0, 1, -1, 132),
-            listOf(1, 0, -1, -1, -119),
-            listOf(4, -1, 0, -1, 115),
-            listOf(2, -2, 0, 1, 107)
+    private fun table47b(): Array<Array<Int>> {
+        return arrayOf(
+            arrayOf(0, 0, 0, 1, 5128122),
+            arrayOf(0, 0, 1, 1, 280602),
+            arrayOf(0, 0, 1, -1, 277693),
+            arrayOf(2, 0, 0, -1, 173237),
+            arrayOf(2, 0, -1, 1, 55413),
+            arrayOf(2, 0, -1, -1, 46271),
+            arrayOf(2, 0, 0, 1, 32573),
+            arrayOf(0, 0, 2, 1, 17198),
+            arrayOf(2, 0, 1, -1, 9266),
+            arrayOf(0, 0, 2, -1, 8822),
+            arrayOf(2, -1, 0, -1, 8216),
+            arrayOf(2, 0, -2, -1, 4324),
+            arrayOf(2, 0, 1, 1, 4200),
+            arrayOf(2, 1, 0, -1, -3359),
+            arrayOf(2, -1, -1, 1, 2463),
+            arrayOf(2, -1, 0, 1, 2211),
+            arrayOf(2, -1, -1, -1, 2065),
+            arrayOf(0, 1, -1, -1, -1870),
+            arrayOf(4, 0, -1, -1, 1828),
+            arrayOf(0, 1, 0, 1, -1794),
+            arrayOf(0, 0, 0, 3, -1749),
+            arrayOf(0, 1, -1, 1, -1565),
+            arrayOf(1, 0, 0, 1, -1491),
+            arrayOf(0, 1, 1, 1, -1475),
+            arrayOf(0, 1, 1, -1, -1410),
+            arrayOf(0, 1, 0, -1, -1344),
+            arrayOf(1, 0, 0, -1, -1335),
+            arrayOf(0, 0, 3, 1, 1107),
+            arrayOf(4, 0, 0, -1, 1021),
+            arrayOf(4, 0, -1, 1, 833),
+            arrayOf(0, 0, 1, -3, 777),
+            arrayOf(4, 0, -2, 1, 671),
+            arrayOf(2, 0, 0, -3, 607),
+            arrayOf(2, 0, 2, -1, 596),
+            arrayOf(2, -1, 1, -1, 491),
+            arrayOf(2, 0, -2, 1, -451),
+            arrayOf(0, 0, 3, -1, 439),
+            arrayOf(2, 0, 2, 1, 422),
+            arrayOf(2, 0, -3, -1, 421),
+            arrayOf(2, 1, -1, 1, -366),
+            arrayOf(2, 1, 0, 1, -351),
+            arrayOf(4, 0, 0, 1, 331),
+            arrayOf(2, -1, 1, 1, 315),
+            arrayOf(2, -2, 0, -1, 302),
+            arrayOf(0, 0, 1, 3, -283),
+            arrayOf(2, 1, 1, -1, -229),
+            arrayOf(1, 1, 0, -1, 223),
+            arrayOf(1, 1, 0, 1, 223),
+            arrayOf(0, 1, -2, -1, -220),
+            arrayOf(2, 1, -1, -1, -220),
+            arrayOf(1, 0, 1, 1, -185),
+            arrayOf(2, -1, -2, -1, 181),
+            arrayOf(0, 1, 2, 1, -177),
+            arrayOf(4, 0, -2, -1, 176),
+            arrayOf(4, -1, -1, -1, 166),
+            arrayOf(1, 0, 1, -1, -164),
+            arrayOf(4, 0, 1, -1, 132),
+            arrayOf(1, 0, -1, -1, -119),
+            arrayOf(4, -1, 0, -1, 115),
+            arrayOf(2, -2, 0, 1, 107)
         )
     }
 }

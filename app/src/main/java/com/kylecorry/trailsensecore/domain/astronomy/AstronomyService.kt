@@ -312,60 +312,6 @@ class AstronomyService : IAstronomyService {
         return getMoonAltitude(time, location, withRefraction) > 0
     }
 
-    override fun getCelestialObjectEvents(
-        body: CelestialObject,
-        date: ZonedDateTime,
-        location: Coordinate,
-        withRefraction: Boolean
-    ): RiseSetTransitTimes {
-        return Astro.getTransitEvents(
-            date,
-            location,
-            0.0,
-            withRefraction,
-            getCoordinateMethod(body)
-        )
-    }
-
-    override fun getCelestialObjectAltitude(
-        body: CelestialObject,
-        time: ZonedDateTime,
-        location: Coordinate,
-        withRefraction: Boolean
-    ): Float {
-        val jd = Astro.julianDay(Astro.ut(time))
-        val coords = getCoordinateMethod(body)(jd)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            coords.rightAscension
-        )
-        return Astro.altitude(
-            hourAngle,
-            location.latitude,
-            coords.declination,
-            withRefraction
-        )
-            .toFloat()
-    }
-
-    override fun getCelestialObjectAzimuth(
-        body: CelestialObject,
-        time: ZonedDateTime,
-        location: Coordinate
-    ): Bearing {
-        val jd = Astro.julianDay(Astro.ut(time))
-        val coords = getCoordinateMethod(body)(jd)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            coords.rightAscension
-        )
-        return Bearing(
-            Astro.azimuth(hourAngle, location.latitude, coords.declination).toFloat()
-        )
-    }
-
     override fun getAstronomicalSeason(location: Coordinate, date: ZonedDateTime): Season {
         val sl = wrap(getSolarLongitude(date), 0f, 360f)
         return when {
@@ -529,20 +475,6 @@ class AstronomyService : IAstronomyService {
     private fun getSolarLongitude(date: ZonedDateTime): Float {
         val jd = Astro.julianDay(Astro.ut(date))
         return Astro.sunTrueLongitude(jd).toFloat()
-    }
-
-    private fun getCoordinateMethod(celestialObject: CelestialObject): (julianDate: Double) -> AstroCoordinates {
-        return when (celestialObject) {
-            CelestialObject.Sun -> Astro::solarCoordinates
-            CelestialObject.Mercury -> Astro::mercuryCoordinates
-            CelestialObject.Venus -> Astro::venusCoordinates
-            CelestialObject.Moon -> Astro::lunarCoordinates
-            CelestialObject.Mars -> Astro::marsCoordinates
-            CelestialObject.Jupiter -> Astro::jupiterCoordinates
-            CelestialObject.Saturn -> Astro::saturnCoordinates
-            CelestialObject.Uranus -> Astro::uranusCoordinates
-            CelestialObject.Neptune -> Astro::neptuneCoordinates
-        }
     }
 
 }
