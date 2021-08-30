@@ -7,6 +7,7 @@ import com.kylecorry.andromeda.core.time.atStartOfDay
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.CompassDirection
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.Eclipse
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
@@ -379,7 +380,7 @@ class AstronomyService : IAstronomyService {
         time: Instant,
         location: Coordinate,
         type: EclipseType
-    ): InstantRange? {
+    ): Eclipse? {
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()

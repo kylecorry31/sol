@@ -9,7 +9,7 @@ import java.time.ZoneId
 import kotlin.math.absoluteValue
 
 abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
-    override fun getNextEclipse(after: Instant, location: Coordinate): InstantRange? {
+    override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
         return getNextEclipseHelper(after.minus(Duration.ofDays(20)), after, location, 100)
     }
 
@@ -21,7 +21,7 @@ abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
         atLeastInstant: Instant,
         location: Coordinate,
         iterationsRemaining: Int
-    ): InstantRange? {
+    ): Eclipse? {
         if (iterationsRemaining == 0) {
             return null
         }
@@ -49,7 +49,7 @@ abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
         )
 
         val isAfterInstant = time.end.isAfter(atLeastInstant)
-        if (!isAfterInstant){
+        if (!isAfterInstant) {
             return getNextEclipseHelper(
                 parameters.maximum.plus(Duration.ofDays(10)),
                 atLeastInstant,
@@ -64,7 +64,7 @@ abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
 
 
         if (upAtStart || upAtEnd) {
-            return time
+            return Eclipse(time.start, time.end, magnitude.toFloat())
         }
 
         return getNextEclipseHelper(

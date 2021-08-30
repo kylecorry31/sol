@@ -43,6 +43,8 @@ class AstronomyServiceTest {
             actual.end.atZone(ZoneId.of("UTC")),
             Duration.ofMinutes(2)
         )
+
+        assertEquals(0.974f, actual.magnitude, 0.005f)
     }
 
     @Test
@@ -63,6 +65,8 @@ class AstronomyServiceTest {
             actual.end.atZone(ZoneId.of("UTC")),
             Duration.ofMinutes(2)
         )
+
+        assertEquals(1.414f, actual.magnitude, 0.005f)
     }
 
     @Test

@@ -5,5 +5,5 @@ import com.kylecorry.trailsensecore.domain.astronomy.InstantRange
 import java.time.Instant
 
 interface EclipseCalculator {
-    fun getNextEclipse(after: Instant, location: Coordinate): InstantRange?
+    fun getNextEclipse(after: Instant, location: Coordinate): Eclipse?
 }
