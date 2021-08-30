@@ -2,6 +2,9 @@ package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.andromeda.core.time.duration
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.time.Season
@@ -21,6 +24,46 @@ class AstronomyServiceTest {
     private val service = AstronomyService()
 
     // TODO: Verify sun events other than actual time
+
+    @Test
+    fun canGetNextPartialEclipse() {
+        val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
+        val location = Coordinate(42.0, -70.0)
+
+        val actual = service.getNextEclipse(date.toInstant(), location, EclipseType.PartialLunar)
+
+        assertDate(
+            ZonedDateTime.of(LocalDateTime.of(2021, 11, 19, 7, 18), ZoneId.of("UTC")),
+            actual!!.start.atZone(ZoneId.of("UTC")),
+            Duration.ofMinutes(2)
+        )
+
+        assertDate(
+            ZonedDateTime.of(LocalDateTime.of(2021, 11, 19, 10, 47), ZoneId.of("UTC")),
+            actual.end.atZone(ZoneId.of("UTC")),
+            Duration.ofMinutes(2)
+        )
+    }
+
+    @Test
+    fun canGetNextTotalEclipse() {
+        val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
+        val location = Coordinate(42.0, -70.0)
+
+        val actual = service.getNextEclipse(date.toInstant(), location, EclipseType.TotalLunar)
+
+        assertDate(
+            ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 3, 29), ZoneId.of("UTC")),
+            actual!!.start.atZone(ZoneId.of("UTC")),
+            Duration.ofMinutes(2)
+        )
+
+        assertDate(
+            ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 4, 53), ZoneId.of("UTC")),
+            actual.end.atZone(ZoneId.of("UTC")),
+            Duration.ofMinutes(2)
+        )
+    }
 
     @Test
     fun getSunEventsActual() {
@@ -128,7 +171,7 @@ class AstronomyServiceTest {
     }
 
     @Test
-    fun getBestSolarPanelPositionForDayNorthern(){
+    fun getBestSolarPanelPositionForDayNorthern() {
         val ny = Coordinate(40.7128, -74.0060)
 
         parametrized(
@@ -148,7 +191,7 @@ class AstronomyServiceTest {
     }
 
     @Test
-    fun getBestSolarPanelPositionForDaySouthern(){
+    fun getBestSolarPanelPositionForDaySouthern() {
         val ny = Coordinate(-40.7128, -74.0060)
         parametrized(
             listOf(
@@ -559,7 +602,7 @@ class AstronomyServiceTest {
     }
 
     @Test
-    fun getMeteorShower(){
+    fun getMeteorShower() {
         val service = AstronomyService()
         val location = Coordinate(40.7128, -74.0060)
 
@@ -575,13 +618,16 @@ class AstronomyServiceTest {
             MeteorShower.Ursids to LocalDate.of(2021, 12, 21),
             null to LocalDate.of(2021, 1, 1)
         ).forEach {
-            val shower = service.getMeteorShower(location, getDate(LocalDateTime.of(it.second, LocalTime.MIN)))
+            val shower = service.getMeteorShower(
+                location,
+                getDate(LocalDateTime.of(it.second, LocalTime.MIN))
+            )
             assertEquals(it.first, shower?.shower)
         }
     }
 
     @Test
-    fun getAstronomicalSeasonNorthern(){
+    fun getAstronomicalSeasonNorthern() {
         val service = AstronomyService()
         val location = Coordinate(40.7128, -74.0060)
 
@@ -597,13 +643,16 @@ class AstronomyServiceTest {
             Season.Winter to LocalDate.of(2021, 12, 21),
             Season.Winter to LocalDate.of(2021, 12, 31),
         ).forEach {
-            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MAX)))
+            val season = service.getAstronomicalSeason(
+                location,
+                getDate(LocalDateTime.of(it.second, LocalTime.MAX))
+            )
             assertEquals(it.first, season)
         }
     }
 
     @Test
-    fun getAstronomicalSeasonSouthern(){
+    fun getAstronomicalSeasonSouthern() {
         val service = AstronomyService()
         val location = Coordinate(-40.7128, -74.0060)
 
@@ -619,7 +668,10 @@ class AstronomyServiceTest {
             Season.Summer to LocalDate.of(2021, 12, 21),
             Season.Summer to LocalDate.of(2021, 12, 31),
         ).forEach {
-            val season = service.getAstronomicalSeason(location, getDate(LocalDateTime.of(it.second, LocalTime.MAX)))
+            val season = service.getAstronomicalSeason(
+                location,
+                getDate(LocalDateTime.of(it.second, LocalTime.MAX))
+            )
             assertEquals(it.first, season)
         }
     }
@@ -654,7 +706,7 @@ class AstronomyServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideDayLengths")
-    fun getDaylightLength(date: ZonedDateTime, location: Coordinate, expected: Duration){
+    fun getDaylightLength(date: ZonedDateTime, location: Coordinate, expected: Duration) {
         val length = service.getDaylightLength(date, location)
         assertDuration(expected, length, Duration.ofSeconds(30))
     }
@@ -684,7 +736,7 @@ class AstronomyServiceTest {
         val rise: LocalTime?,
         val transit: LocalTime?,
         val set: LocalTime?,
-            val location: Coordinate = Coordinate(40.7128, -74.0060),
+        val location: Coordinate = Coordinate(40.7128, -74.0060),
         val zone: String = "America/New_York"
     )
 
@@ -697,13 +749,49 @@ class AstronomyServiceTest {
             val greenland = Coordinate(76.7667, -18.6667)
             val zoneGreenland = ZoneId.of("America/Danmarkshavn")
             return Stream.of(
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 4, 3), LocalTime.MIN, zoneNy), ny, duration(12, 47)),
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 3, 13), LocalTime.MIN, zoneNy), ny, duration(11, 50)),
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 3, 14), LocalTime.MIN, zoneNy), ny, duration(11, 53)),
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 1, 10), LocalTime.MIN, zoneGreenland), greenland, duration(0)),
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 2, 17), LocalTime.MIN, zoneGreenland), greenland, duration(4, 37)),
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 4, 22), LocalTime.MIN, zoneGreenland), greenland, duration(22, 42)),
-                Arguments.of(ZonedDateTime.of(LocalDate.of(2021, 5, 22), LocalTime.MIN, zoneGreenland), greenland, duration(24)),
+                Arguments.of(
+                    ZonedDateTime.of(LocalDate.of(2021, 4, 3), LocalTime.MIN, zoneNy),
+                    ny,
+                    duration(12, 47)
+                ),
+                Arguments.of(
+                    ZonedDateTime.of(LocalDate.of(2021, 3, 13), LocalTime.MIN, zoneNy),
+                    ny,
+                    duration(11, 50)
+                ),
+                Arguments.of(
+                    ZonedDateTime.of(LocalDate.of(2021, 3, 14), LocalTime.MIN, zoneNy),
+                    ny,
+                    duration(11, 53)
+                ),
+                Arguments.of(
+                    ZonedDateTime.of(
+                        LocalDate.of(2021, 1, 10),
+                        LocalTime.MIN,
+                        zoneGreenland
+                    ), greenland, duration(0)
+                ),
+                Arguments.of(
+                    ZonedDateTime.of(
+                        LocalDate.of(2021, 2, 17),
+                        LocalTime.MIN,
+                        zoneGreenland
+                    ), greenland, duration(4, 37)
+                ),
+                Arguments.of(
+                    ZonedDateTime.of(
+                        LocalDate.of(2021, 4, 22),
+                        LocalTime.MIN,
+                        zoneGreenland
+                    ), greenland, duration(22, 42)
+                ),
+                Arguments.of(
+                    ZonedDateTime.of(
+                        LocalDate.of(2021, 5, 22),
+                        LocalTime.MIN,
+                        zoneGreenland
+                    ), greenland, duration(24)
+                ),
             )
         }
     }

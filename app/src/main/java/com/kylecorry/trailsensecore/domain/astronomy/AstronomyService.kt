@@ -7,10 +7,14 @@ import com.kylecorry.andromeda.core.time.atStartOfDay
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.CompassDirection
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import com.kylecorry.trailsensecore.domain.time.Season
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
@@ -105,39 +109,50 @@ class AstronomyService : IAstronomyService {
         return getSunAltitude(time, location, withRefraction) > 0
     }
 
-    override fun getDaylightLength(date: ZonedDateTime, location: Coordinate, sunTimesMode: SunTimesMode): Duration {
+    override fun getDaylightLength(
+        date: ZonedDateTime,
+        location: Coordinate,
+        sunTimesMode: SunTimesMode
+    ): Duration {
         val startOfDay = date.atStartOfDay()
         val sunrise = getNextSunrise(startOfDay, location, sunTimesMode)
         val sunset = getNextSunset(startOfDay, location, sunTimesMode)
 
-        if (sunrise != null && sunset != null && sunset > sunrise){
+        if (sunrise != null && sunset != null && sunset > sunrise) {
             // Rise in morning, set at night
             return Duration.between(sunrise, sunset)
-        } else if (sunrise == null && sunset == null){
+        } else if (sunrise == null && sunset == null) {
             // Sun doesn't rise or set
-            return if (isSunUp(startOfDay, location)) Duration.between(startOfDay, startOfDay.plusDays(1)) else Duration.ZERO
+            return if (isSunUp(startOfDay, location)) Duration.between(
+                startOfDay,
+                startOfDay.plusDays(1)
+            ) else Duration.ZERO
         } else if (sunrise != null && sunset == null) {
             // Sun rises but doesn't set
             return Duration.between(sunrise, startOfDay.plusDays(1))
-        } else if (sunset != null && sunrise == null){
+        } else if (sunset != null && sunrise == null) {
             // Sun sets but doesn't rise
             return Duration.between(startOfDay, sunset)
         } else {
             // Sun sets in morning, rises at night
-            return Duration.between(startOfDay, sunset).plus(Duration.between(sunrise, startOfDay.plusDays(1)))
+            return Duration.between(startOfDay, sunset)
+                .plus(Duration.between(sunrise, startOfDay.plusDays(1)))
         }
     }
 
 
     private fun getOptimalSolarDirection(location: Coordinate): Bearing {
-        return if (location.latitude > 0){
+        return if (location.latitude > 0) {
             Bearing.from(CompassDirection.South)
         } else {
             Bearing.from(CompassDirection.North)
         }
     }
 
-    override fun getBestSolarPanelPositionForRestOfDay(start: ZonedDateTime, location: Coordinate): SolarPanelPosition {
+    override fun getBestSolarPanelPositionForRestOfDay(
+        start: ZonedDateTime,
+        location: Coordinate
+    ): SolarPanelPosition {
         val interval = 5L
 
         var time = start
@@ -146,13 +161,13 @@ class AstronomyService : IAstronomyService {
         var averageAltitude = 0f
         var count = 0
 
-        while(time.toLocalDate() == start.toLocalDate()){
+        while (time.toLocalDate() == start.toLocalDate()) {
             val altitude = getSunAltitude(time, location, true)
 
             val wrapAzimuth = !location.isNorthernHemisphere
-            if (altitude >= 0){
+            if (altitude >= 0) {
                 var azimuth = getSunAzimuth(time, location).value
-                if (wrapAzimuth && azimuth < 180f){
+                if (wrapAzimuth && azimuth < 180f) {
                     azimuth += 360f
                 }
                 averageAzimuth += azimuth
@@ -161,19 +176,19 @@ class AstronomyService : IAstronomyService {
             time = time.plusMinutes(interval)
         }
 
-        if (count != 0){
+        if (count != 0) {
             averageAzimuth /= count
         }
 
         // Only get altitudes close to the average azimuth
         time = start
         count = 0
-        while(time.toLocalDate() == start.toLocalDate()){
+        while (time.toLocalDate() == start.toLocalDate()) {
             val altitude = getSunAltitude(time, location, true)
 
-            if (altitude >= 0){
+            if (altitude >= 0) {
                 val azimuth = getSunAzimuth(time, location).value
-                if (deltaAngle(azimuth, averageAzimuth).absoluteValue < 45f){
+                if (deltaAngle(azimuth, averageAzimuth).absoluteValue < 45f) {
                     averageAltitude += altitude
                     count++
                 }
@@ -181,7 +196,7 @@ class AstronomyService : IAstronomyService {
             time = time.plusMinutes(interval)
         }
 
-        if (count != 0){
+        if (count != 0) {
             averageAltitude /= count
         }
 
@@ -191,15 +206,21 @@ class AstronomyService : IAstronomyService {
     }
 
 
-    override fun getBestSolarPanelPositionForDay(date: ZonedDateTime, location: Coordinate): SolarPanelPosition {
+    override fun getBestSolarPanelPositionForDay(
+        date: ZonedDateTime,
+        location: Coordinate
+    ): SolarPanelPosition {
         val start = date.withHour(0).withMinute(0).withSecond(0)
         return getBestSolarPanelPositionForRestOfDay(start, location)
     }
 
-    override fun getBestSolarPanelPositionForTime(time: ZonedDateTime, location: Coordinate): SolarPanelPosition {
+    override fun getBestSolarPanelPositionForTime(
+        time: ZonedDateTime,
+        location: Coordinate
+    ): SolarPanelPosition {
         val sunAltitude = getSunAltitude(time, location, true)
 
-        if (sunAltitude >= 0){
+        if (sunAltitude >= 0) {
             val azimuth = getSunAzimuth(time, location)
             return SolarPanelPosition(90f - sunAltitude, azimuth)
         }
@@ -354,19 +375,31 @@ class AstronomyService : IAstronomyService {
         }
     }
 
+    override fun getNextEclipse(
+        time: Instant,
+        location: Coordinate,
+        type: EclipseType
+    ): InstantRange? {
+        val calculator = when (type) {
+            EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
+            EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
+        }
+        return calculator.getNextEclipse(time, location)
+    }
+
     override fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {
         val startOfDay = ZonedDateTime.of(date.toLocalDate(), LocalTime.MIN, date.zone)
 
         val solarLongitude = getSolarLongitude(date)
 
-        for (shower in MeteorShower.values()){
-            if (deltaAngle(solarLongitude, shower.solarLongitude).absoluteValue > 1){
+        for (shower in MeteorShower.values()) {
+            if (deltaAngle(solarLongitude, shower.solarLongitude).absoluteValue > 1) {
                 continue
             }
 
             val peak = getNextMeteorShowerPeak(shower, location, startOfDay)
 
-            if (peak?.toLocalDate() == date.toLocalDate()){
+            if (peak?.toLocalDate() == date.toLocalDate()) {
                 return MeteorShowerPeak(shower, peak!!)
             }
         }
@@ -374,20 +407,32 @@ class AstronomyService : IAstronomyService {
         return null
     }
 
-    private fun getNextMeteorShowerPeak(shower: MeteorShower, location: Coordinate, now: ZonedDateTime): ZonedDateTime? {
+    private fun getNextMeteorShowerPeak(
+        shower: MeteorShower,
+        location: Coordinate,
+        now: ZonedDateTime
+    ): ZonedDateTime? {
         val time = getNextTimeAtSolarLongitude(shower.solarLongitude, now)
         val today = getMeteorShowerTimes(shower, location, time)
         val yesterday = getMeteorShowerTimes(shower, location, time.plusDays(1))
         val tomorrow = getMeteorShowerTimes(shower, location, time.minusDays(1))
 
-        val closest = DateUtils.getClosestTime(time, listOf(today.transit, yesterday.transit, tomorrow.transit))
+        val closest = DateUtils.getClosestTime(
+            time,
+            listOf(today.transit, yesterday.transit, tomorrow.transit)
+        )
 
-        if (closest == null && isMeteorShowerVisible(shower, location, time)){
+        if (closest == null && isMeteorShowerVisible(shower, location, time)) {
             // Doesn't set
             val sun = getSunEvents(time, location, SunTimesMode.Astronomical)
-            return if (!isSunUp(time, location, false)){
+            return if (!isSunUp(time, location, false)) {
                 time
-            } else if (sun.rise != null && isMeteorShowerVisible(shower, location, sun.rise.minusHours(1))){
+            } else if (sun.rise != null && isMeteorShowerVisible(
+                    shower,
+                    location,
+                    sun.rise.minusHours(1)
+                )
+            ) {
                 sun.rise.minusHours(1)
             } else {
                 null
@@ -395,9 +440,14 @@ class AstronomyService : IAstronomyService {
         } else if (closest != null) {
             // Sets, use the transit point
             val sun = getSunEvents(closest, location, SunTimesMode.Astronomical)
-            return if (!isSunUp(closest, location, false)){
+            return if (!isSunUp(closest, location, false)) {
                 closest
-            } else if (sun.rise != null && isMeteorShowerVisible(shower, location, sun.rise.minusHours(1))){
+            } else if (sun.rise != null && isMeteorShowerVisible(
+                    shower,
+                    location,
+                    sun.rise.minusHours(1)
+                )
+            ) {
                 sun.rise.minusHours(1)
             } else {
                 null
@@ -407,12 +457,20 @@ class AstronomyService : IAstronomyService {
         return null
     }
 
-    private fun isMeteorShowerVisible(shower: MeteorShower, location: Coordinate, time: ZonedDateTime): Boolean {
+    private fun isMeteorShowerVisible(
+        shower: MeteorShower,
+        location: Coordinate,
+        time: ZonedDateTime
+    ): Boolean {
         val showerAltitude = getMeteorShowerAltitude(shower, location, time)
         return showerAltitude > 0
     }
 
-    private fun getMeteorShowerTimes(shower: MeteorShower, location: Coordinate, date: ZonedDateTime): RiseSetTransitTimes {
+    private fun getMeteorShowerTimes(
+        shower: MeteorShower,
+        location: Coordinate,
+        date: ZonedDateTime
+    ): RiseSetTransitTimes {
         return Astro.getTransitEvents(
             date,
             location,
@@ -423,7 +481,11 @@ class AstronomyService : IAstronomyService {
         }
     }
 
-    private fun getMeteorShowerAltitude(shower: MeteorShower, location: Coordinate, time: ZonedDateTime): Float {
+    private fun getMeteorShowerAltitude(
+        shower: MeteorShower,
+        location: Coordinate,
+        time: ZonedDateTime
+    ): Float {
         val ut = Astro.ut(time)
         val jd = Astro.julianDay(ut)
         val hourAngle = Astro.hourAngle(
@@ -443,10 +505,10 @@ class AstronomyService : IAstronomyService {
     private fun getNextTimeAtSolarLongitude(longitude: Float, today: ZonedDateTime): ZonedDateTime {
         val threshold = 1f
         var d = today
-        for (i in 0..365){
+        for (i in 0..365) {
             val date = today.plusDays(i.toLong())
             val sl = getSolarLongitude(date)
-            if (deltaAngle(	longitude, sl).absoluteValue < threshold){
+            if (deltaAngle(longitude, sl).absoluteValue < threshold) {
                 d = date
                 break
             }

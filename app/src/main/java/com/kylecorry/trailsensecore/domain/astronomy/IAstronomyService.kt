@@ -2,12 +2,13 @@ package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.eclipse.IEclipseService
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.time.Season
 import java.time.Duration
 import java.time.ZonedDateTime
 
-interface IAstronomyService {
+interface IAstronomyService: IEclipseService {
 
     // SUN
     fun getSunEvents(
