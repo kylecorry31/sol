@@ -4,6 +4,8 @@ import com.kylecorry.andromeda.core.math.deltaAngle
 import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.time.atStartOfDay
+import com.kylecorry.andromeda.core.time.toZonedDateTime
+import com.kylecorry.andromeda.core.time.utc
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.CompassDirection
 import com.kylecorry.andromeda.core.units.Coordinate
@@ -14,10 +16,7 @@ import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCa
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import com.kylecorry.trailsensecore.domain.time.Season
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalTime
-import java.time.ZonedDateTime
+import java.time.*
 import kotlin.math.absoluteValue
 
 class AstronomyService : IAstronomyService {
@@ -354,6 +353,47 @@ class AstronomyService : IAstronomyService {
         return null
     }
 
+    override fun getMeteorShowerAltitude(
+        shower: MeteorShower,
+        location: Coordinate,
+        time: Instant
+    ): Float {
+        val ut = Astro.ut(time.utc())
+        val jd = Astro.julianDay(ut)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            shower.radiant.rightAscension
+        )
+        return Astro.altitude(
+            hourAngle,
+            location.latitude,
+            shower.radiant.declination,
+            false
+        ).toFloat()
+    }
+
+    override fun getMeteorShowerAzimuth(
+        shower: MeteorShower,
+        location: Coordinate,
+        time: Instant
+    ): Bearing {
+        val ut = Astro.ut(time.utc())
+        val jd = Astro.julianDay(ut)
+        val hourAngle = Astro.hourAngle(
+            Astro.meanSiderealTime(jd),
+            location.longitude,
+            shower.radiant.rightAscension
+        )
+        return Bearing(
+            Astro.azimuth(
+                hourAngle,
+                location.latitude,
+                shower.radiant.declination
+            ).toFloat()
+        )
+    }
+
     private fun getNextMeteorShowerPeak(
         shower: MeteorShower,
         location: Coordinate,
@@ -409,7 +449,7 @@ class AstronomyService : IAstronomyService {
         location: Coordinate,
         time: ZonedDateTime
     ): Boolean {
-        val showerAltitude = getMeteorShowerAltitude(shower, location, time)
+        val showerAltitude = getMeteorShowerAltitude(shower, location, time.toInstant())
         return showerAltitude > 0
     }
 
@@ -426,27 +466,6 @@ class AstronomyService : IAstronomyService {
         ) {
             shower.radiant
         }
-    }
-
-    private fun getMeteorShowerAltitude(
-        shower: MeteorShower,
-        location: Coordinate,
-        time: ZonedDateTime
-    ): Float {
-        val ut = Astro.ut(time)
-        val jd = Astro.julianDay(ut)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            shower.radiant.rightAscension
-        )
-        return Astro.altitude(
-            hourAngle,
-            location.latitude,
-            shower.radiant.declination,
-            false
-        )
-            .toFloat()
     }
 
     private fun getNextTimeAtSolarLongitude(longitude: Float, today: ZonedDateTime): ZonedDateTime {
