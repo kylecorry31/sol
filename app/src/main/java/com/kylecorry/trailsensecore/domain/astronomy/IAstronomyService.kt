@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.domain.astronomy
 
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.IEclipseService
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.time.Season
@@ -98,6 +99,10 @@ interface IAstronomyService : IEclipseService {
         location: Coordinate,
         withRefraction: Boolean = false
     ): Boolean
+
+    fun getMoonDistance(time: Instant): Distance
+
+    fun isSuperMoon(time: Instant): Boolean
 
     // Meteor showers
     fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak?

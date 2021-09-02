@@ -4,6 +4,7 @@ import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.LunarEclipseParameters
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
@@ -687,6 +688,7 @@ internal object Astro {
 
         var sumL = 0.0
         var sumB = 0.0
+        var sumR = 0.0
 
         for (row in t47a) {
             val eTerm = when (row[1].absoluteValue) {
@@ -695,6 +697,7 @@ internal object Astro {
                 else -> 1.0
             }
             sumL += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
+            sumR += row[5] * eTerm * cosDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
         }
 
         for (row in t47b) {
@@ -710,12 +713,15 @@ internal object Astro {
         sumB += -2235 * sinDegrees(L) + 382 * sinDegrees(a3) + 175 * sinDegrees(a1 - F) +
                 175 * sinDegrees(a1 + F) + 127 * sinDegrees(L - Mprime) - 115 * sinDegrees(L + Mprime)
 
+        val distanceKm = 385000.56 + sumR / 1000
+
         val apparentLongitude = L + sumL / 1000000.0 + nutationInLongitude(julianDay)
         val eclipticLatitude = sumB / 1000000.0
         val eclipticObliquity = trueObliquityOfEcliptic(julianDay)
         return AstroCoordinates(
             declination(apparentLongitude, eclipticObliquity, eclipticLatitude),
-            rightAscension(apparentLongitude, eclipticObliquity, eclipticLatitude)
+            rightAscension(apparentLongitude, eclipticObliquity, eclipticLatitude),
+            distanceKm
         )
     }
 
@@ -1206,4 +1212,4 @@ internal object Astro {
 }
 
 
-data class AstroCoordinates(val declination: Double, val rightAscension: Double)
+data class AstroCoordinates(val declination: Double, val rightAscension: Double, val distanceKm: Double? = null)

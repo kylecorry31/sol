@@ -26,6 +26,34 @@ class AstronomyServiceTest {
     // TODO: Verify sun events other than actual time
 
     @Test
+    fun isSuperMoonTrue(){
+        val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 26, 12, 0), ZoneId.of("UTC"))
+        val isSuperMoon = service.isSuperMoon(date.toInstant())
+        assertTrue(isSuperMoon)
+    }
+
+    @Test
+    fun isSuperMoonNotFull(){
+        val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 21, 12, 0), ZoneId.of("UTC"))
+        val isSuperMoon = service.isSuperMoon(date.toInstant())
+        assertFalse(isSuperMoon)
+    }
+
+    @Test
+    fun isSuperMoonNotCloseEnough(){
+        val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.SEPTEMBER, 21, 12, 0), ZoneId.of("UTC"))
+        val isSuperMoon = service.isSuperMoon(date.toInstant())
+        assertFalse(isSuperMoon)
+    }
+
+    @Test
+    fun canGetMoonDistance(){
+        val date = ZonedDateTime.of(LocalDateTime.of(1992, Month.APRIL, 12, 0, 0), ZoneId.of("UTC"))
+        val distance = service.getMoonDistance(date.toInstant())
+        assertEquals(368409.7f, distance.distance, 0.1f)
+    }
+
+    @Test
     fun canGetNextPartialEclipse() {
         val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
         val location = Coordinate(42.0, -70.0)

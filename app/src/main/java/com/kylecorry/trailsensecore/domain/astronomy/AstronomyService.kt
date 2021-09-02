@@ -6,14 +6,13 @@ import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.time.atStartOfDay
 import com.kylecorry.andromeda.core.time.toZonedDateTime
 import com.kylecorry.andromeda.core.time.utc
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.CompassDirection
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.andromeda.core.units.*
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.Eclipse
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
+import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import com.kylecorry.trailsensecore.domain.time.Season
 import java.time.*
@@ -309,6 +308,23 @@ class AstronomyService : IAstronomyService {
         withRefraction: Boolean
     ): Boolean {
         return getMoonAltitude(time, location, withRefraction) > 0
+    }
+
+    override fun getMoonDistance(time: Instant): Distance {
+        val ut = Astro.ut(time.utc())
+        val jd = Astro.julianDay(ut)
+        val lunarCoordinates = Astro.lunarCoordinates(jd)
+        val km = lunarCoordinates.distanceKm ?: 0.0
+        return Distance.kilometers(km.toFloat())
+    }
+
+    override fun isSuperMoon(time: Instant): Boolean {
+        val phase = getMoonPhase(time.toZonedDateTime())
+        if (phase.phase != MoonTruePhase.Full){
+            return false
+        }
+        val distance = getMoonDistance(time)
+        return distance.convertTo(DistanceUnits.Kilometers).distance <= 360000f
     }
 
     override fun getAstronomicalSeason(location: Coordinate, date: ZonedDateTime): Season {
