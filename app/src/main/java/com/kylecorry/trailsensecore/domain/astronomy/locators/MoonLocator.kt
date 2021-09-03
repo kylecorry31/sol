@@ -4,6 +4,7 @@ import com.kylecorry.andromeda.core.math.cosDegrees
 import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
 import com.kylecorry.trailsensecore.domain.astronomy.AstroCoordinates
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
@@ -101,8 +102,12 @@ class MoonLocator : ICelestialLocator {
         return Distance.kilometers(distanceKm.toFloat())
     }
 
-    fun getAngularDiameter(ut: UniversalTime): Double {
-        TODO("Not yet implemented")
+    fun getAngularDiameter(ut: UniversalTime, location: Coordinate = Coordinate.zero): Double {
+        val distance = getDistance(ut).convertTo(DistanceUnits.Kilometers).distance
+        val s = 358743400 / distance
+        val sinPi = 6378.14 / distance
+        val h = Astro.getAltitude(this, ut, location, true).toDouble()
+        return (s * (1 + sinDegrees(h) * sinPi)) * 0.000277778 * 2
     }
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
