@@ -128,47 +128,47 @@ class AstroTest {
         )
     }
 
-    @Test
-    fun meanSiderealTime() {
-        assertEquals(128.7378734, Astro.meanSiderealTime(2446896.30625), 0.0001)
-    }
+//    @Test
+//    fun meanSiderealTime() {
+//        assertEquals(128.7378734, Astro.meanSiderealTime(2446896.30625), 0.0001)
+//    }
 
-    @Test
-    fun apparentSiderealTime() {
-        val jd = 2446895.5
-        assertEquals(
-            Astro.timeToAngle(13, 10, 46.1351),
-            Astro.apparentSiderealTime(jd, -3.788, 23.44357),
-            0.5
-        )
-    }
+//    @Test
+//    fun apparentSiderealTime() {
+//        val jd = 2446895.5
+//        assertEquals(
+//            Astro.timeToAngle(13, 10, 46.1351),
+//            Astro.apparentSiderealTime(jd, -3.788, 23.44357),
+//            0.5
+//        )
+//    }
 
-    @Test
-    fun hourAngle() {
-        assertEquals(-2.0, Astro.hourAngle(10.0, -4.0, 8.0), 0.00001)
-        assertEquals(2.0, Astro.hourAngle(10.0, 8.0), 0.00001)
-    }
+//    @Test
+//    fun hourAngle() {
+//        assertEquals(-2.0, Astro.hourAngle(10.0, -4.0, 8.0), 0.00001)
+//        assertEquals(2.0, Astro.hourAngle(10.0, 8.0), 0.00001)
+//    }
 
-    @Test
-    fun azimuth() {
-        assertEquals(248.0337, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
-    }
+//    @Test
+//    fun azimuth() {
+//        assertEquals(248.0337, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
+//    }
 
-    @Test
-    fun altitude() {
-        assertEquals(15.1249, Astro.altitude(64.352133, 38.92139, -6.719892), 0.0001)
-    }
+//    @Test
+//    fun altitude() {
+//        assertEquals(15.1249, Astro.altitude(64.352133, 38.92139, -6.719892), 0.0001)
+//    }
 
-    @Test
-    fun riseSetTransitTimes() {
-        val times = Astro.riseSetTransitTimes(
-            42.3333, -71.0833, 177.74208, -0.5667, false, 56.0,
-            Triple(18.04761, 18.44092, 18.82742), Triple(40.68021, 41.73129, 42.78204)
-        )
-        assertEquals(0.51766 * 24, times!!.first, 0.05)
-        assertEquals(0.81980 * 24, times.second, 0.05)
-        assertEquals(0.12130 * 24, times.third, 0.05)
-    }
+//    @Test
+//    fun riseSetTransitTimes() {
+//        val times = Astro.riseSetTransitTimes(
+//            42.3333, -71.0833, 177.74208, -0.5667, false, 56.0,
+//            Triple(18.04761, 18.44092, 18.82742), Triple(40.68021, 41.73129, 42.78204)
+//        )
+//        assertEquals(0.51766 * 24, times!!.first, 0.05)
+//        assertEquals(0.81980 * 24, times.second, 0.05)
+//        assertEquals(0.12130 * 24, times.third, 0.05)
+//    }
 
     @Test
     fun solarCoordinates() {

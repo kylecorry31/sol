@@ -6,7 +6,6 @@ import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
-import com.kylecorry.trailsensecore.domain.astronomy.AstroCoordinates
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
 import kotlin.math.absoluteValue
 
@@ -123,11 +122,6 @@ class MoonLocator : ICelestialLocator {
             )
         )
     }
-
-//    fun getTrueAnomaly(ut: UniversalTime): Double {
-//        // This is not correct
-//        return getMeanAnomaly(ut)
-//    }
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()

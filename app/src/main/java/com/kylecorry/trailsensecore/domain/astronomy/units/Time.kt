@@ -36,7 +36,12 @@ object TimeUtils {
     }
 
     fun degreesToTime(degrees: Double): Duration {
-        return decimalToTime(degrees * 15)
+        return decimalToTime(degrees / 15)
+    }
+
+    fun dmsToTime(degrees: Int, minutes: Int, seconds: Number): Duration {
+        val d = degrees + minutes / 60.0 + seconds.toDouble() / 3600.0
+        return degreesToTime(d)
     }
 
     fun decimalToTime(hours: Double): Duration {

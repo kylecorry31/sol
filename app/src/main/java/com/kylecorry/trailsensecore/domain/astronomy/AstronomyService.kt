@@ -11,6 +11,7 @@ import com.kylecorry.trailsensecore.domain.astronomy.eclipse.Eclipse
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
+import com.kylecorry.trailsensecore.domain.astronomy.locators.MeteorShowerLocator
 import com.kylecorry.trailsensecore.domain.astronomy.locators.MoonLocator
 import com.kylecorry.trailsensecore.domain.astronomy.locators.SunLocator
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
@@ -343,19 +344,8 @@ class AstronomyService : IAstronomyService {
         location: Coordinate,
         time: Instant
     ): Float {
-        val ut = Astro.ut(time.utc())
-        val jd = Astro.julianDay(ut)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            shower.radiant.rightAscension
-        )
-        return Astro.altitude(
-            hourAngle,
-            location.latitude,
-            shower.radiant.declination,
-            false
-        ).toFloat()
+        val locator = MeteorShowerLocator(shower)
+        return Astro.getAltitude(locator, time.toUniversalTime(), location, false)
     }
 
     override fun getMeteorShowerAzimuth(
@@ -363,20 +353,8 @@ class AstronomyService : IAstronomyService {
         location: Coordinate,
         time: Instant
     ): Bearing {
-        val ut = Astro.ut(time.utc())
-        val jd = Astro.julianDay(ut)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            shower.radiant.rightAscension
-        )
-        return Bearing(
-            Astro.azimuth(
-                hourAngle,
-                location.latitude,
-                shower.radiant.declination
-            ).toFloat()
-        )
+        val locator = MeteorShowerLocator(shower)
+        return Astro.getAzimuth(locator, time.toUniversalTime(), location)
     }
 
     private fun getNextMeteorShowerPeak(
@@ -443,14 +421,13 @@ class AstronomyService : IAstronomyService {
         location: Coordinate,
         date: ZonedDateTime
     ): RiseSetTransitTimes {
-        return Astro.getTransitEvents(
+        return RiseSetTransitTimeCalculator().calculate(
+            MeteorShowerLocator(shower),
             date,
             location,
             0.0,
             false
-        ) {
-            shower.radiant
-        }
+        )
     }
 
     private fun getNextTimeAtSolarLongitude(longitude: Float, today: ZonedDateTime): ZonedDateTime {

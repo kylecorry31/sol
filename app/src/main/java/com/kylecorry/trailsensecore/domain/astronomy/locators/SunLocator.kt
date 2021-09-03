@@ -39,12 +39,6 @@ class SunLocator : ICelestialLocator {
         return Distance.kilometers((semiMajorAxisLen0 / f).toFloat())
     }
 
-    //    fun sunRadiusVector(julianDay: Double): Double {
-//        val v = sunTrueAnomaly(julianDay)
-//        val e = eccentricity(julianDay)
-//        return (1.000001018 * (1 - e * e)) / (1 + e * cosDegrees(v))
-//    }
-
     fun getAngularDiameter(ut: UniversalTime): Double {
         val trueAnomaly = getTrueAnomaly(ut)
         val f =
