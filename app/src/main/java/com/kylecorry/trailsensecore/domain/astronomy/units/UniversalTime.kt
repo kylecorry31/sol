@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.astronomy.units
 
+import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
 import com.kylecorry.trailsensecore.domain.astronomy.units.TimeUtils.toDecimal
 import com.kylecorry.trailsensecore.domain.astronomy.units.TimeUtils.toDuration
@@ -57,7 +58,7 @@ fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
 }
 
 fun ZonedDateTime.toUniversalTime(): UniversalTime {
-    return withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime()
+    return toUTCLocal()
 }
 
 fun fromJulianDay(jd: Double): UniversalTime {

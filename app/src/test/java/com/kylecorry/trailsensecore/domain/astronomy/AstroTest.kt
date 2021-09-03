@@ -1,5 +1,7 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.trailsensecore.domain.astronomy.locators.SunLocator
+import com.kylecorry.trailsensecore.domain.astronomy.units.fromJulianDay
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -244,7 +246,7 @@ class AstroTest {
 
     @Test
     fun solarCoordinates() {
-        val coords = Astro.solarCoordinates(2448908.5)
+        val coords = SunLocator().getCoordinates(fromJulianDay(2448908.5))
         assertEquals(-7.78507, coords.declination, 0.0001)
         assertEquals(360 - 161.61917, coords.rightAscension, 0.0001)
     }

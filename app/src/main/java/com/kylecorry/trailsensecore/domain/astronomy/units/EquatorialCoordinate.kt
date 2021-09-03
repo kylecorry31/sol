@@ -2,7 +2,11 @@ package com.kylecorry.trailsensecore.domain.astronomy.units
 
 import com.kylecorry.andromeda.core.math.wrap
 
-class EquatorialCoordinate(_declination: Double, _rightAscension: Double) {
+class EquatorialCoordinate(
+    _declination: Double,
+    _rightAscension: Double,
+    val isApparent: Boolean = false
+) {
     val declination = wrap(_declination, -90.0, 90.0)
     val rightAscension = wrap(_rightAscension, 0.0, 360.0)
 

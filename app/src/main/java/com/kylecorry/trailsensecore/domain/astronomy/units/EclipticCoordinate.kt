@@ -73,9 +73,14 @@ class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) 
                     e
                 )
 
-            val x = cosDegrees(equatorial.rightAscension)
+            val x = cosDegrees(alpha)
 
-            val lon = atan2(y, x).toDegrees()
+            var lon = atan2(y, x).toDegrees()
+
+            if (equatorial.isApparent) {
+                val omega = Astro.polynomial(ut.toJulianCenturies(), 125.04, -1934.136)
+                lon += 0.00569 + 0.00478 * sinDegrees(omega)
+            }
 
             return EclipticCoordinate(lat, lon)
         }

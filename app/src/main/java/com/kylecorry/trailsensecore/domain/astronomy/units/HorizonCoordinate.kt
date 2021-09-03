@@ -1,9 +1,8 @@
 package com.kylecorry.trailsensecore.domain.astronomy.units
 
-import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.andromeda.core.math.toDegrees
-import com.kylecorry.andromeda.core.math.wrap
+import com.kylecorry.andromeda.core.math.*
+import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.Astro
 import kotlin.math.acos
 import kotlin.math.asin
 
@@ -52,8 +51,47 @@ class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
         return result
     }
 
+    fun withRefraction(): HorizonCoordinate {
+        val refraction = wrap(getRefraction(), -90.0, 90.0)
+        return HorizonCoordinate(azimuth, altitude + refraction)
+    }
+
+
+    private fun getRefraction(): Double {
+        if (altitude > 85.0) {
+            return 0.0
+        }
+
+        val tanElev = tanDegrees(altitude)
+
+        if (altitude > 5.0) {
+            return (58.1 / tanElev - 0.07 / Astro.cube(tanElev) + 0.000086 / Astro.power(
+                tanElev,
+                5
+            )) / 3600.0
+        }
+
+        if (altitude > -0.575) {
+            return Astro.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
+        }
+
+        return -20.774 / tanElev / 3600.0
+    }
 
     companion object {
+
+        fun fromEquatorial(
+            equatorial: EquatorialCoordinate,
+            ut: UniversalTime,
+            coordinate: Coordinate
+        ): HorizonCoordinate {
+            return fromEquatorial(
+                equatorial,
+                ut.toSiderealTime().atLongitude(coordinate.longitude),
+                coordinate.latitude
+            )
+        }
+
         fun fromEquatorial(
             equatorial: EquatorialCoordinate,
             siderealTime: SiderealTime,
