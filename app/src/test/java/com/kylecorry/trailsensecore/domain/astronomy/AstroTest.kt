@@ -1,5 +1,6 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
+import com.kylecorry.trailsensecore.domain.astronomy.locators.MoonLocator
 import com.kylecorry.trailsensecore.domain.astronomy.locators.SunLocator
 import com.kylecorry.trailsensecore.domain.astronomy.units.fromJulianDay
 import org.junit.jupiter.api.Assertions.*
@@ -68,39 +69,6 @@ class AstroTest {
     }
 
     @Test
-    fun interpolateExtremum() {
-        assertEquals(
-            1.3812030,
-            Astro.interpolateExtremum(1.3814294, 1.3812213, 1.3812453),
-            0.0000005
-        )
-    }
-
-    @Test
-    fun interpolateExtremumX() {
-        assertEquals(
-            0.3966,
-            Astro.interpolateExtremumX(1.3814294, 1.3812213, 1.3812453),
-            0.00005
-        )
-    }
-
-    @Test
-    fun interpolateZeroCrossing() {
-        assertEquals(
-            -0.20127,
-            Astro.interpolateZeroCrossing(-1693.4, 406.3, 2303.2),
-            0.000005
-        )
-    }
-
-    @Test
-    fun canInterpolate() {
-        assertTrue(Astro.canInterpolate(-1693.4, 406.3, 2303.2, 203.0))
-        assertFalse(Astro.canInterpolate(-1693.4, 406.3, 2303.2, 201.0))
-    }
-
-    @Test
     fun julianDay() {
         val tolerance = 0.0001
 
@@ -147,19 +115,6 @@ class AstroTest {
     }
 
     @Test
-    fun tt() {
-        assertEquals(
-            LocalDateTime.of(2000, 1, 1, 12, 1, 5),
-            Astro.tt(
-                ZonedDateTime.of(
-                    LocalDateTime.of(2000, 1, 1, 7, 0),
-                    ZoneId.of("America/New_York")
-                )
-            )
-        )
-    }
-
-    @Test
     fun utToLocal() {
         assertEquals(
             ZonedDateTime.of(
@@ -168,20 +123,6 @@ class AstroTest {
             ),
             Astro.utToLocal(
                 LocalDateTime.of(2020, 1, 1, 12, 0),
-                ZoneId.of("America/New_York")
-            )
-        )
-    }
-
-    @Test
-    fun ttToLocal() {
-        assertEquals(
-            ZonedDateTime.of(
-                LocalDateTime.of(2000, 1, 1, 7, 0),
-                ZoneId.of("America/New_York")
-            ),
-            Astro.ttToLocal(
-                LocalDateTime.of(2000, 1, 1, 12, 1, 5),
                 ZoneId.of("America/New_York")
             )
         )
@@ -198,21 +139,6 @@ class AstroTest {
         assertEquals(
             Astro.timeToAngle(13, 10, 46.1351),
             Astro.apparentSiderealTime(jd, -3.788, 23.44357),
-            0.5
-        )
-    }
-
-    @Test
-    fun localMeanSiderealTime() {
-        assertEquals(138.7378734, Astro.localMeanSidereal(2446896.30625, 10.0), 0.0001)
-    }
-
-    @Test
-    fun localApparentSiderealTime() {
-        val jd = 2446895.5
-        assertEquals(
-            Astro.timeToAngle(13, 10, 46.1351) - 15,
-            Astro.localApparentSidereal(jd, -15.0, -3.788, 23.44357),
             0.5
         )
     }
@@ -253,7 +179,7 @@ class AstroTest {
 
     @Test
     fun lunarCoordinates() {
-        val coords = Astro.lunarCoordinates(2448724.5)
+        val coords = MoonLocator().getCoordinates(fromJulianDay(2448724.5))
         assertEquals(13.768368, coords.declination, 0.001)
         assertEquals(134.688470, coords.rightAscension, 0.001)
     }

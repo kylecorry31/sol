@@ -9,8 +9,8 @@ class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) 
     val eclipticLatitude = wrap(_eclipticLatitude, -90.0, 90.0)
     val eclipticLongitude = wrap(_eclipticLongitude, 0.0, 360.0)
 
-    fun toEquatorial(ut: UniversalTime): EquatorialCoordinate {
-        val e = getObliquityOfTheEcliptic(ut)
+    fun toEquatorial(eclipticObliquity: Double): EquatorialCoordinate {
+        val e = eclipticObliquity
         val t =
             sinDegrees(eclipticLatitude) * cosDegrees(e) + cosDegrees(eclipticLatitude) * sinDegrees(
                 e
@@ -28,6 +28,10 @@ class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) 
         val rightAscension = atan2(y, x).toDegrees()
 
         return EquatorialCoordinate(declination, rightAscension)
+    }
+
+    fun toEquatorial(ut: UniversalTime): EquatorialCoordinate {
+        return toEquatorial(getObliquityOfTheEcliptic(ut))
     }
 
     override fun equals(other: Any?): Boolean {

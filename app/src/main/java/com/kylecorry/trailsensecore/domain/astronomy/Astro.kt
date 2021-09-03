@@ -3,12 +3,13 @@ package com.kylecorry.trailsensecore.domain.astronomy
 import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.time.toUTCLocal
+import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.LunarEclipseParameters
+import com.kylecorry.trailsensecore.domain.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
-import com.kylecorry.trailsensecore.domain.astronomy.units.fromJulianDay
-import com.kylecorry.trailsensecore.domain.astronomy.units.toJulianDay
+import com.kylecorry.trailsensecore.domain.astronomy.units.*
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -16,6 +17,33 @@ import kotlin.math.*
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)
 internal object Astro {
+
+    fun getAltitude(
+        locator: ICelestialLocator,
+        ut: UniversalTime,
+        location: Coordinate,
+        withRefraction: Boolean = false
+        ): Float {
+        val coords = locator.getCoordinates(ut)
+        val horizon = HorizonCoordinate.fromEquatorial(coords, ut, location)
+        return horizon.let {
+            if (withRefraction) {
+                it.withRefraction()
+            } else {
+                it
+            }
+        }.altitude.toFloat()
+    }
+
+    fun getAzimuth(
+        locator: ICelestialLocator,
+        ut: UniversalTime,
+        location: Coordinate
+    ): Bearing {
+        val coords = locator.getCoordinates(ut)
+        val horizon = HorizonCoordinate.fromEquatorial(coords, ut, location)
+        return Bearing(horizon.azimuth.toFloat())
+    }
 
     fun timeToAngle(hours: Number, minutes: Number, seconds: Number): Double {
         return timeToDecimal(hours, minutes, seconds) * 15
@@ -59,12 +87,6 @@ internal object Astro {
         return runningTotal
     }
 
-    fun canInterpolate(y1: Double, y2: Double, y3: Double, threshold: Double): Boolean {
-        val a = y2 - y1
-        val b = y3 - y2
-        return abs(b - a) < threshold
-    }
-
     fun interpolate(
         n: Double,
         y1: Double,
@@ -78,47 +100,6 @@ internal object Astro {
         return y2 + (n / 2.0) * (a + b + n * c)
     }
 
-    fun interpolateExtremum(y1: Double, y2: Double, y3: Double): Double {
-        val a = y2 - y1
-        val b = y3 - y2
-        val c = b - a
-
-        return y2 - square(a + b) / (8 * c)
-    }
-
-    fun interpolateExtremumX(y1: Double, y2: Double, y3: Double): Double {
-        val a = y2 - y1
-        val b = y3 - y2
-        val c = b - a
-
-        return -(a + b) / (2 * c)
-    }
-
-    fun interpolateZeroCrossing(y1: Double, y2: Double, y3: Double): Double {
-        val a = y2 - y1
-        val b = y3 - y2
-        val c = b - a
-
-        val negligibleThreshold = 1e-12
-        val iterations = 20
-
-        var estimate = 0.0
-
-        for (i in 0 until iterations) {
-            val lastEstimate = estimate
-
-            val gradient =
-                -(2 * y2 + estimate * (a + b + c * estimate)) / (a + b + 2 * c * estimate)
-            estimate += gradient
-
-            if (abs(estimate - lastEstimate) <= negligibleThreshold) {
-                break
-            }
-        }
-
-        return estimate
-    }
-
     fun julianDay(date: LocalDateTime): Double {
         return date.toJulianDay()
     }
@@ -129,10 +110,6 @@ internal object Astro {
 
     fun julianCenturies(julianDay: Double): Double {
         return (julianDay - 2451545.0) / 36525.0
-    }
-
-    fun julianDateFromCenturies(julianCenturies: Double): Double {
-        return julianCenturies * 36525.0 + 2451545.0
     }
 
     /**
@@ -150,19 +127,8 @@ internal object Astro {
         return time.withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime()
     }
 
-    /**
-     * Calculates the terrestrial time
-     */
-    fun tt(time: ZonedDateTime): LocalDateTime {
-        return ut(time).plusNanos((1e+9 * deltaT(time.year)).toLong())
-    }
-
     fun utToLocal(ut: LocalDateTime, zone: ZoneId): ZonedDateTime {
         return ut.atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
-    }
-
-    fun ttToLocal(tt: LocalDateTime, zone: ZoneId): ZonedDateTime {
-        return utToLocal(tt.minusNanos((1e+9 * deltaT(tt.year)).toLong()), zone)
     }
 
     fun meanSiderealTime(julianDay: Double): Double {
@@ -181,19 +147,6 @@ internal object Astro {
     ): Double {
         val meanSidereal = meanSiderealTime(julianDay)
         return meanSidereal + (longitudeNutation * cosDegrees(eclipticObliquity)) / 15.0
-    }
-
-    fun localMeanSidereal(julianDay: Double, longitude: Double): Double {
-        return meanSiderealTime(julianDay) + longitude
-    }
-
-    fun localApparentSidereal(
-        julianDay: Double,
-        longitude: Double,
-        longitudeNutation: Double,
-        eclipticObliquity: Double
-    ): Double {
-        return apparentSiderealTime(julianDay, longitudeNutation, eclipticObliquity) + longitude
     }
 
     fun hourAngle(sidereal: Double, longitude: Double, rightAscension: Double): Double {
@@ -381,7 +334,7 @@ internal object Astro {
         val astroCoords = coordinateFn.invoke(jd)
         val astroCoordsy = coordinateFn.invoke(julianDay(uty))
         val astroCoordst = coordinateFn.invoke(julianDay(utt))
-        val times =  riseSetTransitTimes(
+        val times = riseSetTransitTimes(
             coordinate.latitude,
             coordinate.longitude,
             sr,
@@ -460,32 +413,6 @@ internal object Astro {
         return RiseSetTransitTimes(rise, transit, set)
     }
 
-    fun getMoonTimes(
-        date: ZonedDateTime,
-        coordinate: Coordinate,
-        standardAltitude: Double = 0.125,
-        withRefraction: Boolean = false
-    ): RiseSetTransitTimes {
-        return getTransitEvents(
-            date,
-            coordinate,
-            standardAltitude,
-            withRefraction,
-            this::lunarCoordinates
-        )
-    }
-
-    fun sunMeanAnomaly(julianDay: Double): Double {
-        val T = julianCenturies(julianDay)
-        // TODO: Maybe don't reduce here?
-        return reduceAngleDegrees(polynomial(T, 357.52911, 35999.05029, -0.0001537))
-    }
-
-    fun sunGeometricLongitude(julianDay: Double): Double {
-        val T = julianCenturies(julianDay)
-        return reduceAngleDegrees(polynomial(T, 280.46646, 36000.76983, 0.0003032))
-    }
-
     fun moonMeanAnomaly(julianDay: Double): Double {
         val T = julianCenturies(julianDay)
         return reduceAngleDegrees(
@@ -553,103 +480,6 @@ internal object Astro {
         return meanObliquityOfEcliptic(julianDay) + nutationInObliquity(julianDay)
     }
 
-    fun lunarCoordinates(julianDay: Double): AstroCoordinates {
-        val T = (julianDay - 2451545.0) / 36525
-        val L = reduceAngleDegrees(
-            polynomial(
-                T,
-                218.3164477,
-                481267.88123421,
-                -0.0015786,
-                1 / 538841.0,
-                -1 / 65194000.0
-            )
-        )
-
-        val D = reduceAngleDegrees(
-            polynomial(
-                T,
-                297.8501921,
-                445267.1114034,
-                -0.0018819,
-                1 / 545868.0,
-                -1 / 113065000.0
-            )
-        )
-
-        val M = reduceAngleDegrees(
-            polynomial(
-                T,
-                357.5291092,
-                35999.0502909,
-                -0.0001536,
-                1 / 24490000.0
-            )
-        )
-
-        val Mprime = moonMeanAnomaly(julianDay)
-        val F = moonArgumentOfLatitude(julianDay)
-
-        val a1 = reduceAngleDegrees(119.75 + 131.849 * T)
-        val a2 = reduceAngleDegrees(53.09 + 479264.290 * T)
-        val a3 = reduceAngleDegrees(313.45 + 481266.484 * T)
-        val E = polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = square(E)
-
-        val t47a = table47a()
-        val t47b = table47b()
-
-        var sumL = 0.0
-        var sumB = 0.0
-        var sumR = 0.0
-
-        for (row in t47a) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
-            sumL += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
-            sumR += row[5] * eTerm * cosDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
-        }
-
-        for (row in t47b) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
-            sumB += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
-        }
-
-        sumL += 3958 * sinDegrees(a1) + 1962 * sinDegrees(L - F) + 318 * sinDegrees(a2)
-        sumB += -2235 * sinDegrees(L) + 382 * sinDegrees(a3) + 175 * sinDegrees(a1 - F) +
-                175 * sinDegrees(a1 + F) + 127 * sinDegrees(L - Mprime) - 115 * sinDegrees(L + Mprime)
-
-        val distanceKm = 385000.56 + sumR / 1000
-
-        val apparentLongitude = L + sumL / 1000000.0 + nutationInLongitude(julianDay)
-        val eclipticLatitude = sumB / 1000000.0
-        val eclipticObliquity = trueObliquityOfEcliptic(julianDay)
-        return AstroCoordinates(
-            declination(apparentLongitude, eclipticObliquity, eclipticLatitude),
-            rightAscension(apparentLongitude, eclipticObliquity, eclipticLatitude),
-            distanceKm
-        )
-    }
-
-    fun rightAscension(
-        apparentLongitude: Double,
-        eclipticObliquity: Double,
-        eclipticLatitude: Double
-    ): Double {
-        return atan2(
-            sinDegrees(apparentLongitude) * cosDegrees(eclipticObliquity) - tanDegrees(
-                eclipticLatitude
-            ) * sinDegrees(eclipticObliquity), cosDegrees(apparentLongitude)
-        ).toDegrees()
-    }
-
     fun declination(
         apparentLongitude: Double,
         eclipticObliquity: Double,
@@ -661,13 +491,6 @@ internal object Astro {
             ) * sinDegrees(eclipticObliquity) * sinDegrees(apparentLongitude)
         ).toDegrees()
     }
-
-    //    fun sunRadiusVector(julianDay: Double): Double {
-//        val v = sunTrueAnomaly(julianDay)
-//        val e = eccentricity(julianDay)
-//        return (1.000001018 * (1 - e * e)) / (1 + e * cosDegrees(v))
-//    }
-
 
     /**
      * Get the current phase of the moon
@@ -876,7 +699,7 @@ internal object Astro {
         return a * a * a
     }
 
-    private fun square(a: Double): Double {
+    fun square(a: Double): Double {
         return a * a
     }
 
@@ -1074,4 +897,8 @@ internal object Astro {
 }
 
 
-data class AstroCoordinates(val declination: Double, val rightAscension: Double, val distanceKm: Double? = null)
+data class AstroCoordinates(
+    val declination: Double,
+    val rightAscension: Double,
+    val distanceKm: Double? = null
+)

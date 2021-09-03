@@ -32,26 +32,32 @@ class SunLocator : ICelestialLocator {
         return EquatorialCoordinate(declination, rightAscension, true)
     }
 
-    override fun getDistance(ut: UniversalTime): Distance {
+    fun getDistance(ut: UniversalTime): Distance {
         val trueAnomaly = getTrueAnomaly(ut)
         val f =
             (1 + getEccentricity(ut) * cosDegrees(trueAnomaly)) / (1 - getEccentricity(ut).pow(2))
         return Distance.kilometers((semiMajorAxisLen0 / f).toFloat())
     }
 
-    override fun getAngularDiameter(ut: UniversalTime): Double {
+    //    fun sunRadiusVector(julianDay: Double): Double {
+//        val v = sunTrueAnomaly(julianDay)
+//        val e = eccentricity(julianDay)
+//        return (1.000001018 * (1 - e * e)) / (1 + e * cosDegrees(v))
+//    }
+
+    fun getAngularDiameter(ut: UniversalTime): Double {
         val trueAnomaly = getTrueAnomaly(ut)
         val f =
             (1 + getEccentricity(ut) * cosDegrees(trueAnomaly)) / (1 - getEccentricity(ut).pow(2))
         return angularDiameter0 * f
     }
 
-    override fun getMeanAnomaly(ut: UniversalTime): Double {
+    fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return Astro.reduceAngleDegrees(Astro.polynomial(T, 357.52911, 35999.05029, -0.0001537))
+        return Astro.reduceAngleDegrees(Astro.polynomial(T, 357.52911, 35999.05029, -0.0001537))//, 1 / 24490000.0))
     }
 
-    override fun getTrueAnomaly(ut: UniversalTime): Double {
+    fun getTrueAnomaly(ut: UniversalTime): Double {
         val mean = getMeanAnomaly(ut)
         val center = equationOfCenter(ut)
         return mean + center

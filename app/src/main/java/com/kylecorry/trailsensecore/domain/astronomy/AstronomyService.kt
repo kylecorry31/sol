@@ -11,12 +11,13 @@ import com.kylecorry.trailsensecore.domain.astronomy.eclipse.Eclipse
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
+import com.kylecorry.trailsensecore.domain.astronomy.locators.MoonLocator
 import com.kylecorry.trailsensecore.domain.astronomy.locators.SunLocator
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.EclipticCoordinate
-import com.kylecorry.trailsensecore.domain.astronomy.units.HorizonCoordinate
 import com.kylecorry.trailsensecore.domain.astronomy.units.fromJulianDay
+import com.kylecorry.trailsensecore.domain.astronomy.units.toJulianDay
 import com.kylecorry.trailsensecore.domain.astronomy.units.toUniversalTime
 import com.kylecorry.trailsensecore.domain.time.DateUtils
 import com.kylecorry.trailsensecore.domain.time.Season
@@ -25,7 +26,8 @@ import kotlin.math.absoluteValue
 
 class AstronomyService : IAstronomyService {
 
-    private val sunLocator = SunLocator()
+    private val sun = SunLocator()
+    private val moon = MoonLocator()
 
     override fun getSunEvents(
         date: ZonedDateTime,
@@ -42,7 +44,7 @@ class AstronomyService : IAstronomyService {
         }
 
         return RiseSetTransitTimeCalculator().calculate(
-            sunLocator,
+            sun,
             date,
             location,
             altitude,
@@ -54,21 +56,11 @@ class AstronomyService : IAstronomyService {
         time: ZonedDateTime, location: Coordinate,
         withRefraction: Boolean
     ): Float {
-        val coords = sunLocator.getCoordinates(time.toUniversalTime())
-        val horizon = HorizonCoordinate.fromEquatorial(coords, time.toUniversalTime(), location)
-        return horizon.let {
-            if (withRefraction) {
-                it.withRefraction()
-            } else {
-                it
-            }
-        }.altitude.toFloat()
+        return Astro.getAltitude(sun, time.toUniversalTime(), location, withRefraction)
     }
 
     override fun getSunAzimuth(time: ZonedDateTime, location: Coordinate): Bearing {
-        val coords = sunLocator.getCoordinates(time.toUniversalTime())
-        val horizon = HorizonCoordinate.fromEquatorial(coords, time.toUniversalTime(), location)
-        return Bearing(horizon.azimuth.toFloat())
+        return Astro.getAzimuth(sun, time.toUniversalTime(), location)
     }
 
     override fun getNextSunset(
@@ -235,42 +227,24 @@ class AstronomyService : IAstronomyService {
         date: ZonedDateTime, location: Coordinate,
         withRefraction: Boolean
     ): RiseSetTransitTimes {
-        return Astro.getMoonTimes(date, location, withRefraction = withRefraction)
+        return RiseSetTransitTimeCalculator().calculate(
+            moon,
+            date,
+            location,
+            0.125,
+            withRefraction
+        )
     }
 
     override fun getMoonAltitude(
         time: ZonedDateTime, location: Coordinate,
         withRefraction: Boolean
     ): Float {
-        val ut = Astro.ut(time)
-        val jd = Astro.julianDay(ut)
-        val lunarCoordinates = Astro.lunarCoordinates(jd)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            lunarCoordinates.rightAscension
-        )
-        return Astro.altitude(
-            hourAngle,
-            location.latitude,
-            lunarCoordinates.declination,
-            withRefraction
-        )
-            .toFloat()
+        return Astro.getAltitude(moon, time.toUniversalTime(), location, withRefraction)
     }
 
     override fun getMoonAzimuth(time: ZonedDateTime, location: Coordinate): Bearing {
-        val ut = Astro.ut(time)
-        val jd = Astro.julianDay(ut)
-        val lunarCoordinates = Astro.lunarCoordinates(jd)
-        val hourAngle = Astro.hourAngle(
-            Astro.meanSiderealTime(jd),
-            location.longitude,
-            lunarCoordinates.rightAscension
-        )
-        return Bearing(
-            Astro.azimuth(hourAngle, location.latitude, lunarCoordinates.declination).toFloat()
-        )
+        return Astro.getAzimuth(moon, time.toUniversalTime(), location)
     }
 
     override fun getNextMoonset(
@@ -310,11 +284,7 @@ class AstronomyService : IAstronomyService {
     }
 
     override fun getMoonDistance(time: Instant): Distance {
-        val ut = Astro.ut(time.utc())
-        val jd = Astro.julianDay(ut)
-        val lunarCoordinates = Astro.lunarCoordinates(jd)
-        val km = lunarCoordinates.distanceKm ?: 0.0
-        return Distance.kilometers(km.toFloat())
+        return moon.getDistance(time.toUniversalTime())
     }
 
     override fun isSuperMoon(time: Instant): Boolean {
@@ -495,12 +465,12 @@ class AstronomyService : IAstronomyService {
             }
         }
 
-        var jd = Astro.julianDay(Astro.ut(d))
+        var jd = d.toUniversalTime().toJulianDay()
         var correction: Double
 
         do {
             val ut = fromJulianDay(jd)
-            val coords = sunLocator.getCoordinates(ut)
+            val coords = sun.getCoordinates(ut)
             val solarLon = EclipticCoordinate.fromEquatorial(
                 coords,
                 ut
@@ -509,11 +479,11 @@ class AstronomyService : IAstronomyService {
             jd += correction
         } while (correction > 0.00001)
 
-        return Astro.utToLocal(Astro.utFromJulianDay(jd), today.zone)
+        return Astro.utToLocal(fromJulianDay(jd), today.zone)
     }
 
     private fun getSolarLongitude(date: ZonedDateTime): Float {
-        val coords = sunLocator.getCoordinates(date.toUniversalTime())
+        val coords = sun.getCoordinates(date.toUniversalTime())
         return EclipticCoordinate.fromEquatorial(
             coords,
             date.toUniversalTime()

@@ -1,13 +1,11 @@
 package com.kylecorry.trailsensecore.domain.astronomy.units
 
 import com.kylecorry.andromeda.core.time.toUTCLocal
+import com.kylecorry.andromeda.core.time.utc
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
 import com.kylecorry.trailsensecore.domain.astronomy.units.TimeUtils.toDecimal
 import com.kylecorry.trailsensecore.domain.astronomy.units.TimeUtils.toDuration
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 import kotlin.math.floor
 
 typealias UniversalTime = LocalDateTime
@@ -59,6 +57,10 @@ fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
 
 fun ZonedDateTime.toUniversalTime(): UniversalTime {
     return toUTCLocal()
+}
+
+fun Instant.toUniversalTime(): UniversalTime {
+    return utc().toUniversalTime()
 }
 
 fun fromJulianDay(jd: Double): UniversalTime {
