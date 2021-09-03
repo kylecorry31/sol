@@ -1,0 +1,86 @@
+package com.kylecorry.trailsensecore.domain.astronomy.units
+
+import com.kylecorry.andromeda.core.math.cosDegrees
+import com.kylecorry.andromeda.core.math.sinDegrees
+import com.kylecorry.andromeda.core.math.toDegrees
+import com.kylecorry.andromeda.core.math.wrap
+import kotlin.math.acos
+import kotlin.math.asin
+
+class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
+
+    val azimuth = wrap(_azimuth, 0.0, 360.0)
+    val altitude = wrap(_altitude, -90.0, 90.0)
+
+    fun toEquatorial(siderealTime: SiderealTime, latitude: Double): EquatorialCoordinate {
+        val sinH = sinDegrees(altitude)
+        val sinLat = sinDegrees(latitude)
+        val cosLat = cosDegrees(latitude)
+
+        val t0 = sinH * sinLat + cosDegrees(altitude) * cosLat * cosDegrees(azimuth)
+        val declination = asin(t0).toDegrees()
+
+        val t1 = sinH - sinLat * sinDegrees(declination)
+        val t2 = cosLat * cosDegrees(declination)
+
+        var hourAngle = acos(t1 / t2).toDegrees()
+
+        val sinA = sinDegrees(azimuth)
+
+        if (sinA > 0) {
+            hourAngle = 360 - hourAngle
+        }
+
+        return EquatorialCoordinate.fromHourAngle(declination, hourAngle / 15, siderealTime)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as HorizonCoordinate
+
+        if (azimuth != other.azimuth) return false
+        if (altitude != other.altitude) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = azimuth.hashCode()
+        result = 31 * result + altitude.hashCode()
+        return result
+    }
+
+
+    companion object {
+        fun fromEquatorial(
+            equatorial: EquatorialCoordinate,
+            siderealTime: SiderealTime,
+            latitude: Double
+        ): HorizonCoordinate {
+            val sinD = sinDegrees(equatorial.declination)
+            val sinLat = sinDegrees(latitude)
+            val cosLat = cosDegrees(latitude)
+
+            val hourAngle = equatorial.getHourAngle(siderealTime) * 15
+
+            val t0 =
+                sinD * sinLat + cosDegrees(equatorial.declination) * cosLat * cosDegrees(hourAngle)
+            val h = asin(t0).toDegrees()
+
+            val t1 = sinD - sinLat * sinDegrees(h)
+
+            var a = acos(t1 / (cosLat * cosDegrees(h))).toDegrees()
+
+            val sinH = sinDegrees(hourAngle)
+
+            if (sinH > 0) {
+                a = 360 - a
+            }
+
+            return HorizonCoordinate(a, h)
+        }
+    }
+
+}

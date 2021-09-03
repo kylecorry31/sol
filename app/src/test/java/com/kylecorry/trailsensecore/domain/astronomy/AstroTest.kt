@@ -117,6 +117,11 @@ class AstroTest {
             Astro.julianDay(LocalDateTime.of(1957, Month.OCTOBER, 4, 19, 26)),
             tolerance
         )
+        assertEquals(
+            2455197.5,
+            Astro.julianDay(LocalDateTime.of(2010, 1, 1, 0, 0)),
+            tolerance
+        )
     }
 
     @Test

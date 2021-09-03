@@ -4,12 +4,14 @@ import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.LunarEclipseParameters
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
-import java.time.*
-import kotlin.collections.toDoubleArray
+import com.kylecorry.trailsensecore.domain.astronomy.units.fromJulianDay
+import com.kylecorry.trailsensecore.domain.astronomy.units.toJulianDay
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.math.*
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)
@@ -118,59 +120,11 @@ internal object Astro {
     }
 
     fun julianDay(date: LocalDateTime): Double {
-        var Y = date.year.toDouble()
-        var M = date.month.value.toDouble()
-        val D =
-            date.dayOfMonth.toDouble() + timeToAngle(date.hour, date.minute, date.second) / 360.0
-
-        if (M <= 2) {
-            Y--
-            M += 12
-        }
-
-        val A = floor(Y / 100)
-        val B = 2 - A + floor(A / 4)
-
-        return floor(365.25 * (Y + 4716)) + floor(30.6001 * (M + 1)) + D + B - 1524.5
+        return date.toJulianDay()
     }
 
     fun utFromJulianDay(jd: Double): LocalDateTime {
-        val f = (jd + 0.5) % 1
-        val z = (jd + 0.5) - f
-
-        val a = if (z < 2299161) {
-            z
-        } else {
-            val alpha = floor((z - 1867216.25) / 36524.25)
-            z + 1 + alpha - floor(alpha / 4)
-        }
-
-        val b = a + 1524
-        val c = floor((b - 122.1) / 365.25)
-        val d = floor(365.25 * c)
-        val e = floor((b - d) / 30.6001)
-        val day = b - d - floor(30.6001 * e) + f
-
-        val dayOfMonth = floor(day).toInt()
-        val hours = (day - dayOfMonth) * 24
-        val hour = floor(hours).toInt()
-        val minutes = (hours - hour) * 60
-        val minute = floor(minutes).toInt()
-        val seconds = floor((minutes - minute) * 60).toInt()
-        val month = if (e < 14) {
-            e - 1
-        } else {
-            e - 13
-        }.toInt()
-
-        val year = if (month > 2) {
-            c - 4716
-        } else {
-            c - 4715
-        }.toInt()
-
-        return LocalDateTime.of(year, month, dayOfMonth, hour, minute, seconds)
-
+        return fromJulianDay(jd)
     }
 
     fun julianCenturies(julianDay: Double): Double {
