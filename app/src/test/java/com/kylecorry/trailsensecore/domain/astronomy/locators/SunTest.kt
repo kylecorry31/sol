@@ -4,9 +4,9 @@ import com.kylecorry.trailsensecore.domain.astronomy.units.UniversalTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class SunLocatorTest {
+internal class SunTest {
 
-    val sun = SunLocator()
+    val sun = Sun()
 
     @Test
     fun getCoordinates() {

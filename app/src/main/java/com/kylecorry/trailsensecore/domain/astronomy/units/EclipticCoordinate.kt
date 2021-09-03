@@ -2,6 +2,7 @@ package com.kylecorry.trailsensecore.domain.astronomy.units
 
 import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.math.MathUtils
 import kotlin.math.asin
 import kotlin.math.atan2
 
@@ -57,7 +58,7 @@ class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) 
         fun getObliquityOfTheEcliptic(ut: UniversalTime): Double {
             val e0 = 23.439292
             val t = ut.toJulianCenturies()
-            return e0 - Astro.polynomial(t, 0.0, 46.815, 0.0006, -0.00181) / 3600
+            return e0 - MathUtils.polynomial(t, 0.0, 46.815, 0.0006, -0.00181) / 3600
         }
 
         fun fromEquatorial(
@@ -82,7 +83,7 @@ class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) 
             var lon = atan2(y, x).toDegrees()
 
             if (equatorial.isApparent) {
-                val omega = Astro.polynomial(ut.toJulianCenturies(), 125.04, -1934.136)
+                val omega = MathUtils.polynomial(ut.toJulianCenturies(), 125.04, -1934.136)
                 lon += 0.00569 + 0.00478 * sinDegrees(omega)
             }
 

@@ -5,15 +5,14 @@ import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.time.atStartOfDay
 import com.kylecorry.andromeda.core.time.toZonedDateTime
-import com.kylecorry.andromeda.core.time.utc
 import com.kylecorry.andromeda.core.units.*
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.Eclipse
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.PartialLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.eclipse.TotalLunarEclipseCalculator
 import com.kylecorry.trailsensecore.domain.astronomy.locators.MeteorShowerLocator
-import com.kylecorry.trailsensecore.domain.astronomy.locators.MoonLocator
-import com.kylecorry.trailsensecore.domain.astronomy.locators.SunLocator
+import com.kylecorry.trailsensecore.domain.astronomy.locators.Moon
+import com.kylecorry.trailsensecore.domain.astronomy.locators.Sun
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.EclipticCoordinate
@@ -27,8 +26,8 @@ import kotlin.math.absoluteValue
 
 class AstronomyService : IAstronomyService {
 
-    private val sun = SunLocator()
-    private val moon = MoonLocator()
+    private val sun = Sun()
+    private val moon = Moon()
 
     override fun getSunEvents(
         date: ZonedDateTime,
@@ -273,7 +272,7 @@ class AstronomyService : IAstronomyService {
     }
 
     override fun getMoonPhase(date: ZonedDateTime): MoonPhase {
-        return Astro.getMoonPhase(date)
+        return moon.getPhase(date.toUniversalTime())
     }
 
     override fun isMoonUp(

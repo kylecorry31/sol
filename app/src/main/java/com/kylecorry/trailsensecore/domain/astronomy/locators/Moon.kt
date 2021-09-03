@@ -1,22 +1,29 @@
 package com.kylecorry.trailsensecore.domain.astronomy.locators
 
 import com.kylecorry.andromeda.core.math.cosDegrees
+import com.kylecorry.andromeda.core.math.normalizeAngle
 import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
+import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
+import com.kylecorry.trailsensecore.domain.math.MathUtils
+import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
+import kotlin.math.floor
+import kotlin.math.pow
 
-class MoonLocator : ICelestialLocator {
+class Moon : ICelestialLocator {
 
-    private val sun = SunLocator()
+    private val sun = Sun()
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val T = ut.toJulianCenturies()
         val L = Astro.reduceAngleDegrees(
-            Astro.polynomial(
+            MathUtils.polynomial(
                 T,
                 218.3164477,
                 481267.88123421,
@@ -36,7 +43,7 @@ class MoonLocator : ICelestialLocator {
         val a1 = Astro.reduceAngleDegrees(119.75 + 131.849 * T)
         val a2 = Astro.reduceAngleDegrees(53.09 + 479264.290 * T)
         val a3 = Astro.reduceAngleDegrees(313.45 + 481266.484 * T)
-        val E = Astro.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000075)
         val E2 = Astro.square(E)
 
         val t47a = table47a()
@@ -84,7 +91,7 @@ class MoonLocator : ICelestialLocator {
         val M = sun.getMeanAnomaly(ut)
 
         val Mprime = getMeanAnomaly(ut)
-        val E = Astro.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000075)
         val E2 = Astro.square(E)
         val t47a = table47a()
         var sumR = 0.0
@@ -112,7 +119,7 @@ class MoonLocator : ICelestialLocator {
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         return Astro.reduceAngleDegrees(
-            Astro.polynomial(
+            MathUtils.polynomial(
                 T,
                 134.9633964,
                 477198.8675055,
@@ -123,10 +130,80 @@ class MoonLocator : ICelestialLocator {
         )
     }
 
+    fun getPhase(ut: UniversalTime): MoonPhase {
+        val phaseAngle = getMoonPhaseAngle(ut)
+        val illumination = getMoonIllumination(phaseAngle).toFloat()
+
+        for (phase in MoonTruePhase.values()) {
+            if (phase.startAngle <= phaseAngle && phase.endAngle >= phaseAngle) {
+                return MoonPhase(phase, illumination)
+            }
+
+            // Handle new moon
+            if (phase.startAngle >= phase.endAngle) {
+                if (phase.startAngle <= phaseAngle || phase.endAngle >= phaseAngle) {
+                    return MoonPhase(phase, illumination)
+                }
+            }
+        }
+
+        return MoonPhase(MoonTruePhase.New, illumination)
+    }
+
+    fun getNextPhaseK(date: UniversalTime, moonTruePhase: MoonTruePhase): Double {
+        val year = date.year
+        val day = date.dayOfYear / 365.25
+        val hour = (date.hour / 24.0) / 365.25
+        val minute = (((date.minute / 60.0) / 24.0) / 365.25)
+        val y = year + day + hour + minute
+        val k = (y - 2000) * 12.3685
+
+        val ending = when (moonTruePhase) {
+            MoonTruePhase.New -> 0.0
+            MoonTruePhase.WaningCrescent -> 0.125
+            MoonTruePhase.ThirdQuarter -> 0.25
+            MoonTruePhase.WaningGibbous -> 0.375
+            MoonTruePhase.Full -> 0.5
+            MoonTruePhase.WaxingGibbous -> 0.625
+            MoonTruePhase.FirstQuarter -> 0.75
+            MoonTruePhase.WaxingCrescent -> 0.875
+        }
+
+        val intK = floor(k)
+        val remainder = k % 1
+
+        return if (remainder > ending) {
+            intK + 1.0 + ending
+        } else {
+            intK + ending
+        }
+    }
+
+    private fun getMoonPhaseAngle(ut: UniversalTime): Double {
+        val D = getMeanElongation(ut)
+        val M = sun.getMeanAnomaly(ut)
+        val Mp = getMeanAnomaly(ut)
+
+        val i =
+            180 - D - 6.289 * sinDegrees(Mp) + 2.100 * sinDegrees(
+                M
+            ) - 1.274 * sinDegrees(2 * D - Mp) - 0.658 * sinDegrees(
+                2 * D
+            ) - 0.214 * sinDegrees(
+                2 * Mp
+            ) - 0.110 * sinDegrees(D)
+
+        return (i + 180) % 360.0
+    }
+
+    private fun getMoonIllumination(phaseAngle: Double): Double {
+        return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
+    }
+
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         return Astro.reduceAngleDegrees(
-            Astro.polynomial(
+            MathUtils.polynomial(
                 T,
                 297.8501921,
                 445267.1114034,
@@ -140,7 +217,7 @@ class MoonLocator : ICelestialLocator {
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         return Astro.reduceAngleDegrees(
-            Astro.polynomial(
+            MathUtils.polynomial(
                 T,
                 93.2720950,
                 483202.0175233,
@@ -175,13 +252,13 @@ class MoonLocator : ICelestialLocator {
 
     private fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        val seconds = Astro.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
+        val seconds = MathUtils.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
         return 23.0 + (26.0 + seconds / 60.0) / 60.0
     }
 
     private fun getAscendingNodeLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return Astro.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
+        return MathUtils.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 
     private fun table47a(): Array<Array<Int>> {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 
-internal class MoonLocatorTest {
+internal class MoonTest {
 
     @Test
     fun getCoordinates() {

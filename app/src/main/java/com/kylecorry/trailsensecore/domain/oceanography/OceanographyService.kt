@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.domain.oceanography
 
-import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.AstronomyService
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import java.time.Duration
 import java.time.LocalDate
@@ -8,9 +8,11 @@ import java.time.ZonedDateTime
 
 class OceanographyService : IOceanographyService {
 
+    private val astronomyService = AstronomyService()
+
     override fun getTidalRange(time: ZonedDateTime): TidalRange {
         for (i in 0..3) {
-            val phase = Astro.getMoonPhase(time.minusDays(i.toLong()))
+            val phase = astronomyService.getMoonPhase(time.minusDays(i.toLong()))
 
             when (phase.phase) {
                 MoonTruePhase.New, MoonTruePhase.Full -> {

@@ -1,13 +1,11 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.andromeda.core.math.tanDegrees
-import com.kylecorry.andromeda.core.math.wrap
+import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.domain.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
+import com.kylecorry.trailsensecore.domain.math.MathUtils
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
@@ -168,7 +166,7 @@ class RiseSetTransitTimeCalculator {
 
     private fun meanObliquityOfEcliptic(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        val seconds = Astro.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
+        val seconds = MathUtils.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
         return 23.0 + (26.0 + seconds / 60.0) / 60.0
     }
 
@@ -184,7 +182,7 @@ class RiseSetTransitTimeCalculator {
 
     private fun moonAscendingNodeLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return Astro.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
+        return MathUtils.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 
     private fun riseSetTransitTimes(
@@ -328,14 +326,14 @@ class RiseSetTransitTimeCalculator {
         val tanElev = tanDegrees(elevation)
 
         if (elevation > 5.0) {
-            return (58.1 / tanElev - 0.07 / Astro.cube(tanElev) + 0.000086 / Astro.power(
+            return (58.1 / tanElev - 0.07 / Astro.cube(tanElev) + 0.000086 / power(
                 tanElev,
                 5
             )) / 3600.0
         }
 
         if (elevation > -0.575) {
-            return Astro.polynomial(elevation, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
+            return MathUtils.polynomial(elevation, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
         }
 
         return -20.774 / tanElev / 3600.0

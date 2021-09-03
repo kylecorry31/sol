@@ -1,8 +1,9 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.trailsensecore.domain.astronomy.locators.MoonLocator
-import com.kylecorry.trailsensecore.domain.astronomy.locators.SunLocator
+import com.kylecorry.trailsensecore.domain.astronomy.locators.Moon
+import com.kylecorry.trailsensecore.domain.astronomy.locators.Sun
 import com.kylecorry.trailsensecore.domain.astronomy.units.fromJulianDay
+import com.kylecorry.trailsensecore.domain.math.MathUtils
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -26,17 +27,17 @@ class AstroTest {
         )
 
         cases.forEach {
-            assertEquals(it[2], Astro.power(it[0], it[1].toInt()), 0.0000001)
+            assertEquals(it[2], com.kylecorry.andromeda.core.math.power(it[0], it[1].toInt()), 0.0000001)
         }
     }
 
     @Test
     fun polynomial() {
-        assertEquals(0.0, Astro.polynomial(1.0, 0.0), 0.0001)
-        assertEquals(0.0, Astro.polynomial(1.0), 0.0001)
-        assertEquals(1.0, Astro.polynomial(2.0, 1.0), 0.0001)
-        assertEquals(3.0, Astro.polynomial(1.0, 1.0, 2.0), 0.0001)
-        assertEquals(81.0, Astro.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
+        assertEquals(0.0, MathUtils.polynomial(1.0, 0.0), 0.0001)
+        assertEquals(0.0, MathUtils.polynomial(1.0), 0.0001)
+        assertEquals(1.0, MathUtils.polynomial(2.0, 1.0), 0.0001)
+        assertEquals(3.0, MathUtils.polynomial(1.0, 1.0, 2.0), 0.0001)
+        assertEquals(81.0, MathUtils.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
     }
 
     @Test
@@ -128,36 +129,6 @@ class AstroTest {
         )
     }
 
-//    @Test
-//    fun meanSiderealTime() {
-//        assertEquals(128.7378734, Astro.meanSiderealTime(2446896.30625), 0.0001)
-//    }
-
-//    @Test
-//    fun apparentSiderealTime() {
-//        val jd = 2446895.5
-//        assertEquals(
-//            Astro.timeToAngle(13, 10, 46.1351),
-//            Astro.apparentSiderealTime(jd, -3.788, 23.44357),
-//            0.5
-//        )
-//    }
-
-//    @Test
-//    fun hourAngle() {
-//        assertEquals(-2.0, Astro.hourAngle(10.0, -4.0, 8.0), 0.00001)
-//        assertEquals(2.0, Astro.hourAngle(10.0, 8.0), 0.00001)
-//    }
-
-//    @Test
-//    fun azimuth() {
-//        assertEquals(248.0337, Astro.azimuth(64.352133, 38.92139, -6.719892), 0.0001)
-//    }
-
-//    @Test
-//    fun altitude() {
-//        assertEquals(15.1249, Astro.altitude(64.352133, 38.92139, -6.719892), 0.0001)
-//    }
 
 //    @Test
 //    fun riseSetTransitTimes() {
@@ -172,14 +143,14 @@ class AstroTest {
 
     @Test
     fun solarCoordinates() {
-        val coords = SunLocator().getCoordinates(fromJulianDay(2448908.5))
+        val coords = Sun().getCoordinates(fromJulianDay(2448908.5))
         assertEquals(-7.78507, coords.declination, 0.0001)
         assertEquals(360 - 161.61917, coords.rightAscension, 0.0001)
     }
 
     @Test
     fun lunarCoordinates() {
-        val coords = MoonLocator().getCoordinates(fromJulianDay(2448724.5))
+        val coords = Moon().getCoordinates(fromJulianDay(2448724.5))
         assertEquals(13.768368, coords.declination, 0.001)
         assertEquals(134.688470, coords.rightAscension, 0.001)
     }
