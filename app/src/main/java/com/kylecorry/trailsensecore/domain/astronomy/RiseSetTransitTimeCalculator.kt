@@ -1,17 +1,19 @@
 package com.kylecorry.trailsensecore.domain.astronomy
 
-import com.kylecorry.andromeda.core.math.*
+import com.kylecorry.andromeda.core.math.cosDegrees
+import com.kylecorry.andromeda.core.math.sinDegrees
+import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.LongitudinalNutation
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.TerrestrialTime
 import com.kylecorry.trailsensecore.domain.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
-import com.kylecorry.trailsensecore.domain.math.MathUtils
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
-import kotlin.math.asin
 
-// TODO: Remove the duplication in this class
 class RiseSetTransitTimeCalculator {
 
     fun calculate(
@@ -22,34 +24,16 @@ class RiseSetTransitTimeCalculator {
         withRefraction: Boolean = false
     ): RiseSetTransitTimes {
 
-        return getTransitEvents(
-            date,
-            location,
-            standardAltitude,
-            withRefraction
-        ) {
-            locator.getCoordinates(it)
-        }
-    }
-
-    private fun getTransitEvents(
-        date: ZonedDateTime,
-        coordinate: Coordinate,
-        standardAltitude: Double,
-        withRefraction: Boolean,
-        coordinateFn: (ut: UniversalTime) -> EquatorialCoordinate
-    ): RiseSetTransitTimes {
-
         val ld = date.toLocalDate()
 
         // Get today's times
         val today =
             getTransitTimesHelper(
                 date,
-                coordinate,
+                location,
                 standardAltitude,
                 withRefraction,
-                coordinateFn
+                locator
             )
         if (today.rise?.toLocalDate() == ld && today.transit?.toLocalDate() == ld && today.set?.toLocalDate() == ld) {
             return today
@@ -59,18 +43,18 @@ class RiseSetTransitTimeCalculator {
         val yesterday =
             getTransitTimesHelper(
                 date.minusDays(1),
-                coordinate,
+                location,
                 standardAltitude,
                 withRefraction,
-                coordinateFn
+                locator
             )
         val tomorrow =
             getTransitTimesHelper(
                 date.plusDays(1),
-                coordinate,
+                location,
                 standardAltitude,
                 withRefraction,
-                coordinateFn
+                locator
             )
 
         val rise = listOfNotNull(
@@ -97,30 +81,20 @@ class RiseSetTransitTimeCalculator {
         coordinate: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        coordinateFn: (ut: UniversalTime) -> EquatorialCoordinate
+        locator: ICelestialLocator
     ): RiseSetTransitTimes {
         val ut = Astro.ut0hOnDate(date)
         val uty = Astro.ut0hOnDate(date.minusDays(1))
         val utt = Astro.ut0hOnDate(date.plusDays(1))
-        val longitudeNutation = nutationInLongitude(ut)
-        val eclipticObliquity = trueObliquityOfEcliptic(ut)
-        val sr = apparentSiderealTime(ut, longitudeNutation, eclipticObliquity)
-        val astroCoords = coordinateFn.invoke(ut)
-        val astroCoordsy = coordinateFn.invoke(uty)
-        val astroCoordst = coordinateFn.invoke(utt)
-        val times = riseSetTransitTimes(
-            coordinate.latitude,
-            coordinate.longitude,
-            sr,
+        val astroCoords = locator.getCoordinates(ut)
+        val astroCoordsy = locator.getCoordinates(uty)
+        val astroCoordst = locator.getCoordinates(utt)
+        val times = getRiseSetTransitTimes(
+            ut,
+            coordinate,
             standardAltitude,
             withRefraction,
-            Astro.deltaT(date.year),
-            Triple(astroCoordsy.declination, astroCoords.declination, astroCoordst.declination),
-            Triple(
-                astroCoordsy.rightAscension,
-                astroCoords.rightAscension,
-                astroCoordst.rightAscension
-            )
+            Triple(astroCoordsy, astroCoords, astroCoordst)
         )
             ?: return RiseSetTransitTimes(null, null, null)
 
@@ -131,16 +105,14 @@ class RiseSetTransitTimeCalculator {
         return RiseSetTransitTimes(rise, transit, set)
     }
 
-    private fun apparentSiderealTime(
-        ut: UniversalTime,
-        longitudeNutation: Double,
-        eclipticObliquity: Double
-    ): Double {
-        val meanSidereal = meanSiderealTime(ut)
+    private fun getApparentSiderealTime(ut: UniversalTime): Double {
+        val longitudeNutation = LongitudinalNutation.getNutationInLongitude(ut)
+        val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(ut)
+        val meanSidereal = getMeanSiderealTime(ut)
         return meanSidereal + (longitudeNutation * cosDegrees(eclipticObliquity)) / 15.0
     }
 
-    private fun meanSiderealTime(ut: UniversalTime): Double {
+    private fun getMeanSiderealTime(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val theta0 =
             280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * Astro.square(
@@ -151,54 +123,19 @@ class RiseSetTransitTimeCalculator {
         return wrap(theta0, 0.0, 360.0)
     }
 
-    private fun trueObliquityOfEcliptic(ut: UniversalTime): Double {
-        return meanObliquityOfEcliptic(ut) + nutationInObliquity(ut)
-    }
-
-    private fun nutationInObliquity(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val L = 280.4665 + 36000.7698 * T
-        val LPrime = 218.3165 + 481267.8813 * T
-        val omega = moonAscendingNodeLongitude(ut)
-        return 0.002555556 * cosDegrees(omega) + 0.0001583333 * cosDegrees(2 * L) +
-                0.00002777778 * cosDegrees(2 * LPrime) - 0.000025 * cosDegrees(2 * omega)
-    }
-
-    private fun meanObliquityOfEcliptic(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val seconds = MathUtils.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
-        return 23.0 + (26.0 + seconds / 60.0) / 60.0
-    }
-
-
-    private fun nutationInLongitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val L = 280.4665 + 36000.7698 * T
-        val LPrime = 218.3165 + 481267.8813 * T
-        val omega = moonAscendingNodeLongitude(ut)
-        return -0.004777778 * sinDegrees(omega) + 0.0003666667 * sinDegrees(2 * L) -
-                0.00006388889 * sinDegrees(2 * LPrime) + 0.00005833333 * sinDegrees(2 * omega)
-    }
-
-    private fun moonAscendingNodeLongitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        return MathUtils.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
-    }
-
-    private fun riseSetTransitTimes(
-        latitude: Double,
-        longitude: Double,
-        apparentSidereal: Double,
+    private fun getRiseSetTransitTimes(
+        ut: UniversalTime,
+        location: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        deltaT: Double,
-        declinations: Triple<Double, Double, Double>,
-        rightAscensions: Triple<Double, Double, Double>
+        coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>
     ): Triple<Double, Double, Double>? {
+        val apparentSidereal = getApparentSiderealTime(ut)
+        val deltaT = TerrestrialTime.getDeltaT(ut.year)
         val cosH =
-            (sinDegrees(standardAltitude) - sinDegrees(latitude) * sinDegrees(declinations.second)) / (cosDegrees(
-                latitude
-            ) * cosDegrees(declinations.second))
+            (sinDegrees(standardAltitude) - sinDegrees(location.latitude) * sinDegrees(coordinates.second.declination)) / (cosDegrees(
+                location.latitude
+            ) * cosDegrees(coordinates.second.declination))
 
         if (cosH >= 1) {
             // Always down
@@ -213,66 +150,52 @@ class RiseSetTransitTimeCalculator {
         val iterations = 20
         val doneThresh = 0.0001
 
-        var m0 = wrap((rightAscensions.second - longitude - apparentSidereal) / 360.0, 0.0, 1.0)
+        var m0 = wrap(
+            (coordinates.second.rightAscension - location.longitude - apparentSidereal) / 360.0,
+            0.0,
+            1.0
+        )
         var m1 = wrap(m0 - H / 360, 0.0, 1.0)
         var m2 = wrap(m0 + H / 360, 0.0, 1.0)
+        val date = ut.toLocalDate()
 
         for (i in 0 until iterations) {
-            val sidereal0 = Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m0)
-            val sidereal1 = Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m1)
-            val sidereal2 = Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m2)
+            val sidereal0 =
+                GreenwichSiderealTime(Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
+            val sidereal1 =
+                GreenwichSiderealTime(Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
+            val sidereal2 =
+                GreenwichSiderealTime(Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
 
             val n0 = m0 + deltaT / 86400
             val n1 = m1 + deltaT / 86400
             val n2 = m2 + deltaT / 86400
 
-            val normalizedRas = normalizeRightAscensions(rightAscensions)
+            val c0 =
+                interpolateCoordinate(n0, coordinates.first, coordinates.second, coordinates.third)
+            val c1 =
+                interpolateCoordinate(n1, coordinates.first, coordinates.second, coordinates.third)
+            val c2 =
+                interpolateCoordinate(n2, coordinates.first, coordinates.second, coordinates.third)
 
-            val ra0 =
-                Astro.reduceAngleDegrees(
-                    Astro.interpolate(
-                        n0,
-                        normalizedRas.first,
-                        normalizedRas.second,
-                        normalizedRas.third
-                    )
-                )
-            val ra1 =
-                Astro.reduceAngleDegrees(
-                    Astro.interpolate(
-                        n1,
-                        normalizedRas.first,
-                        normalizedRas.second,
-                        normalizedRas.third
-                    )
-                )
-            val ra2 = Astro.reduceAngleDegrees(
-                Astro.interpolate(
-                    n2,
-                    normalizedRas.first,
-                    normalizedRas.second,
-                    normalizedRas.third
-                )
-            )
-            val declination1 =
-                Astro.interpolate(n1, declinations.first, declinations.second, declinations.third)
-            val declination2 =
-                Astro.interpolate(n2, declinations.first, declinations.second, declinations.third)
+            val hourAngle0 = c0.getHourAngle(sidereal0.atLongitude(location.longitude)) * 15
+            val hourAngle1 = c1.getHourAngle(sidereal1.atLongitude(location.longitude)) * 15
+            val hourAngle2 = c2.getHourAngle(sidereal2.atLongitude(location.longitude)) * 15
 
-            val hourAngle0 = Astro.reduceAngleDegrees(hourAngle(sidereal0, longitude, ra0))
-            val hourAngle1 = Astro.reduceAngleDegrees(hourAngle(sidereal1, longitude, ra1))
-            val hourAngle2 = Astro.reduceAngleDegrees(hourAngle(sidereal2, longitude, ra2))
-
-            val altitude1 = altitude(hourAngle1, latitude, declination1, withRefraction)
-            val altitude2 = altitude(hourAngle2, latitude, declination2, withRefraction)
+            val altitude1 =
+                Astro.getAltitude(c1, sidereal1.toUniversalTime(date), location, withRefraction)
+            val altitude2 =
+                Astro.getAltitude(c2, sidereal2.toUniversalTime(date), location, withRefraction)
 
             val dm0 = -hourAngle0 / 360
-            val dm1 = (altitude1 - standardAltitude) / (360 * cosDegrees(declination1) * cosDegrees(
-                latitude
-            ) * sinDegrees(hourAngle1))
-            val dm2 = (altitude2 - standardAltitude) / (360 * cosDegrees(declination2) * cosDegrees(
-                latitude
-            ) * sinDegrees(hourAngle2))
+            val dm1 =
+                (altitude1 - standardAltitude) / (360 * cosDegrees(c1.declination) * cosDegrees(
+                    location.latitude
+                ) * sinDegrees(hourAngle1))
+            val dm2 =
+                (altitude2 - standardAltitude) / (360 * cosDegrees(c2.declination) * cosDegrees(
+                    location.latitude
+                ) * sinDegrees(hourAngle2))
 
             m0 = wrap(m0 + dm0, 0.0, 1.0)
             m1 = wrap(m1 + dm1, 0.0, 1.0)
@@ -290,53 +213,32 @@ class RiseSetTransitTimeCalculator {
         return Triple(riseHour, transitHour, setHour)
     }
 
-    private fun hourAngle(sidereal: Double, longitude: Double, rightAscension: Double): Double {
-        return sidereal + longitude - rightAscension
-    }
 
-    private fun altitude(
-        hourAngle: Double,
-        latitude: Double,
-        declination: Double,
-        withRefraction: Boolean = false
-    ): Double {
-        val altitude = wrap(
-            Math.toDegrees(
-                asin(
-                    sinDegrees(latitude) * sinDegrees(declination) + cosDegrees(
-                        latitude
-                    ) * cosDegrees(declination) * cosDegrees(hourAngle)
-                )
-            ), -90.0, 90.0
+    private fun interpolateCoordinate(
+        value: Double,
+        first: EquatorialCoordinate,
+        second: EquatorialCoordinate,
+        third: EquatorialCoordinate
+    ): EquatorialCoordinate {
+        val normalizedRas = normalizeRightAscensions(
+            Triple(
+                first.rightAscension,
+                second.rightAscension,
+                third.rightAscension
+            )
         )
 
-        return if (withRefraction) {
-            val refract = wrap(refraction(altitude), -90.0, 90.0)
-            wrap(altitude + refract, -90.0, 90.0)
-        } else {
-            altitude
-        }
-    }
+        val ra = Astro.interpolate(
+            value,
+            normalizedRas.first,
+            normalizedRas.second,
+            normalizedRas.third
+        )
 
-    private fun refraction(elevation: Double): Double {
-        if (elevation > 85.0) {
-            return 0.0
-        }
+        val declination =
+            Astro.interpolate(value, first.declination, second.declination, third.declination)
 
-        val tanElev = tanDegrees(elevation)
-
-        if (elevation > 5.0) {
-            return (58.1 / tanElev - 0.07 / Astro.cube(tanElev) + 0.000086 / power(
-                tanElev,
-                5
-            )) / 3600.0
-        }
-
-        if (elevation > -0.575) {
-            return MathUtils.polynomial(elevation, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
-        }
-
-        return -20.774 / tanElev / 3600.0
+        return EquatorialCoordinate(declination, ra)
     }
 
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {

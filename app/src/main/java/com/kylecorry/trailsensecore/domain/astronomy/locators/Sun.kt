@@ -6,6 +6,7 @@ import com.kylecorry.andromeda.core.math.toDegrees
 import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
 import com.kylecorry.trailsensecore.domain.math.MathUtils
 import kotlin.math.asin
@@ -91,15 +92,9 @@ class Sun : ICelestialLocator {
 
     private fun getObliquityCorrection(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        val e = getMeanObliquityOfEcliptic(ut)
+        val e = EclipticObliquity.getMeanObliquityOfEcliptic(ut)
         val omega = MathUtils.polynomial(T, 125.04, -1934.136)
         return e + 0.00256 * cosDegrees(omega)
-    }
-
-    private fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val seconds = MathUtils.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
-        return 23.0 + (26.0 + seconds / 60.0) / 60.0
     }
 
 }

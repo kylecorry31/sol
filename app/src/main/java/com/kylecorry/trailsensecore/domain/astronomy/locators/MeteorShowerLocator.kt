@@ -6,6 +6,6 @@ import com.kylecorry.trailsensecore.domain.astronomy.units.UniversalTime
 
 class MeteorShowerLocator(private val shower: MeteorShower) : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
-        return EquatorialCoordinate(shower.radiant.declination, shower.radiant.rightAscension)
+        return shower.radiant
     }
 }

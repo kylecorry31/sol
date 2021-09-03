@@ -1,20 +1,19 @@
 package com.kylecorry.trailsensecore.domain.astronomy.locators
 
 import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.math.normalizeAngle
 import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.LongitudinalNutation
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
 import com.kylecorry.trailsensecore.domain.math.MathUtils
-import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 import kotlin.math.floor
-import kotlin.math.pow
 
 class Moon : ICelestialLocator {
 
@@ -75,9 +74,10 @@ class Moon : ICelestialLocator {
                 175 * sinDegrees(a1 + F) + 127 * sinDegrees(L - Mprime) - 115 * sinDegrees(L + Mprime)
 
 
-        val apparentLongitude = L + sumL / 1000000.0 + getNutationInLongitude(ut)
+        val apparentLongitude =
+            L + sumL / 1000000.0 + LongitudinalNutation.getNutationInLongitude(ut)
         val eclipticLatitude = sumB / 1000000.0
-        val eclipticObliquity = getTrueObliquityOfEcliptic(ut)
+        val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(ut)
 
         return EclipticCoordinate(eclipticLatitude, apparentLongitude).toEquatorial(
             eclipticObliquity
@@ -226,39 +226,6 @@ class Moon : ICelestialLocator {
                 1 / 863310000.0
             )
         )
-    }
-
-    private fun getNutationInLongitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val L = 280.4665 + 36000.7698 * T
-        val LPrime = 218.3165 + 481267.8813 * T
-        val omega = getAscendingNodeLongitude(ut)
-        return -0.004777778 * sinDegrees(omega) + 0.0003666667 * sinDegrees(2 * L) -
-                0.00006388889 * sinDegrees(2 * LPrime) + 0.00005833333 * sinDegrees(2 * omega)
-    }
-
-    private fun getTrueObliquityOfEcliptic(ut: UniversalTime): Double {
-        return getMeanObliquityOfEcliptic(ut) + getNutationInObliquity(ut)
-    }
-
-    private fun getNutationInObliquity(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val L = 280.4665 + 36000.7698 * T
-        val LPrime = 218.3165 + 481267.8813 * T
-        val omega = getAscendingNodeLongitude(ut)
-        return 0.002555556 * cosDegrees(omega) + 0.0001583333 * cosDegrees(2 * L) +
-                0.00002777778 * cosDegrees(2 * LPrime) - 0.000025 * cosDegrees(2 * omega)
-    }
-
-    private fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val seconds = MathUtils.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
-        return 23.0 + (26.0 + seconds / 60.0) / 60.0
-    }
-
-    private fun getAscendingNodeLongitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        return MathUtils.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 
     private fun table47a(): Array<Array<Int>> {
