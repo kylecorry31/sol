@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.time
 
 import com.kylecorry.andromeda.core.math.toRadians
-import com.kylecorry.trailsensecore.astronomy.units.UniversalTime
-import com.kylecorry.trailsensecore.astronomy.units.atZeroHour
-import com.kylecorry.trailsensecore.astronomy.units.toUniversalTime
+import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
+import com.kylecorry.trailsensecore.science.astronomy.units.atZeroHour
+import com.kylecorry.trailsensecore.science.astronomy.units.toUniversalTime
 import java.time.*
 
 object TimeUtils {
