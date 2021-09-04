@@ -1,8 +1,9 @@
 package com.kylecorry.sol.science.astronomy.eclipse
 
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.power
-import com.kylecorry.sol.math.TSMath.sinDegrees
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.power
+import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
@@ -28,7 +29,7 @@ internal class LunarEclipseParameterProvider {
         var F: Double
         do {
             T = k / 1236.85
-            F = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
+            F = com.kylecorry.sol.math.SolMath.reduceAngleDegrees(
                 160.7108 + 390.67050284 * k - 0.0016118 * power(T, 2) - 0.00000227 * power(
                     T,
                     3
@@ -40,25 +41,25 @@ internal class LunarEclipseParameterProvider {
         } while (sinDegrees(F).absoluteValue > 0.36)
 
         val mean = getJDEOfMeanMoonPhase(k)
-        val M = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
+        val M = SolMath.reduceAngleDegrees(
             2.5534 + 29.1053567 * k - 0.0000014 * power(
                 T,
                 2
             ) - 0.00000011 * power(T, 3)
         )
-        val MPrime = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
+        val MPrime = SolMath.reduceAngleDegrees(
             201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
                 T,
                 3
             ) - 0.000000058 * power(T, 4)
         )
-        val omega = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
+        val omega = SolMath.reduceAngleDegrees(
             124.7746 - 1.56375588 * k + 0.0020672 * power(
                 T,
                 2
             ) + 0.00000215 * power(T, 3)
         )
-        val E = com.kylecorry.sol.math.TSMath.polynomial(T, 1.0, -0.002516, -0.0000074)
+        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000074)
 
         val F1 = F - 0.02665 * sinDegrees(omega)
         val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)

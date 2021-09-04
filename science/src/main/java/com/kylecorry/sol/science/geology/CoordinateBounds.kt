@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.TSMath.deltaAngle
+import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import kotlin.math.max

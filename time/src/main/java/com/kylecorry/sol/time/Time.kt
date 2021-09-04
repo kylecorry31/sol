@@ -2,7 +2,7 @@ package com.kylecorry.sol.time
 
 import java.time.*
 
-object TSTime {
+object Time {
 
     fun hours(hours: Double): Duration {
         val minutes = hours * 60

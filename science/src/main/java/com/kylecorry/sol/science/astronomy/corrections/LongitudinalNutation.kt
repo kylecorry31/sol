@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.corrections
 
-import com.kylecorry.sol.math.TSMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 
@@ -17,7 +17,7 @@ internal object LongitudinalNutation {
 
     private fun moonAscendingNodeLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return com.kylecorry.sol.math.TSMath.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
+        return com.kylecorry.sol.math.SolMath.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 
 }

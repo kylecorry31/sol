@@ -1,8 +1,8 @@
 package com.kylecorry.sol.time
 
-import com.kylecorry.sol.time.TSTime.getClosestFutureTime
-import com.kylecorry.sol.time.TSTime.getClosestPastTime
-import com.kylecorry.sol.time.TSTime.getClosestTime
+import com.kylecorry.sol.time.Time.getClosestFutureTime
+import com.kylecorry.sol.time.Time.getClosestPastTime
+import com.kylecorry.sol.time.Time.getClosestTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -11,7 +11,7 @@ import java.time.Month
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class TSTimeTest {
+class TimeTest {
 
     @Test
     fun canGetClosestPastTime() {

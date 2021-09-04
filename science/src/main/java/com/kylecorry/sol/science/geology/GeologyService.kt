@@ -2,10 +2,10 @@ package com.kylecorry.sol.science.geology
 
 import android.hardware.GeomagneticField
 import android.location.Location
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.sinDegrees
-import com.kylecorry.sol.math.TSMath.toDegrees
-import com.kylecorry.sol.math.TSMath.toRadians
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate

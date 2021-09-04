@@ -1,10 +1,11 @@
 package com.kylecorry.sol.science.astronomy.units
 
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.sinDegrees
-import com.kylecorry.sol.math.TSMath.tanDegrees
-import com.kylecorry.sol.math.TSMath.toDegrees
-import com.kylecorry.sol.math.TSMath.wrap
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.tanDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.SolMath.wrap
 import kotlin.math.asin
 import kotlin.math.atan2
 
@@ -60,7 +61,7 @@ internal class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude:
         fun getObliquityOfTheEcliptic(ut: UniversalTime): Double {
             val e0 = 23.439292
             val t = ut.toJulianCenturies()
-            return e0 - com.kylecorry.sol.math.TSMath.polynomial(t, 0.0, 46.815, 0.0006, -0.00181) / 3600
+            return e0 - SolMath.polynomial(t, 0.0, 46.815, 0.0006, -0.00181) / 3600
         }
 
         fun fromEquatorial(
@@ -85,7 +86,7 @@ internal class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude:
             var lon = atan2(y, x).toDegrees()
 
             if (equatorial.isApparent) {
-                val omega = com.kylecorry.sol.math.TSMath.polynomial(ut.toJulianCenturies(), 125.04, -1934.136)
+                val omega = SolMath.polynomial(ut.toJulianCenturies(), 125.04, -1934.136)
                 lon += 0.00569 + 0.00478 * sinDegrees(omega)
             }
 

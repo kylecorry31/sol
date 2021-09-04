@@ -4,7 +4,7 @@ import com.kylecorry.sol.math.filters.LowPassFilter
 import com.kylecorry.sol.math.filters.MovingAverageFilter
 import kotlin.math.*
 
-object TSMath {
+object SolMath {
 
     fun wrap(value: Float, min: Float, max: Float): Float {
         return wrap(value.toDouble(), min.toDouble(), max.toDouble()).toFloat()

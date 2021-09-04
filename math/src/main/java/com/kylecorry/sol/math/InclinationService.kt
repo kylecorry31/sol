@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.TSMath.tanDegrees
+import com.kylecorry.sol.math.SolMath.tanDegrees
 import kotlin.math.absoluteValue
 import kotlin.math.max
 

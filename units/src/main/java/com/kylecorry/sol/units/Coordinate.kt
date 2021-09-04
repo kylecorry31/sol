@@ -2,9 +2,9 @@ package com.kylecorry.sol.units
 
 import android.location.Location
 import android.os.Parcelable
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.sinDegrees
-import com.kylecorry.sol.math.TSMath.toDegrees
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlin.math.*

@@ -22,17 +22,17 @@ class AstroUtilsTest {
         )
 
         cases.forEach {
-            assertEquals(it[2], com.kylecorry.sol.math.TSMath.power(it[0], it[1].toInt()), 0.0000001)
+            assertEquals(it[2], com.kylecorry.sol.math.SolMath.power(it[0], it[1].toInt()), 0.0000001)
         }
     }
 
     @Test
     fun polynomial() {
-        assertEquals(0.0, com.kylecorry.sol.math.TSMath.polynomial(1.0, 0.0), 0.0001)
-        assertEquals(0.0, com.kylecorry.sol.math.TSMath.polynomial(1.0), 0.0001)
-        assertEquals(1.0, com.kylecorry.sol.math.TSMath.polynomial(2.0, 1.0), 0.0001)
-        assertEquals(3.0, com.kylecorry.sol.math.TSMath.polynomial(1.0, 1.0, 2.0), 0.0001)
-        assertEquals(81.0, com.kylecorry.sol.math.TSMath.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
+        assertEquals(0.0, SolMath.polynomial(1.0, 0.0), 0.0001)
+        assertEquals(0.0, SolMath.polynomial(1.0), 0.0001)
+        assertEquals(1.0, SolMath.polynomial(2.0, 1.0), 0.0001)
+        assertEquals(3.0, SolMath.polynomial(1.0, 1.0, 2.0), 0.0001)
+        assertEquals(81.0, SolMath.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
     }
 
 //    @Test

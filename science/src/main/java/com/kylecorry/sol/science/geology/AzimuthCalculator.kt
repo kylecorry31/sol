@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.TSMath.toDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Utils
 import com.kylecorry.sol.units.Bearing

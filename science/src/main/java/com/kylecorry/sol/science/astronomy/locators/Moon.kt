@@ -1,7 +1,8 @@
 package com.kylecorry.sol.science.astronomy.locators
 
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.sinDegrees
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
@@ -23,8 +24,8 @@ internal class Moon : ICelestialLocator {
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val T = ut.toJulianCenturies()
-        val L = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
-            com.kylecorry.sol.math.TSMath.polynomial(
+        val L = SolMath.reduceAngleDegrees(
+            SolMath.polynomial(
                 T,
                 218.3164477,
                 481267.88123421,
@@ -41,11 +42,11 @@ internal class Moon : ICelestialLocator {
 
         val F = getArgumentOfLatitude(ut)
 
-        val a1 = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(119.75 + 131.849 * T)
-        val a2 = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(53.09 + 479264.290 * T)
-        val a3 = com.kylecorry.sol.math.TSMath.reduceAngleDegrees(313.45 + 481266.484 * T)
-        val E = com.kylecorry.sol.math.TSMath.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = com.kylecorry.sol.math.TSMath.square(E)
+        val a1 = SolMath.reduceAngleDegrees(119.75 + 131.849 * T)
+        val a2 = SolMath.reduceAngleDegrees(53.09 + 479264.290 * T)
+        val a3 = SolMath.reduceAngleDegrees(313.45 + 481266.484 * T)
+        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E2 = SolMath.square(E)
 
         val t47a = table47a()
         val t47b = table47b()
@@ -93,8 +94,8 @@ internal class Moon : ICelestialLocator {
         val M = sun.getMeanAnomaly(ut)
 
         val Mprime = getMeanAnomaly(ut)
-        val E = com.kylecorry.sol.math.TSMath.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = com.kylecorry.sol.math.TSMath.square(E)
+        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E2 = SolMath.square(E)
         val t47a = table47a()
         var sumR = 0.0
 
@@ -120,8 +121,8 @@ internal class Moon : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
-            com.kylecorry.sol.math.TSMath.polynomial(
+        return SolMath.reduceAngleDegrees(
+            SolMath.polynomial(
                 T,
                 134.9633964,
                 477198.8675055,
@@ -204,8 +205,8 @@ internal class Moon : ICelestialLocator {
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
-            com.kylecorry.sol.math.TSMath.polynomial(
+        return SolMath.reduceAngleDegrees(
+            SolMath.polynomial(
                 T,
                 297.8501921,
                 445267.1114034,
@@ -218,8 +219,8 @@ internal class Moon : ICelestialLocator {
 
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return com.kylecorry.sol.math.TSMath.reduceAngleDegrees(
-            com.kylecorry.sol.math.TSMath.polynomial(
+        return SolMath.reduceAngleDegrees(
+            SolMath.polynomial(
                 T,
                 93.2720950,
                 483202.0175233,

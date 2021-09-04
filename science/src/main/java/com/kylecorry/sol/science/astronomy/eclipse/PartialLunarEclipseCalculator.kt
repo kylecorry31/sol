@@ -1,5 +1,5 @@
 package com.kylecorry.sol.science.astronomy.eclipse
-import com.kylecorry.sol.math.TSMath.power
+import com.kylecorry.sol.math.SolMath.power
 import java.time.Duration
 import kotlin.math.sqrt
 

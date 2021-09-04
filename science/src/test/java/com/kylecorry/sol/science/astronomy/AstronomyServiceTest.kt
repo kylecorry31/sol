@@ -9,7 +9,7 @@ import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
 import com.kylecorry.sol.tests.parametrized
-import com.kylecorry.sol.time.TSTime.duration
+import com.kylecorry.sol.time.Time.duration
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

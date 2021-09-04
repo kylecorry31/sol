@@ -6,11 +6,11 @@ import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.*
-import com.kylecorry.sol.math.TSMath
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.sinDegrees
-import com.kylecorry.sol.math.TSMath.wrap
-import com.kylecorry.sol.time.TSTime.plusHours
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.time.Time.plusHours
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
@@ -116,9 +116,9 @@ internal class RiseSetTransitTimeCalculator {
     private fun getMeanSiderealTime(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val theta0 =
-            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * TSMath.square(
+            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * SolMath.square(
                 T
-            ) - TSMath.cube(
+            ) - SolMath.cube(
                 T
             ) / 38710000.0
         return wrap(theta0, 0.0, 360.0)
@@ -162,11 +162,11 @@ internal class RiseSetTransitTimeCalculator {
 
         for (i in 0 until iterations) {
             val sidereal0 =
-                GreenwichSiderealTime(TSMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
+                GreenwichSiderealTime(SolMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
             val sidereal1 =
-                GreenwichSiderealTime(TSMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
+                GreenwichSiderealTime(SolMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
             val sidereal2 =
-                GreenwichSiderealTime(TSMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
+                GreenwichSiderealTime(SolMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
 
             val n0 = m0 + deltaT / 86400
             val n1 = m1 + deltaT / 86400
@@ -239,7 +239,7 @@ internal class RiseSetTransitTimeCalculator {
             )
         )
 
-        val ra = TSMath.interpolate(
+        val ra = SolMath.interpolate(
             value,
             normalizedRas.first,
             normalizedRas.second,
@@ -247,7 +247,7 @@ internal class RiseSetTransitTimeCalculator {
         )
 
         val declination =
-            TSMath.interpolate(value, first.declination, second.declination, third.declination)
+            SolMath.interpolate(value, first.declination, second.declination, third.declination)
 
         return EquatorialCoordinate(declination, ra)
     }

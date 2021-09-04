@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.units
 
-import com.kylecorry.sol.math.TSMath.wrap
+import com.kylecorry.sol.math.SolMath.wrap
 
 internal open class SiderealTime(_hours: Double, val longitude: Double) {
 

@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.units
 
-import com.kylecorry.sol.math.TSMath.wrap
+import com.kylecorry.sol.math.SolMath.wrap
 
 internal class EquatorialCoordinate(
     _declination: Double,

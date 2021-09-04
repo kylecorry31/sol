@@ -1,6 +1,6 @@
 package com.kylecorry.sol.units
 
-import com.kylecorry.sol.math.TSMath.normalizeAngle
+import com.kylecorry.sol.math.SolMath.normalizeAngle
 import kotlin.math.roundToInt
 
 class Bearing(_value: Float){

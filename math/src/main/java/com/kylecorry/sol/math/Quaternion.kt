@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.TSMath.cosDegrees
-import com.kylecorry.sol.math.TSMath.sinDegrees
-import com.kylecorry.sol.math.TSMath.toDegrees
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
 import kotlin.math.*
 
 data class Quaternion(val x: Float, val y: Float, val z: Float, val w: Float) {

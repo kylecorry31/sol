@@ -1,9 +1,9 @@
 package com.kylecorry.sol.science.astronomy.units
 
-import com.kylecorry.sol.math.TSMath.toRadians
-import com.kylecorry.sol.time.TSTime
-import com.kylecorry.sol.time.TSTime.toUTCLocal
-import com.kylecorry.sol.time.TSTime.utc
+import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.time.Time
+import com.kylecorry.sol.time.Time.toUTCLocal
+import com.kylecorry.sol.time.Time.utc
 import java.time.*
 import kotlin.math.floor
 
@@ -41,7 +41,7 @@ internal fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
 
     val t = (jd0 - 2415020.0) / 36525.0
 
-    val r = com.kylecorry.sol.math.TSMath.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
+    val r = com.kylecorry.sol.math.SolMath.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
 
     val b = 24 - r + 24 * (year - 1900)
 
@@ -147,7 +147,7 @@ fun Duration.toRadians(): Double {
 }
 
 fun degreesToTime(degrees: Double): Duration {
-    return TSTime.hours(degrees / 15)
+    return Time.hours(degrees / 15)
 }
 
 fun dmsToTime(degrees: Int, minutes: Int, seconds: Number): Duration {

@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.corrections
 
-import com.kylecorry.sol.math.TSMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 
@@ -11,7 +11,7 @@ internal object EclipticObliquity {
 
     fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        val seconds = com.kylecorry.sol.math.TSMath.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
+        val seconds = com.kylecorry.sol.math.SolMath.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
         return 23.0 + (26.0 + seconds / 60.0) / 60.0
     }
 
@@ -26,6 +26,6 @@ internal object EclipticObliquity {
 
     private fun getAscendingNodeLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return com.kylecorry.sol.math.TSMath.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
+        return com.kylecorry.sol.math.SolMath.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 }

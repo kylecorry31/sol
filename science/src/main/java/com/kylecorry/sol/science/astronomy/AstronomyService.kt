@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.astronomy
 
-import com.kylecorry.sol.math.TSMath.deltaAngle
-import com.kylecorry.sol.math.TSMath.sinDegrees
-import com.kylecorry.sol.math.TSMath.wrap
+import com.kylecorry.sol.math.SolMath.deltaAngle
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.eclipse.PartialLunarEclipseCalculator
@@ -18,9 +18,9 @@ import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.shared.Season
-import com.kylecorry.sol.time.TSTime.atStartOfDay
-import com.kylecorry.sol.time.TSTime.getClosestFutureTime
-import com.kylecorry.sol.time.TSTime.getClosestTime
+import com.kylecorry.sol.time.Time.atStartOfDay
+import com.kylecorry.sol.time.Time.getClosestFutureTime
+import com.kylecorry.sol.time.Time.getClosestTime
 import com.kylecorry.sol.units.*
 import java.time.*
 import kotlin.math.absoluteValue
