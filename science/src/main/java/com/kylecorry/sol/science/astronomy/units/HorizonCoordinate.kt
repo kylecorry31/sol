@@ -70,7 +70,7 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
         val tanElev = tanDegrees(altitude)
 
         if (altitude > 5.0) {
-            return (58.1 / tanElev - 0.07 / com.kylecorry.sol.math.SolMath.cube(tanElev) + 0.000086 / power(
+            return (58.1 / tanElev - 0.07 / SolMath.cube(tanElev) + 0.000086 / power(
                 tanElev,
                 5
             )) / 3600.0

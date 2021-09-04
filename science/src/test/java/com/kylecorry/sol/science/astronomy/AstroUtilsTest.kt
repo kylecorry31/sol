@@ -23,7 +23,7 @@ class AstroUtilsTest {
         )
 
         cases.forEach {
-            assertEquals(it[2], com.kylecorry.sol.math.SolMath.power(it[0], it[1].toInt()), 0.0000001)
+            assertEquals(it[2], SolMath.power(it[0], it[1].toInt()), 0.0000001)
         }
     }
 

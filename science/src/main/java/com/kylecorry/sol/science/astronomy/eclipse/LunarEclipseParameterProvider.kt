@@ -29,7 +29,7 @@ internal class LunarEclipseParameterProvider {
         var F: Double
         do {
             T = k / 1236.85
-            F = com.kylecorry.sol.math.SolMath.reduceAngleDegrees(
+            F = SolMath.reduceAngleDegrees(
                 160.7108 + 390.67050284 * k - 0.0016118 * power(T, 2) - 0.00000227 * power(
                     T,
                     3

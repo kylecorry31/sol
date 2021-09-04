@@ -14,17 +14,16 @@ internal class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude:
     val eclipticLongitude = wrap(_eclipticLongitude, 0.0, 360.0)
 
     fun toEquatorial(eclipticObliquity: Double): EquatorialCoordinate {
-        val e = eclipticObliquity
         val t =
-            sinDegrees(eclipticLatitude) * cosDegrees(e) + cosDegrees(eclipticLatitude) * sinDegrees(
-                e
+            sinDegrees(eclipticLatitude) * cosDegrees(eclipticObliquity) + cosDegrees(eclipticLatitude) * sinDegrees(
+                eclipticObliquity
             ) * sinDegrees(eclipticLongitude)
 
         val declination = asin(t).toDegrees()
 
         val y =
-            sinDegrees(eclipticLongitude) * cosDegrees(e) - tanDegrees(eclipticLatitude) * sinDegrees(
-                e
+            sinDegrees(eclipticLongitude) * cosDegrees(eclipticObliquity) - tanDegrees(eclipticLatitude) * sinDegrees(
+                eclipticObliquity
             )
 
         val x = cosDegrees(eclipticLongitude)
