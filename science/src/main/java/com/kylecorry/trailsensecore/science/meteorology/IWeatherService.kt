@@ -1,36 +1,48 @@
 package com.kylecorry.trailsensecore.science.meteorology
 
 import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.Pressure
 import com.kylecorry.andromeda.core.units.Temperature
 import com.kylecorry.trailsensecore.time.ISeasonService
 import com.kylecorry.trailsensecore.science.meteorology.clouds.ICloudService
+import java.time.Duration
 import java.time.Instant
 
 interface IWeatherService : ICloudService, ISeasonService {
+
+    fun getSeaLevelPressure(
+        pressure: Pressure,
+        altitude: Distance,
+        temperature: Temperature? = null
+    ): Pressure
+
+    fun isHighPressure(pressure: Pressure): Boolean
+
+    fun isLowPressure(pressure: Pressure): Boolean
 
     /**
      * Calculates the tendency
      * @param last The last pressure reading (hPa)
      * @param current The current pressure reading (hPa)
+     * @param duration The duration between the last and current pressure reading
      * @param changeThreshold The change threshold (hPa / 3 hr)
      * @return The pressure tendency (hPa / 3 hr)
      */
     fun getTendency(
-        last: PressureReading,
-        current: PressureReading,
+        last: Pressure,
+        current: Pressure,
+        duration: Duration,
         changeThreshold: Float
     ): PressureTendency
 
     /**
      * Forecast the weather in the next few hours
      * @param tendency The current pressure tendency (hPa / 3 hr)
-     * @param currentPressure The current pressure - ideally adjusted for sea level (hPa)
      * @param stormThreshold (optional) The change threshold to consider a storm (hPa / 3 hr)
      * @return The predicted weather
      */
     fun forecast(
         tendency: PressureTendency,
-        currentPressure: PressureReading,
         stormThreshold: Float? = null
     ): Weather
 

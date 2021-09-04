@@ -1,7 +1,6 @@
 package com.kylecorry.trailsensecore.science.meteorology
 
-import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.*
 import com.kylecorry.trailsensecore.time.Season
 import org.junit.Assert
 import org.junit.Test
@@ -19,27 +18,26 @@ class WeatherServiceTest {
     @ParameterizedTest
     @MethodSource("provideForecasts")
     fun forecast(
-        pressure: Float,
         characteristic: PressureCharacteristic,
         tendencyAmount: Float,
         stormThresh: Float?,
         expectedWeather: Weather
     ) {
         val tendency = PressureTendency(characteristic, tendencyAmount)
-        val reading = PressureReading(Instant.now(), pressure)
-        val weather = weatherService.forecast(tendency, reading, stormThresh)
+        val weather = weatherService.forecast(tendency, stormThresh)
         assertEquals(expectedWeather, weather)
     }
 
     @ParameterizedTest
     @MethodSource("provideTendencies")
     fun tendency(
-        last: PressureReading,
-        current: PressureReading,
+        last: Pressure,
+        current: Pressure,
+        duration: Duration,
         threshold: Float,
         expectedTendency: PressureTendency
     ) {
-        val tendency = weatherService.getTendency(last, current, threshold)
+        val tendency = weatherService.getTendency(last, current, duration, threshold)
         assertEquals(expectedTendency, tendency)
     }
 
@@ -94,34 +92,123 @@ class WeatherServiceTest {
         assertEquals(68.75f, temp)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideSeaLevelPressure")
+    fun convertsToSeaLevel(
+        pressure: Pressure,
+        altitude: Distance,
+        temperature: Temperature?,
+        expected: Pressure
+    ) {
+        val reading = weatherService.getSeaLevelPressure(pressure, altitude, temperature)
+        assertEquals(expected.pressure, reading.pressure, 0.1f)
+        assertEquals(expected.units, reading.units)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideHighPressures")
+    fun isHigh(pressure: Pressure, isHigh: Boolean) {
+        val ret = weatherService.isHighPressure(pressure)
+        assertEquals(isHigh, ret)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLowPressures")
+    fun isLow(pressure: Pressure, isLow: Boolean) {
+        val ret = weatherService.isLowPressure(pressure)
+        assertEquals(isLow, ret)
+    }
+
 
     companion object {
+
+        @JvmStatic
+        fun provideLowPressures(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(Pressure(1000f, PressureUnits.Hpa), true),
+                Arguments.of(Pressure(1009.144f, PressureUnits.Hpa), true),
+                Arguments.of(Pressure(1009.145f, PressureUnits.Hpa), false),
+                Arguments.of(Pressure(1013f, PressureUnits.Hpa), false),
+                Arguments.of(Pressure(1030f, PressureUnits.Hpa), false),
+            )
+        }
+
+        @JvmStatic
+        fun provideHighPressures(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(Pressure(1000f, PressureUnits.Hpa), false),
+                Arguments.of(Pressure(1013f, PressureUnits.Hpa), false),
+                Arguments.of(Pressure(1022.688f, PressureUnits.Hpa), false),
+                Arguments.of(Pressure(1022.689f, PressureUnits.Hpa), true),
+                Arguments.of(Pressure(1030f, PressureUnits.Hpa), true),
+            )
+        }
+
+        @JvmStatic
+        fun provideSeaLevelPressure(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Pressure(0f, PressureUnits.Hpa),
+                    Distance.meters(0f),
+                    null,
+                    Pressure(0f, PressureUnits.Hpa)
+                ),
+                Arguments.of(
+                    Pressure(0f, PressureUnits.Hpa),
+                    Distance.meters(0f),
+                    Temperature(0f, TemperatureUnits.C),
+                    Pressure(0f, PressureUnits.Hpa)
+                ),
+                Arguments.of(
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Distance.meters(-100f),
+                    null,
+                    Pressure(988.2f, PressureUnits.Hpa)
+                ),
+                Arguments.of(
+                    Pressure(980f, PressureUnits.Hpa),
+                    Distance.meters(200f),
+                    null,
+                    Pressure(1003.48f, PressureUnits.Hpa)
+                ),
+                Arguments.of(
+                    Pressure(980f, PressureUnits.Hpa),
+                    Distance.meters(1000f),
+                    Temperature(15f, TemperatureUnits.C),
+                    Pressure(1101.93f, PressureUnits.Hpa)
+                ),
+                Arguments.of(
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Distance.meters(-100f),
+                    Temperature(28f, TemperatureUnits.C),
+                    Pressure(988.71f, PressureUnits.Hpa)
+                ),
+            )
+        }
+
         @JvmStatic
         fun provideForecasts(): Stream<Arguments> {
             // First argument not used yet
             return Stream.of(
-                Arguments.of(1013, PressureCharacteristic.Steady, 0f, -6f, Weather.NoChange),
-                Arguments.of(1013, PressureCharacteristic.FallingFast, -6f, -6f, Weather.Storm),
-                Arguments.of(1013, PressureCharacteristic.FallingFast, -8f, -7f, Weather.Storm),
-                Arguments.of(1013, PressureCharacteristic.FallingFast, -6f, null, Weather.Storm),
+                Arguments.of(PressureCharacteristic.Steady, 0f, -6f, Weather.NoChange),
+                Arguments.of(PressureCharacteristic.FallingFast, -6f, -6f, Weather.Storm),
+                Arguments.of(PressureCharacteristic.FallingFast, -8f, -7f, Weather.Storm),
+                Arguments.of(PressureCharacteristic.FallingFast, -6f, null, Weather.Storm),
                 Arguments.of(
-                    1013,
                     PressureCharacteristic.FallingFast,
                     -5f,
                     null,
                     Weather.WorseningFast
                 ),
                 Arguments.of(
-                    1013,
                     PressureCharacteristic.FallingFast,
                     -4f,
                     -6f,
                     Weather.WorseningFast
                 ),
-                Arguments.of(1013, PressureCharacteristic.Falling, -2f, -6f, Weather.WorseningSlow),
-                Arguments.of(1013, PressureCharacteristic.Rising, 2f, -6f, Weather.ImprovingSlow),
+                Arguments.of(PressureCharacteristic.Falling, -2f, -6f, Weather.WorseningSlow),
+                Arguments.of(PressureCharacteristic.Rising, 2f, -6f, Weather.ImprovingSlow),
                 Arguments.of(
-                    1013,
                     PressureCharacteristic.RisingFast,
                     8f,
                     -6f,
@@ -132,81 +219,88 @@ class WeatherServiceTest {
 
         @JvmStatic
         fun provideTendencies(): Stream<Arguments> {
-            val now = Instant.now()
-            val h3 = now.minusSeconds(60 * 60 * 3)
-            val h2 = now.minusSeconds(60 * 60 * 2)
-            val h4 = now.minusSeconds(60 * 60 * 4)
-
             return Stream.of(
                 Arguments.of(
-                    PressureReading(h3, 1000f),
-                    PressureReading(now, 1000f),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1000f),
-                    PressureReading(now, 1001f),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Pressure(1001f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.Steady, 1f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1000f),
-                    PressureReading(now, 1004f),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Pressure(1004f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.RisingFast, 4f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1000f),
-                    PressureReading(now, 1003f),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Pressure(1003f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.Rising, 3f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1004f),
-                    PressureReading(now, 1000f),
+                    Pressure(1004f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.FallingFast, -4f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1002f),
-                    PressureReading(now, 1000f),
+                    Pressure(1002f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.Falling, -2f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1002f),
-                    PressureReading(now, 1000f),
+                    Pressure(1002f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     1f,
                     PressureTendency(PressureCharacteristic.Falling, -2f)
                 ),
                 Arguments.of(
-                    PressureReading(h3, 1003f),
-                    PressureReading(now, 1000f),
+                    Pressure(1003f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(3),
                     1f,
                     PressureTendency(PressureCharacteristic.FallingFast, -3f)
                 ),
                 Arguments.of(
-                    PressureReading(h2, 1002f),
-                    PressureReading(now, 1000f),
+                    Pressure(1002f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(2),
                     1f,
                     PressureTendency(PressureCharacteristic.FallingFast, -3f)
                 ),
                 Arguments.of(
-                    PressureReading(h4, 1008f),
-                    PressureReading(now, 1000f),
+                    Pressure(1008f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ofHours(4),
                     2f,
                     PressureTendency(PressureCharacteristic.FallingFast, -6f)
                 ),
                 Arguments.of(
-                    PressureReading(now, 1000f),
-                    PressureReading(now, 1000f),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ZERO,
                     2f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
-                    PressureReading(now, 1000.1f),
-                    PressureReading(now, 1000f),
+                    Pressure(1000.1f, PressureUnits.Hpa),
+                    Pressure(1000f, PressureUnits.Hpa),
+                    Duration.ZERO,
                     2f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),

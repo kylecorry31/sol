@@ -1,10 +1,7 @@
 package com.kylecorry.trailsensecore.science.meteorology
 
-import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.*
 import com.kylecorry.trailsensecore.time.Season
-import com.kylecorry.andromeda.core.units.Temperature
-import com.kylecorry.andromeda.core.units.TemperatureUnits
 import com.kylecorry.trailsensecore.science.meteorology.clouds.*
 import java.time.Duration
 import java.time.Instant
@@ -12,18 +9,47 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.ln
+import kotlin.math.pow
 
 class WeatherService : IWeatherService {
 
     private val cloudService = CloudService()
 
+    override fun getSeaLevelPressure(
+        pressure: Pressure,
+        altitude: Distance,
+        temperature: Temperature?
+    ): Pressure {
+        val hpa = pressure.hpa().pressure
+        val meters = altitude.meters().distance
+        val celsius = temperature?.celsius()?.temperature
+        val adjustedPressure = if (celsius != null) {
+            hpa * (1 - ((0.0065f * meters) / (celsius + 0.0065f * meters + 273.15f))).pow(
+                -5.257f
+            )
+        } else {
+            hpa * (1 - meters / 44330.0).pow(-5.255).toFloat()
+        }
+
+        return Pressure(adjustedPressure, PressureUnits.Hpa).convertTo(pressure.units)
+    }
+
+    override fun isHighPressure(pressure: Pressure): Boolean {
+        return pressure.hpa().pressure >= 1022.689
+    }
+
+    override fun isLowPressure(pressure: Pressure): Boolean {
+        return pressure.hpa().pressure <= 1009.144
+    }
+
     override fun getTendency(
-        last: PressureReading,
-        current: PressureReading,
+        last: Pressure,
+        current: Pressure,
+        duration: Duration,
         changeThreshold: Float
     ): PressureTendency {
-        val diff = current.value - last.value
-        val dt = Duration.between(last.time, current.time).seconds
+        val diff = current.hpa().pressure - last.hpa().pressure
+        val dt = duration.seconds
 
         if (dt == 0L) {
             return PressureTendency(PressureCharacteristic.Steady, 0f)
@@ -47,7 +73,6 @@ class WeatherService : IWeatherService {
 
     override fun forecast(
         tendency: PressureTendency,
-        currentPressure: PressureReading,
         stormThreshold: Float?
     ): Weather {
         val isStorm = tendency.amount <= (stormThreshold ?: -6f)
