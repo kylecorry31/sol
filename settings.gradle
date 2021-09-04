@@ -1,2 +1,2 @@
-include ':app'
+include ':science'
 rootProject.name = "Trail Sense Core"
