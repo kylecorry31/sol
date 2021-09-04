@@ -1,7 +1,12 @@
 package com.kylecorry.trailsensecore.domain.oceanography
 
+import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.andromeda.core.units.DistanceUnits
+import com.kylecorry.andromeda.core.units.Pressure
+import com.kylecorry.andromeda.core.units.PressureUnits
 import com.kylecorry.trailsensecore.domain.astronomy.AstronomyService
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
+import com.kylecorry.trailsensecore.domain.physics.PhysicsService
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -81,6 +86,32 @@ class OceanographyService : IOceanographyService {
         )
 
         return tides.filter { it.time.toLocalDate() == date }.sortedBy { it.time }
-
     }
+
+    override fun getDepth(
+        pressure: Pressure,
+        seaLevelPressure: Pressure,
+        isSaltWater: Boolean
+    ): Distance {
+        if (pressure <= seaLevelPressure) {
+            return Distance(0f, DistanceUnits.Meters)
+        }
+
+        val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
+        val pressureDiff =
+            pressure.convertTo(PressureUnits.Hpa).pressure - seaLevelPressure.convertTo(
+                PressureUnits.Hpa
+            ).pressure
+
+        return Distance(
+            pressureDiff * 100 / (PhysicsService.GRAVITY * waterDensity),
+            DistanceUnits.Meters
+        )
+    }
+
+    companion object {
+        const val DENSITY_SALT_WATER = 1023.6f
+        const val DENSITY_FRESH_WATER = 997.0474f
+    }
+
 }
