@@ -1,8 +1,10 @@
-package com.kylecorry.trailsensecore.domain.astronomy.units
+package com.kylecorry.trailsensecore.domain.time
 
 import com.kylecorry.andromeda.core.math.toRadians
-import java.time.Duration
-import java.time.LocalTime
+import com.kylecorry.trailsensecore.domain.astronomy.units.UniversalTime
+import com.kylecorry.trailsensecore.domain.astronomy.units.atZeroHour
+import com.kylecorry.trailsensecore.domain.astronomy.units.toUniversalTime
+import java.time.*
 
 object TimeUtils {
 
@@ -49,6 +51,32 @@ object TimeUtils {
         val seconds = minutes * 60
         val millis = seconds * 1000
         return Duration.ofMillis(millis.toLong())
+    }
+
+    fun timeToAngle(hours: Number, minutes: Number, seconds: Number): Double {
+        return timeToDecimal(hours, minutes, seconds) * 15
+    }
+
+    fun timeToDecimal(hours: Number, minutes: Number, seconds: Number): Double {
+        return hours.toDouble() + minutes.toDouble() / 60.0 + seconds.toDouble() / 3600.0
+    }
+
+    fun UniversalTime.toLocal(zone: ZoneId): ZonedDateTime {
+        return atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
+    }
+
+    fun ut0hOnDate(date: ZonedDateTime): LocalDateTime {
+        val localDate = date.toLocalDate()
+
+        for (i in -1..1) {
+            val ut0h = date.plusDays(i.toLong()).toUniversalTime().atZeroHour()
+            val local0h = ut0h.toLocal(date.zone)
+            if (localDate == local0h.toLocalDate()) {
+                return ut0h
+            }
+        }
+
+        return date.toUniversalTime().atZeroHour()
     }
 }
 

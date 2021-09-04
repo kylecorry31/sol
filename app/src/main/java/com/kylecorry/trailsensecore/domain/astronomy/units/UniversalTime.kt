@@ -2,9 +2,8 @@ package com.kylecorry.trailsensecore.domain.astronomy.units
 
 import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.andromeda.core.time.utc
-import com.kylecorry.trailsensecore.domain.astronomy.Astro
-import com.kylecorry.trailsensecore.domain.astronomy.units.TimeUtils.toDecimal
-import com.kylecorry.trailsensecore.domain.astronomy.units.TimeUtils.toDuration
+import com.kylecorry.trailsensecore.domain.time.TimeUtils.toDecimal
+import com.kylecorry.trailsensecore.domain.time.TimeUtils.toDuration
 import com.kylecorry.trailsensecore.domain.math.MathUtils
 import java.time.*
 import kotlin.math.floor
@@ -58,6 +57,10 @@ fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
 
 fun ZonedDateTime.toUniversalTime(): UniversalTime {
     return toUTCLocal()
+}
+
+fun UniversalTime.atZeroHour(): UniversalTime {
+    return toLocalDate().atStartOfDay()
 }
 
 fun Instant.toUniversalTime(): UniversalTime {

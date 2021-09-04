@@ -5,7 +5,7 @@ import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
-import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.AstroUtils
 import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
 import com.kylecorry.trailsensecore.domain.astronomy.correcctions.LongitudinalNutation
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
@@ -21,7 +21,7 @@ class Moon : ICelestialLocator {
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val T = ut.toJulianCenturies()
-        val L = Astro.reduceAngleDegrees(
+        val L = MathUtils.reduceAngleDegrees(
             MathUtils.polynomial(
                 T,
                 218.3164477,
@@ -39,11 +39,11 @@ class Moon : ICelestialLocator {
 
         val F = getArgumentOfLatitude(ut)
 
-        val a1 = Astro.reduceAngleDegrees(119.75 + 131.849 * T)
-        val a2 = Astro.reduceAngleDegrees(53.09 + 479264.290 * T)
-        val a3 = Astro.reduceAngleDegrees(313.45 + 481266.484 * T)
+        val a1 = MathUtils.reduceAngleDegrees(119.75 + 131.849 * T)
+        val a2 = MathUtils.reduceAngleDegrees(53.09 + 479264.290 * T)
+        val a3 = MathUtils.reduceAngleDegrees(313.45 + 481266.484 * T)
         val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = Astro.square(E)
+        val E2 = MathUtils.square(E)
 
         val t47a = table47a()
         val t47b = table47b()
@@ -92,7 +92,7 @@ class Moon : ICelestialLocator {
 
         val Mprime = getMeanAnomaly(ut)
         val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = Astro.square(E)
+        val E2 = MathUtils.square(E)
         val t47a = table47a()
         var sumR = 0.0
 
@@ -112,13 +112,13 @@ class Moon : ICelestialLocator {
         val distance = getDistance(ut).convertTo(DistanceUnits.Kilometers).distance
         val s = 358743400 / distance
         val sinPi = 6378.14 / distance
-        val h = Astro.getAltitude(this, ut, location, true).toDouble()
+        val h = AstroUtils.getAltitude(this, ut, location, true).toDouble()
         return (s * (1 + sinDegrees(h) * sinPi)) * 0.000277778 * 2
     }
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return Astro.reduceAngleDegrees(
+        return MathUtils.reduceAngleDegrees(
             MathUtils.polynomial(
                 T,
                 134.9633964,
@@ -202,7 +202,7 @@ class Moon : ICelestialLocator {
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return Astro.reduceAngleDegrees(
+        return MathUtils.reduceAngleDegrees(
             MathUtils.polynomial(
                 T,
                 297.8501921,
@@ -216,7 +216,7 @@ class Moon : ICelestialLocator {
 
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return Astro.reduceAngleDegrees(
+        return MathUtils.reduceAngleDegrees(
             MathUtils.polynomial(
                 T,
                 93.2720950,

@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.domain.astronomy.eclipse
 import com.kylecorry.andromeda.core.math.cosDegrees
 import com.kylecorry.andromeda.core.math.power
 import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.trailsensecore.domain.astronomy.Astro
+import com.kylecorry.trailsensecore.domain.astronomy.correcctions.TerrestrialTime
 import com.kylecorry.trailsensecore.domain.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.UniversalTime
@@ -29,7 +29,7 @@ class LunarEclipseParameterProvider {
         var F: Double
         do {
             T = k / 1236.85
-            F = Astro.reduceAngleDegrees(
+            F = MathUtils.reduceAngleDegrees(
                 160.7108 + 390.67050284 * k - 0.0016118 * power(T, 2) - 0.00000227 * power(
                     T,
                     3
@@ -41,19 +41,19 @@ class LunarEclipseParameterProvider {
         } while (sinDegrees(F).absoluteValue > 0.36)
 
         val mean = getJDEOfMeanMoonPhase(k)
-        val M = Astro.reduceAngleDegrees(
+        val M = MathUtils.reduceAngleDegrees(
             2.5534 + 29.1053567 * k - 0.0000014 * power(
                 T,
                 2
             ) - 0.00000011 * power(T, 3)
         )
-        val MPrime = Astro.reduceAngleDegrees(
+        val MPrime = MathUtils.reduceAngleDegrees(
             201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
                 T,
                 3
             ) - 0.000000058 * power(T, 4)
         )
-        val omega = Astro.reduceAngleDegrees(
+        val omega = MathUtils.reduceAngleDegrees(
             124.7746 - 1.56375588 * k + 0.0020672 * power(
                 T,
                 2
@@ -103,7 +103,7 @@ class LunarEclipseParameterProvider {
         val datetime = ZonedDateTime.of(fromJulianDay(correctedJD), ZoneId.of("UTC"))
 
         return LunarEclipseParameters(
-            datetime.toInstant().minusSeconds(Astro.deltaT(datetime.year).toLong()),
+            datetime.toInstant().minusSeconds(TerrestrialTime.getDeltaT(datetime.year).toLong()),
             gamma,
             u,
             n

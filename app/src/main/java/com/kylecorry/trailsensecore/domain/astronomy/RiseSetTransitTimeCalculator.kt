@@ -10,6 +10,9 @@ import com.kylecorry.trailsensecore.domain.astronomy.correcctions.LongitudinalNu
 import com.kylecorry.trailsensecore.domain.astronomy.correcctions.TerrestrialTime
 import com.kylecorry.trailsensecore.domain.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
+import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.domain.time.TimeUtils
+import com.kylecorry.trailsensecore.domain.time.TimeUtils.toLocal
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
@@ -83,9 +86,9 @@ class RiseSetTransitTimeCalculator {
         withRefraction: Boolean,
         locator: ICelestialLocator
     ): RiseSetTransitTimes {
-        val ut = Astro.ut0hOnDate(date)
-        val uty = Astro.ut0hOnDate(date.minusDays(1))
-        val utt = Astro.ut0hOnDate(date.plusDays(1))
+        val ut = TimeUtils.ut0hOnDate(date)
+        val uty = TimeUtils.ut0hOnDate(date.minusDays(1))
+        val utt = TimeUtils.ut0hOnDate(date.plusDays(1))
         val astroCoords = locator.getCoordinates(ut)
         val astroCoordsy = locator.getCoordinates(uty)
         val astroCoordst = locator.getCoordinates(utt)
@@ -98,9 +101,9 @@ class RiseSetTransitTimeCalculator {
         )
             ?: return RiseSetTransitTimes(null, null, null)
 
-        val rise = Astro.utToLocal(ut.plusHours(times.first), date.zone)
-        val transit = Astro.utToLocal(ut.plusHours(times.second), date.zone)
-        val set = Astro.utToLocal(ut.plusHours(times.third), date.zone)
+        val rise = ut.plusHours(times.first).toLocal(date.zone)
+        val transit = ut.plusHours(times.second).toLocal(date.zone)
+        val set = ut.plusHours(times.third).toLocal(date.zone)
 
         return RiseSetTransitTimes(rise, transit, set)
     }
@@ -115,9 +118,9 @@ class RiseSetTransitTimeCalculator {
     private fun getMeanSiderealTime(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val theta0 =
-            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * Astro.square(
+            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * MathUtils.square(
                 T
-            ) - Astro.cube(
+            ) - MathUtils.cube(
                 T
             ) / 38710000.0
         return wrap(theta0, 0.0, 360.0)
@@ -161,11 +164,11 @@ class RiseSetTransitTimeCalculator {
 
         for (i in 0 until iterations) {
             val sidereal0 =
-                GreenwichSiderealTime(Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
+                GreenwichSiderealTime(MathUtils.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
             val sidereal1 =
-                GreenwichSiderealTime(Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
+                GreenwichSiderealTime(MathUtils.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
             val sidereal2 =
-                GreenwichSiderealTime(Astro.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
+                GreenwichSiderealTime(MathUtils.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
 
             val n0 = m0 + deltaT / 86400
             val n1 = m1 + deltaT / 86400
@@ -183,9 +186,9 @@ class RiseSetTransitTimeCalculator {
             val hourAngle2 = c2.getHourAngle(sidereal2.atLongitude(location.longitude)) * 15
 
             val altitude1 =
-                Astro.getAltitude(c1, sidereal1.toUniversalTime(date), location, withRefraction)
+                AstroUtils.getAltitude(c1, sidereal1.toUniversalTime(date), location, withRefraction)
             val altitude2 =
-                Astro.getAltitude(c2, sidereal2.toUniversalTime(date), location, withRefraction)
+                AstroUtils.getAltitude(c2, sidereal2.toUniversalTime(date), location, withRefraction)
 
             val dm0 = -hourAngle0 / 360
             val dm1 =
@@ -228,7 +231,7 @@ class RiseSetTransitTimeCalculator {
             )
         )
 
-        val ra = Astro.interpolate(
+        val ra = MathUtils.interpolate(
             value,
             normalizedRas.first,
             normalizedRas.second,
@@ -236,7 +239,7 @@ class RiseSetTransitTimeCalculator {
         )
 
         val declination =
-            Astro.interpolate(value, first.declination, second.declination, third.declination)
+            MathUtils.interpolate(value, first.declination, second.declination, third.declination)
 
         return EquatorialCoordinate(declination, ra)
     }

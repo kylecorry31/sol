@@ -100,9 +100,9 @@ interface IAstronomyService : IEclipseService {
         withRefraction: Boolean = false
     ): Boolean
 
-    fun getMoonDistance(time: Instant): Distance
+    fun getMoonDistance(time: ZonedDateTime): Distance
 
-    fun isSuperMoon(time: Instant): Boolean
+    fun isSuperMoon(time: ZonedDateTime): Boolean
 
     // Meteor showers
     fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak?
