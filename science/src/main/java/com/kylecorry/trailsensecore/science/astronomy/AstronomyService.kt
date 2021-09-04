@@ -1,10 +1,8 @@
 package com.kylecorry.trailsensecore.science.astronomy
 
-import com.kylecorry.andromeda.core.math.deltaAngle
-import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.andromeda.core.math.wrap
-import com.kylecorry.andromeda.core.time.atStartOfDay
-import com.kylecorry.andromeda.core.units.*
+import com.kylecorry.trailsensecore.math.TSMath.deltaAngle
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.wrap
 import com.kylecorry.trailsensecore.science.astronomy.eclipse.Eclipse
 import com.kylecorry.trailsensecore.science.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.science.astronomy.eclipse.PartialLunarEclipseCalculator
@@ -23,7 +21,9 @@ import com.kylecorry.trailsensecore.science.astronomy.units.toJulianDay
 import com.kylecorry.trailsensecore.science.astronomy.units.toUniversalTime
 import com.kylecorry.trailsensecore.time.DateUtils
 import com.kylecorry.trailsensecore.time.Season
+import com.kylecorry.trailsensecore.time.TimeUtils.atStartOfDay
 import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
+import com.kylecorry.trailsensecore.units.*
 import java.time.*
 import kotlin.math.absoluteValue
 

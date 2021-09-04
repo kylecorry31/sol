@@ -1,10 +1,13 @@
 package com.kylecorry.trailsensecore.science.astronomy.units
 
-import com.kylecorry.andromeda.core.time.toUTCLocal
-import com.kylecorry.andromeda.core.time.utc
 import com.kylecorry.trailsensecore.time.TimeUtils.toDecimal
 import com.kylecorry.trailsensecore.time.TimeUtils.toDuration
-import java.time.*
+import com.kylecorry.trailsensecore.time.TimeUtils.toUTCLocal
+import com.kylecorry.trailsensecore.time.TimeUtils.utc
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZonedDateTime
 import kotlin.math.floor
 
 typealias UniversalTime = LocalDateTime

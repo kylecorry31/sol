@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.science.geology
 
-import com.kylecorry.andromeda.core.math.Vector3
-import com.kylecorry.andromeda.core.math.Vector3Utils
-import com.kylecorry.andromeda.core.math.toDegrees
-import com.kylecorry.andromeda.core.units.Bearing
+import com.kylecorry.trailsensecore.math.TSMath.toDegrees
+import com.kylecorry.trailsensecore.math.Vector3
+import com.kylecorry.trailsensecore.math.Vector3Utils
+import com.kylecorry.trailsensecore.units.Bearing
 import kotlin.math.atan2
 
 // From https://stackoverflow.com/questions/16317599/android-compass-that-can-compensate-for-tilt-and-pitch

@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.science.physics
 
-import com.kylecorry.andromeda.core.math.Quaternion
-import com.kylecorry.andromeda.core.math.Vector3
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.math.Quaternion
+import com.kylecorry.trailsensecore.math.Vector3
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Distance
 import java.time.Duration
 
 interface IPhysicsService {

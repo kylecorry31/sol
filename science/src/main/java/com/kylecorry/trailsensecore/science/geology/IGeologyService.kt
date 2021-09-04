@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.science.geology
 
-import com.kylecorry.andromeda.core.math.Vector3
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.math.Vector3
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Coordinate
+import com.kylecorry.trailsensecore.units.Distance
 
 interface IGeologyService {
 
@@ -27,6 +27,9 @@ interface IGeologyService {
     fun getAvalancheRisk(inclination: Float): AvalancheRisk
 
     // Coordinates / navigation
+
+    fun isInGeofence(coordinate: Coordinate, geofence: Geofence): Boolean
+
     fun getRegion(coordinate: Coordinate): Region
 
     fun getMapDistance(measurement: Distance, scaleFrom: Distance, scaleTo: Distance): Distance

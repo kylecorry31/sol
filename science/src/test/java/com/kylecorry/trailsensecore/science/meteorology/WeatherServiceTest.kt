@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.meteorology
 
-import com.kylecorry.andromeda.core.units.*
+import com.kylecorry.trailsensecore.units.*
 import com.kylecorry.trailsensecore.time.Season
 import org.junit.Assert
 import org.junit.Test

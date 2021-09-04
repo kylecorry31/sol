@@ -1,10 +1,10 @@
 package com.kylecorry.trailsensecore.science.astronomy.locators
 
-import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.andromeda.core.math.toDegrees
-import com.kylecorry.andromeda.core.math.wrap
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.toDegrees
+import com.kylecorry.trailsensecore.math.TSMath.wrap
+import com.kylecorry.trailsensecore.units.Distance
 import com.kylecorry.trailsensecore.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.trailsensecore.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime

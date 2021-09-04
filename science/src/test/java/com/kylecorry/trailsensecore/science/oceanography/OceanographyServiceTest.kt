@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.science.oceanography
 
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.DistanceUnits
-import com.kylecorry.andromeda.core.units.Pressure
-import com.kylecorry.andromeda.core.units.PressureUnits
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.DistanceUnits
+import com.kylecorry.trailsensecore.units.Pressure
+import com.kylecorry.trailsensecore.units.PressureUnits
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

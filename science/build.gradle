@@ -62,9 +62,10 @@ android {
 
 dependencies {
     implementation project(':math')
+    implementation project(path: ':units')
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.github.kylecorry31.andromeda:core:1.4.1"
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.junit.platform:junit-platform-runner:1.7.2"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"

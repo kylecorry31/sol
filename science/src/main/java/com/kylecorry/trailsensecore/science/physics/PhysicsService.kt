@@ -1,10 +1,10 @@
 package com.kylecorry.trailsensecore.science.physics
 
-import com.kylecorry.andromeda.core.math.Quaternion
-import com.kylecorry.andromeda.core.math.Vector3
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.DistanceUnits
+import com.kylecorry.trailsensecore.math.Quaternion
+import com.kylecorry.trailsensecore.math.Vector3
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.DistanceUnits
 import com.kylecorry.trailsensecore.science.geology.GeologyService
 import java.time.Duration
 import kotlin.math.sqrt

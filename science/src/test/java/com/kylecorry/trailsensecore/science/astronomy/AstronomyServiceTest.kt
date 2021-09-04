@@ -1,7 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy
 
-import com.kylecorry.andromeda.core.time.duration
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.science.astronomy.meteors.MeteorShower
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonPhase
@@ -10,6 +9,7 @@ import com.kylecorry.trailsensecore.time.Season
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.assertDuration
 import com.kylecorry.trailsensecore.tests.parametrized
+import com.kylecorry.trailsensecore.time.TimeUtils.duration
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

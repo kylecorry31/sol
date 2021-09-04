@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy
 
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.locators.Sun
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime

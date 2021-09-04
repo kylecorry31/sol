@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.science.meteorology
 
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.Pressure
-import com.kylecorry.andromeda.core.units.Temperature
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.Pressure
+import com.kylecorry.trailsensecore.units.Temperature
 import com.kylecorry.trailsensecore.time.ISeasonService
 import com.kylecorry.trailsensecore.science.meteorology.clouds.ICloudService
 import java.time.Duration

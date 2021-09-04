@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.science.astronomy.sun
 
-import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
+import com.kylecorry.trailsensecore.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.AstroUtils
 import com.kylecorry.trailsensecore.science.astronomy.locators.Sun
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime

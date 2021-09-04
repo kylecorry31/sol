@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.science.geology
 
 import android.location.Location
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Coordinate
 
 import org.junit.Assert.*
 import org.junit.Test

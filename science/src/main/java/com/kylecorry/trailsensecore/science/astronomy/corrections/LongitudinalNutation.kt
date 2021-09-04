@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy.corrections
 
-import com.kylecorry.andromeda.core.math.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.toJulianCenturies
 

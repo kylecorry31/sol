@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy.eclipse
 
-import com.kylecorry.andromeda.core.math.power
+import com.kylecorry.trailsensecore.math.TSMath.power
 import java.time.Duration
 import kotlin.math.sqrt
 

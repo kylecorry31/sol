@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy.units
 
-import com.kylecorry.andromeda.core.math.wrap
+import com.kylecorry.trailsensecore.math.TSMath.wrap
 
 internal open class SiderealTime(_hours: Double, val longitude: Double) {
 

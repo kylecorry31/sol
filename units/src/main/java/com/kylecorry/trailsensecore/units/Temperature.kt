@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.units
 data class Temperature(val temperature: Float, val units: TemperatureUnits) {
 
     fun convertTo(toUnits: TemperatureUnits): Temperature {
-       val c = when (units) {
+        val c = when (units) {
             TemperatureUnits.C -> temperature
             TemperatureUnits.F -> (temperature - 32) * 5 / 9
         }
@@ -18,5 +18,11 @@ data class Temperature(val temperature: Float, val units: TemperatureUnits) {
 
     fun celsius(): Temperature {
         return convertTo(TemperatureUnits.C)
+    }
+
+    companion object {
+        fun celsius(temperature: Float): Temperature {
+            return Temperature(temperature, TemperatureUnits.C)
+        }
     }
 }

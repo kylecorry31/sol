@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy.eclipse
 
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.AstronomyService
 import com.kylecorry.trailsensecore.time.InstantRange
 import java.time.Duration

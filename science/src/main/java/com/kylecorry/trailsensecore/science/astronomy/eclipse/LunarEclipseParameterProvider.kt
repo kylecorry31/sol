@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.science.astronomy.eclipse
 
-import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.math.power
-import com.kylecorry.andromeda.core.math.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
+import com.kylecorry.trailsensecore.math.TSMath.power
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
 import com.kylecorry.trailsensecore.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.trailsensecore.science.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonTruePhase

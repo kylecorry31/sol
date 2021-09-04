@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.science.oceanography
 
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.Pressure
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.Pressure
 import java.time.LocalDate
 import java.time.ZonedDateTime
 

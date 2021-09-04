@@ -1,11 +1,11 @@
 package com.kylecorry.trailsensecore.science.astronomy
 
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.trailsensecore.science.astronomy.units.HorizonCoordinate
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Coordinate
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)
 internal object AstroUtils {

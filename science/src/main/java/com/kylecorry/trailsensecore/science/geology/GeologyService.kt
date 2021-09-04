@@ -2,10 +2,14 @@ package com.kylecorry.trailsensecore.science.geology
 
 import android.hardware.GeomagneticField
 import android.location.Location
-import com.kylecorry.andromeda.core.math.*
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.toDegrees
+import com.kylecorry.trailsensecore.math.TSMath.toRadians
+import com.kylecorry.trailsensecore.math.Vector3
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Coordinate
+import com.kylecorry.trailsensecore.units.Distance
 import kotlin.math.*
 
 class GeologyService : IGeologyService {
@@ -45,6 +49,10 @@ class GeologyService : IGeologyService {
 
     override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
         return riskClassifier.classify(inclination)
+    }
+
+    override fun isInGeofence(coordinate: Coordinate, geofence: Geofence): Boolean {
+        return geofence.contains(coordinate)
     }
 
     override fun getGeomagneticField(

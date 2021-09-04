@@ -1,9 +1,9 @@
 package com.kylecorry.trailsensecore.science.geology.specifications
 
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.CompassDirection
-import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.CompassDirection
+import com.kylecorry.trailsensecore.units.Coordinate
+import com.kylecorry.trailsensecore.units.Distance
 import com.kylecorry.trailsensecore.science.geology.ApproximateCoordinate
 import org.junit.Assert
 import org.junit.Test

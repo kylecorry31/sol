@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.science.physics
 
-import com.kylecorry.andromeda.core.math.Vector3
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.DistanceUnits
+import com.kylecorry.trailsensecore.math.Vector3
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.DistanceUnits
 import org.junit.Assert
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest

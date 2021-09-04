@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.science.astronomy.meteors
 
-import com.kylecorry.andromeda.core.units.Bearing
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Bearing
+import com.kylecorry.trailsensecore.units.Coordinate
 import java.time.Instant
 import java.time.ZonedDateTime
 

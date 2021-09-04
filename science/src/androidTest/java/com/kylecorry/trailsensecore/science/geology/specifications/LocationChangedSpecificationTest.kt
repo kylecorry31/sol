@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.geology.specifications
 
-import com.kylecorry.andromeda.core.units.Distance
+import com.kylecorry.trailsensecore.units.Distance
 import com.kylecorry.trailsensecore.science.geology.ApproximateCoordinate
 import org.junit.Assert.assertEquals
 import org.junit.Test

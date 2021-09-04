@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy.eclipse
 
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Coordinate
 import com.kylecorry.trailsensecore.tests.assertDate
 import org.junit.jupiter.api.Test
 import java.time.*

@@ -1,7 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy
 
-import com.kylecorry.andromeda.core.time.plusHours
-import com.kylecorry.andromeda.core.units.Coordinate
+import com.kylecorry.trailsensecore.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.trailsensecore.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.trailsensecore.science.astronomy.corrections.TerrestrialTime
@@ -12,6 +11,7 @@ import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
 import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
 import com.kylecorry.trailsensecore.math.TSMath.wrap
 import com.kylecorry.trailsensecore.time.TimeUtils
+import com.kylecorry.trailsensecore.time.TimeUtils.plusHours
 import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
 import java.time.ZonedDateTime
 import kotlin.math.abs

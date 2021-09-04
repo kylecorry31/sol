@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.science.meteorology.clouds
 
-import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.DistanceUnits
+import com.kylecorry.trailsensecore.units.Coordinate
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.DistanceUnits
 import com.kylecorry.trailsensecore.science.geology.GeologyService
 import com.kylecorry.trailsensecore.science.geology.Region
 

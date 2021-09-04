@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.geology
 
-import com.kylecorry.andromeda.core.math.Vector3
+import com.kylecorry.trailsensecore.math.Vector3
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

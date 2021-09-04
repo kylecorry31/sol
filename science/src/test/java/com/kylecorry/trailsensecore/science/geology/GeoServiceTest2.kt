@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.science.geology
 
-import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.andromeda.core.units.DistanceUnits
+import com.kylecorry.trailsensecore.units.Distance
+import com.kylecorry.trailsensecore.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

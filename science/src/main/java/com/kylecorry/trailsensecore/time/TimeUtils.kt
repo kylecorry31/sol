@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.time
 
-import com.kylecorry.andromeda.core.math.toRadians
+import com.kylecorry.trailsensecore.math.TSMath.toRadians
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.atZeroHour
 import com.kylecorry.trailsensecore.science.astronomy.units.toUniversalTime
@@ -78,17 +78,29 @@ object TimeUtils {
 
         return date.toUniversalTime().atZeroHour()
     }
-}
 
-/*
-    LCT (Local Civil Time) - the local time of the user (using timezones)
-        ZonedDateTime
-    UT (Universal Time) - the time in UTC / Greenwich time zone
-        LocalDateTime
-    TT (Terrestrial Time) - UT with rotation of Earth correction
-        LocalDateTime
-    GST (Greenwich Sidereal Time) - star time at Greenwich
-        Double
-    LST (Local Sidereal Time) - star time at local
-        Double
- */
+    fun ZonedDateTime.atStartOfDay(): ZonedDateTime {
+        return ZonedDateTime.of(this.toLocalDate(), LocalTime.MIN, this.zone)
+    }
+
+    fun LocalDateTime.plusHours(hours: Double): LocalDateTime {
+        val h = hours.toLong()
+        val m = (hours % 1) * 60
+        val s = (m % 1) * 60
+        val ns = (1e9 * s).toLong()
+        return this.plusHours(h).plusMinutes(m.toLong()).plusNanos(ns)
+    }
+
+    fun ZonedDateTime.toUTCLocal(): LocalDateTime {
+        return LocalDateTime.ofInstant(this.toInstant(), ZoneId.of("UTC"))
+    }
+
+    fun Instant.utc(): ZonedDateTime {
+        return ZonedDateTime.ofInstant(this, ZoneId.of("UTC"))
+    }
+
+    fun duration(hours: Long = 0L, minutes: Long = 0L, seconds: Long = 0L): Duration {
+        return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+    }
+
+}

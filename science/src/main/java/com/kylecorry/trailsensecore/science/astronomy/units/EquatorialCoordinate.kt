@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.science.astronomy.units
 
-import com.kylecorry.andromeda.core.math.wrap
+import com.kylecorry.trailsensecore.math.TSMath.wrap
 
 internal class EquatorialCoordinate(
     _declination: Double,

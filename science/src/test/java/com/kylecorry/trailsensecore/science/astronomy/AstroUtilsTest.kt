@@ -22,7 +22,7 @@ class AstroUtilsTest {
         )
 
         cases.forEach {
-            assertEquals(it[2], com.kylecorry.andromeda.core.math.power(it[0], it[1].toInt()), 0.0000001)
+            assertEquals(it[2], com.kylecorry.trailsensecore.math.TSMath.power(it[0], it[1].toInt()), 0.0000001)
         }
     }
 

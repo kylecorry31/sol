@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.units
 
-import com.kylecorry.andromeda.core.math.normalizeAngle
+import com.kylecorry.trailsensecore.math.TSMath.normalizeAngle
 import kotlin.math.roundToInt
 
 class Bearing(_value: Float){

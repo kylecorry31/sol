@@ -1,6 +1,10 @@
 package com.kylecorry.trailsensecore.science.astronomy.units
 
-import com.kylecorry.andromeda.core.math.*
+import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.tanDegrees
+import com.kylecorry.trailsensecore.math.TSMath.toDegrees
+import com.kylecorry.trailsensecore.math.TSMath.wrap
 import kotlin.math.asin
 import kotlin.math.atan2
 

@@ -46,5 +46,11 @@ data class Pressure(val pressure: Float, val units: PressureUnits) : Comparable<
         return result
     }
 
+    companion object {
+        fun hpa(pressure: Float): Pressure {
+            return Pressure(pressure, PressureUnits.Hpa)
+        }
+    }
+
 
 }
