@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.science.astronomy.corrections
 
 import com.kylecorry.trailsensecore.math.MathUtils
 
-object TerrestrialTime {
+internal object TerrestrialTime {
 
     fun getDeltaT(year: Int): Double {
         val t = (year - 2000) / 100.0

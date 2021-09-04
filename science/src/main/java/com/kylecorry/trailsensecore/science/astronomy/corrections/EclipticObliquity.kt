@@ -5,7 +5,7 @@ import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.toJulianCenturies
 import com.kylecorry.trailsensecore.math.MathUtils
 
-object EclipticObliquity {
+internal object EclipticObliquity {
     fun getTrueObliquityOfEcliptic(ut: UniversalTime): Double {
         return getMeanObliquityOfEcliptic(ut) + getNutationInObliquity(ut)
     }

@@ -3,6 +3,7 @@ package com.kylecorry.trailsensecore.science.astronomy
 import com.kylecorry.andromeda.core.time.duration
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.eclipse.EclipseType
+import com.kylecorry.trailsensecore.science.astronomy.meteors.MeteorShower
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.time.Season

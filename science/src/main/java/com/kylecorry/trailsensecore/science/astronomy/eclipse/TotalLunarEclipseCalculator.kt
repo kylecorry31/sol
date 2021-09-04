@@ -4,7 +4,7 @@ import com.kylecorry.andromeda.core.math.power
 import java.time.Duration
 import kotlin.math.sqrt
 
-class TotalLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculator() {
+internal class TotalLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculator() {
 
     override fun getMagnitudeThreshold(): Double {
         return 1.0

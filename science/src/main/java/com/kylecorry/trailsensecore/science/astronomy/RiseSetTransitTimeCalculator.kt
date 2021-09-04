@@ -17,7 +17,7 @@ import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
 
-class RiseSetTransitTimeCalculator {
+internal class RiseSetTransitTimeCalculator {
 
     fun calculate(
         locator: ICelestialLocator,

@@ -14,7 +14,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
-class LunarEclipseParameterProvider {
+internal class LunarEclipseParameterProvider {
 
     private val moon = Moon()
 

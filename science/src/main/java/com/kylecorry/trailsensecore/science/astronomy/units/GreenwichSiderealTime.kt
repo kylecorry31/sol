@@ -5,7 +5,7 @@ import com.kylecorry.trailsensecore.math.MathUtils
 import com.kylecorry.trailsensecore.time.TimeUtils
 import java.time.LocalDate
 
-class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0) {
+internal class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0) {
 
     fun toUniversalTime(date: LocalDate): UniversalTime {
         val jd = date.atStartOfDay().toJulianDay()

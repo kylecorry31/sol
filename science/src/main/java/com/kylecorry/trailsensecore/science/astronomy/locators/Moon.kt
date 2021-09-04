@@ -18,7 +18,7 @@ import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 
-class Moon : ICelestialLocator {
+internal class Moon : ICelestialLocator {
 
     private val sun = Sun()
 

@@ -5,7 +5,7 @@ import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.toJulianCenturies
 import com.kylecorry.trailsensecore.math.MathUtils
 
-object LongitudinalNutation {
+internal object LongitudinalNutation {
 
     fun getNutationInLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()

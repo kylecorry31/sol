@@ -12,6 +12,8 @@ import com.kylecorry.trailsensecore.science.astronomy.eclipse.TotalLunarEclipseC
 import com.kylecorry.trailsensecore.science.astronomy.locators.MeteorShowerLocator
 import com.kylecorry.trailsensecore.science.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.science.astronomy.locators.Sun
+import com.kylecorry.trailsensecore.science.astronomy.meteors.MeteorShower
+import com.kylecorry.trailsensecore.science.astronomy.meteors.MeteorShowerPeak
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.science.astronomy.sun.SolarRadiationCalculator

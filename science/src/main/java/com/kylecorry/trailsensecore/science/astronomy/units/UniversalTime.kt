@@ -34,7 +34,7 @@ fun UniversalTime.toJulianDay(): Double {
     return floor(365.25 * (Y + 4716)) + floor(30.6001 * (M + 1)) + D + B - 1524.5
 }
 
-fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
+internal fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
     val jd = UniversalTime.of(toLocalDate(), LocalTime.MIN).toJulianDay()
     val jd0 = UniversalTime.of(year, 1, 1, 0, 0).toJulianDay() - 1
 

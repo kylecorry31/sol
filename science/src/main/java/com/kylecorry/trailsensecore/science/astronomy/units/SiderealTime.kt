@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.science.astronomy.units
 
 import com.kylecorry.andromeda.core.math.wrap
 
-open class SiderealTime(_hours: Double, val longitude: Double) {
+internal open class SiderealTime(_hours: Double, val longitude: Double) {
 
     val hours = wrap(_hours, 0.0, 24.0)
 

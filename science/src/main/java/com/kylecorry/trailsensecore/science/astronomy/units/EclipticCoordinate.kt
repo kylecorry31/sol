@@ -5,7 +5,7 @@ import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.asin
 import kotlin.math.atan2
 
-class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) {
+internal class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) {
     val eclipticLatitude = wrap(_eclipticLatitude, -90.0, 90.0)
     val eclipticLongitude = wrap(_eclipticLongitude, 0.0, 360.0)
 

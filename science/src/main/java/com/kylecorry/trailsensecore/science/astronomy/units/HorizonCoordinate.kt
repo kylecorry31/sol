@@ -6,7 +6,7 @@ import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.acos
 import kotlin.math.asin
 
-class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
+internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
 
     val azimuth = wrap(_azimuth, 0.0, 360.0)
     val altitude = wrap(_altitude, -90.0, 90.0)

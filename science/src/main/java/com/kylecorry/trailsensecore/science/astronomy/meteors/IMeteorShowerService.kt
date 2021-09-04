@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.science.astronomy
+package com.kylecorry.trailsensecore.science.astronomy.meteors
 
 import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.Coordinate

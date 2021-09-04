@@ -8,7 +8,7 @@ import java.time.Instant
 import java.time.ZoneId
 import kotlin.math.absoluteValue
 
-abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
+internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
         return getNextEclipseHelper(after.minus(Duration.ofDays(20)), after, location, 100)
     }

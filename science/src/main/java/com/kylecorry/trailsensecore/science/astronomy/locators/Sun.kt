@@ -14,7 +14,7 @@ import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.pow
 
-class Sun : ICelestialLocator {
+internal class Sun : ICelestialLocator {
 
     private val semiMajorAxisLen0 = 1.495985e8
     private val angularDiameter0 = 0.533128

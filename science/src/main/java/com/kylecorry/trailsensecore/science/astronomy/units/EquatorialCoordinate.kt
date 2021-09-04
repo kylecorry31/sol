@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.science.astronomy.units
 
 import com.kylecorry.andromeda.core.math.wrap
 
-class EquatorialCoordinate(
+internal class EquatorialCoordinate(
     _declination: Double,
     _rightAscension: Double,
     val isApparent: Boolean = false
