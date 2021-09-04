@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Sun
 import com.kylecorry.sol.science.astronomy.units.fromJulianDay
