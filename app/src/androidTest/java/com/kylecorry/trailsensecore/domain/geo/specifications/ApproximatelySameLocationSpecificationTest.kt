@@ -4,7 +4,8 @@ import com.kylecorry.andromeda.core.units.Bearing
 import com.kylecorry.andromeda.core.units.CompassDirection
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.trailsensecore.domain.geo.ApproximateCoordinate
+import com.kylecorry.trailsensecore.geology.ApproximateCoordinate
+import com.kylecorry.trailsensecore.geology.specifications.ApproximatelySameLocationSpecification
 import org.junit.Assert
 import org.junit.Test
 
