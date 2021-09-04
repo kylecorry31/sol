@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.domain.geo.specifications
 
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.trailsensecore.domain.geo.ApproximateCoordinate
-import com.kylecorry.trailsensecore.domain.specifications.Specification
+import com.kylecorry.andromeda.core.specifications.Specification
 
 class LocationChangedSpecification(private val previousLocation: ApproximateCoordinate, private val minDistance: Distance): Specification<ApproximateCoordinate>() {
     override fun isSatisfiedBy(value: ApproximateCoordinate): Boolean {

@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.domain.units
 
 import com.kylecorry.andromeda.core.units.DistanceUnits
-import com.kylecorry.trailsensecore.domain.specifications.Specification
+import com.kylecorry.andromeda.core.specifications.Specification
 
 class IsLargeUnitSpecification: Specification<DistanceUnits>() {
     override fun isSatisfiedBy(value: DistanceUnits): Boolean {
