@@ -4,14 +4,9 @@ import android.hardware.GeomagneticField
 import com.kylecorry.andromeda.core.math.Vector3
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.trailsensecore.domain.geo.cartography.CoordinateBounds
-import com.kylecorry.trailsensecore.domain.geo.cartography.MapSite
-import com.kylecorry.trailsensecore.domain.geo.cartography.MapSiteService
 import kotlin.math.absoluteValue
 
 class GeoService : IGeoService {
-
-    private val mapUrlGenerator = MapSiteService()
 
     override fun getDeclination(coordinate: Coordinate, altitude: Float?, time: Long): Float {
         val geoField = GeomagneticField(
@@ -69,10 +64,6 @@ class GeoService : IGeoService {
 
     override fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
         return Distance(ratioTo * measurement.distance / ratioFrom, measurement.units)
-    }
-
-    override fun getMapUrl(coordinate: Coordinate, map: MapSite): String {
-        return mapUrlGenerator.getUrl(coordinate, map)
     }
 
     override fun getBounds(points: List<Coordinate>): CoordinateBounds {

@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain.geo.cartography
+package com.kylecorry.trailsensecore.domain.geo
 
 import com.kylecorry.andromeda.core.math.deltaAngle
 import com.kylecorry.andromeda.core.units.Coordinate
