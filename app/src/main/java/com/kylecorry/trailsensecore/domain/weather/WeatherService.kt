@@ -141,7 +141,7 @@ class WeatherService : IWeatherService {
         return (temp0 * temp2 - temp1 * temp1) / (temp0 + temp2 - 2 * temp1)
     }
 
-    override fun getMeteorologicalSeason(location: Coordinate, date: ZonedDateTime): Season {
+    override fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
         val north = location.isNorthernHemisphere
         val d = date.toLocalDate()
         return when {

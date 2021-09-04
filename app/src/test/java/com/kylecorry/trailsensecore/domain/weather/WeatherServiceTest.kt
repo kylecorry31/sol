@@ -81,7 +81,7 @@ class WeatherServiceTest {
     @ParameterizedTest
     @MethodSource("provideSeasons")
     fun seasons(expected: Season, isNorth: Boolean, date: LocalDate) {
-        val season = weatherService.getMeteorologicalSeason(
+        val season = weatherService.getSeason(
             Coordinate(if (isNorth) 1.0 else -1.0, 0.0),
             ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault())
         )

@@ -1,14 +1,12 @@
 package com.kylecorry.trailsensecore.domain.weather
 
-import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.trailsensecore.domain.time.Season
 import com.kylecorry.andromeda.core.units.Temperature
+import com.kylecorry.trailsensecore.domain.time.ISeasonService
 import com.kylecorry.trailsensecore.domain.weather.clouds.ICloudService
 import java.time.Instant
-import java.time.ZonedDateTime
 
-interface IWeatherService : ICloudService {
+interface IWeatherService : ICloudService, ISeasonService {
 
     /**
      * Calculates the tendency
@@ -82,8 +80,6 @@ interface IWeatherService : ICloudService {
      * @return the ambient temperature in celsius or null if the readings weren't all increasing or decreasing
      */
     fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float?
-
-    fun getMeteorologicalSeason(location: Coordinate, date: ZonedDateTime): Season
 
     /**
      * Calculates the temperature at an elevation

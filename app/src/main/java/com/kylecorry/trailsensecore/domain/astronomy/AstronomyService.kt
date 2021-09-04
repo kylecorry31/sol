@@ -131,6 +131,10 @@ class AstronomyService : IAstronomyService {
         }
     }
 
+    override fun getSunDistance(time: ZonedDateTime): Distance {
+        return sun.getDistance(time.toUniversalTime())
+    }
+
 
     private fun getOptimalSolarDirection(location: Coordinate): Bearing {
         return if (location.latitude > 0) {
@@ -297,7 +301,7 @@ class AstronomyService : IAstronomyService {
         return distance.convertTo(DistanceUnits.Kilometers).distance <= 360000f
     }
 
-    override fun getAstronomicalSeason(location: Coordinate, date: ZonedDateTime): Season {
+    override fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
         val sl = wrap(getSolarLongitude(date), 0f, 360f)
         return when {
             sl >= OrbitalPosition.WinterSolstice.solarLongitude -> if (location.isNorthernHemisphere) Season.Winter else Season.Summer
