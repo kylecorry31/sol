@@ -4,8 +4,8 @@ import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.andromeda.core.units.Pressure
 import com.kylecorry.andromeda.core.units.PressureUnits
-import com.kylecorry.trailsensecore.domain.astronomy.AstronomyService
-import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
+import com.kylecorry.trailsensecore.astronomy.AstronomyService
+import com.kylecorry.trailsensecore.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.physics.PhysicsService
 import java.time.Duration
 import java.time.LocalDate
