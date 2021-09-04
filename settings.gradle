@@ -1,2 +1,4 @@
 include ':science'
 rootProject.name = "Trail Sense Core"
+include ':math'
+include ':units'

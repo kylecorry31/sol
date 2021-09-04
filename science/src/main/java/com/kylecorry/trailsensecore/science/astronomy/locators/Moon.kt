@@ -14,7 +14,6 @@ import com.kylecorry.trailsensecore.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.trailsensecore.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.toJulianCenturies
-import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 
@@ -24,8 +23,8 @@ internal class Moon : ICelestialLocator {
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val T = ut.toJulianCenturies()
-        val L = MathUtils.reduceAngleDegrees(
-            MathUtils.polynomial(
+        val L = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
+            com.kylecorry.trailsensecore.math.TSMath.polynomial(
                 T,
                 218.3164477,
                 481267.88123421,
@@ -42,11 +41,11 @@ internal class Moon : ICelestialLocator {
 
         val F = getArgumentOfLatitude(ut)
 
-        val a1 = MathUtils.reduceAngleDegrees(119.75 + 131.849 * T)
-        val a2 = MathUtils.reduceAngleDegrees(53.09 + 479264.290 * T)
-        val a3 = MathUtils.reduceAngleDegrees(313.45 + 481266.484 * T)
-        val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = MathUtils.square(E)
+        val a1 = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(119.75 + 131.849 * T)
+        val a2 = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(53.09 + 479264.290 * T)
+        val a3 = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(313.45 + 481266.484 * T)
+        val E = com.kylecorry.trailsensecore.math.TSMath.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E2 = com.kylecorry.trailsensecore.math.TSMath.square(E)
 
         val t47a = table47a()
         val t47b = table47b()
@@ -94,8 +93,8 @@ internal class Moon : ICelestialLocator {
         val M = sun.getMeanAnomaly(ut)
 
         val Mprime = getMeanAnomaly(ut)
-        val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = MathUtils.square(E)
+        val E = com.kylecorry.trailsensecore.math.TSMath.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E2 = com.kylecorry.trailsensecore.math.TSMath.square(E)
         val t47a = table47a()
         var sumR = 0.0
 
@@ -121,8 +120,8 @@ internal class Moon : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return MathUtils.reduceAngleDegrees(
-            MathUtils.polynomial(
+        return com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
+            com.kylecorry.trailsensecore.math.TSMath.polynomial(
                 T,
                 134.9633964,
                 477198.8675055,
@@ -205,8 +204,8 @@ internal class Moon : ICelestialLocator {
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return MathUtils.reduceAngleDegrees(
-            MathUtils.polynomial(
+        return com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
+            com.kylecorry.trailsensecore.math.TSMath.polynomial(
                 T,
                 297.8501921,
                 445267.1114034,
@@ -219,8 +218,8 @@ internal class Moon : ICelestialLocator {
 
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return MathUtils.reduceAngleDegrees(
-            MathUtils.polynomial(
+        return com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
+            com.kylecorry.trailsensecore.math.TSMath.polynomial(
                 T,
                 93.2720950,
                 483202.0175233,

@@ -4,7 +4,6 @@ import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.andromeda.core.time.utc
 import com.kylecorry.trailsensecore.time.TimeUtils.toDecimal
 import com.kylecorry.trailsensecore.time.TimeUtils.toDuration
-import com.kylecorry.trailsensecore.math.MathUtils
 import java.time.*
 import kotlin.math.floor
 
@@ -42,7 +41,7 @@ internal fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
 
     val t = (jd0 - 2415020.0) / 36525.0
 
-    val r = MathUtils.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
+    val r = com.kylecorry.trailsensecore.math.TSMath.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
 
     val b = 24 - r + 24 * (year - 1900)
 

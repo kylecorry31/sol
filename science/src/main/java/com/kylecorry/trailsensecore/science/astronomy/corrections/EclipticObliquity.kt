@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.science.astronomy.corrections
 import com.kylecorry.andromeda.core.math.cosDegrees
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.toJulianCenturies
-import com.kylecorry.trailsensecore.math.MathUtils
 
 internal object EclipticObliquity {
     fun getTrueObliquityOfEcliptic(ut: UniversalTime): Double {
@@ -12,7 +11,7 @@ internal object EclipticObliquity {
 
     fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        val seconds = MathUtils.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
+        val seconds = com.kylecorry.trailsensecore.math.TSMath.polynomial(T, 21.448, -46.815, -0.00059, 0.001813)
         return 23.0 + (26.0 + seconds / 60.0) / 60.0
     }
 
@@ -27,6 +26,6 @@ internal object EclipticObliquity {
 
     private fun getAscendingNodeLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return MathUtils.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
+        return com.kylecorry.trailsensecore.math.TSMath.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 }

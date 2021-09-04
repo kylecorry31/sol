@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.math
 
-import com.kylecorry.andromeda.core.math.tanDegrees
+import com.kylecorry.trailsensecore.math.TSMath.tanDegrees
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
@@ -21,7 +21,6 @@ class InclinationService : IInclinationService {
         if (bottomInclination.absoluteValue == 90f || topInclination.absoluteValue == 90f){
             return Float.POSITIVE_INFINITY
         }
-
 
         val up = tanDegrees(topInclination) * distance
         val down = tanDegrees(bottomInclination) * distance

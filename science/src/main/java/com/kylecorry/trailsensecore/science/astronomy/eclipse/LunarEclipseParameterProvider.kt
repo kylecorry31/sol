@@ -8,7 +8,6 @@ import com.kylecorry.trailsensecore.science.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.fromJulianDay
-import com.kylecorry.trailsensecore.math.MathUtils
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -29,7 +28,7 @@ internal class LunarEclipseParameterProvider {
         var F: Double
         do {
             T = k / 1236.85
-            F = MathUtils.reduceAngleDegrees(
+            F = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
                 160.7108 + 390.67050284 * k - 0.0016118 * power(T, 2) - 0.00000227 * power(
                     T,
                     3
@@ -41,25 +40,25 @@ internal class LunarEclipseParameterProvider {
         } while (sinDegrees(F).absoluteValue > 0.36)
 
         val mean = getJDEOfMeanMoonPhase(k)
-        val M = MathUtils.reduceAngleDegrees(
+        val M = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
             2.5534 + 29.1053567 * k - 0.0000014 * power(
                 T,
                 2
             ) - 0.00000011 * power(T, 3)
         )
-        val MPrime = MathUtils.reduceAngleDegrees(
+        val MPrime = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
             201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
                 T,
                 3
             ) - 0.000000058 * power(T, 4)
         )
-        val omega = MathUtils.reduceAngleDegrees(
+        val omega = com.kylecorry.trailsensecore.math.TSMath.reduceAngleDegrees(
             124.7746 - 1.56375588 * k + 0.0020672 * power(
                 T,
                 2
             ) + 0.00000215 * power(T, 3)
         )
-        val E = MathUtils.polynomial(T, 1.0, -0.002516, -0.0000074)
+        val E = com.kylecorry.trailsensecore.math.TSMath.polynomial(T, 1.0, -0.002516, -0.0000074)
 
         val F1 = F - 0.02665 * sinDegrees(omega)
         val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)

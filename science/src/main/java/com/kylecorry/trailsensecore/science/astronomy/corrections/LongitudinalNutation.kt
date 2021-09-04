@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.science.astronomy.corrections
 import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.trailsensecore.science.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.science.astronomy.units.toJulianCenturies
-import com.kylecorry.trailsensecore.math.MathUtils
 
 internal object LongitudinalNutation {
 
@@ -18,7 +17,7 @@ internal object LongitudinalNutation {
 
     private fun moonAscendingNodeLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return MathUtils.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
+        return com.kylecorry.trailsensecore.math.TSMath.polynomial(T, 125.04452, -1934.136261, 0.0020708, 1 / 450000.0)
     }
 
 }

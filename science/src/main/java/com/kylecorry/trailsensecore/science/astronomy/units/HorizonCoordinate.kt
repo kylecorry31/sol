@@ -2,7 +2,6 @@ package com.kylecorry.trailsensecore.science.astronomy.units
 
 import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.acos
 import kotlin.math.asin
 
@@ -65,14 +64,14 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
         val tanElev = tanDegrees(altitude)
 
         if (altitude > 5.0) {
-            return (58.1 / tanElev - 0.07 / MathUtils.cube(tanElev) + 0.000086 / power(
+            return (58.1 / tanElev - 0.07 / com.kylecorry.trailsensecore.math.TSMath.cube(tanElev) + 0.000086 / power(
                 tanElev,
                 5
             )) / 3600.0
         }
 
         if (altitude > -0.575) {
-            return MathUtils.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
+            return com.kylecorry.trailsensecore.math.TSMath.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
         }
 
         return -20.774 / tanElev / 3600.0

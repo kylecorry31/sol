@@ -1,8 +1,5 @@
 package com.kylecorry.trailsensecore.science.astronomy
 
-import com.kylecorry.andromeda.core.math.cosDegrees
-import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.science.astronomy.corrections.EclipticObliquity
@@ -10,7 +7,10 @@ import com.kylecorry.trailsensecore.science.astronomy.corrections.LongitudinalNu
 import com.kylecorry.trailsensecore.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.trailsensecore.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.science.astronomy.units.*
-import com.kylecorry.trailsensecore.math.MathUtils
+import com.kylecorry.trailsensecore.math.TSMath
+import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
+import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
+import com.kylecorry.trailsensecore.math.TSMath.wrap
 import com.kylecorry.trailsensecore.time.TimeUtils
 import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
 import java.time.ZonedDateTime
@@ -118,9 +118,9 @@ internal class RiseSetTransitTimeCalculator {
     private fun getMeanSiderealTime(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val theta0 =
-            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * MathUtils.square(
+            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * TSMath.square(
                 T
-            ) - MathUtils.cube(
+            ) - TSMath.cube(
                 T
             ) / 38710000.0
         return wrap(theta0, 0.0, 360.0)
@@ -164,11 +164,11 @@ internal class RiseSetTransitTimeCalculator {
 
         for (i in 0 until iterations) {
             val sidereal0 =
-                GreenwichSiderealTime(MathUtils.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
+                GreenwichSiderealTime(TSMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
             val sidereal1 =
-                GreenwichSiderealTime(MathUtils.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
+                GreenwichSiderealTime(TSMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
             val sidereal2 =
-                GreenwichSiderealTime(MathUtils.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
+                GreenwichSiderealTime(TSMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
 
             val n0 = m0 + deltaT / 86400
             val n1 = m1 + deltaT / 86400
@@ -241,7 +241,7 @@ internal class RiseSetTransitTimeCalculator {
             )
         )
 
-        val ra = MathUtils.interpolate(
+        val ra = TSMath.interpolate(
             value,
             normalizedRas.first,
             normalizedRas.second,
@@ -249,7 +249,7 @@ internal class RiseSetTransitTimeCalculator {
         )
 
         val declination =
-            MathUtils.interpolate(value, first.declination, second.declination, third.declination)
+            TSMath.interpolate(value, first.declination, second.declination, third.declination)
 
         return EquatorialCoordinate(declination, ra)
     }

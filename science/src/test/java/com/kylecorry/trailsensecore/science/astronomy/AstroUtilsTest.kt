@@ -3,7 +3,6 @@ package com.kylecorry.trailsensecore.science.astronomy
 import com.kylecorry.trailsensecore.science.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.science.astronomy.locators.Sun
 import com.kylecorry.trailsensecore.science.astronomy.units.fromJulianDay
-import com.kylecorry.trailsensecore.math.MathUtils
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -29,11 +28,11 @@ class AstroUtilsTest {
 
     @Test
     fun polynomial() {
-        assertEquals(0.0, MathUtils.polynomial(1.0, 0.0), 0.0001)
-        assertEquals(0.0, MathUtils.polynomial(1.0), 0.0001)
-        assertEquals(1.0, MathUtils.polynomial(2.0, 1.0), 0.0001)
-        assertEquals(3.0, MathUtils.polynomial(1.0, 1.0, 2.0), 0.0001)
-        assertEquals(81.0, MathUtils.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
+        assertEquals(0.0, com.kylecorry.trailsensecore.math.TSMath.polynomial(1.0, 0.0), 0.0001)
+        assertEquals(0.0, com.kylecorry.trailsensecore.math.TSMath.polynomial(1.0), 0.0001)
+        assertEquals(1.0, com.kylecorry.trailsensecore.math.TSMath.polynomial(2.0, 1.0), 0.0001)
+        assertEquals(3.0, com.kylecorry.trailsensecore.math.TSMath.polynomial(1.0, 1.0, 2.0), 0.0001)
+        assertEquals(81.0, com.kylecorry.trailsensecore.math.TSMath.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
     }
 
 //    @Test
