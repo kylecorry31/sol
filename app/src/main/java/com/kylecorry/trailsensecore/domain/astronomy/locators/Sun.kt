@@ -5,7 +5,7 @@ import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.math.toDegrees
 import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.EclipticObliquity
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
 import com.kylecorry.trailsensecore.domain.math.MathUtils
 import kotlin.math.asin

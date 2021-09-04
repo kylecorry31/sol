@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.domain.astronomy.correcctions
+package com.kylecorry.trailsensecore.domain.astronomy.corrections
 
 import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.trailsensecore.domain.astronomy.units.UniversalTime

@@ -5,9 +5,9 @@ import com.kylecorry.andromeda.core.math.sinDegrees
 import com.kylecorry.andromeda.core.math.wrap
 import com.kylecorry.andromeda.core.time.plusHours
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.LongitudinalNutation
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.TerrestrialTime
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.EclipticObliquity
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.LongitudinalNutation
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.TerrestrialTime
 import com.kylecorry.trailsensecore.domain.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.domain.astronomy.units.*
 import com.kylecorry.trailsensecore.domain.math.MathUtils

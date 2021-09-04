@@ -6,8 +6,8 @@ import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.trailsensecore.domain.astronomy.AstroUtils
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.EclipticObliquity
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.LongitudinalNutation
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.EclipticObliquity
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.*

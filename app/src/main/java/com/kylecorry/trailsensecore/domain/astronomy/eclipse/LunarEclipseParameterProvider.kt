@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.domain.astronomy.eclipse
 import com.kylecorry.andromeda.core.math.cosDegrees
 import com.kylecorry.andromeda.core.math.power
 import com.kylecorry.andromeda.core.math.sinDegrees
-import com.kylecorry.trailsensecore.domain.astronomy.correcctions.TerrestrialTime
+import com.kylecorry.trailsensecore.domain.astronomy.corrections.TerrestrialTime
 import com.kylecorry.trailsensecore.domain.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.domain.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.domain.astronomy.units.UniversalTime
