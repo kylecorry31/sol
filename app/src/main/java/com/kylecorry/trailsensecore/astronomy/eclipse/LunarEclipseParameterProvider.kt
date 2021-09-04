@@ -8,7 +8,7 @@ import com.kylecorry.trailsensecore.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.astronomy.units.fromJulianDay
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime

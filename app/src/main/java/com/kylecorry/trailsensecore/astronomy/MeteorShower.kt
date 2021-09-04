@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.astronomy
 
 import com.kylecorry.trailsensecore.astronomy.units.EquatorialCoordinate
-import com.kylecorry.trailsensecore.domain.time.TimeUtils
+import com.kylecorry.trailsensecore.time.TimeUtils
 import java.time.ZonedDateTime
 
 enum class MeteorShower(val solarLongitude: Float, val radiant: EquatorialCoordinate, val rate: Int) {

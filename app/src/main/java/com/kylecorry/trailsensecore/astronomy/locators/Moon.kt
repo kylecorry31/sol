@@ -14,7 +14,7 @@ import com.kylecorry.trailsensecore.astronomy.units.EclipticCoordinate
 import com.kylecorry.trailsensecore.astronomy.units.EquatorialCoordinate
 import com.kylecorry.trailsensecore.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.astronomy.units.toJulianCenturies
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 

@@ -11,7 +11,7 @@ import kotlin.math.atan2
 // TODO: Expose this via Andromeda or do compass math here
 internal object AzimuthCalculator {
 
-    fun calculate(gravity: FloatArray, magneticField: FloatArray, includeMagnitudeCheck: Boolean = true): Bearing? {
+    fun calculate(gravity: FloatArray, magneticField: FloatArray): Bearing? {
         // Gravity
         val normGravity = Vector3Utils.normalize(gravity)
         val normMagField = Vector3Utils.normalize(magneticField)
@@ -19,14 +19,6 @@ internal object AzimuthCalculator {
         // East vector
         val east = Vector3Utils.cross(normMagField, normGravity)
         val normEast = Vector3Utils.normalize(east)
-
-        // Magnitude check
-        val eastMagnitude = Vector3Utils.magnitude(east)
-        val gravityMagnitude = Vector3Utils.magnitude(gravity)
-        val magneticMagnitude = Vector3Utils.magnitude(magneticField)
-        if (includeMagnitudeCheck && gravityMagnitude * magneticMagnitude * eastMagnitude < 0.1f) {
-            return null
-        }
 
         // North vector
         val dotProduct = Vector3Utils.dot(normGravity, normMagField)
@@ -47,8 +39,8 @@ internal object AzimuthCalculator {
     }
 
 
-    fun calculate(gravity: Vector3, magneticField: Vector3, includeMagnitudeCheck: Boolean = true): Bearing? {
-       return calculate(gravity.toFloatArray(), magneticField.toFloatArray(), includeMagnitudeCheck)
+    fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
+       return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
     }
 
 }

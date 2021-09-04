@@ -5,9 +5,7 @@ import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.trailsensecore.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.astronomy.moon.MoonTruePhase
-import com.kylecorry.trailsensecore.astronomy.units.UniversalTime
-import com.kylecorry.trailsensecore.domain.time.Season
-import com.kylecorry.trailsensecore.domain.time.TimeUtils.toLocal
+import com.kylecorry.trailsensecore.time.Season
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.assertDuration
 import com.kylecorry.trailsensecore.tests.parametrized

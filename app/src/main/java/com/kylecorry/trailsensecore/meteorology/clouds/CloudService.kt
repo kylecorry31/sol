@@ -3,12 +3,12 @@ package com.kylecorry.trailsensecore.meteorology.clouds
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
-import com.kylecorry.trailsensecore.geology.GeoService
+import com.kylecorry.trailsensecore.geology.GeologyService
 import com.kylecorry.trailsensecore.geology.Region
 
 class CloudService : ICloudService {
 
-    private val geoService = GeoService()
+    private val geoService = GeologyService()
 
     override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {
         return when (cloud) {

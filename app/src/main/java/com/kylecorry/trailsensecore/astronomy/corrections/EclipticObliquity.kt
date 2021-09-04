@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.astronomy.corrections
 import com.kylecorry.andromeda.core.math.cosDegrees
 import com.kylecorry.trailsensecore.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.astronomy.units.toJulianCenturies
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 
 object EclipticObliquity {
     fun getTrueObliquityOfEcliptic(ut: UniversalTime): Double {

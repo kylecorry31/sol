@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.meteorology
 
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.trailsensecore.domain.time.Season
+import com.kylecorry.trailsensecore.time.Season
 import com.kylecorry.andromeda.core.units.Temperature
 import com.kylecorry.andromeda.core.units.TemperatureUnits
 import com.kylecorry.trailsensecore.meteorology.clouds.*

@@ -2,8 +2,7 @@ package com.kylecorry.trailsensecore.meteorology
 
 import com.kylecorry.andromeda.core.units.Coordinate
 import com.kylecorry.andromeda.core.units.Distance
-import com.kylecorry.trailsensecore.domain.time.Season
-import com.kylecorry.trailsensecore.meteorology.*
+import com.kylecorry.trailsensecore.time.Season
 import org.junit.Assert
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*

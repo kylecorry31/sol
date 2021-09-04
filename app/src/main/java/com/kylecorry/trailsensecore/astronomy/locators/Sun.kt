@@ -9,7 +9,7 @@ import com.kylecorry.trailsensecore.astronomy.units.EquatorialCoordinate
 import com.kylecorry.trailsensecore.astronomy.corrections.EclipticObliquity
 import com.kylecorry.trailsensecore.astronomy.units.UniversalTime
 import com.kylecorry.trailsensecore.astronomy.units.toJulianCenturies
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.pow

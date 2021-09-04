@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.astronomy.units
 
 import com.kylecorry.andromeda.core.math.*
 import com.kylecorry.andromeda.core.units.Coordinate
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 import kotlin.math.acos
 import kotlin.math.asin
 

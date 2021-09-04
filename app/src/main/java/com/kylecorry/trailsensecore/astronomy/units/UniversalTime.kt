@@ -2,9 +2,9 @@ package com.kylecorry.trailsensecore.astronomy.units
 
 import com.kylecorry.andromeda.core.time.toUTCLocal
 import com.kylecorry.andromeda.core.time.utc
-import com.kylecorry.trailsensecore.domain.time.TimeUtils.toDecimal
-import com.kylecorry.trailsensecore.domain.time.TimeUtils.toDuration
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.time.TimeUtils.toDecimal
+import com.kylecorry.trailsensecore.time.TimeUtils.toDuration
+import com.kylecorry.trailsensecore.math.MathUtils
 import java.time.*
 import kotlin.math.floor
 

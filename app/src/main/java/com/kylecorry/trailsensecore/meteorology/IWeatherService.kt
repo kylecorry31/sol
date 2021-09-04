@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.meteorology
 
 import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.Temperature
-import com.kylecorry.trailsensecore.domain.time.ISeasonService
+import com.kylecorry.trailsensecore.time.ISeasonService
 import com.kylecorry.trailsensecore.meteorology.clouds.ICloudService
 import java.time.Instant
 

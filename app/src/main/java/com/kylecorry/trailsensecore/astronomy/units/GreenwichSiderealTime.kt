@@ -1,8 +1,8 @@
 package com.kylecorry.trailsensecore.astronomy.units
 
-import com.kylecorry.trailsensecore.domain.time.TimeUtils.toLocalTime
-import com.kylecorry.trailsensecore.domain.math.MathUtils
-import com.kylecorry.trailsensecore.domain.time.TimeUtils
+import com.kylecorry.trailsensecore.time.TimeUtils.toLocalTime
+import com.kylecorry.trailsensecore.math.MathUtils
+import com.kylecorry.trailsensecore.time.TimeUtils
 import java.time.LocalDate
 
 class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0) {

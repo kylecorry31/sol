@@ -1,6 +1,6 @@
 package com.kylecorry.trailsensecore.astronomy.corrections
 
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 
 object TerrestrialTime {
 

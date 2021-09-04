@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.astronomy
 import com.kylecorry.trailsensecore.astronomy.locators.Moon
 import com.kylecorry.trailsensecore.astronomy.locators.Sun
 import com.kylecorry.trailsensecore.astronomy.units.fromJulianDay
-import com.kylecorry.trailsensecore.domain.math.MathUtils
+import com.kylecorry.trailsensecore.math.MathUtils
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 

@@ -10,9 +10,9 @@ import com.kylecorry.trailsensecore.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.trailsensecore.astronomy.corrections.TerrestrialTime
 import com.kylecorry.trailsensecore.astronomy.locators.ICelestialLocator
 import com.kylecorry.trailsensecore.astronomy.units.*
-import com.kylecorry.trailsensecore.domain.math.MathUtils
-import com.kylecorry.trailsensecore.domain.time.TimeUtils
-import com.kylecorry.trailsensecore.domain.time.TimeUtils.toLocal
+import com.kylecorry.trailsensecore.math.MathUtils
+import com.kylecorry.trailsensecore.time.TimeUtils
+import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos

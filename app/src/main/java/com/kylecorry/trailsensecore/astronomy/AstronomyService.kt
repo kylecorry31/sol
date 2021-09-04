@@ -19,9 +19,9 @@ import com.kylecorry.trailsensecore.astronomy.units.EclipticCoordinate
 import com.kylecorry.trailsensecore.astronomy.units.fromJulianDay
 import com.kylecorry.trailsensecore.astronomy.units.toJulianDay
 import com.kylecorry.trailsensecore.astronomy.units.toUniversalTime
-import com.kylecorry.trailsensecore.domain.time.DateUtils
-import com.kylecorry.trailsensecore.domain.time.Season
-import com.kylecorry.trailsensecore.domain.time.TimeUtils.toLocal
+import com.kylecorry.trailsensecore.time.DateUtils
+import com.kylecorry.trailsensecore.time.Season
+import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
 import java.time.*
 import kotlin.math.absoluteValue
 
