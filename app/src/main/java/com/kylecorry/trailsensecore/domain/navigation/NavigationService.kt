@@ -98,47 +98,8 @@ class NavigationService : INavigationService {
         )
     }
 
-    override fun navigate(
-        from: Position,
-        to: Beacon,
-        declination: Float,
-        usingTrueNorth: Boolean
-    ): NavigationVector {
-        val originalVector = navigate(from.location, to.coordinate, declination, usingTrueNorth)
-        val altitudeChange = if (to.elevation != null) to.elevation - from.altitude else null
-        return originalVector.copy(altitudeChange = altitudeChange)
-    }
-
     override fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
         return from.plus(distance.toDouble(), bearing)
-    }
-
-    override fun eta(from: Position, to: Beacon, nonLinear: Boolean): Duration {
-        val speed =
-            if (from.speed < 3) clamp(from.speed, 0.89408f, 1.78816f) else from.speed
-        val elevationGain =
-            max(if (to.elevation == null) 0f else (to.elevation - from.altitude), 0f)
-        val distance =
-            from.location.distanceTo(to.coordinate) * (if (nonLinear) PI.toFloat() / 2f else 1f)
-
-        val baseTime = distance / speed
-        val elevationSeconds = (elevationGain / 300f) * 30f * 60f
-
-        return Duration.ofSeconds(baseTime.toLong()).plusSeconds(elevationSeconds.toLong())
-    }
-
-    override fun nearby(
-        location: Coordinate,
-        beacons: List<Beacon>,
-        maxDistance: Float
-    ): List<Beacon> {
-        return beacons
-            .asSequence()
-            .map { Pair(it, location.distanceTo(it.coordinate)) }
-            .filter { it.second <= maxDistance }
-            .sortedBy { it.second }
-            .map { it.first }
-            .toList()
     }
 
     override fun getPaceDistance(paces: Int, paceLength: Distance): Distance {
