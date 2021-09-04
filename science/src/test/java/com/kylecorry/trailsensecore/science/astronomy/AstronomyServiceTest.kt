@@ -5,11 +5,11 @@ import com.kylecorry.trailsensecore.science.astronomy.eclipse.EclipseType
 import com.kylecorry.trailsensecore.science.astronomy.meteors.MeteorShower
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonTruePhase
-import com.kylecorry.trailsensecore.time.Season
+import com.kylecorry.trailsensecore.science.shared.Season
 import com.kylecorry.trailsensecore.tests.assertDate
 import com.kylecorry.trailsensecore.tests.assertDuration
 import com.kylecorry.trailsensecore.tests.parametrized
-import com.kylecorry.trailsensecore.time.TimeUtils.duration
+import com.kylecorry.trailsensecore.time.TSTime.duration
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

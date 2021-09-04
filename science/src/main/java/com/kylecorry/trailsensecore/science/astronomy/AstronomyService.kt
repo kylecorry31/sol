@@ -15,14 +15,12 @@ import com.kylecorry.trailsensecore.science.astronomy.meteors.MeteorShowerPeak
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonPhase
 import com.kylecorry.trailsensecore.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.trailsensecore.science.astronomy.sun.SolarRadiationCalculator
+import com.kylecorry.trailsensecore.science.astronomy.units.*
 import com.kylecorry.trailsensecore.science.astronomy.units.EclipticCoordinate
-import com.kylecorry.trailsensecore.science.astronomy.units.fromJulianDay
-import com.kylecorry.trailsensecore.science.astronomy.units.toJulianDay
-import com.kylecorry.trailsensecore.science.astronomy.units.toUniversalTime
-import com.kylecorry.trailsensecore.time.DateUtils
-import com.kylecorry.trailsensecore.time.Season
-import com.kylecorry.trailsensecore.time.TimeUtils.atStartOfDay
-import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
+import com.kylecorry.trailsensecore.science.shared.Season
+import com.kylecorry.trailsensecore.time.TSTime.atStartOfDay
+import com.kylecorry.trailsensecore.time.TSTime.getClosestFutureTime
+import com.kylecorry.trailsensecore.time.TSTime.getClosestTime
 import com.kylecorry.trailsensecore.units.*
 import java.time.*
 import kotlin.math.absoluteValue
@@ -74,7 +72,7 @@ class AstronomyService : IAstronomyService {
     ): ZonedDateTime? {
         val today = getSunEvents(time, location, mode, withRefraction)
         val tomorrow = getSunEvents(time.plusDays(1), location, mode, withRefraction)
-        return DateUtils.getClosestFutureTime(
+        return getClosestFutureTime(
             time,
             listOf(today.set, tomorrow.set)
         )
@@ -88,7 +86,7 @@ class AstronomyService : IAstronomyService {
     ): ZonedDateTime? {
         val today = getSunEvents(time, location, mode, withRefraction)
         val tomorrow = getSunEvents(time.plusDays(1), location, mode, withRefraction)
-        return DateUtils.getClosestFutureTime(
+        return getClosestFutureTime(
             time,
             listOf(today.rise, tomorrow.rise)
         )
@@ -264,7 +262,7 @@ class AstronomyService : IAstronomyService {
     ): ZonedDateTime? {
         val today = getMoonEvents(time, location, withRefraction)
         val tomorrow = getMoonEvents(time.plusDays(1), location, withRefraction)
-        return DateUtils.getClosestFutureTime(
+        return getClosestFutureTime(
             time,
             listOf(today.set, tomorrow.set)
         )
@@ -276,7 +274,7 @@ class AstronomyService : IAstronomyService {
     ): ZonedDateTime? {
         val today = getMoonEvents(time, location, withRefraction)
         val tomorrow = getMoonEvents(time.plusDays(1), location, withRefraction)
-        return DateUtils.getClosestFutureTime(
+        return getClosestFutureTime(
             time,
             listOf(today.rise, tomorrow.rise)
         )
@@ -377,7 +375,7 @@ class AstronomyService : IAstronomyService {
         val yesterday = getMeteorShowerTimes(shower, location, time.plusDays(1))
         val tomorrow = getMeteorShowerTimes(shower, location, time.minusDays(1))
 
-        val closest = DateUtils.getClosestTime(
+        val closest = getClosestTime(
             time,
             listOf(today.transit, yesterday.transit, tomorrow.transit)
         )

@@ -1,14 +1,17 @@
 package com.kylecorry.trailsensecore.time
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Test
+import com.kylecorry.trailsensecore.time.TSTime.getClosestFutureTime
+import com.kylecorry.trailsensecore.time.TSTime.getClosestPastTime
+import com.kylecorry.trailsensecore.time.TSTime.getClosestTime
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class DateUtilsTest {
+class TSTimeTest {
 
     @Test
     fun canGetClosestPastTime() {
@@ -20,7 +23,7 @@ class DateUtilsTest {
             null
         )
 
-        val actual = DateUtils.getClosestPastTime(now, times)
+        val actual = getClosestPastTime(now, times)
 
         assertEquals(dt(2020, Month.JANUARY, 10, 1), actual)
     }
@@ -36,7 +39,7 @@ class DateUtilsTest {
             null
         )
 
-        val actual = DateUtils.getClosestTime(now, times)
+        val actual = getClosestTime(now, times)
 
         assertEquals(zdt(2020, Month.JANUARY, 10, 2, 30), actual)
     }
@@ -52,7 +55,7 @@ class DateUtilsTest {
             null
         )
 
-        val actual = DateUtils.getClosestFutureTime(now, times)
+        val actual = getClosestFutureTime(now, times)
 
         assertEquals(dt(2020, Month.JANUARY, 11, 0), actual)
     }
@@ -66,7 +69,7 @@ class DateUtilsTest {
             null
         )
 
-        val actual = DateUtils.getClosestFutureTime(now, times)
+        val actual = getClosestFutureTime(now, times)
 
         assertNull(actual)
     }
@@ -80,7 +83,7 @@ class DateUtilsTest {
             null
         )
 
-        val actual = DateUtils.getClosestPastTime(now, times)
+        val actual = getClosestPastTime(now, times)
 
         assertNull(actual)
     }

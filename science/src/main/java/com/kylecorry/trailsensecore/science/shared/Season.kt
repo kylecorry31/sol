@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.time
+package com.kylecorry.trailsensecore.science.shared
 
 enum class Season {
     Winter,

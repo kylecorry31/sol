@@ -1,4 +1,4 @@
-package com.kylecorry.trailsensecore.time
+package com.kylecorry.trailsensecore.science.shared
 
 import com.kylecorry.trailsensecore.units.Coordinate
 import java.time.ZonedDateTime

@@ -1,7 +1,7 @@
 package com.kylecorry.trailsensecore.science.meteorology
 
 import com.kylecorry.trailsensecore.units.*
-import com.kylecorry.trailsensecore.time.Season
+import com.kylecorry.trailsensecore.science.shared.Season
 import org.junit.Assert
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*

@@ -2,7 +2,7 @@ package com.kylecorry.trailsensecore.science.astronomy
 
 import com.kylecorry.trailsensecore.science.astronomy.eclipse.IEclipseService
 import com.kylecorry.trailsensecore.science.astronomy.meteors.IMeteorShowerService
-import com.kylecorry.trailsensecore.time.ISeasonService
+import com.kylecorry.trailsensecore.science.shared.ISeasonService
 
 // TODO: Move solar panel service out of this
 interface IAstronomyService : IEclipseService, ISunService, IMoonService, ISolarPanelService,

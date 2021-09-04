@@ -3,7 +3,7 @@ package com.kylecorry.trailsensecore.science.meteorology
 import com.kylecorry.trailsensecore.units.Distance
 import com.kylecorry.trailsensecore.units.Pressure
 import com.kylecorry.trailsensecore.units.Temperature
-import com.kylecorry.trailsensecore.time.ISeasonService
+import com.kylecorry.trailsensecore.science.shared.ISeasonService
 import com.kylecorry.trailsensecore.science.meteorology.clouds.ICloudService
 import java.time.Duration
 import java.time.Instant

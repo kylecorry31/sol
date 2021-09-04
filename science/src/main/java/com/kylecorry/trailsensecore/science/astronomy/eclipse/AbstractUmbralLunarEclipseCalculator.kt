@@ -43,7 +43,7 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         // It is a total eclipse
         val semiDuration = getSemiDuration(parameters)
 
-        val time = InstantRange(
+        val time = com.kylecorry.trailsensecore.time.InstantRange(
             parameters.maximum - semiDuration,
             parameters.maximum + semiDuration,
         )

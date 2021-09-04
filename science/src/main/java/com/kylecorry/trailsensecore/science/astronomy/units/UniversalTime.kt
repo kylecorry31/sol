@@ -1,13 +1,10 @@
 package com.kylecorry.trailsensecore.science.astronomy.units
 
-import com.kylecorry.trailsensecore.time.TimeUtils.toDecimal
-import com.kylecorry.trailsensecore.time.TimeUtils.toDuration
-import com.kylecorry.trailsensecore.time.TimeUtils.toUTCLocal
-import com.kylecorry.trailsensecore.time.TimeUtils.utc
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZonedDateTime
+import com.kylecorry.trailsensecore.math.TSMath.toRadians
+import com.kylecorry.trailsensecore.time.TSTime
+import com.kylecorry.trailsensecore.time.TSTime.toUTCLocal
+import com.kylecorry.trailsensecore.time.TSTime.utc
+import java.time.*
 import kotlin.math.floor
 
 typealias UniversalTime = LocalDateTime
@@ -105,4 +102,63 @@ fun fromJulianDay(jd: Double): UniversalTime {
     }.toInt()
 
     return LocalDateTime.of(year, month, dayOfMonth, hour, minute, seconds)
+}
+
+fun UniversalTime.toLocal(zone: ZoneId): ZonedDateTime {
+    return atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
+}
+
+fun ut0hOnDate(date: ZonedDateTime): UniversalTime {
+    val localDate = date.toLocalDate()
+
+    for (i in -1..1) {
+        val ut0h = date.plusDays(i.toLong()).toUniversalTime().atZeroHour()
+        val local0h = ut0h.toLocal(date.zone)
+        if (localDate == local0h.toLocalDate()) {
+            return ut0h
+        }
+    }
+
+    return date.toUniversalTime().atZeroHour()
+}
+
+fun LocalTime.toDuration(): Duration {
+    return Duration.ofHours(hour.toLong()).plusMinutes(minute.toLong())
+        .plusSeconds(second.toLong()).plusNanos(nano.toLong())
+}
+
+fun Duration.toLocalTime(): LocalTime {
+    return LocalTime.MIN.plus(this)
+}
+
+fun Duration.toDecimal(): Double {
+    val millis = toMillis()
+    val seconds = millis / 1000.0
+    val minutes = seconds / 60.0
+    return minutes / 60.0
+}
+
+fun Duration.toDegrees(): Double {
+    return toDecimal() * 15.0
+}
+
+fun Duration.toRadians(): Double {
+    return toDegrees().toRadians()
+}
+
+fun degreesToTime(degrees: Double): Duration {
+    return TSTime.hours(degrees / 15)
+}
+
+fun dmsToTime(degrees: Int, minutes: Int, seconds: Number): Duration {
+    val d = degrees + minutes / 60.0 + seconds.toDouble() / 3600.0
+    return degreesToTime(d)
+}
+
+fun timeToAngle(hours: Number, minutes: Number, seconds: Number): Double {
+    return timeToDecimal(hours, minutes, seconds) * 15
+}
+
+fun timeToDecimal(hours: Number, minutes: Number, seconds: Number): Double {
+    return hours.toDouble() + minutes.toDouble() / 60.0 + seconds.toDouble() / 3600.0
 }

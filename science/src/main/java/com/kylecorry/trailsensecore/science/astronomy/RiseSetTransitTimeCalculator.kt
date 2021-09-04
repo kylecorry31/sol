@@ -10,9 +10,7 @@ import com.kylecorry.trailsensecore.math.TSMath
 import com.kylecorry.trailsensecore.math.TSMath.cosDegrees
 import com.kylecorry.trailsensecore.math.TSMath.sinDegrees
 import com.kylecorry.trailsensecore.math.TSMath.wrap
-import com.kylecorry.trailsensecore.time.TimeUtils
-import com.kylecorry.trailsensecore.time.TimeUtils.plusHours
-import com.kylecorry.trailsensecore.time.TimeUtils.toLocal
+import com.kylecorry.trailsensecore.time.TSTime.plusHours
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
@@ -86,9 +84,9 @@ internal class RiseSetTransitTimeCalculator {
         withRefraction: Boolean,
         locator: ICelestialLocator
     ): RiseSetTransitTimes {
-        val ut = TimeUtils.ut0hOnDate(date)
-        val uty = TimeUtils.ut0hOnDate(date.minusDays(1))
-        val utt = TimeUtils.ut0hOnDate(date.plusDays(1))
+        val ut = ut0hOnDate(date)
+        val uty = ut0hOnDate(date.minusDays(1))
+        val utt = ut0hOnDate(date.plusDays(1))
         val astroCoords = locator.getCoordinates(ut)
         val astroCoordsy = locator.getCoordinates(uty)
         val astroCoordst = locator.getCoordinates(utt)

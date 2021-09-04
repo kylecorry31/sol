@@ -43,7 +43,7 @@ android {
                 release(MavenPublication) {
                     from components.release
                     groupId = group
-                    artifactId = 'science'
+                    artifactId = 'time'
                     version = version
                 }
             }
@@ -62,9 +62,6 @@ android {
 
 dependencies {
     implementation project(':math')
-    implementation project(':units')
-    implementation project(':time')
-
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'junit:junit:4.13.2'

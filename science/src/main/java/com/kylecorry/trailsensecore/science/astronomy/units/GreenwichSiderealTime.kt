@@ -1,7 +1,5 @@
 package com.kylecorry.trailsensecore.science.astronomy.units
 
-import com.kylecorry.trailsensecore.time.TimeUtils.toLocalTime
-import com.kylecorry.trailsensecore.time.TimeUtils
 import java.time.LocalDate
 
 internal class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0) {
@@ -29,7 +27,7 @@ internal class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0)
 
         val ut = 0.99727 * a
 
-        val duration = TimeUtils.decimalToTime(ut)
+        val duration = com.kylecorry.trailsensecore.time.TSTime.hours(ut)
         return UniversalTime.of(date, duration.toLocalTime())
     }
 }
