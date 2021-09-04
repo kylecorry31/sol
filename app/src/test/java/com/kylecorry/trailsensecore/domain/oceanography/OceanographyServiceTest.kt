@@ -4,7 +4,6 @@ import com.kylecorry.andromeda.core.units.Distance
 import com.kylecorry.andromeda.core.units.DistanceUnits
 import com.kylecorry.andromeda.core.units.Pressure
 import com.kylecorry.andromeda.core.units.PressureUnits
-import com.kylecorry.trailsensecore.domain.depth.DepthService
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -83,9 +82,9 @@ internal class OceanographyServiceTest {
     @Test
     fun canCalculateDepth(){
         val currentPressure = Pressure(2222.516f, PressureUnits.Hpa)
-        val service = DepthService()
+        val service = OceanographyService()
 
-        val depth = service.calculateDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
+        val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
 
         val expected = Distance(12f, DistanceUnits.Meters)
 
@@ -95,9 +94,9 @@ internal class OceanographyServiceTest {
     @Test
     fun depthReturnsZeroWhenAboveWater(){
         val currentPressure = Pressure(1000f, PressureUnits.Hpa)
-        val service = DepthService()
+        val service = OceanographyService()
 
-        val depth = service.calculateDepth(currentPressure,  Pressure(1013f, PressureUnits.Hpa))
+        val depth = service.getDepth(currentPressure,  Pressure(1013f, PressureUnits.Hpa))
 
         val expected = Distance(0f, DistanceUnits.Meters)
 
