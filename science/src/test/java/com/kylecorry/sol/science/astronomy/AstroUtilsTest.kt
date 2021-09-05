@@ -9,43 +9,6 @@ import org.junit.jupiter.api.Test
 
 class AstroUtilsTest {
 
-    @Test
-    fun power() {
-        val cases = listOf(
-            listOf(1.0, 1.0, 1.0),
-            listOf(2.0, 1.0, 2.0),
-            listOf(2.0, 2.0, 4.0),
-            listOf(3.0, 2.0, 9.0),
-            listOf(4.0, 3.0, 64.0),
-            listOf(2.0, 0.0, 1.0),
-            listOf(2.0, -1.0, 0.5),
-            listOf(2.0, -2.0, 0.25)
-        )
-
-        cases.forEach {
-            assertEquals(it[2], SolMath.power(it[0], it[1].toInt()), 0.0000001)
-        }
-    }
-
-    @Test
-    fun polynomial() {
-        assertEquals(0.0, SolMath.polynomial(1.0, 0.0), 0.0001)
-        assertEquals(0.0, SolMath.polynomial(1.0), 0.0001)
-        assertEquals(1.0, SolMath.polynomial(2.0, 1.0), 0.0001)
-        assertEquals(3.0, SolMath.polynomial(1.0, 1.0, 2.0), 0.0001)
-        assertEquals(81.0, SolMath.polynomial(2.0, 1.0, 2.0, 3.0, 0.0, 4.0), 0.0001)
-    }
-
-//    @Test
-//    fun reduceAngleDegrees() {
-//        assertEquals(0.0, Astro.reduceAngleDegrees(0.0), 0.0)
-//        assertEquals(180.0, Astro.reduceAngleDegrees(180.0), 0.0)
-//        assertEquals(0.0, Astro.reduceAngleDegrees(0.0), 0.0)
-//        assertEquals(1.0, Astro.reduceAngleDegrees(361.0), 0.0)
-//        assertEquals(359.0, Astro.reduceAngleDegrees(-1.0), 0.0)
-//        assertEquals(180.0, Astro.reduceAngleDegrees(-180.0), 0.0)
-//        assertEquals(360.0, Astro.reduceAngleDegrees(720.0), 0.0)
-//    }
 
 //    @Test
 //    fun hourToAngle() {
@@ -56,14 +19,6 @@ class AstroUtilsTest {
 //        )
 //    }
 
-//    @Test
-//    fun interpolate() {
-//        assertEquals(
-//            0.876125,
-//            Astro.interpolate(0.18125, 0.884226, 0.877366, 0.870531),
-//            0.0000005
-//        )
-//    }
 
 //    @Test
 //    fun julianDay() {

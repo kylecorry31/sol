@@ -24,7 +24,7 @@ internal class Moon : ICelestialLocator {
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val T = ut.toJulianCenturies()
-        val L = SolMath.reduceAngleDegrees(
+        val L = SolMath.normalizeAngle(
             SolMath.polynomial(
                 T,
                 218.3164477,
@@ -42,9 +42,9 @@ internal class Moon : ICelestialLocator {
 
         val F = getArgumentOfLatitude(ut)
 
-        val a1 = SolMath.reduceAngleDegrees(119.75 + 131.849 * T)
-        val a2 = SolMath.reduceAngleDegrees(53.09 + 479264.290 * T)
-        val a3 = SolMath.reduceAngleDegrees(313.45 + 481266.484 * T)
+        val a1 = SolMath.normalizeAngle(119.75 + 131.849 * T)
+        val a2 = SolMath.normalizeAngle(53.09 + 479264.290 * T)
+        val a3 = SolMath.normalizeAngle(313.45 + 481266.484 * T)
         val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000075)
         val E2 = SolMath.square(E)
 
@@ -121,7 +121,7 @@ internal class Moon : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.reduceAngleDegrees(
+        return SolMath.normalizeAngle(
             SolMath.polynomial(
                 T,
                 134.9633964,
@@ -205,7 +205,7 @@ internal class Moon : ICelestialLocator {
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.reduceAngleDegrees(
+        return SolMath.normalizeAngle(
             SolMath.polynomial(
                 T,
                 297.8501921,
@@ -219,7 +219,7 @@ internal class Moon : ICelestialLocator {
 
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.reduceAngleDegrees(
+        return SolMath.normalizeAngle(
             SolMath.polynomial(
                 T,
                 93.2720950,

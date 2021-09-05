@@ -162,11 +162,11 @@ internal class RiseSetTransitTimeCalculator {
 
         for (i in 0 until iterations) {
             val sidereal0 =
-                GreenwichSiderealTime(SolMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m0) / 15)
+                GreenwichSiderealTime(SolMath.normalizeAngle(apparentSidereal + 360.985647 * m0) / 15)
             val sidereal1 =
-                GreenwichSiderealTime(SolMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m1) / 15)
+                GreenwichSiderealTime(SolMath.normalizeAngle(apparentSidereal + 360.985647 * m1) / 15)
             val sidereal2 =
-                GreenwichSiderealTime(SolMath.reduceAngleDegrees(apparentSidereal + 360.985647 * m2) / 15)
+                GreenwichSiderealTime(SolMath.normalizeAngle(apparentSidereal + 360.985647 * m2) / 15)
 
             val n0 = m0 + deltaT / 86400
             val n1 = m1 + deltaT / 86400

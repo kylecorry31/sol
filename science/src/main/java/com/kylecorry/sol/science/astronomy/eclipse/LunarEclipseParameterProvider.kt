@@ -29,7 +29,7 @@ internal class LunarEclipseParameterProvider {
         var F: Double
         do {
             T = k / 1236.85
-            F = SolMath.reduceAngleDegrees(
+            F = SolMath.normalizeAngle(
                 160.7108 + 390.67050284 * k - 0.0016118 * power(T, 2) - 0.00000227 * power(
                     T,
                     3
@@ -41,19 +41,19 @@ internal class LunarEclipseParameterProvider {
         } while (sinDegrees(F).absoluteValue > 0.36)
 
         val mean = getJDEOfMeanMoonPhase(k)
-        val M = SolMath.reduceAngleDegrees(
+        val M = SolMath.normalizeAngle(
             2.5534 + 29.1053567 * k - 0.0000014 * power(
                 T,
                 2
             ) - 0.00000011 * power(T, 3)
         )
-        val MPrime = SolMath.reduceAngleDegrees(
+        val MPrime = SolMath.normalizeAngle(
             201.5643 + 385.81693528 * k + 0.0107582 * power(T, 2) + 0.00001238 * power(
                 T,
                 3
             ) - 0.000000058 * power(T, 4)
         )
-        val omega = SolMath.reduceAngleDegrees(
+        val omega = SolMath.normalizeAngle(
             124.7746 - 1.56375588 * k + 0.0020672 * power(
                 T,
                 2

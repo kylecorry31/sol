@@ -11,6 +11,11 @@ object SolMath {
     }
 
     fun wrap(value: Double, min: Double, max: Double): Double {
+
+        if (min >= max){
+            return value
+        }
+
         val range = max - min
 
         var newValue = value
@@ -27,6 +32,11 @@ object SolMath {
     }
 
     fun power(x: Int, power: Int): Int {
+        if (x == 1){
+            return 1
+        }
+
+
         var total = 1
         for (i in 0 until abs(power)) {
             total *= x
@@ -72,10 +82,6 @@ object SolMath {
 
     fun square(a: Double): Double {
         return a * a
-    }
-
-    fun reduceAngleDegrees(angle: Double): Double {
-        return wrap(angle, 0.0, 360.0)
     }
 
     fun interpolate(

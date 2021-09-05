@@ -22,7 +22,7 @@ internal class Sun : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val apparentLongitude = getApparentLongitude(ut)
         val correctedObliquity = getObliquityCorrection(ut)
-        val rightAscension = SolMath.reduceAngleDegrees(
+        val rightAscension = SolMath.normalizeAngle(
             atan2(
                 cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
                 cosDegrees(apparentLongitude)
@@ -51,7 +51,7 @@ internal class Sun : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.reduceAngleDegrees(SolMath.polynomial(T, 357.52911, 35999.05029, -0.0001537))//, 1 / 24490000.0))
+        return SolMath.normalizeAngle(SolMath.polynomial(T, 357.52911, 35999.05029, -0.0001537))//, 1 / 24490000.0))
     }
 
     fun getTrueAnomaly(ut: UniversalTime): Double {
@@ -75,7 +75,7 @@ internal class Sun : ICelestialLocator {
 
     private fun getGeometricLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.reduceAngleDegrees(SolMath.polynomial(T, 280.46646, 36000.76983, 0.0003032))
+        return SolMath.normalizeAngle(SolMath.polynomial(T, 280.46646, 36000.76983, 0.0003032))
     }
 
     private fun getEccentricity(ut: UniversalTime): Double {
