@@ -101,6 +101,10 @@ object SolMath {
         return sin(angle.toRadians())
     }
 
+    fun sinDegrees(angle: Float): Float {
+        return sin(angle.toRadians())
+    }
+
     fun tanDegrees(angle: Double): Double {
         return tan(angle.toRadians())
     }
@@ -113,12 +117,24 @@ object SolMath {
         return cos(angle.toRadians())
     }
 
+    fun cosDegrees(angle: Float): Float {
+        return cos(angle.toRadians())
+    }
+
     fun Double.toRadians(): Double {
         return Math.toRadians(this)
     }
 
     fun Float.toRadians(): Float {
         return Math.toRadians(this.toDouble()).toFloat()
+    }
+
+    fun Float.toDegrees(): Float {
+        return Math.toDegrees(this.toDouble()).toFloat()
+    }
+
+    fun Double.toDegrees(): Double {
+        return Math.toDegrees(this)
     }
 
     fun deltaAngle(angle1: Float, angle2: Float): Float {
@@ -132,8 +148,12 @@ object SolMath {
         return delta
     }
 
+    fun clamp(value: Double, minimum: Double, maximum: Double): Double {
+        return value.coerceIn(minimum, maximum)
+    }
+
     fun clamp(value: Float, minimum: Float, maximum: Float): Float {
-        return min(maximum, max(minimum, value))
+        return value.coerceIn(minimum, maximum)
     }
 
     fun Double.roundPlaces(places: Int): Double {
@@ -142,14 +162,6 @@ object SolMath {
 
     fun Float.roundPlaces(places: Int): Float {
         return (this * 10f.pow(places)).roundToInt() / 10f.pow(places)
-    }
-
-    fun Float.toDegrees(): Float {
-        return Math.toDegrees(this.toDouble()).toFloat()
-    }
-
-    fun Double.toDegrees(): Double {
-        return Math.toDegrees(this)
     }
 
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
@@ -240,12 +252,23 @@ object SolMath {
         return filtered
     }
 
-    fun constrain(value: Float, minimum: Float, maximum: Float): Float {
-        return value.coerceIn(minimum, maximum)
-    }
-
     fun lerp(start: Float, end: Float, percent: Float): Float {
         return start + (end - start) * percent
+    }
+
+    fun lerp(start: Double, end: Double, percent: Double): Double {
+        return start + (end - start) * percent
+    }
+
+    fun map(
+        value: Double,
+        originalMin: Double,
+        originalMax: Double,
+        newMin: Double,
+        newMax: Double
+    ): Double {
+        val normal = norm(value, originalMin, originalMax)
+        return lerp(newMin, newMax, normal)
     }
 
     fun map(
@@ -257,6 +280,14 @@ object SolMath {
     ): Float {
         val normal = norm(value, originalMin, originalMax)
         return lerp(newMin, newMax, normal)
+    }
+
+    fun norm(value: Double, minimum: Double, maximum: Double): Double {
+        val range = maximum - minimum
+        if (range == 0.0) {
+            return 0.0
+        }
+        return (value - minimum) / range
     }
 
     fun norm(value: Float, minimum: Float, maximum: Float): Float {

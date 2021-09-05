@@ -1,11 +1,16 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.SolMath.toRadians
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.tan
 
 class SolMathTest {
 
@@ -84,6 +89,166 @@ class SolMathTest {
         val actual = SolMath.deltaAngle(angle1, angle2)
         assertEquals(expected, actual, 0.00001f)
     }
+
+    @ParameterizedTest
+    @MethodSource("provideTanDegrees")
+    fun tanDegreesDouble(angle: Double, expected: Double) {
+        val actual = SolMath.tanDegrees(angle)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTanDegrees")
+    fun tanDegreesFloat(angle: Double, expected: Double) {
+        val actual = SolMath.tanDegrees(angle.toFloat())
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSinDegrees")
+    fun sinDegreesDouble(angle: Double, expected: Double) {
+        val actual = SolMath.sinDegrees(angle)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSinDegrees")
+    fun sinDegreesFloat(angle: Double, expected: Double) {
+        val actual = SolMath.sinDegrees(angle.toFloat())
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCosDegrees")
+    fun cosDegreesDouble(angle: Double, expected: Double) {
+        val actual = SolMath.cosDegrees(angle)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCosDegrees")
+    fun cosDegreesFloat(angle: Double, expected: Double) {
+        val actual = SolMath.cosDegrees(angle.toFloat())
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRadians")
+    fun toRadiansDouble(angle: Double, expected: Double) {
+        val actual = angle.toRadians()
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRadians")
+    fun toRadiansFloat(angle: Double, expected: Double) {
+        val actual = angle.toFloat().toRadians()
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRadians")
+    fun toDegreesDouble(expected: Double, angle: Double) {
+        val actual = angle.toDegrees()
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRadians")
+    fun toDegreesFloat(expected: Double, angle: Double) {
+        val actual = angle.toFloat().toDegrees()
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideClamp")
+    fun clampDouble(value: Double, min: Double, max: Double, expected: Double) {
+        val actual = SolMath.clamp(value, min, max)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideClamp")
+    fun clampFloat(value: Double, min: Double, max: Double, expected: Double) {
+        val actual = SolMath.clamp(value.toFloat(), min.toFloat(), max.toFloat())
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNorm")
+    fun normDouble(value: Double, min: Double, max: Double, expected: Double) {
+        val actual = SolMath.norm(value, min, max)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNorm")
+    fun normFloat(value: Double, min: Double, max: Double, expected: Double) {
+        val actual = SolMath.norm(value.toFloat(), min.toFloat(), max.toFloat())
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLerp")
+    fun lerpDouble(value: Double, min: Double, max: Double, expected: Double) {
+        val actual = SolMath.lerp(min, max, value)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLerp")
+    fun lerpFloat(value: Double, min: Double, max: Double, expected: Double) {
+        val actual = SolMath.lerp(min.toFloat(), max.toFloat(), value.toFloat())
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMap")
+    fun mapDouble(
+        value: Double,
+        min: Double,
+        max: Double,
+        newMin: Double,
+        newMax: Double,
+        expected: Double
+    ) {
+        val actual = SolMath.map(value, min, max, newMin, newMax)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMap")
+    fun mapFloat(
+        value: Double,
+        min: Double,
+        max: Double,
+        newMin: Double,
+        newMax: Double,
+        expected: Double
+    ) {
+        val actual = SolMath.map(
+            value.toFloat(),
+            min.toFloat(),
+            max.toFloat(),
+            newMin.toFloat(),
+            newMax.toFloat()
+        )
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideScaleToFit")
+    fun scaleToFit(
+        width: Float,
+        height: Float,
+        maxWidth: Float,
+        maxHeight: Float,
+        expected: Float
+    ) {
+        val actual = SolMath.scaleToFit(width, height, maxWidth, maxHeight)
+        assertEquals(expected, actual, 0.00001f)
+    }
+
 
     companion object {
         @JvmStatic
@@ -203,6 +368,153 @@ class SolMathTest {
                 Arguments.of(10.0f, 180.0f, 170.0f),
                 Arguments.of(-10.0f, 180.0f, -170.0f),
                 Arguments.of(0.0f, 180.0f, 180.0f),
+            )
+        }
+
+        @JvmStatic
+        fun provideTanDegrees(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(45.0, tan(Math.toRadians(45.0))),
+                Arguments.of(80.0, tan(Math.toRadians(80.0))),
+                Arguments.of(0.0, tan(Math.toRadians(0.0))),
+                Arguments.of(-80.0, tan(Math.toRadians(-80.0))),
+                Arguments.of(720.0, tan(Math.toRadians(720.0))),
+            )
+        }
+
+        @JvmStatic
+        fun provideSinDegrees(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(45.0, sin(Math.toRadians(45.0))),
+                Arguments.of(90.0, sin(Math.toRadians(90.0))),
+                Arguments.of(0.0, sin(Math.toRadians(0.0))),
+                Arguments.of(-90.0, sin(Math.toRadians(-90.0))),
+                Arguments.of(720.0, sin(Math.toRadians(720.0))),
+            )
+        }
+
+        @JvmStatic
+        fun provideCosDegrees(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(45.0, cos(Math.toRadians(45.0))),
+                Arguments.of(90.0, cos(Math.toRadians(90.0))),
+                Arguments.of(0.0, cos(Math.toRadians(0.0))),
+                Arguments.of(-90.0, cos(Math.toRadians(-90.0))),
+                Arguments.of(720.0, cos(Math.toRadians(720.0))),
+            )
+        }
+
+        @JvmStatic
+        fun provideRadians(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(45.0, Math.toRadians(45.0)),
+                Arguments.of(90.0, Math.toRadians(90.0)),
+                Arguments.of(0.0, Math.toRadians(0.0)),
+                Arguments.of(-90.0, Math.toRadians(-90.0)),
+                Arguments.of(720.0, Math.toRadians(720.0)),
+            )
+        }
+
+        @JvmStatic
+        fun provideClamp(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, 1.0),
+                Arguments.of(-0.1, 0.0, 1.0, 0.0),
+                Arguments.of(4.0, 2.0, 5.0, 4.0),
+                Arguments.of(1.0, 2.0, 5.0, 2.0),
+                Arguments.of(6.0, 2.0, 5.0, 5.0),
+            )
+        }
+
+        @JvmStatic
+        fun provideNorm(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, 1.2),
+                Arguments.of(-0.1, 0.0, 1.0, -0.1),
+                Arguments.of(4.0, 2.0, 6.0, 0.5),
+                Arguments.of(1.0, 2.0, 6.0, -0.25),
+                Arguments.of(6.0, 2.0, 6.0, 1.0),
+                Arguments.of(2.0, 2.0, 6.0, 0.0),
+            )
+        }
+
+        @JvmStatic
+        fun provideLerp(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, 1.2),
+                Arguments.of(-0.1, 0.0, 1.0, -0.1),
+                Arguments.of(0.5, 2.0, 6.0, 4.0),
+                Arguments.of(-0.25, 2.0, 6.0, 1.0),
+                Arguments.of(1.0, 2.0, 6.0, 6.0),
+                Arguments.of(0.0, 2.0, 6.0, 2.0),
+            )
+        }
+
+        @JvmStatic
+        fun provideMap(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, 2.0, 4.0, 2.2),
+                Arguments.of(0.0, 0.0, 1.0, 2.0, 4.0, 2.0),
+                Arguments.of(1.0, 0.0, 1.0, 2.0, 4.0, 4.0),
+                Arguments.of(1.2, 0.0, 1.0, 2.0, 4.0, 4.4),
+                Arguments.of(-0.1, 0.0, 1.0, 2.0, 4.0, 1.8),
+                Arguments.of(4.0, 2.0, 6.0, 0.0, 4.0, 2.0),
+                Arguments.of(1.0, 2.0, 6.0, 0.0, 4.0, -1.0),
+                Arguments.of(6.0, 2.0, 6.0, 0.0, 4.0, 4.0),
+                Arguments.of(2.0, 2.0, 6.0, 0.0, 4.0, 0.0),
+            )
+        }
+
+        @JvmStatic
+        fun provideScaleToFit(): Stream<Arguments> {
+            return Stream.of(
+                // Square destination
+                Arguments.of(2.0f, 2.0f, 2.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 1.0f, 2.0f, 2.0f, 2.0f),
+                Arguments.of(4.0f, 4.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 2.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(2.0f, 4.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(1.0f, 4.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 1.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(2.0f, 1.0f, 2.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 2.0f, 2.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 0.5f, 2.0f, 2.0f, 2.0f),
+                Arguments.of(0.5f, 1.0f, 2.0f, 2.0f, 2.0f),
+
+                // Long destination
+                Arguments.of(2.0f, 2.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 1.0f, 4.0f, 2.0f, 2.0f),
+                Arguments.of(4.0f, 4.0f, 4.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 2.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(2.0f, 4.0f, 4.0f, 2.0f, 0.5f),
+                Arguments.of(1.0f, 4.0f, 4.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 1.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(2.0f, 1.0f, 4.0f, 2.0f, 2.0f),
+                Arguments.of(1.0f, 2.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 0.5f, 4.0f, 2.0f, 4.0f),
+                Arguments.of(0.5f, 1.0f, 4.0f, 2.0f, 2.0f),
+
+                // Tall destination
+                Arguments.of(2.0f, 2.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(1.0f, 1.0f, 2.0f, 4.0f, 2.0f),
+                Arguments.of(4.0f, 4.0f, 2.0f, 4.0f, 0.5f),
+                Arguments.of(4.0f, 2.0f, 2.0f, 4.0f, 0.5f),
+                Arguments.of(2.0f, 4.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(1.0f, 4.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(4.0f, 1.0f, 2.0f, 4.0f, 0.5f),
+                Arguments.of(2.0f, 1.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(1.0f, 2.0f, 2.0f, 4.0f, 2.0f),
+                Arguments.of(1.0f, 0.5f, 2.0f, 4.0f, 2.0f),
+                Arguments.of(0.5f, 1.0f, 2.0f, 4.0f, 4.0f),
             )
         }
     }
