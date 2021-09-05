@@ -55,6 +55,10 @@ object Time {
         return this < Instant.now()
     }
 
+    fun Instant.isOlderThan(duration: Duration): Boolean {
+        return Duration.between(this, Instant.now()) > duration
+    }
+
     fun duration(hours: Long = 0L, minutes: Long = 0L, seconds: Long = 0L): Duration {
         return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
     }
