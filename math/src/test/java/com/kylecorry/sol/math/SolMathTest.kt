@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -247,6 +248,20 @@ class SolMathTest {
     ) {
         val actual = SolMath.scaleToFit(width, height, maxWidth, maxHeight)
         assertEquals(expected, actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRoundPlaces")
+    fun roundPlacesDouble(value: Double, places: Int, expected: Double){
+        val actual = value.roundPlaces(places)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRoundPlaces")
+    fun roundPlacesFloat(value: Double, places: Int, expected: Double){
+        val actual = value.toFloat().roundPlaces(places)
+        assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
 
@@ -515,6 +530,41 @@ class SolMathTest {
                 Arguments.of(1.0f, 2.0f, 2.0f, 4.0f, 2.0f),
                 Arguments.of(1.0f, 0.5f, 2.0f, 4.0f, 2.0f),
                 Arguments.of(0.5f, 1.0f, 2.0f, 4.0f, 4.0f),
+            )
+        }
+
+        @JvmStatic
+        fun provideRoundPlaces(): Stream<Arguments> {
+            return Stream.of(
+                // Floor
+                Arguments.of(1.1111, 0, 1.0),
+                Arguments.of(1.1111, 1, 1.1),
+                Arguments.of(1.1111, 2, 1.11),
+                Arguments.of(1.1111, 3, 1.111),
+                Arguments.of(1.1111, 4, 1.1111),
+                Arguments.of(1.1111, 5, 1.1111),
+
+                // Ceil
+                Arguments.of(1.6666, 0, 2.0),
+                Arguments.of(1.6666, 1, 1.7),
+                Arguments.of(1.6666, 2, 1.67),
+                Arguments.of(1.6666, 3, 1.667),
+                Arguments.of(1.6666, 4, 1.6666),
+                Arguments.of(1.6666, 5, 1.6666),
+
+                // Middle
+                Arguments.of(1.5555, 0, 2.0),
+                Arguments.of(1.5555, 1, 1.6),
+                Arguments.of(1.5555, 2, 1.56),
+                Arguments.of(1.5555, 3, 1.556),
+                Arguments.of(1.5555, 4, 1.5555),
+                Arguments.of(1.5555, 5, 1.5555),
+
+                // Negative
+                Arguments.of(15.11, -1, 20.0),
+                Arguments.of(15.11, -2, 0.0),
+                Arguments.of(55.11, -2, 100.0),
+                Arguments.of(155.11, -2, 200.0),
             )
         }
     }
