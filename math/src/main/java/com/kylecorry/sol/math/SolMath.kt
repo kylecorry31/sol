@@ -210,12 +210,6 @@ object SolMath {
         return ssxy / ssxx
     }
 
-    fun List<Double>.toDoubleArray(): DoubleArray {
-        return DoubleArray(size) {
-            get(it)
-        }
-    }
-
     fun removeOutliers(
         measurements: List<Double>,
         threshold: Double,
