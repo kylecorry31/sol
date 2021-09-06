@@ -8,9 +8,9 @@ import com.kylecorry.sol.units.Distance
 interface IGeologyService {
 
     // Geomagnetic field
-    fun getMagneticDeclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
+    fun getGeomagneticDeclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
 
-    fun getMagneticInclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
+    fun getGeomagneticInclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
 
     fun getGeomagneticField(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Vector3
 
@@ -28,7 +28,7 @@ interface IGeologyService {
 
     // Coordinates / navigation
 
-    fun isInGeofence(coordinate: Coordinate, geofence: Geofence): Boolean
+    fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean
 
     fun getRegion(coordinate: Coordinate): Region
 

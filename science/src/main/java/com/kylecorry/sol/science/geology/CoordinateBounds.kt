@@ -5,7 +5,7 @@ import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import kotlin.math.max
 
-class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) {
+class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double): IGeoArea {
 
     val northWest = Coordinate(north, west)
     val southWest = Coordinate(south, west)
@@ -31,7 +31,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
         return Distance.meters(max(southEast.distanceTo(southWest), northEast.distanceTo(northWest)))
     }
 
-    fun contains(location: Coordinate): Boolean {
+    override fun contains(location: Coordinate): Boolean {
         val containsLatitude = location.latitude in south..north
 
         val containsLongitude = if (east < 0 && west > 0) {

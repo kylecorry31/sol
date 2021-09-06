@@ -14,7 +14,7 @@ import kotlin.math.*
 class GeologyService : IGeologyService {
     private val riskClassifier = AvalancheRiskClassifier()
 
-    override fun getMagneticDeclination(
+    override fun getGeomagneticDeclination(
         coordinate: Coordinate,
         altitude: Float?,
         time: Long
@@ -28,7 +28,7 @@ class GeologyService : IGeologyService {
         return geoField.declination
     }
 
-    override fun getMagneticInclination(
+    override fun getGeomagneticInclination(
         coordinate: Coordinate,
         altitude: Float?,
         time: Long
@@ -40,18 +40,6 @@ class GeologyService : IGeologyService {
             time
         )
         return geoField.inclination
-    }
-
-    override fun getInclination(gravity: Vector3): Float {
-        return InclinationCalculator.calculate(gravity)
-    }
-
-    override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
-        return riskClassifier.classify(inclination)
-    }
-
-    override fun isInGeofence(coordinate: Coordinate, geofence: Geofence): Boolean {
-        return geofence.contains(coordinate)
     }
 
     override fun getGeomagneticField(
@@ -66,6 +54,18 @@ class GeologyService : IGeologyService {
             time
         )
         return Vector3(geoField.x * 0.001f, geoField.y * 0.001f, geoField.z * 0.001f)
+    }
+
+    override fun getInclination(gravity: Vector3): Float {
+        return InclinationCalculator.calculate(gravity)
+    }
+
+    override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
+        return riskClassifier.classify(inclination)
+    }
+
+    override fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean {
+        return area.contains(coordinate)
     }
 
     override fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing {

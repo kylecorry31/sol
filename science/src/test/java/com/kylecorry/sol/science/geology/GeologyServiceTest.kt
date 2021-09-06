@@ -60,7 +60,7 @@ internal class GeologyServiceTest {
         val service = GeologyService()
         val ny = Coordinate(40.7128, -74.0060)
         val altitude = 10f
-        val dec = service.getMagneticDeclination(ny, altitude, 1608151299005)
+        val dec = service.getGeomagneticDeclination(ny, altitude, 1608151299005)
         Assert.assertEquals(-12.708426f, dec, 0.01f)
     }
 
