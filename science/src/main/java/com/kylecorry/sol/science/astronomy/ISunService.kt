@@ -52,4 +52,14 @@ interface ISunService {
      */
     fun getSolarRadiation(date: ZonedDateTime, location: Coordinate): Double
 
+    /**
+     * Gets the solar radiation for the given time in kW/m^2
+     */
+    fun getSolarRadiation(
+        date: ZonedDateTime,
+        location: Coordinate,
+        tilt: Float,
+        azimuth: Bearing
+    ): Double
+
 }

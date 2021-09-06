@@ -143,102 +143,10 @@ class AstronomyService : IAstronomyService {
     override fun getSolarRadiation(
         date: ZonedDateTime,
         location: Coordinate,
-        position: SolarPanelPosition
+        tilt: Float,
+        azimuth: Bearing
     ): Double {
-        return radiation.getRadiation(date.toUniversalTime(), location, position)
-    }
-
-
-    private fun getOptimalSolarDirection(location: Coordinate): Bearing {
-        return if (location.latitude > 0) {
-            Bearing.from(CompassDirection.South)
-        } else {
-            Bearing.from(CompassDirection.North)
-        }
-    }
-
-    override fun getBestSolarPanelPositionForRestOfDay(
-        start: ZonedDateTime,
-        location: Coordinate
-    ): SolarPanelPosition {
-        val interval = 5L
-
-        var time = start
-
-        var averageAzimuth = 0f
-        var averageAltitude = 0f
-        var count = 0
-
-        while (time.toLocalDate() == start.toLocalDate()) {
-            val altitude = getSunAltitude(time, location, true)
-
-            val wrapAzimuth = !location.isNorthernHemisphere
-            if (altitude >= 0) {
-                var azimuth = getSunAzimuth(time, location).value
-                if (wrapAzimuth && azimuth < 180f) {
-                    azimuth += 360f
-                }
-                averageAzimuth += azimuth
-                count++
-            }
-            time = time.plusMinutes(interval)
-        }
-
-        if (count != 0) {
-            averageAzimuth /= count
-        }
-
-        // Only get altitudes close to the average azimuth
-        time = start
-        count = 0
-        while (time.toLocalDate() == start.toLocalDate()) {
-            val altitude = getSunAltitude(time, location, true)
-
-            if (altitude >= 0) {
-                val azimuth = getSunAzimuth(time, location).value
-                if (deltaAngle(azimuth, averageAzimuth).absoluteValue < 45f) {
-                    averageAltitude += altitude
-                    count++
-                }
-            }
-            time = time.plusMinutes(interval)
-        }
-
-        if (count != 0) {
-            averageAltitude /= count
-        }
-
-        val angle = 90f - averageAltitude
-        val direction = Bearing(averageAzimuth)
-        return SolarPanelPosition(angle, direction)
-    }
-
-
-    override fun getBestSolarPanelPositionForDay(
-        date: ZonedDateTime,
-        location: Coordinate
-    ): SolarPanelPosition {
-        val start = date.withHour(0).withMinute(0).withSecond(0)
-        return getBestSolarPanelPositionForRestOfDay(start, location)
-    }
-
-    override fun getBestSolarPanelPositionForTime(
-        time: ZonedDateTime,
-        location: Coordinate
-    ): SolarPanelPosition {
-        val sunAltitude = getSunAltitude(time, location, true)
-
-        if (sunAltitude >= 0) {
-            val azimuth = getSunAzimuth(time, location)
-            return SolarPanelPosition(90f - sunAltitude, azimuth)
-        }
-
-        // Get azimuth of next sunrise
-        val nextSunrise = getNextSunrise(time, location)
-            ?: return getBestSolarPanelPositionForDay(time, location)
-
-        val azimuth = getSunAzimuth(nextSunrise, location)
-        return SolarPanelPosition(90f, azimuth)
+        return radiation.getRadiation(date.toUniversalTime(), location, tilt, azimuth)
     }
 
     override fun getMoonEvents(

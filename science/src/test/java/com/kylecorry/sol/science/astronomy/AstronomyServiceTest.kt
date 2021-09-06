@@ -202,45 +202,6 @@ class AstronomyServiceTest {
     }
 
     @Test
-    fun getBestSolarPanelPositionForDayNorthern() {
-        val ny = Coordinate(40.7128, -74.0060)
-
-        parametrized(
-            listOf(
-                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 179f, 22.5f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 180f, 65.7f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 180f, 65.7f),
-            )
-        ) {
-            val position = service.getBestSolarPanelPositionForDay(
-                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-                ny
-            )
-            assertEquals(it.second, position.bearing.value, 0.5f)
-            assertEquals(it.third, position.tilt, 0.5f)
-        }
-    }
-
-    @Test
-    fun getBestSolarPanelPositionForDaySouthern() {
-        val ny = Coordinate(-40.7128, -74.0060)
-        parametrized(
-            listOf(
-                Triple(LocalDateTime.of(2020, Month.JULY, 21, 0, 0), 360f, 65.68f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 0, 0), 360f, 22.54f),
-                Triple(LocalDateTime.of(2020, Month.NOVEMBER, 22, 12, 30), 360f, 22.54f),
-            )
-        ) {
-            val position = service.getBestSolarPanelPositionForDay(
-                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-                ny
-            )
-            assertEquals(it.second, position.bearing.value, 0.5f)
-            assertEquals(it.third, position.tilt, 0.05f)
-        }
-    }
-
-    @Test
     fun getSunAzimuth() {
         val ny = Coordinate(40.7128, -74.0060)
         parametrized(
