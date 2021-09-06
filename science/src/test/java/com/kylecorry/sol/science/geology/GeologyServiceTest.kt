@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.geology
 
+import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
@@ -11,7 +12,48 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-internal class GeoServiceTest2 {
+internal class GeologyServiceTest {
+
+    @Test
+    fun triangulate(){
+        val service = GeologyService()
+        val pointA = Coordinate(40.0, 10.0)
+        val bearingA = Bearing(220f)
+        val pointB = Coordinate(40.5, 9.5)
+        val bearingB = Bearing(295f)
+
+        val expected = Coordinate(40.229722, 10.252778)
+        val actual = service.triangulate(pointA, bearingA, pointB, bearingB)
+
+        Assert.assertNotNull(actual)
+        Assert.assertEquals(expected.latitude, actual!!.latitude, 0.01)
+        Assert.assertEquals(expected.longitude, actual.longitude, 0.01)
+    }
+
+    @Test
+    fun deadReckon(){
+        val service = GeologyService()
+        val start = Coordinate(40.0, 10.0)
+        val bearing = Bearing(280f)
+        val distance = 10000f
+
+        val expected = Coordinate(39.984444, 10.115556)
+        val actual = service.deadReckon(start, distance, bearing)
+        Assert.assertEquals(expected.latitude, actual.latitude, 0.01)
+        Assert.assertEquals(expected.longitude, actual.longitude, 0.01)
+    }
+
+    @Test
+    fun navigate() {
+        val service = GeologyService()
+        val start = Coordinate(0.0, 1.0)
+        val end = Coordinate(10.0, -8.0)
+
+        val vector = service.navigate(start, end, 0f, true)
+
+        Assert.assertEquals(Bearing(-41.7683f).value, vector.direction.value, 0.005f)
+        Assert.assertEquals(1488793.6f, vector.distance, 0.005f)
+    }
 
     @Test
     fun getDeclination() {

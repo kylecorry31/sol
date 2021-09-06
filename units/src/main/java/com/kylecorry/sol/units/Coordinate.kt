@@ -1,6 +1,5 @@
 package com.kylecorry.sol.units
 
-import android.location.Location
 import android.os.Parcelable
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
@@ -21,9 +20,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     }
 
     fun distanceTo(other: Coordinate): Float {
-        val results = FloatArray(3)
-        Location.distanceBetween(latitude, longitude, other.latitude, other.longitude, results)
-        return results[0]
+        return DistanceCalculator.getDistanceAndBearing(this, other)[0]
     }
 
     fun plus(distance: Distance, bearing: Bearing): Coordinate {
@@ -52,21 +49,12 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
      * Get the bearing to the other coordinate (using True North)
      */
     fun bearingTo(other: Coordinate): Bearing {
-        val results = FloatArray(3)
-        Location.distanceBetween(latitude, longitude, other.latitude, other.longitude, results)
-        return Bearing(results[1])
+        return Bearing(DistanceCalculator.getDistanceAndBearing(this, other)[1])
     }
 
     companion object {
 
         val zero = Coordinate(0.0, 0.0)
 
-        private fun isValidLongitude(longitude: Double): Boolean {
-            return longitude.absoluteValue <= 180
-        }
-
-        private fun isValidLatitude(latitude: Double): Boolean {
-            return latitude.absoluteValue <= 90
-        }
     }
 }

@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.geology
 
-import android.location.Location
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
@@ -9,6 +8,7 @@ import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceCalculator
 import kotlin.math.*
 
 class GeologyService : IGeologyService {
@@ -174,8 +174,7 @@ class GeologyService : IGeologyService {
         declination: Float,
         useTrueNorth: Boolean
     ): NavigationVector {
-        val results = FloatArray(3)
-        Location.distanceBetween(from.latitude, from.longitude, to.latitude, to.longitude, results)
+        val results = DistanceCalculator.getDistanceAndBearing(from, to)
 
         val declinationAdjustment = if (useTrueNorth) {
             0f
