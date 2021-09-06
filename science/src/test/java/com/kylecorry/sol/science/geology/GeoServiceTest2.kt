@@ -1,7 +1,9 @@
 package com.kylecorry.sol.science.geology
 
+import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
+import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -10,6 +12,15 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class GeoServiceTest2 {
+
+    @Test
+    fun getDeclination() {
+        val service = GeologyService()
+        val ny = Coordinate(40.7128, -74.0060)
+        val altitude = 10f
+        val dec = service.getMagneticDeclination(ny, altitude, 1608151299005)
+        Assert.assertEquals(-12.708426f, dec, 0.01f)
+    }
 
     @ParameterizedTest
     @MethodSource("provideAvalancheRisk")

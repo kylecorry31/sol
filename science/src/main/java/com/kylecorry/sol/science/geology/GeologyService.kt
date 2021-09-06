@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.geology
 
-import android.hardware.GeomagneticField
 import android.location.Location
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
@@ -20,7 +19,7 @@ class GeologyService : IGeologyService {
         altitude: Float?,
         time: Long
     ): Float {
-        val geoField = GeomagneticField(
+        val geoField = GeomagneticField2020(
             coordinate.latitude.toFloat(),
             coordinate.longitude.toFloat(),
             altitude ?: 0f,
@@ -34,7 +33,7 @@ class GeologyService : IGeologyService {
         altitude: Float?,
         time: Long
     ): Float {
-        val geoField = GeomagneticField(
+        val geoField = GeomagneticField2020(
             coordinate.latitude.toFloat(),
             coordinate.longitude.toFloat(),
             altitude ?: 0f,
@@ -60,7 +59,7 @@ class GeologyService : IGeologyService {
         altitude: Float?,
         time: Long
     ): Vector3 {
-        val geoField = GeomagneticField(
+        val geoField = GeomagneticField2020(
             coordinate.latitude.toFloat(),
             coordinate.longitude.toFloat(),
             altitude ?: 0f,

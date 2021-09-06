@@ -12,14 +12,6 @@ class GeologyServiceTest {
     private val service = GeologyService()
 
     @Test
-    fun getDeclination() {
-        val ny = Coordinate(40.7128, -74.0060)
-        val altitude = 10f
-        val dec = service.getMagneticDeclination(ny, altitude, 1608151299005)
-        assertEquals(-12.820191f, dec, 0.01f)
-    }
-
-    @Test
     fun triangulate(){
         val pointA = Coordinate(40.0, 10.0)
         val bearingA = Bearing(220f)
