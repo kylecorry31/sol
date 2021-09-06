@@ -29,6 +29,7 @@ class AstronomyService : IAstronomyService {
 
     private val sun = Sun()
     private val moon = Moon()
+    private val radiation = SolarRadiationCalculator()
 
     override fun getSunEvents(
         date: ZonedDateTime,
@@ -136,7 +137,15 @@ class AstronomyService : IAstronomyService {
     }
 
     override fun getSolarRadiation(date: ZonedDateTime, location: Coordinate): Double {
-        return SolarRadiationCalculator().getRadiation(date.toUniversalTime(), location)
+        return radiation.getRadiation(date.toUniversalTime(), location)
+    }
+
+    override fun getSolarRadiation(
+        date: ZonedDateTime,
+        location: Coordinate,
+        position: SolarPanelPosition
+    ): Double {
+        return radiation.getRadiation(date.toUniversalTime(), location, position)
     }
 
 
