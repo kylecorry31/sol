@@ -12,7 +12,7 @@ object SolMath {
 
     fun wrap(value: Double, min: Double, max: Double): Double {
 
-        if (min >= max){
+        if (min >= max) {
             return value
         }
 
@@ -32,7 +32,7 @@ object SolMath {
     }
 
     fun power(x: Int, power: Int): Int {
-        if (x == 1){
+        if (x == 1) {
             return 1
         }
 
@@ -81,6 +81,14 @@ object SolMath {
     }
 
     fun square(a: Double): Double {
+        return a * a
+    }
+
+    fun cube(a: Float): Float {
+        return a * a * a
+    }
+
+    fun square(a: Float): Float {
         return a * a
     }
 
@@ -246,11 +254,11 @@ object SolMath {
         return filtered
     }
 
-    fun lerp(start: Float, end: Float, percent: Float): Float {
+    fun lerp(percent: Float, start: Float, end: Float): Float {
         return start + (end - start) * percent
     }
 
-    fun lerp(start: Double, end: Double, percent: Double): Double {
+    fun lerp(percent: Double, start: Double, end: Double): Double {
         return start + (end - start) * percent
     }
 
@@ -262,7 +270,7 @@ object SolMath {
         newMax: Double
     ): Double {
         val normal = norm(value, originalMin, originalMax)
-        return lerp(newMin, newMax, normal)
+        return lerp(normal, newMin, newMax)
     }
 
     fun map(
@@ -273,7 +281,7 @@ object SolMath {
         newMax: Float
     ): Float {
         val normal = norm(value, originalMin, originalMax)
-        return lerp(newMin, newMax, normal)
+        return lerp(normal, newMin, newMax)
     }
 
     fun norm(value: Double, minimum: Double, maximum: Double): Double {
@@ -307,6 +315,27 @@ object SolMath {
 
     fun normalizeAngle(angle: Double): Double {
         return wrap(angle, 0.0, 360.0) % 360
+    }
+
+    fun approximateGradient(
+        x: Double,
+        step: Double = 0.0001,
+        fn: (x: Double) -> Double
+    ): Double {
+        val current = fn(x)
+        return (fn(x + step) - current) / step
+    }
+
+    fun approximateGradient(
+        x: Double,
+        y: Double,
+        step: Double = 0.0001,
+        fn: (x: Double, y: Double) -> Double
+    ): Pair<Double, Double> {
+        val current = fn(x, y)
+        val xGrad = (fn(x + step, y) - current) / step
+        val yGrad = (fn(x, y + step) - current) / step
+        return xGrad to yGrad
     }
 
 }
