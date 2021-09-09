@@ -192,14 +192,14 @@ class SolMathTest {
     @ParameterizedTest
     @MethodSource("provideLerp")
     fun lerpDouble(value: Double, min: Double, max: Double, expected: Double) {
-        val actual = SolMath.lerp(min, max, value)
+        val actual = SolMath.lerp(value, min, max)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideLerp")
     fun lerpFloat(value: Double, min: Double, max: Double, expected: Double) {
-        val actual = SolMath.lerp(min.toFloat(), max.toFloat(), value.toFloat())
+        val actual = SolMath.lerp(value.toFloat(), min.toFloat(), max.toFloat())
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
