@@ -8,7 +8,11 @@ import kotlin.random.Random
 class SimulatedAnnealingOptimizer(
     private val startingTemperature: Double,
     private val stepSize: Double,
-    private val maxIterations: Int = 1000
+    private val maxIterations: Int = 1000,
+    private val minimumTemperature: Double = 0.0,
+    private val coolingFn: (t0: Double, t: Double, k: Int) -> Double = { t0: Double, t: Double, k: Int ->
+        t0 / (k + 1).toDouble()
+    }
 ) : IOptimizer {
 
     private val random = Random(1)
@@ -29,8 +33,12 @@ class SimulatedAnnealingOptimizer(
         var y = bestY
         var z = bestZ
 
+        var t = startingTemperature
 
         for (i in 0 until maxIterations) {
+            if (t < minimumTemperature) {
+                break
+            }
             val newX = x + random.nextDouble(-1.0, 1.0) * stepSize
             val newY = y + random.nextDouble(-1.0, 1.0) * stepSize
             val newZ = myFn(newX, newY)
@@ -43,7 +51,7 @@ class SimulatedAnnealingOptimizer(
 
             val diff = newZ - z
 
-            val t = startingTemperature / (i + 1).toFloat()
+            t = coolingFn(startingTemperature, t, i)
 
             val metropolisAC = exp(-diff / t)
 
