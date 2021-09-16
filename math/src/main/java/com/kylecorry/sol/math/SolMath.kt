@@ -316,26 +316,4 @@ object SolMath {
     fun normalizeAngle(angle: Double): Double {
         return wrap(angle, 0.0, 360.0) % 360
     }
-
-    fun approximateGradient(
-        x: Double,
-        step: Double = 0.0001,
-        fn: (x: Double) -> Double
-    ): Double {
-        val current = fn(x)
-        return (fn(x + step) - current) / step
-    }
-
-    fun approximateGradient(
-        x: Double,
-        y: Double,
-        step: Double = 0.0001,
-        fn: (x: Double, y: Double) -> Double
-    ): Pair<Double, Double> {
-        val current = fn(x, y)
-        val xGrad = (fn(x + step, y) - current) / step
-        val yGrad = (fn(x, y + step) - current) / step
-        return xGrad to yGrad
-    }
-
 }

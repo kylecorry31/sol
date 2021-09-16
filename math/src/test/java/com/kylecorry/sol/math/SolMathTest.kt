@@ -264,58 +264,6 @@ class SolMathTest {
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
-    @Test
-    fun approximateGradient1Variable() {
-        val fn1 = { x: Double -> x * x }
-        val gradFn1 = { x: Double -> 2 * x }
-
-        val fn2 = { x: Double -> SolMath.cube(x) }
-        val gradFn2 = { x: Double -> 3 * SolMath.square(x) }
-
-        assertEquals(
-            gradFn1(1.0),
-            SolMath.approximateGradient(1.0, step = 0.000001, fn = fn1),
-            0.0001
-        )
-        assertEquals(
-            gradFn2(4.0),
-            SolMath.approximateGradient(4.0, step = 0.000001, fn = fn2),
-            0.0001
-        )
-    }
-
-    @Test
-    fun approximateGradient2Variables() {
-        val fn1 = { x: Double, y: Double -> x * x + y * y }
-        val gradFn1 = { x: Double, y: Double -> 2 * x to 2 * y }
-
-        val fn2 = { x: Double, y: Double -> SolMath.cube(x) }
-        val gradFn2 = { x: Double, y: Double -> 3 * SolMath.square(x) to 0.0 }
-
-        assertEquals(
-            gradFn1(1.0, 3.0).first,
-            SolMath.approximateGradient(1.0, 3.0, step = 0.000001, fn = fn1).first,
-            0.0001
-        )
-        assertEquals(
-            gradFn1(1.0, 3.0).second,
-            SolMath.approximateGradient(1.0, 3.0, step = 0.000001, fn = fn1).second,
-            0.0001
-        )
-
-        assertEquals(
-            gradFn2(4.0, 3.0).first,
-            SolMath.approximateGradient(4.0, 3.0, step = 0.000001, fn = fn2).first,
-            0.0001
-        )
-        assertEquals(
-            gradFn2(4.0, 3.0).second,
-            SolMath.approximateGradient(4.0, 3.0, step = 0.000001, fn = fn2).second,
-            0.0001
-        )
-    }
-
-
     companion object {
         @JvmStatic
         fun provideWrapDouble(): Stream<Arguments> {

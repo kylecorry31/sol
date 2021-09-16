@@ -3,6 +3,7 @@ package com.kylecorry.sol.math.optimization
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.lerp
+import com.kylecorry.sol.math.calculus.CalculusService
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -43,7 +44,7 @@ class GradientDescentOptimizer(
             fn: (x: Double, y: Double) -> Double
         ): (x: Double, y: Double) -> Pair<Double, Double> {
             return { x: Double, y: Double ->
-                SolMath.approximateGradient(x, y, step, fn)
+                CalculusService().derivative(x, y, step, fn)
             }
         }
     }
