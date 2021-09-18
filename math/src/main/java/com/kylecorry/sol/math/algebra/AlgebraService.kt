@@ -5,45 +5,36 @@ import kotlin.math.sqrt
 class AlgebraService {
 
     /**
-     * Evaluates an equation of form mx + b = y
-     */
-    fun evaluateLinear(x: Float, m: Float, b: Float): Float {
-        return m * x + b
-    }
-
-    /**
-     * Evaluates an equation of form ax^2 + bx + c = y
-     */
-    fun evaluateQuadratic(x: Float, a: Float, b: Float, c: Float): Float {
-        return a * x * x + b * x + c
-    }
-
-
-    /**
      * Solves an equation of form mx + b = 0
      */
-    fun solveLinear(m: Float, b: Float): Float? {
-        if (m == 0f) {
-            if (b == 0f) {
+    fun solve(equation: LinearEquation): Float? {
+        if (equation.m == 0f) {
+            if (equation.b == 0f) {
                 return 0f
             }
             return null
         }
-        return -b / m
+        return -equation.b / equation.m
     }
 
-    /**
-     * Solves an equation of form ax^2 + bx + c = 0
-     */
-    fun solveQuadratic(a: Float, b: Float, c: Float): Pair<Float, Float>? {
-        val discriminant = b * b - 4 * a * c
+    fun solve(equation: QuadraticEquation): Pair<Float, Float>? {
+        if (equation.a == 0f) {
+            val linear = solve(LinearEquation(equation.b, equation.c)) ?: return null
+            return linear to linear
+        }
+
+        val discriminant = equation.b * equation.b - 4 * equation.a * equation.c
         if (discriminant < 0) {
             return null
         }
         val sqrtDiscriminant = sqrt(discriminant)
-        val x1 = (-b + sqrtDiscriminant) / (2 * a)
-        val x2 = (-b - sqrtDiscriminant) / (2 * a)
+        val x1 = (-equation.b + sqrtDiscriminant) / (2 * equation.a)
+        val x2 = (-equation.b - sqrtDiscriminant) / (2 * equation.a)
         return x1 to x2
+    }
+
+    fun inverse(equation: LinearEquation): LinearEquation {
+        return LinearEquation(1 / equation.m, -equation.b / equation.m)
     }
 
 }

@@ -1,27 +1,29 @@
 package com.kylecorry.sol.math.geometry
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.AlgebraService
+import com.kylecorry.sol.math.algebra.QuadraticEquation
 
 internal class IntersectionService(private val algebra: AlgebraService) {
 
     fun getIntersection(line: Line, circle: Circle): Pair<Vector2, Vector2>? {
-        val m = line.slope()
-        val yIntercept = line.intercept()
-        val a = (1 - m * m)
-        val b = -(2 * circle.center.x + 2 * m * yIntercept - 2 * circle.center.y * m)
-        val c =
-            SolMath.square(circle.center.x) + SolMath.square(yIntercept) - 2 * circle.center.y * yIntercept + SolMath.square(
-                circle.center.y - circle.radius
-            )
+        val centeredLine = Line(line.start - circle.center, line.end - circle.center)
 
-        val solutions = algebra.solveQuadratic(a, b, c) ?: return null
+        val m = centeredLine.slope()
+        val yIntercept = centeredLine.intercept()
+        val a = (1 + square(m))
+        val b = 2 * yIntercept * m
+        val c = square(yIntercept) - square(circle.radius)
+        val solutions = algebra.solve(QuadraticEquation(a, b, c)) ?: return null
 
-        val y1 = algebra.evaluateLinear(solutions.first, m, yIntercept)
-        val y2 = algebra.evaluateLinear(solutions.second, m, yIntercept)
+        val y1 = centeredLine.equation().evaluate(solutions.first)
+        val y2 = centeredLine.equation().evaluate(solutions.second)
 
-        return Vector2(solutions.first, y1) to Vector2(solutions.second, y2)
+        val start = Vector2(solutions.first, y1) + circle.center
+        val end = Vector2(solutions.second, y2) + circle.center
+
+        return start to end
     }
 
     fun getIntersection(line1: Line, line2: Line): Vector2? {
@@ -33,7 +35,11 @@ internal class IntersectionService(private val algebra: AlgebraService) {
         }
 
         val x = intercepts / slopes
-        return Vector2(x, algebra.evaluateLinear(x, line1.slope(), line1.intercept()))
+        return Vector2(x, line1.equation().evaluate(x))
     }
+
+    /**
+     * Line and rectangle - just evaluate at x = left, right and y = top, bottom
+     */
 
 }
