@@ -1,9 +1,19 @@
 package com.kylecorry.sol.math.calculus
 
+import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.algebra.QuadraticEquation
 import kotlin.math.max
 import kotlin.math.min
 
 class CalculusService {
+
+    fun derivative(equation: QuadraticEquation): LinearEquation {
+        return LinearEquation(equation.a * 2, equation.b)
+    }
+
+    fun derivative(equation: LinearEquation): Float {
+        return equation.m
+    }
 
     fun derivative(
         x: Double,
@@ -57,7 +67,7 @@ class CalculusService {
         }
 
         // Add up the last piece
-        if (x < end){
+        if (x < end) {
             val endValue = fn(end)
             total += (end - x) * (startValue + endValue) / 2
         }
