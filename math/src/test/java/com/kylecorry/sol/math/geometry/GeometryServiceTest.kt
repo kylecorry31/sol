@@ -26,6 +26,8 @@ internal class GeometryServiceTest {
         val line3 = Line(Vector2(0.5f, 1f), Vector2(0.5f, -1f))
         val line4 = Line(Vector2(1f, 0f), Vector2(2f, 2f))
 
+        // TODO: Add test where line is outside circle, but points to circle
+
         val circle1 = Circle(Vector2(0f, 0f), 1f)
         val circle2 = Circle(Vector2(4f, 3f), 2f)
 

@@ -3,6 +3,7 @@ package com.kylecorry.sol.math.geometry
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.AlgebraService
+import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
 class GeometryService {
@@ -41,6 +42,10 @@ class GeometryService {
                     bottom
                 }
 
+                if (!contains(line, start) || !contains(line, end)) {
+                    return null
+                }
+
                 Line(start, end)
             } else {
                 null
@@ -68,6 +73,10 @@ class GeometryService {
             right
         }
 
+        if (!contains(line, start) || !contains(line, end)) {
+            return null
+        }
+
         return Line(start, end)
     }
 
@@ -88,12 +97,12 @@ class GeometryService {
     fun contains(line: Line, point: Vector2): Boolean {
         // Vertical line
         if (line.isVertical) {
-            return point.x == line.start.x && point.y in line.bottom().y..line.top().y
+            return point.x == line.start.x && point.y >= line.bottom().y && point.y <= line.top().y
         }
 
-        return line.equation().evaluate(
-            point.x
-        ) == point.y && point.x in line.left().x..line.right().x
+        val eval = line.equation().evaluate(point.x)
+
+        return (eval - point.y).absoluteValue < 0.00001f && point.x >= line.left().x && point.x <= line.right().x
     }
 
     fun contains(circle: Circle, point: Vector2): Boolean {
