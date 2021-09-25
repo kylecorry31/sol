@@ -26,18 +26,18 @@ class CloudService : ICloudService {
     }
 
     override fun getCloudPrecipitationPercentage(cloud: CloudType): Float {
-        // TODO: Find a better source for these values
+        // Using average values from table 9: https://www.ideals.illinois.edu/bitstream/handle/2142/101973/ISWSRI-33.pdf?sequence=1&isAllowed=y
         return when (cloud) {
-            CloudType.Cirrus -> 0f
-            CloudType.Cirrocumulus -> 0f
-            CloudType.Cirrostratus -> 0f
-            CloudType.Altocumulus -> 0.1f
-            CloudType.Altostratus -> 0.2f
+            CloudType.Cirrus -> 0.06f
+            CloudType.Cirrocumulus -> 0.06f
+            CloudType.Cirrostratus -> 0.06f
+            CloudType.Altocumulus -> 0.02f
+            CloudType.Altostratus -> 0.23f
             CloudType.Nimbostratus -> 1f
-            CloudType.Stratus -> 0.75f
-            CloudType.Stratocumulus -> 0.6f
-            CloudType.Cumulus -> 0.5f
-            CloudType.Cumulonimbus -> 1f
+            CloudType.Stratus -> 0.21f
+            CloudType.Stratocumulus -> 0.17f
+            CloudType.Cumulus -> 0.24f
+            CloudType.Cumulonimbus -> 0.41f
         }
     }
 

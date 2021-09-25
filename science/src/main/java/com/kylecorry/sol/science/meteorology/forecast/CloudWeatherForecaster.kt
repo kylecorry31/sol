@@ -22,11 +22,11 @@ class CloudWeatherForecaster(
             return WeatherForecast(Weather.Storm, 1f)
         }
 
-        return if (gettingWorse && currentPrecipitation <= 0.5f) {
+        return if (gettingWorse && currentPrecipitation <= 0.2f) {
             return WeatherForecast(Weather.WorseningSlow, currentPrecipitation)
         } else if (gettingWorse) {
             WeatherForecast(Weather.WorseningFast, currentPrecipitation)
-        } else if (gettingBetter && currentPrecipitation > 0.5f) {
+        } else if (gettingBetter && currentPrecipitation > 0.2f) {
             WeatherForecast(Weather.ImprovingSlow, currentPrecipitation)
         } else if (gettingBetter) {
             WeatherForecast(Weather.ImprovingFast, currentPrecipitation)
