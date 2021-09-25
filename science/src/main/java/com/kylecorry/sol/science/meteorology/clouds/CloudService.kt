@@ -25,6 +25,22 @@ class CloudService : ICloudService {
         }
     }
 
+    override fun getCloudPrecipitationPercentage(cloud: CloudType): Float {
+        // TODO: Find a better source for these values
+        return when (cloud) {
+            CloudType.Cirrus -> 0f
+            CloudType.Cirrocumulus -> 0f
+            CloudType.Cirrostratus -> 0f
+            CloudType.Altocumulus -> 0.1f
+            CloudType.Altostratus -> 0.2f
+            CloudType.Nimbostratus -> 1f
+            CloudType.Stratus -> 0.75f
+            CloudType.Stratocumulus -> 0.6f
+            CloudType.Cumulus -> 0.5f
+            CloudType.Cumulonimbus -> 1f
+        }
+    }
+
     override fun getCloudHeightRange(height: CloudHeight, location: Coordinate): HeightRange {
         if (height == CloudHeight.Low) {
             return HeightRange(
