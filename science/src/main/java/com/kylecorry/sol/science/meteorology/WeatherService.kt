@@ -76,7 +76,7 @@ class WeatherService : IWeatherService {
         tendency: PressureTendency,
         stormThreshold: Float?
     ): Weather {
-        val isStorm = tendency.amount <= (stormThreshold ?: -6f)
+        val isStorm = tendency.amount <= (stormThreshold ?: -2f)
 
         if (isStorm) {
             return Weather.Storm
@@ -193,6 +193,10 @@ class WeatherService : IWeatherService {
 
     override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {
         return cloudService.getCloudPrecipitation(cloud)
+    }
+
+    override fun getCloudPrecipitationPercentage(cloud: CloudType): Float {
+        return cloudService.getCloudPrecipitationPercentage(cloud)
     }
 
     override fun getCloudHeightRange(height: CloudHeight, location: Coordinate): HeightRange {

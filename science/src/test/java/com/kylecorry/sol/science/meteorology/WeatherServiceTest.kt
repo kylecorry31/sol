@@ -194,10 +194,10 @@ class WeatherServiceTest {
                 Arguments.of(PressureCharacteristic.Steady, 0f, -6f, Weather.NoChange),
                 Arguments.of(PressureCharacteristic.FallingFast, -6f, -6f, Weather.Storm),
                 Arguments.of(PressureCharacteristic.FallingFast, -8f, -7f, Weather.Storm),
-                Arguments.of(PressureCharacteristic.FallingFast, -6f, null, Weather.Storm),
+                Arguments.of(PressureCharacteristic.FallingFast, -6/3f, null, Weather.Storm),
                 Arguments.of(
                     PressureCharacteristic.FallingFast,
-                    -5f,
+                    -5/3f,
                     null,
                     Weather.WorseningFast
                 ),
@@ -232,77 +232,77 @@ class WeatherServiceTest {
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1001f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2f,
-                    PressureTendency(PressureCharacteristic.Steady, 1f)
+                    2/3f,
+                    PressureTendency(PressureCharacteristic.Steady, 1/3f)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1004f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2f,
-                    PressureTendency(PressureCharacteristic.RisingFast, 4f)
+                    2/3f,
+                    PressureTendency(PressureCharacteristic.RisingFast, 4/3f)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1003f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2f,
-                    PressureTendency(PressureCharacteristic.Rising, 3f)
+                    2/3f,
+                    PressureTendency(PressureCharacteristic.Rising, 1f)
                 ),
                 Arguments.of(
                     Pressure(1004f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -4f)
+                    2/3f,
+                    PressureTendency(PressureCharacteristic.FallingFast, -4/3f)
                 ),
                 Arguments.of(
                     Pressure(1002f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2f,
-                    PressureTendency(PressureCharacteristic.Falling, -2f)
+                    2/3f,
+                    PressureTendency(PressureCharacteristic.Falling, -2/3f)
                 ),
                 Arguments.of(
                     Pressure(1002f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    1f,
-                    PressureTendency(PressureCharacteristic.Falling, -2f)
+                    1/3f,
+                    PressureTendency(PressureCharacteristic.Falling, -2/3f)
                 ),
                 Arguments.of(
                     Pressure(1003f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    1f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -3f)
+                    1/3f,
+                    PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
                     Pressure(1002f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(2),
-                    1f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -3f)
+                    1/3f,
+                    PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
                     Pressure(1008f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(4),
-                    2f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -6f)
+                    2/3f,
+                    PressureTendency(PressureCharacteristic.FallingFast, -2f)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ZERO,
-                    2f,
+                    2/3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
                     Pressure(1000.1f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ZERO,
-                    2f,
+                    2/3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
             )
