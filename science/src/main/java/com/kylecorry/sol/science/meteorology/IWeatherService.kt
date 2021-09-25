@@ -5,6 +5,7 @@ import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Temperature
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
+import com.kylecorry.sol.science.meteorology.forecast.Weather
 import java.time.Duration
 import java.time.Instant
 
@@ -25,8 +26,8 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @param last The last pressure reading (hPa)
      * @param current The current pressure reading (hPa)
      * @param duration The duration between the last and current pressure reading
-     * @param changeThreshold The change threshold (hPa / 3 hr)
-     * @return The pressure tendency (hPa / 3 hr)
+     * @param changeThreshold The change threshold (hPa / hr)
+     * @return The pressure tendency (hPa / hr)
      */
     fun getTendency(
         last: Pressure,

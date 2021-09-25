@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.meteorology
+package com.kylecorry.sol.science.meteorology.forecast
 
 enum class Weather {
     ImprovingFast,

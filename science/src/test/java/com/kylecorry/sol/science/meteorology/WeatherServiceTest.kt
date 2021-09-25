@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.science.meteorology.forecast.Weather
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import org.junit.Assert
