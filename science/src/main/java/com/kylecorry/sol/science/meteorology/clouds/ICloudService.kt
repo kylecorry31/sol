@@ -9,4 +9,10 @@ interface ICloudService {
     fun getCloudsByShape(shape: CloudShape): List<CloudType>
     fun getCloudsByHeight(height: CloudHeight): List<CloudType>
     fun getCloudsByColor(color: CloudColor): List<CloudType>
+
+    /**
+     * Get the cloud cover label
+     * @param percent the percent cloud cover between 0 and 1
+     */
+    fun getCloudCover(percent: Float): CloudCover
 }

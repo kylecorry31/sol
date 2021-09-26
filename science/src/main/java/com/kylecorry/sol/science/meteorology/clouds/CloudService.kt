@@ -86,4 +86,27 @@ class CloudService : ICloudService {
         return CloudType.values().filter { it.colors.contains(color) }
     }
 
+    override fun getCloudCover(percent: Float): CloudCover {
+        return when {
+            percent < 0.01f -> {
+                CloudCover.NoClouds
+            }
+            percent < 0.1f -> {
+                CloudCover.Few
+            }
+            percent < 0.25f -> {
+                CloudCover.Isolated
+            }
+            percent < 0.5f -> {
+                CloudCover.Scattered
+            }
+            percent < 0.9f -> {
+                CloudCover.Broken
+            }
+            else -> {
+                CloudCover.Overcast
+            }
+        }
+    }
+
 }

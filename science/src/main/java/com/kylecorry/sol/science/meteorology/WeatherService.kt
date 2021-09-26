@@ -214,4 +214,8 @@ class WeatherService : IWeatherService {
     override fun getCloudsByColor(color: CloudColor): List<CloudType> {
         return cloudService.getCloudsByColor(color)
     }
+
+    override fun getCloudCover(percent: Float): CloudCover {
+        return cloudService.getCloudCover(percent)
+    }
 }
