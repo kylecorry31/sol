@@ -2,7 +2,6 @@ package com.kylecorry.sol.math.statistics
 
 import org.junit.jupiter.api.Assertions.*
 
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -15,7 +14,7 @@ internal class StatisticsServiceTest {
     @ParameterizedTest
     @MethodSource("provideWeightedSum")
     fun weightedSum(values: List<Pair<Float, Float>>, expected: Float) {
-        val actual = service.weightedSum(values)
+        val actual = service.weightedMean(values)
         assertEquals(expected, actual, 0.00001f)
     }
 

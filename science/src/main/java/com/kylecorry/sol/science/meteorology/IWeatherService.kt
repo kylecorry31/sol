@@ -5,7 +5,6 @@ import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Temperature
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
-import com.kylecorry.sol.science.meteorology.forecast.Weather
 import java.time.Duration
 import java.time.Instant
 
@@ -38,8 +37,8 @@ interface IWeatherService : ICloudService, ISeasonService {
 
     /**
      * Forecast the weather in the next few hours
-     * @param tendency The current pressure tendency (hPa / 3 hr)
-     * @param stormThreshold (optional) The change threshold to consider a storm (hPa / 3 hr)
+     * @param tendency The current pressure tendency (hPa / hr)
+     * @param stormThreshold (optional) The change threshold to consider a storm (hPa / hr)
      * @return The predicted weather
      */
     fun forecast(

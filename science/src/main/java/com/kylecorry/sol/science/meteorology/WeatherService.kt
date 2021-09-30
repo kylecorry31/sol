@@ -3,7 +3,6 @@ package com.kylecorry.sol.science.meteorology
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.science.meteorology.clouds.*
-import com.kylecorry.sol.science.meteorology.forecast.Weather
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
