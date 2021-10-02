@@ -292,4 +292,21 @@ object SolMath {
     fun normalizeAngle(angle: Double): Double {
         return wrap(angle, 0.0, 360.0) % 360
     }
+
+    fun <T : Comparable<T>> argmax(values: List<T>): Int {
+        if (values.isEmpty()) {
+            return -1
+        }
+
+        var maxIndex = 0
+
+        for (i in values.indices) {
+            if (values[i] > values[maxIndex]) {
+                maxIndex = i
+            }
+        }
+
+        return maxIndex
+    }
+
 }
