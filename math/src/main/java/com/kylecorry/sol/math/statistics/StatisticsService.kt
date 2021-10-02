@@ -37,7 +37,7 @@ class StatisticsService {
         return total.pow(1 / values.size.toDouble()).toFloat()
     }
 
-    fun stdev(values: List<Float>, forPopulation: Boolean = false): Float {
+    fun variance(values: List<Float>, forPopulation: Boolean = false): Float {
         if (values.size <= 1) {
             return 0f
         }
@@ -46,8 +46,8 @@ class StatisticsService {
             .toFloat() / (values.size - if (!forPopulation) 1 else 0)
     }
 
-    fun variance(values: List<Float>, forPopulation: Boolean = false): Float {
-        return sqrt(stdev(values, forPopulation))
+    fun stdev(values: List<Float>, forPopulation: Boolean = false): Float {
+        return sqrt(variance(values, forPopulation))
     }
 
     fun median(values: List<Float>): Float {
