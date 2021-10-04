@@ -1,6 +1,6 @@
 package com.kylecorry.sol.units
 
-data class Distance(val distance: Float, val units: DistanceUnits) {
+data class Distance(val distance: Float, val units: DistanceUnits) : Comparable<Distance> {
 
     fun convertTo(newUnits: DistanceUnits): Distance {
         val m = distance * units.meters
@@ -46,6 +46,12 @@ data class Distance(val distance: Float, val units: DistanceUnits) {
             return Distance(distance, DistanceUnits.Yards)
         }
 
+    }
+
+    override fun compareTo(other: Distance): Int {
+        val meters = meters().distance
+        val otherMeters = other.meters().distance
+        return meters.compareTo(otherMeters)
     }
 
 }

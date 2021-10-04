@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.science.meteorology.clouds.*
@@ -190,28 +191,16 @@ class WeatherService : IWeatherService {
         return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
     }
 
-    override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {
-        return cloudService.getCloudPrecipitation(cloud)
+    override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
+        return cloudService.getPrecipitation(cloud)
     }
 
-    override fun getCloudPrecipitationPercentage(cloud: CloudType): Float {
-        return cloudService.getCloudPrecipitationPercentage(cloud)
+    override fun getPrecipitationChance(cloud: CloudGenus): Float {
+        return cloudService.getPrecipitationChance(cloud)
     }
 
-    override fun getCloudHeightRange(height: CloudHeight, location: Coordinate): HeightRange {
-        return cloudService.getCloudHeightRange(height, location)
-    }
-
-    override fun getCloudsByShape(shape: CloudShape): List<CloudType> {
-        return cloudService.getCloudsByShape(shape)
-    }
-
-    override fun getCloudsByHeight(height: CloudHeight): List<CloudType> {
-        return cloudService.getCloudsByHeight(height)
-    }
-
-    override fun getCloudsByColor(color: CloudColor): List<CloudType> {
-        return cloudService.getCloudsByColor(color)
+    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
+        return cloudService.getHeightRange(level, location)
     }
 
     override fun getCloudCover(percent: Float): CloudCover {

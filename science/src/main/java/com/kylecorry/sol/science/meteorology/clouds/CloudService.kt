@@ -1,49 +1,76 @@
 package com.kylecorry.sol.science.meteorology.clouds
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.science.geology.GeologyService
 import com.kylecorry.sol.science.geology.Region
+import com.kylecorry.sol.science.meteorology.Precipitation
 
 class CloudService : ICloudService {
 
     private val geoService = GeologyService()
 
-    override fun getCloudPrecipitation(cloud: CloudType): CloudWeather {
+    override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
         return when (cloud) {
-            CloudType.Cirrus -> CloudWeather.Fair
-            CloudType.Cirrocumulus -> CloudWeather.Fair
-            CloudType.Cirrostratus -> CloudWeather.Fair
-            CloudType.Altocumulus -> CloudWeather.PrecipitationPossible
-            CloudType.Altostratus -> CloudWeather.PrecipitationPossible
-            CloudType.Nimbostratus -> CloudWeather.PrecipitationLikely
-            CloudType.Stratus -> CloudWeather.PrecipitationPossible
-            CloudType.Stratocumulus -> CloudWeather.PrecipitationPossible
-            CloudType.Cumulus -> CloudWeather.PrecipitationPossible
-            CloudType.Cumulonimbus -> CloudWeather.StormLikely
+            CloudGenus.Altostratus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.IcePellets
+            )
+            CloudGenus.Nimbostratus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.IcePellets
+            )
+            CloudGenus.Stratus -> listOf(
+                Precipitation.Drizzle,
+                Precipitation.Snow,
+                Precipitation.SnowGrains
+            )
+            CloudGenus.Stratocumulus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Drizzle,
+                Precipitation.Snow,
+                Precipitation.SnowPellets
+            )
+            CloudGenus.Cumulus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.SnowPellets
+            )
+            CloudGenus.Cumulonimbus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.SnowPellets,
+                Precipitation.Hail,
+                Precipitation.SmallHail,
+                Precipitation.Lightning
+            )
+            else -> emptyList()
         }
     }
 
-    override fun getCloudPrecipitationPercentage(cloud: CloudType): Float {
+    override fun getPrecipitationChance(cloud: CloudGenus): Float {
         // Using average values from table 9: https://www.ideals.illinois.edu/bitstream/handle/2142/101973/ISWSRI-33.pdf?sequence=1&isAllowed=y
         return when (cloud) {
-            CloudType.Cirrus -> 0.06f
-            CloudType.Cirrocumulus -> 0.06f
-            CloudType.Cirrostratus -> 0.06f
-            CloudType.Altocumulus -> 0.02f
-            CloudType.Altostratus -> 0.23f
-            CloudType.Nimbostratus -> 1f
-            CloudType.Stratus -> 0.21f
-            CloudType.Stratocumulus -> 0.17f
-            CloudType.Cumulus -> 0.24f
-            CloudType.Cumulonimbus -> 0.41f
+            CloudGenus.Cirrus -> 0.06f
+            CloudGenus.Cirrocumulus -> 0.06f
+            CloudGenus.Cirrostratus -> 0.06f
+            CloudGenus.Altocumulus -> 0.02f
+            CloudGenus.Altostratus -> 0.23f
+            CloudGenus.Nimbostratus -> 1f
+            CloudGenus.Stratus -> 0.21f
+            CloudGenus.Stratocumulus -> 0.17f
+            CloudGenus.Cumulus -> 0.24f
+            CloudGenus.Cumulonimbus -> 1f
         }
     }
 
-    override fun getCloudHeightRange(height: CloudHeight, location: Coordinate): HeightRange {
-        if (height == CloudHeight.Low) {
-            return HeightRange(
+    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
+        if (level == CloudLevel.Low) {
+            return Range(
                 Distance(0f, DistanceUnits.Kilometers),
                 Distance(2f, DistanceUnits.Kilometers)
             )
@@ -62,28 +89,16 @@ class CloudService : ICloudService {
             Region.Tropical -> 18f
         }
 
-        return when (height) {
-            CloudHeight.Middle -> HeightRange(
+        return when (level) {
+            CloudLevel.Mid -> Range(
                 Distance(2f, DistanceUnits.Kilometers),
                 Distance(highStart, DistanceUnits.Kilometers)
             )
-            else -> HeightRange(
+            else -> Range(
                 Distance(highStart, DistanceUnits.Kilometers),
                 Distance(highEnd, DistanceUnits.Kilometers)
             )
         }
-    }
-
-    override fun getCloudsByShape(shape: CloudShape): List<CloudType> {
-        return CloudType.values().filter { it.shape.contains(shape) }
-    }
-
-    override fun getCloudsByHeight(height: CloudHeight): List<CloudType> {
-        return CloudType.values().filter { it.height == height }
-    }
-
-    override fun getCloudsByColor(color: CloudColor): List<CloudType> {
-        return CloudType.values().filter { it.colors.contains(color) }
     }
 
     override fun getCloudCover(percent: Float): CloudCover {

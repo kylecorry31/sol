@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.meteorology.clouds
 
 
-enum class CloudHeight {
+enum class CloudLevel {
     Low,
-    Middle,
+    Mid,
     High
 }
