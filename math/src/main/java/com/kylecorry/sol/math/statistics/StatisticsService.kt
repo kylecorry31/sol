@@ -26,7 +26,7 @@ class StatisticsService {
     }
 
     fun geometricMean(values: List<Float>): Float {
-        if (values.isEmpty()){
+        if (values.isEmpty()) {
             return 0f
         }
 
@@ -37,17 +37,17 @@ class StatisticsService {
         return total.pow(1 / values.size.toDouble()).toFloat()
     }
 
-    fun variance(values: List<Float>, forPopulation: Boolean = false): Float {
+    fun variance(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
         if (values.size <= 1) {
             return 0f
         }
-        val average = values.average()
+        val average = mean?.toDouble() ?: values.average()
         return values.sumOf { square(it.toDouble() - average) }
             .toFloat() / (values.size - if (!forPopulation) 1 else 0)
     }
 
-    fun stdev(values: List<Float>, forPopulation: Boolean = false): Float {
-        return sqrt(variance(values, forPopulation))
+    fun stdev(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
+        return sqrt(variance(values, forPopulation, mean))
     }
 
     fun median(values: List<Float>): Float {
