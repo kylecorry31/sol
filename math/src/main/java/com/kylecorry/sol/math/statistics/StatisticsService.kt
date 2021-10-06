@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.statistics
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import java.lang.Math.pow
@@ -56,6 +57,19 @@ class StatisticsService {
         }
 
         return values.sorted()[values.size / 2]
+    }
+
+    fun skewness(
+        values: List<Float>,
+        mean: Float? = null,
+        stdev: Float? = null
+    ): Float {
+        val average = mean ?: values.average().toFloat()
+        val deviation = stdev ?: stdev(values, mean = average)
+
+        return values.sumOf {
+            SolMath.power((it - average) / deviation.toDouble(), 3)
+        }.toFloat() / values.size
     }
 
     /**
