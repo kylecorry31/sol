@@ -55,10 +55,10 @@ class CloudService : ICloudService {
     override fun getPrecipitationChance(cloud: CloudGenus): Float {
         // Using average values from table 9: https://www.ideals.illinois.edu/bitstream/handle/2142/101973/ISWSRI-33.pdf?sequence=1&isAllowed=y
         return when (cloud) {
-            CloudGenus.Cirrus -> 0.06f
-            CloudGenus.Cirrocumulus -> 0.06f
-            CloudGenus.Cirrostratus -> 0.06f
-            CloudGenus.Altocumulus -> 0.02f
+            CloudGenus.Cirrus -> 0f
+            CloudGenus.Cirrocumulus -> 0f
+            CloudGenus.Cirrostratus -> 0f
+            CloudGenus.Altocumulus -> 0f
             CloudGenus.Altostratus -> 0.23f
             CloudGenus.Nimbostratus -> 1f
             CloudGenus.Stratus -> 0.21f
