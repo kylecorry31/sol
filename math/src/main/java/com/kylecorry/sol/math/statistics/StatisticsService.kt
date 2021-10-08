@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import java.lang.Math.pow
+import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -70,6 +71,25 @@ class StatisticsService {
         return values.sumOf {
             SolMath.power((it - average) / deviation.toDouble(), 3)
         }.toFloat() / values.size
+    }
+
+    fun probability(values: List<Float>): List<Float> {
+        val sum = values.sum()
+        if (sum == 0f) {
+            return values
+        }
+
+        return values.map { it / sum }
+    }
+
+    fun softmax(values: List<Float>): List<Float> {
+        if (values.isEmpty()) {
+            return emptyList()
+        }
+        val maxZ = values.maxOrNull() ?: values[0]
+        val exponents = values.map { exp(it - maxZ) }
+        val sumExp = exponents.sum()
+        return exponents.map { if (sumExp == 0f) 0f else it / sumExp }
     }
 
     /**
