@@ -205,23 +205,53 @@ class GeologyService : IGeologyService {
         return Distance.meters(distance)
     }
 
-    override fun getElevationGain(elevations: List<Distance>): Distance {
+    override fun getElevationGain(elevations: List<Distance>, threshold: Distance): Distance {
         var sum = 0f
+
+        if (elevations.isEmpty()) {
+            return Distance.meters(0f)
+        }
+
+        var lastValid = elevations.first().meters().distance
+
+        val thresholdMeters = threshold.meters().distance
+
         for (i in 1 until elevations.size) {
-            val change = elevations[i].meters().distance - elevations[i - 1].meters().distance
-            if (change > 0) {
-                sum += change
+            val current = elevations[i].meters().distance
+            val change = current - lastValid
+
+            if (change.absoluteValue >= thresholdMeters) {
+                lastValid = current
+
+                if (change > 0) {
+                    sum += change
+                }
             }
         }
         return Distance.meters(sum)
     }
 
-    override fun getElevationLoss(elevations: List<Distance>): Distance {
+    override fun getElevationLoss(elevations: List<Distance>, threshold: Distance): Distance {
         var sum = 0f
+
+        if (elevations.isEmpty()) {
+            return Distance.meters(0f)
+        }
+
+        var lastValid = elevations.first().meters().distance
+
+        val thresholdMeters = threshold.meters().distance
+
         for (i in 1 until elevations.size) {
-            val change = elevations[i].meters().distance - elevations[i - 1].meters().distance
-            if (change < 0) {
-                sum += change
+            val current = elevations[i].meters().distance
+            val change = current - lastValid
+
+            if (change.absoluteValue >= thresholdMeters) {
+                lastValid = current
+
+                if (change < 0) {
+                    sum += change
+                }
             }
         }
         return Distance.meters(sum)
