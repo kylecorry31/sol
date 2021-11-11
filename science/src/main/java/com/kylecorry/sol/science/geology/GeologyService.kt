@@ -205,6 +205,28 @@ class GeologyService : IGeologyService {
         return Distance.meters(distance)
     }
 
+    override fun getElevationGain(elevations: List<Distance>): Distance {
+        var sum = 0f
+        for (i in 1 until elevations.size) {
+            val change = elevations[i].meters().distance - elevations[i - 1].meters().distance
+            if (change > 0) {
+                sum += change
+            }
+        }
+        return Distance.meters(sum)
+    }
+
+    override fun getElevationLoss(elevations: List<Distance>): Distance {
+        var sum = 0f
+        for (i in 1 until elevations.size) {
+            val change = elevations[i].meters().distance - elevations[i - 1].meters().distance
+            if (change < 0) {
+                sum += change
+            }
+        }
+        return Distance.meters(sum)
+    }
+
     companion object {
         const val GRAVITY = 9.81f
     }
