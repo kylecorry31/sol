@@ -29,7 +29,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
     fun plus(meters: Double, bearing: Bearing): Coordinate {
         // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
-        val radius = 6371e3
+        val radius = 6371.2e3
         val newLat = asin(
             sinDegrees(latitude) * cos(meters / radius) +
                     cosDegrees(latitude) * sin(meters / radius) * cosDegrees(bearing.value.toDouble())

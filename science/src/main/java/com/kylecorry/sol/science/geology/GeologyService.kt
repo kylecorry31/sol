@@ -188,6 +188,29 @@ class GeologyService : IGeologyService {
         )
     }
 
+    override fun getCrossTrackDistance(
+        point: Coordinate,
+        start: Coordinate,
+        end: Coordinate
+    ): Distance {
+        // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
+        val radius = 6371.2e3
+
+        if (point == start || point == end) {
+            return Distance.meters(0f)
+        }
+
+        val distanceFromStart = start.distanceTo(point) / radius
+        val bearingFromStart = start.bearingTo(point).value.toRadians()
+        val bearingLine = start.bearingTo(end).value.toRadians()
+
+        val crossTrackDistanceRadians =
+            asin(sin(distanceFromStart) * sin(bearingFromStart - bearingLine))
+        val crossTrackDistance = crossTrackDistanceRadians * radius
+
+        return Distance.meters(crossTrackDistance.toFloat())
+    }
+
     override fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
         return from.plus(distance.toDouble(), bearing)
     }
@@ -205,6 +228,7 @@ class GeologyService : IGeologyService {
         return Distance.meters(distance)
     }
 
+    // TODO: The thresholding should be done by the caller of this code
     override fun getElevationGain(elevations: List<Distance>, threshold: Distance): Distance {
         var sum = 0f
 

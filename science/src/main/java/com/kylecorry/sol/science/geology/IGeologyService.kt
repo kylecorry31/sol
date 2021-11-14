@@ -49,6 +49,8 @@ interface IGeologyService {
         useTrueNorth: Boolean
     ): NavigationVector
 
+    fun getCrossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Distance
+
     fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate
 
     fun getPathDistance(points: List<Coordinate>): Distance
