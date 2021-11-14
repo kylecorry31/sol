@@ -29,14 +29,15 @@ class RDPFilter<T>(
         allPoints: List<T>,
         rdpPoints: MutableList<T>
     ) {
-        if (startIndex == endIndex) {
-            return
-        }
         val nextIndex = findFurthest(startIndex, endIndex, allPoints)
         if (nextIndex > 0) {
-            filterHelper(startIndex, nextIndex, allPoints, rdpPoints)
+            if (startIndex != nextIndex) {
+                filterHelper(startIndex, nextIndex, allPoints, rdpPoints)
+            }
             rdpPoints.add((allPoints[nextIndex]))
-            filterHelper(nextIndex, endIndex, allPoints, rdpPoints)
+            if (endIndex != nextIndex) {
+                filterHelper(nextIndex, endIndex, allPoints, rdpPoints)
+            }
         }
     }
 
