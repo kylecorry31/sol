@@ -1,11 +1,14 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.SolMath.deltaAngle
+import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.CompassDirection
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import kotlin.math.max
 
-class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double): IGeoArea {
+class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) :
+    IGeoArea {
 
     val northWest = Coordinate(north, west)
     val southWest = Coordinate(south, west)
@@ -20,7 +23,12 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
         }
 
     fun height(): Distance {
-        return Distance.meters(max(northWest.distanceTo(southWest), northEast.distanceTo(southEast)))
+        return Distance.meters(
+            max(
+                northWest.distanceTo(southWest),
+                northEast.distanceTo(southEast)
+            )
+        )
     }
 
     fun width(): Distance {
@@ -28,7 +36,12 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             return Distance.meters(Coordinate(0.0, west).distanceTo(Coordinate(0.0, east)))
         }
 
-        return Distance.meters(max(southEast.distanceTo(southWest), northEast.distanceTo(northWest)))
+        return Distance.meters(
+            max(
+                southEast.distanceTo(southWest),
+                northEast.distanceTo(northWest)
+            )
+        )
     }
 
     override fun contains(location: Coordinate): Boolean {
@@ -43,9 +56,36 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
         return containsLatitude && containsLongitude
     }
 
+    fun intersects(other: CoordinateBounds): Boolean {
+        val inOther =
+            other.contains(northEast) || other.contains(northWest) || other.contains(southEast) || other.contains(
+                southWest
+            )
+
+        val otherIn =
+            contains(other.northEast) || contains(other.northWest) || contains(other.southEast) || contains(
+                other.southWest
+            )
+
+        return inOther || otherIn
+    }
+
     companion object {
 
         val empty = CoordinateBounds(0.0, 0.0, 0.0, 0.0)
+
+        fun from(geofence: Geofence): CoordinateBounds {
+            val north =
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.North)).latitude
+            val south =
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.South)).latitude
+            val east =
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.East)).longitude
+            val west =
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.West)).longitude
+
+            return CoordinateBounds(north, east, south, west)
+        }
 
         fun from(points: List<Coordinate>): CoordinateBounds {
             val west = getWestLongitudeBound(points) ?: return empty
@@ -60,8 +100,8 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             val first = locations.firstOrNull() ?: return null
             return locations.minByOrNull {
                 deltaAngle(
-                        first.longitude.toFloat() + 180,
-                        it.longitude.toFloat() + 180
+                    first.longitude.toFloat() + 180,
+                    it.longitude.toFloat() + 180
                 )
             }?.longitude
         }
@@ -70,8 +110,8 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             val first = locations.firstOrNull() ?: return null
             return locations.maxByOrNull {
                 deltaAngle(
-                        first.longitude.toFloat() + 180,
-                        it.longitude.toFloat() + 180
+                    first.longitude.toFloat() + 180,
+                    it.longitude.toFloat() + 180
                 )
             }?.longitude
         }

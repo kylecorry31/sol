@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.geology
 
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -35,6 +36,10 @@ interface IGeologyService {
     fun getMapDistance(measurement: Distance, scaleFrom: Distance, scaleTo: Distance): Distance
 
     fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance
+
+    fun toMercator(coordinate: Coordinate, bounds: CoordinateBounds, size: Pair<Float, Float>): Vector2
+
+    fun fromMercator(point: Vector2, bounds: CoordinateBounds, size: Pair<Float, Float>): Coordinate
 
     fun getBounds(points: List<Coordinate>): CoordinateBounds
 

@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -13,6 +14,7 @@ import kotlin.math.*
 
 class GeologyService : IGeologyService {
     private val riskClassifier = AvalancheRiskClassifier()
+    private val mercator = Mercator()
 
     override fun getGeomagneticDeclination(
         coordinate: Coordinate,
@@ -94,6 +96,22 @@ class GeologyService : IGeologyService {
 
     override fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
         return Distance(ratioTo * measurement.distance / ratioFrom, measurement.units)
+    }
+
+    override fun toMercator(
+        coordinate: Coordinate,
+        bounds: CoordinateBounds,
+        size: Pair<Float, Float>
+    ): Vector2 {
+        return mercator.toPixel(coordinate, bounds, size)
+    }
+
+    override fun fromMercator(
+        point: Vector2,
+        bounds: CoordinateBounds,
+        size: Pair<Float, Float>
+    ): Coordinate {
+        return mercator.fromPixel(point, bounds, size)
     }
 
     override fun getBounds(points: List<Coordinate>): CoordinateBounds {
