@@ -18,6 +18,9 @@
 
 package com.kylecorry.sol.units
 
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.power
+import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import kotlin.math.*
@@ -28,7 +31,7 @@ object DistanceCalculator {
      * Computes the distance and bearing to another location
      * @return a 3 element float array of the following [distance (m), initial bearing (true north), final bearing (true north)]
      */
-    fun getDistanceAndBearing(
+    fun vincenty(
         location1: Coordinate,
         location2: Coordinate
     ): FloatArray {
@@ -118,4 +121,41 @@ object DistanceCalculator {
         results[2] = finalBearing
         return results
     }
+
+    fun haversine(
+        location1: Coordinate,
+        location2: Coordinate,
+        radius: Double = 6371.2e3
+    ): FloatArray {
+        // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
+        val distance = getGreatCircleDistance(location1, location2, radius)
+        val initial = getInitialGreatCircleBearing(location1, location2)
+        val final = Bearing.getBearing(initial + 180)
+        return floatArrayOf(distance, initial, final)
+    }
+
+    private fun getInitialGreatCircleBearing(from: Coordinate, to: Coordinate): Float {
+        val deltaLongitude = (to.longitude - from.longitude).toRadians()
+
+        val x =
+            cosDegrees(from.latitude) * sinDegrees(to.latitude) - sinDegrees(from.latitude) * cosDegrees(
+                to.latitude
+            ) * cos(deltaLongitude)
+        val y = sin(deltaLongitude) * cosDegrees(to.latitude)
+        val theta = atan2(y, x)
+        return Bearing.getBearing(theta.toDegrees().toFloat())
+    }
+
+    private fun getGreatCircleDistance(from: Coordinate, to: Coordinate, radius: Double): Float {
+        val deltaLatitude = to.latitude.toRadians() - from.latitude.toRadians()
+        val deltaLongitude = to.longitude.toRadians() - from.longitude.toRadians()
+
+        val a = power(
+            sin(deltaLatitude / 2),
+            2
+        ) + cosDegrees(from.latitude) * cosDegrees(to.latitude) * power(sin(deltaLongitude / 2), 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        return (radius * c).toFloat()
+    }
+
 }

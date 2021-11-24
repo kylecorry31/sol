@@ -192,7 +192,7 @@ class GeologyService : IGeologyService {
         declination: Float,
         useTrueNorth: Boolean
     ): NavigationVector {
-        val results = DistanceCalculator.getDistanceAndBearing(from, to)
+        val results = DistanceCalculator.vincenty(from, to)
 
         val declinationAdjustment = if (useTrueNorth) {
             0f
@@ -212,19 +212,20 @@ class GeologyService : IGeologyService {
         end: Coordinate
     ): Distance {
         // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
-        val radius = 6371.2e3
-
         if (point == start || point == end) {
             return Distance.meters(0f)
         }
 
-        val distanceFromStart = start.distanceTo(point) / radius
-        val bearingFromStart = start.bearingTo(point).value.toRadians()
-        val bearingLine = start.bearingTo(end).value.toRadians()
+        val startToPoint = DistanceCalculator.haversine(start, point, EARTH_RADIUS)
+        val startToEnd = DistanceCalculator.haversine(start, end, EARTH_RADIUS)
+
+        val distanceFromStart = startToPoint[0] / EARTH_RADIUS
+        val bearingFromStart = startToPoint[1].toRadians()
+        val bearingLine = startToEnd[1].toRadians()
 
         val crossTrackDistanceRadians =
             asin(sin(distanceFromStart) * sin(bearingFromStart - bearingLine))
-        val crossTrackDistance = crossTrackDistanceRadians * radius
+        val crossTrackDistance = crossTrackDistanceRadians * EARTH_RADIUS
 
         return Distance.meters(crossTrackDistance.toFloat())
     }
@@ -301,5 +302,6 @@ class GeologyService : IGeologyService {
 
     companion object {
         const val GRAVITY = 9.81f
+        const val EARTH_RADIUS = 6371.2e3
     }
 }

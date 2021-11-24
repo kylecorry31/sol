@@ -15,7 +15,7 @@ import java.util.stream.Stream
 internal class GeologyServiceTest {
 
     @Test
-    fun triangulate(){
+    fun triangulate() {
         val service = GeologyService()
         val pointA = Coordinate(40.0, 10.0)
         val bearingA = Bearing(220f)
@@ -31,7 +31,7 @@ internal class GeologyServiceTest {
     }
 
     @Test
-    fun deadReckon(){
+    fun deadReckon() {
         val service = GeologyService()
         val start = Coordinate(40.0, 10.0)
         val bearing = Bearing(280f)
@@ -102,7 +102,66 @@ internal class GeologyServiceTest {
         assertEquals(expected.units, actual.units)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideCrossTrack")
+    fun crossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate, expected: Float) {
+        val service = GeologyService()
+
+        val actual = service.getCrossTrackDistance(point, start, end)
+
+        assertEquals(expected, actual.meters().distance, 1f)
+    }
+
     companion object {
+
+        @JvmStatic
+        fun provideCrossTrack(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Coordinate(80.0, 80.0),
+                    Coordinate(0.0, 0.0),
+                    Coordinate(90.0, 90.0),
+                    1094921f
+                ),
+                Arguments.of(
+                    Coordinate(1.5, 2.5),
+                    Coordinate(1.2, 0.8),
+                    Coordinate(1.0, 2.0),
+                    -63994.76f
+                ),
+                Arguments.of(
+                    Coordinate(40.0, 180.0),
+                    Coordinate(30.0, 100.0),
+                    Coordinate(50.0, 210.0),
+                    1893409f
+                ),
+                Arguments.of(
+                    Coordinate(0.0, 0.02),
+                    Coordinate(0.0, 0.0),
+                    Coordinate(0.0, 0.01),
+                    0f
+                ),
+                Arguments.of(
+                    Coordinate(0.001, 0.0),
+                    Coordinate(0.0, 0.0),
+                    Coordinate(0.0, 0.001),
+                    -111.1984f
+                ),
+                Arguments.of(
+                    Coordinate(0.001, 0.0),
+                    Coordinate(0.0, 0.0),
+                    Coordinate(0.0, -0.001),
+                    111.1984f
+                ),
+                Arguments.of(
+                    Coordinate(-0.001, 0.0),
+                    Coordinate(0.0, 0.0),
+                    Coordinate(0.0, 0.001),
+                    111.1984f
+                )
+            )
+        }
+
         @JvmStatic
         fun provideAvalancheRisk(): Stream<Arguments> {
             return Stream.of(
