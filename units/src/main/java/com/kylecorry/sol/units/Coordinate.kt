@@ -20,8 +20,12 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
         return "$latitude, $longitude"
     }
 
-    fun distanceTo(other: Coordinate): Float {
-        return DistanceCalculator.vincenty(this, other)[0]
+    fun distanceTo(other: Coordinate, highAccuracy: Boolean = true): Float {
+        return if (highAccuracy) {
+            DistanceCalculator.vincenty(this, other)[0]
+        } else {
+            DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[0]
+        }
     }
 
     fun plus(distance: Distance, bearing: Bearing): Coordinate {
@@ -30,7 +34,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
     fun plus(meters: Double, bearing: Bearing): Coordinate {
         // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
-        val radius = 6371.2e3
+        val radius = EARTH_AVERAGE_RADIUS
         val newLat = asin(
             sinDegrees(latitude) * cos(meters / radius) +
                     cosDegrees(latitude) * sin(meters / radius) * cosDegrees(bearing.value.toDouble())
@@ -49,8 +53,12 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     /**
      * Get the bearing to the other coordinate (using True North)
      */
-    fun bearingTo(other: Coordinate): Bearing {
-        return Bearing(DistanceCalculator.vincenty(this, other)[1])
+    fun bearingTo(other: Coordinate, highAccuracy: Boolean = true): Bearing {
+        return if (highAccuracy) {
+            Bearing(DistanceCalculator.vincenty(this, other)[1])
+        } else {
+            Bearing(DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[1])
+        }
     }
 
     fun toCartesian(): Vector3 {
@@ -64,6 +72,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
     companion object {
 
         val zero = Coordinate(0.0, 0.0)
+        private const val EARTH_AVERAGE_RADIUS = 6371.2e3
 
     }
 }

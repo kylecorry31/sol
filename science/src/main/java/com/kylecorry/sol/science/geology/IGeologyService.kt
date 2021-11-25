@@ -51,14 +51,15 @@ interface IGeologyService {
         from: Coordinate,
         to: Coordinate,
         declination: Float,
-        useTrueNorth: Boolean
+        useTrueNorth: Boolean,
+        highAccuracy: Boolean = true
     ): NavigationVector
 
     fun getCrossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Distance
 
     fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate
 
-    fun getPathDistance(points: List<Coordinate>): Distance
+    fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Distance
 
     fun getElevationGain(elevations: List<Distance>, threshold: Distance = Distance.meters(0f)): Distance
 

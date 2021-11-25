@@ -190,9 +190,14 @@ class GeologyService : IGeologyService {
         from: Coordinate,
         to: Coordinate,
         declination: Float,
-        useTrueNorth: Boolean
+        useTrueNorth: Boolean,
+        highAccuracy: Boolean
     ): NavigationVector {
-        val results = DistanceCalculator.vincenty(from, to)
+        val results = if (highAccuracy) {
+            DistanceCalculator.vincenty(from, to)
+        } else {
+            DistanceCalculator.haversine(from, to, EARTH_RADIUS)
+        }
 
         val declinationAdjustment = if (useTrueNorth) {
             0f
@@ -234,14 +239,14 @@ class GeologyService : IGeologyService {
         return from.plus(distance.toDouble(), bearing)
     }
 
-    override fun getPathDistance(points: List<Coordinate>): Distance {
+    override fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean): Distance {
         if (points.size < 2) {
             return Distance.meters(0f)
         }
 
         var distance = 0f
         for (i in 0 until points.lastIndex) {
-            distance += points[i].distanceTo(points[i + 1])
+            distance += points[i].distanceTo(points[i + 1], highAccuracy)
         }
 
         return Distance.meters(distance)
