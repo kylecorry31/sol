@@ -1,5 +1,7 @@
 package com.kylecorry.sol.math.filters
 
+import kotlin.math.abs
+
 /**
  * The Ramer–Douglas–Peucker path simplification algorithm
  * Adapted from https://www.youtube.com/watch?v=nSYw9GrakjY
@@ -48,7 +50,7 @@ class RDPFilter<T>(
         val end = allPoints[endIndex]
 
         for (i in (startIndex + 1) until endIndex) {
-            val distance = crossTrackDistance(allPoints[i], start, end)
+            val distance = abs(crossTrackDistance(allPoints[i], start, end))
             if (distance > maxDistance) {
                 maxDistance = distance
                 maxIndex = i
