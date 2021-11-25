@@ -196,7 +196,7 @@ class GeologyService : IGeologyService {
         val results = if (highAccuracy) {
             DistanceCalculator.vincenty(from, to)
         } else {
-            DistanceCalculator.haversine(from, to, EARTH_RADIUS)
+            DistanceCalculator.haversine(from, to, EARTH_AVERAGE_RADIUS)
         }
 
         val declinationAdjustment = if (useTrueNorth) {
@@ -221,16 +221,16 @@ class GeologyService : IGeologyService {
             return Distance.meters(0f)
         }
 
-        val startToPoint = DistanceCalculator.haversine(start, point, EARTH_RADIUS)
-        val startToEnd = DistanceCalculator.haversine(start, end, EARTH_RADIUS)
+        val startToPoint = DistanceCalculator.haversine(start, point, EARTH_AVERAGE_RADIUS)
+        val startToEnd = DistanceCalculator.haversine(start, end, EARTH_AVERAGE_RADIUS)
 
-        val distanceFromStart = startToPoint[0] / EARTH_RADIUS
+        val distanceFromStart = startToPoint[0] / EARTH_AVERAGE_RADIUS
         val bearingFromStart = startToPoint[1].toRadians()
         val bearingLine = startToEnd[1].toRadians()
 
         val crossTrackDistanceRadians =
             asin(sin(distanceFromStart) * sin(bearingFromStart - bearingLine))
-        val crossTrackDistance = crossTrackDistanceRadians * EARTH_RADIUS
+        val crossTrackDistance = crossTrackDistanceRadians * EARTH_AVERAGE_RADIUS
 
         return Distance.meters(crossTrackDistance.toFloat())
     }
@@ -252,54 +252,37 @@ class GeologyService : IGeologyService {
         return Distance.meters(distance)
     }
 
-    // TODO: The thresholding should be done by the caller of this code
-    override fun getElevationGain(elevations: List<Distance>, threshold: Distance): Distance {
+    override fun getElevationGain(elevations: List<Distance>): Distance {
         var sum = 0f
 
         if (elevations.isEmpty()) {
             return Distance.meters(0f)
         }
 
-        var lastValid = elevations.first().meters().distance
-
-        val thresholdMeters = threshold.meters().distance
-
         for (i in 1 until elevations.size) {
             val current = elevations[i].meters().distance
-            val change = current - lastValid
-
-            if (change.absoluteValue >= thresholdMeters) {
-                lastValid = current
-
-                if (change > 0) {
-                    sum += change
-                }
+            val last = elevations[i - 1].meters().distance
+            val change = current - last
+            if (change > 0) {
+                sum += change
             }
         }
         return Distance.meters(sum)
     }
 
-    override fun getElevationLoss(elevations: List<Distance>, threshold: Distance): Distance {
+    override fun getElevationLoss(elevations: List<Distance>): Distance {
         var sum = 0f
 
         if (elevations.isEmpty()) {
             return Distance.meters(0f)
         }
 
-        var lastValid = elevations.first().meters().distance
-
-        val thresholdMeters = threshold.meters().distance
-
         for (i in 1 until elevations.size) {
             val current = elevations[i].meters().distance
-            val change = current - lastValid
-
-            if (change.absoluteValue >= thresholdMeters) {
-                lastValid = current
-
-                if (change < 0) {
-                    sum += change
-                }
+            val last = elevations[i - 1].meters().distance
+            val change = current - last
+            if (change < 0) {
+                sum += change
             }
         }
         return Distance.meters(sum)
@@ -307,6 +290,6 @@ class GeologyService : IGeologyService {
 
     companion object {
         const val GRAVITY = 9.81f
-        const val EARTH_RADIUS = 6371.2e3
+        const val EARTH_AVERAGE_RADIUS = 6371.2e3
     }
 }

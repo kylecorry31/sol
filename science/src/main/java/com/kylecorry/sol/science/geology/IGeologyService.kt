@@ -61,8 +61,8 @@ interface IGeologyService {
 
     fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Distance
 
-    fun getElevationGain(elevations: List<Distance>, threshold: Distance = Distance.meters(0f)): Distance
+    fun getElevationGain(elevations: List<Distance>): Distance
 
-    fun getElevationLoss(elevations: List<Distance>, threshold: Distance = Distance.meters(0f)): Distance
+    fun getElevationLoss(elevations: List<Distance>): Distance
 
 }
