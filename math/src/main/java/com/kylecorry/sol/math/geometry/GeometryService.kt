@@ -3,6 +3,7 @@ package com.kylecorry.sol.math.geometry
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.AlgebraService
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
@@ -107,5 +108,16 @@ class GeometryService {
 
     fun contains(circle: Circle, point: Vector2): Boolean {
         return circle.center.distanceTo(point) <= circle.radius
+    }
+
+    fun pointLineDistance(point: Vector2, line: Line): Float {
+        if (line.start == line.end){
+            return point.distanceTo(line.start)
+        }
+
+        val numerator = abs((line.end.x - line.start.x) * (line.start.y - point.y) - (line.start.x - point.x) * (line.end.y - line.start.y))
+        val denominator = line.length()
+
+        return numerator / denominator
     }
 }
