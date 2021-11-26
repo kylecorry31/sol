@@ -1,9 +1,26 @@
 package com.kylecorry.sol.tests
 
+import assertk.assertions.isCloseTo
+import assertk.assertions.isEqualTo
 import org.junit.Assert
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import assertk.assertions.isLessThan
+import assertk.assertions.prop
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+
+fun assertk.Assert<Coordinate>.isCloseTo(other: Coordinate, meters: Float) {
+    prop("distance") {
+        it.distanceTo(other)
+    }.isLessThan(meters)
+}
+
+fun assertk.Assert<Distance>.isCloseTo(other: Distance, tolerance: Float) {
+    prop("units", Distance::units).isEqualTo(other.units)
+    prop("value", Distance::distance).isCloseTo(other.distance, tolerance)
+}
 
 fun <T> parametrized(cases: Collection<T>, test: (case: T) -> Unit) {
     for (case in cases) {

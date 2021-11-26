@@ -1,9 +1,11 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
+import assertk.assertThat
+import assertk.assertions.isCloseTo
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import com.kylecorry.sol.tests.isCloseTo
+import com.kylecorry.sol.units.*
 import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -25,9 +27,7 @@ internal class GeologyServiceTest {
         val expected = Coordinate(40.229722, 10.252778)
         val actual = service.triangulate(pointA, bearingA, pointB, bearingB)
 
-        Assert.assertNotNull(actual)
-        Assert.assertEquals(expected.latitude, actual!!.latitude, 0.01)
-        Assert.assertEquals(expected.longitude, actual.longitude, 0.01)
+        assertThat(actual).isNotNull().isCloseTo(expected, 20f)
     }
 
     @Test
@@ -39,8 +39,8 @@ internal class GeologyServiceTest {
 
         val expected = Coordinate(39.984444, 10.115556)
         val actual = service.deadReckon(start, distance, bearing)
-        Assert.assertEquals(expected.latitude, actual.latitude, 0.01)
-        Assert.assertEquals(expected.longitude, actual.longitude, 0.01)
+
+        assertThat(actual).isCloseTo(expected, 20f)
     }
 
     @Test
@@ -51,8 +51,8 @@ internal class GeologyServiceTest {
 
         val vector = service.navigate(start, end, 0f, true)
 
-        Assert.assertEquals(Bearing(-41.7683f).value, vector.direction.value, 0.005f)
-        Assert.assertEquals(1488793.6f, vector.distance, 0.005f)
+        assertThat(vector.direction.value).isCloseTo(Bearing(-41.7683f).value, 0.005f)
+        assertThat(vector.distance).isCloseTo(1488793.6f, 0.005f)
     }
 
     @Test
@@ -83,8 +83,7 @@ internal class GeologyServiceTest {
         val service = GeologyService()
         val actual = service.getMapDistance(measurement, scaleFrom, scaleTo)
 
-        assertEquals(expected.distance, actual.distance, 0.001f)
-        assertEquals(expected.units, actual.units)
+        assertThat(actual).isCloseTo(expected, 0.001f)
     }
 
     @Test
@@ -98,8 +97,7 @@ internal class GeologyServiceTest {
         val service = GeologyService()
         val actual = service.getMapDistance(measurement, ratioFrom, ratioTo)
 
-        assertEquals(expected.distance, actual.distance, 0.001f)
-        assertEquals(expected.units, actual.units)
+        assertThat(actual).isCloseTo(expected, 0.001f)
     }
 
     @ParameterizedTest
@@ -109,7 +107,21 @@ internal class GeologyServiceTest {
 
         val actual = service.getCrossTrackDistance(point, start, end)
 
-        assertEquals(expected, actual.meters().distance, 1f)
+        assertThat(actual).isCloseTo(Distance.meters(expected), 1f)
+    }
+
+    @Test
+    fun elevationGainLoss() {
+        val elevations = listOf(5f, 1f, 2f, 4f, 2f, 4f, 4f).map { Distance.meters(it) }
+        val expectedGain = Distance.meters(5f)
+        val expectedLoss = Distance.meters(-6f)
+        val service = GeologyService()
+
+        val gain = service.getElevationGain(elevations)
+        val loss = service.getElevationLoss(elevations)
+
+        assertThat(gain).isEqualTo(expectedGain)
+        assertThat(loss).isEqualTo(expectedLoss)
     }
 
     companion object {
