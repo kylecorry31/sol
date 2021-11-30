@@ -37,10 +37,6 @@ interface IGeologyService {
 
     fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance
 
-    fun toMercator(coordinate: Coordinate, bounds: CoordinateBounds, size: Pair<Float, Float>): Vector2
-
-    fun fromMercator(point: Vector2, bounds: CoordinateBounds, size: Pair<Float, Float>): Coordinate
-
     fun getBounds(points: List<Coordinate>): CoordinateBounds
 
     fun triangulate(pointA: Coordinate, bearingA: Bearing, pointB: Coordinate, bearingB: Bearing): Coordinate?
