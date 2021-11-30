@@ -11,19 +11,19 @@ import kotlin.math.exp
 import kotlin.math.ln
 
 // Adapted from https://stackoverflow.com/questions/2103924/mercator-longitude-and-latitude-calculations-to-x-and-y-on-a-cropped-map-of-the/10401734#10401734
-class MercatorMapProjection(
-    private val bounds: CoordinateBounds,
-    private val mapSize: Size
+class WebMercatorMapProjection(
+    private val bounds: CoordinateBounds = CoordinateBounds.world,
+    private val mapSize: Size = Size(1f, 1f)
 ) : IMapProjection {
 
     override fun toPixels(location: Coordinate): Vector2 {
         val deltaLongitude = (bounds.east - bounds.west).absoluteValue
         val x = (location.longitude - bounds.west) * (mapSize.width / deltaLongitude)
 
-        val worldMapWidth = ((mapSize.width / deltaLongitude) * 360) / (2 * Math.PI);
+        val worldMapWidth = ((mapSize.width / deltaLongitude) * 360) / (2 * Math.PI)
         val mapOffsetY = (worldMapWidth / 2 * ln(
             (1 + sinDegrees(bounds.south)) / (1 - sinDegrees(bounds.south))
-        ));
+        ))
         val y = mapSize.height - ((worldMapWidth / 2 * ln(
             (1 + sinDegrees(location.latitude)) / (1 - sinDegrees(location.latitude))
         )) - mapOffsetY);
@@ -33,7 +33,7 @@ class MercatorMapProjection(
 
     override fun toCoordinate(pixel: Vector2): Coordinate {
         val deltaLongitude = (bounds.east - bounds.west).absoluteValue
-        val worldMapWidth = mapSize.width / deltaLongitude * 360 / (2 * Math.PI);
+        val worldMapWidth = mapSize.width / deltaLongitude * 360 / (2 * Math.PI)
         val mapOffsetY = (worldMapWidth / 2 * ln(
             (1 + sinDegrees(bounds.south)) / (1 - sinDegrees(bounds.south))
         ))

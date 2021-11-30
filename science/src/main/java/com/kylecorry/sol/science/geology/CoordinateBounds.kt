@@ -73,6 +73,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     companion object {
 
         val empty = CoordinateBounds(0.0, 0.0, 0.0, 0.0)
+        val world = CoordinateBounds(90.0, 180.0, -90.0, -180.0)
 
         fun from(geofence: Geofence): CoordinateBounds {
             val north =
@@ -92,6 +93,15 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             val east = getEastLongitudeBound(points) ?: return empty
             val north = getNorthLatitudeBound(points) ?: return empty
             val south = getSouthLatitudeBound(points) ?: return empty
+
+            val minLongitude = points.minByOrNull { it.longitude }?.longitude
+            val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
+
+            // This is to support the case where the whole map is shown
+            if (minLongitude == -180.0 && maxLongitude == 180.0){
+                return CoordinateBounds(north, 180.0, south, -180.0)
+            }
+
             return CoordinateBounds(north, east, south, west)
         }
 
