@@ -36,7 +36,7 @@ internal class OceanographyServiceTest {
     fun getTides(reference: ZonedDateTime, date: LocalDate, expected: List<Tide>) {
         val service = OceanographyService()
 
-        val tides = service.getTides(reference, date)
+        val tides = service.getTides(reference, TideFrequency.Semidiurnal, date)
 
         Assert.assertEquals(expected.size, tides.size)
 
@@ -52,7 +52,7 @@ internal class OceanographyServiceTest {
     fun getNextTide(reference: ZonedDateTime, time: ZonedDateTime, expected: Tide) {
         val service = OceanographyService()
 
-        val tide = service.getNextTide(reference, time)
+        val tide = service.getNextTide(reference, TideFrequency.Semidiurnal, time)
 
         Assert.assertEquals(expected.type, tide?.type)
         timeEquals(tide?.time, expected.time, Duration.ofHours(2))
@@ -63,7 +63,7 @@ internal class OceanographyServiceTest {
     fun getTideType(reference: ZonedDateTime, time: ZonedDateTime, expected: TideType) {
         val service = OceanographyService()
 
-        val tide = service.getTideType(reference, time)
+        val tide = service.getTideType(reference, TideFrequency.Semidiurnal, time)
 
         Assert.assertEquals(expected, tide)
     }

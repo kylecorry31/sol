@@ -35,8 +35,8 @@ class OceanographyService : IOceanographyService {
         return TidalRange.Normal
     }
 
-    override fun getTideType(referenceHighTide: ZonedDateTime, now: ZonedDateTime): TideType {
-        val nextTide = getNextTide(referenceHighTide, now) ?: return TideType.Half
+    override fun getTideType(referenceHighTide: ZonedDateTime, frequency: TideFrequency, now: ZonedDateTime): TideType {
+        val nextTide = getNextTide(referenceHighTide, frequency, now) ?: return TideType.Half
         val timeToNextTide = Duration.between(now, nextTide.time)
         return if (nextTide.type == TideType.High && timeToNextTide < Duration.ofHours(2) || (nextTide.type == TideType.Low && timeToNextTide > Duration.ofHours(
                 4
@@ -53,36 +53,39 @@ class OceanographyService : IOceanographyService {
         }
     }
 
-    override fun getNextTide(referenceHighTide: ZonedDateTime, now: ZonedDateTime): Tide? {
-        val today = getTides(referenceHighTide, now.toLocalDate())
-        val tomorrow = getTides(referenceHighTide, now.toLocalDate().plusDays(1))
+    override fun getNextTide(referenceHighTide: ZonedDateTime, frequency: TideFrequency, now: ZonedDateTime): Tide? {
+        val today = getTides(referenceHighTide, frequency, now.toLocalDate())
+        val tomorrow = getTides(referenceHighTide, frequency, now.toLocalDate().plusDays(1))
 
         return (today + tomorrow).firstOrNull {
             it.time > now
         }
     }
 
-    override fun getTides(referenceHighTide: ZonedDateTime, date: LocalDate): List<Tide> {
+    override fun getTides(referenceHighTide: ZonedDateTime, frequency: TideFrequency, date: LocalDate): List<Tide> {
         val averageLunarDay = Duration.ofHours(24).plusMinutes(50).plusSeconds(30)
-        val halfLunarDay = averageLunarDay.dividedBy(2)
-        val quarterLunarDay = averageLunarDay.dividedBy(4)
+        val tideCycle = when(frequency){
+            TideFrequency.Diurnal -> averageLunarDay
+            TideFrequency.Semidiurnal -> averageLunarDay.dividedBy(2)
+        }
+        val halfTideCycle = tideCycle.dividedBy(2)
         var highTideOnDate = referenceHighTide
         while (highTideOnDate.toLocalDate() != date) {
             highTideOnDate = if (highTideOnDate.toLocalDate() > date) {
-                highTideOnDate.minus(halfLunarDay)
+                highTideOnDate.minus(tideCycle)
             } else {
-                highTideOnDate.plus(halfLunarDay)
+                highTideOnDate.plus(tideCycle)
             }
         }
 
         val tides = listOf(
-            Tide(highTideOnDate.minus(halfLunarDay), TideType.High),
+            Tide(highTideOnDate.minus(tideCycle), TideType.High),
             Tide(highTideOnDate, TideType.High),
-            Tide(highTideOnDate.plus(halfLunarDay), TideType.High),
-            Tide(highTideOnDate.minus(halfLunarDay).minus(quarterLunarDay), TideType.Low),
-            Tide(highTideOnDate.minus(quarterLunarDay), TideType.Low),
-            Tide(highTideOnDate.plus(quarterLunarDay), TideType.Low),
-            Tide(highTideOnDate.plus(halfLunarDay).plus(quarterLunarDay), TideType.Low),
+            Tide(highTideOnDate.plus(tideCycle), TideType.High),
+            Tide(highTideOnDate.minus(tideCycle).minus(halfTideCycle), TideType.Low),
+            Tide(highTideOnDate.minus(halfTideCycle), TideType.Low),
+            Tide(highTideOnDate.plus(halfTideCycle), TideType.Low),
+            Tide(highTideOnDate.plus(tideCycle).plus(halfTideCycle), TideType.Low),
         )
 
         return tides.filter { it.time.toLocalDate() == date }.sortedBy { it.time }
