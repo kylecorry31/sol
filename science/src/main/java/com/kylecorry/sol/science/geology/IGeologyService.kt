@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -19,6 +18,7 @@ interface IGeologyService {
 
     // Gravity
     fun getInclination(gravity: Vector3): Float
+    fun getGravity(coordinate: Coordinate): Float
 
     /**
      * Determine the avalanche risk of a slope

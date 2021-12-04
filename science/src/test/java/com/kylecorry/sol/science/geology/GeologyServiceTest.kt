@@ -17,6 +17,14 @@ import java.util.stream.Stream
 internal class GeologyServiceTest {
 
     @Test
+    fun gravity(){
+        val service = GeologyService()
+        assertThat(service.getGravity(Coordinate.zero)).isCloseTo(9.78032677f, 0.00001f)
+        assertThat(service.getGravity(Coordinate(90.0, 0.0))).isCloseTo(9.83218493786340046183f, 0.00001f)
+        assertThat(service.getGravity(Coordinate(-90.0, 0.0))).isCloseTo(9.83218493786340046183f, 0.00001f)
+    }
+
+    @Test
     fun triangulate() {
         val service = GeologyService()
         val pointA = Coordinate(40.0, 10.0)

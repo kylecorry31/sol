@@ -2,6 +2,7 @@ package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector3
@@ -58,6 +59,16 @@ class GeologyService : IGeologyService {
 
     override fun getInclination(gravity: Vector3): Float {
         return InclinationCalculator.calculate(gravity)
+    }
+
+    override fun getGravity(coordinate: Coordinate): Float {
+        // Somigliana equation (IGF80)
+        val ellipsoid = ReferenceEllipsoid.wgs84
+        val ge = 9.78032677153489
+        val k = 0.001931851353260676
+        val e2 = ellipsoid.squaredEccentricity
+        val sinLat2 = square(sinDegrees(coordinate.latitude))
+        return (ge * (1 + k * sinLat2) / sqrt(1 - e2 * sinLat2)).toFloat()
     }
 
     override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
