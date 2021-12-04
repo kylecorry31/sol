@@ -47,7 +47,9 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     override fun contains(location: Coordinate): Boolean {
         val containsLatitude = location.latitude in south..north
 
-        val containsLongitude = if (east < 0 && west > 0) {
+        val containsLongitude = if (west == world.west && east == world.east){
+            true
+        } else if (east < 0 && west > 0) {
             location.longitude >= west || location.longitude <= east
         } else {
             location.longitude in west..east

@@ -6,7 +6,7 @@ import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.units.Coordinate
 
-class CylindricalEquidistantProjection(private val scale: Float = 0f) : IMapProjection {
+class CylindricalEquidistantProjection(private val scale: Float = 1f) : IMapProjection {
 
     override fun toCoordinate(pixel: Vector2): Coordinate {
         val longitude = (pixel.x / scale).toDouble().toDegrees()
