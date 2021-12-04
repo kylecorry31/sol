@@ -309,4 +309,12 @@ object SolMath {
         return maxIndex
     }
 
+    fun isCloseTo(a: Double, b: Double, tolerance: Double): Boolean {
+        return (a - b).absoluteValue <= tolerance
+    }
+
+    fun isCloseTo(a: Float, b: Float, tolerance: Float): Boolean {
+        return (a - b).absoluteValue <= tolerance
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.kylecorry.sol.science.geology.projections
 
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.clamp
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
@@ -14,7 +16,10 @@ class MercatorProjection(private val scale: Float = 1f) : IMapProjection {
     override fun toCoordinate(pixel: Vector2): Coordinate {
         val longitude = (pixel.x / scale).toDegrees()
         val latitude = (atan(sinh(pixel.y / scale))).toDegrees()
-        return Coordinate(latitude.toDouble(), longitude.toDouble())
+        return Coordinate(
+            clamp(latitude.toDouble(), -180.0, 180.0),
+            clamp(longitude.toDouble(), -90.0, 90.0)
+        )
     }
 
     override fun toPixels(location: Coordinate): Vector2 {

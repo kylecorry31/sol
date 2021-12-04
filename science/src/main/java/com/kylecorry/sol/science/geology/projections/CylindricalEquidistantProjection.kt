@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.geology.projections
 
+import com.kylecorry.sol.math.SolMath.clamp
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
@@ -11,7 +12,7 @@ class CylindricalEquidistantProjection(private val scale: Float = 1f) : IMapProj
     override fun toCoordinate(pixel: Vector2): Coordinate {
         val longitude = (pixel.x / scale).toDouble().toDegrees()
         val latitude = pixel.y.toDouble().toDegrees()
-        return Coordinate(latitude, longitude)
+        return Coordinate(clamp(latitude, -180.0, 180.0), clamp(longitude, -90.0, 90.0))
     }
 
     override fun toPixels(location: Coordinate): Vector2 {

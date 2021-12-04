@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.SolMath.deltaAngle
+import com.kylecorry.sol.math.SolMath.isCloseTo
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.CompassDirection
 import com.kylecorry.sol.units.Coordinate
@@ -47,7 +48,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     override fun contains(location: Coordinate): Boolean {
         val containsLatitude = location.latitude in south..north
 
-        val containsLongitude = if (west == world.west && east == world.east){
+        val containsLongitude = if (isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)){
             true
         } else if (east < 0 && west > 0) {
             location.longitude >= west || location.longitude <= east
