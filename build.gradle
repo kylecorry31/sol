@@ -13,7 +13,7 @@ buildscript {
         // in the individual module build.gradle files
     }
     ext.groupId = 'com.kylecorry.sol'
-    ext.versionName = '5.6.0-beta01'
+    ext.versionName = '5.6.0-beta02'
 }
 
 allprojects {
