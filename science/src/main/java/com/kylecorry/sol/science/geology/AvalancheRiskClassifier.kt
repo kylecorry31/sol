@@ -9,10 +9,10 @@ internal class AvalancheRiskClassifier {
         val absAngle = inclination.absoluteValue
 
         return when {
-            absAngle < 20 -> {
+            absAngle < 30 || absAngle > 60 -> {
                 AvalancheRisk.Low
             }
-            absAngle in 30.0..50.0 -> {
+            absAngle in 30.0..45.0 -> {
                 AvalancheRisk.High
             }
             else -> {
