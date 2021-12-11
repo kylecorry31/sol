@@ -18,6 +18,7 @@ interface IGeologyService {
 
     // Gravity
     fun getInclination(gravity: Vector3): Float
+    fun getGrade(inclineDegrees: Float): Float
     fun getGravity(coordinate: Coordinate): Float
 
     /**

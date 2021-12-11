@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.geology
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.square
@@ -59,6 +60,10 @@ class GeologyService : IGeologyService {
 
     override fun getInclination(gravity: Vector3): Float {
         return InclinationCalculator.calculate(gravity)
+    }
+
+    override fun getGrade(inclineDegrees: Float): Float {
+        return SolMath.tanDegrees(inclineDegrees) * 100
     }
 
     override fun getGravity(coordinate: Coordinate): Float {
