@@ -25,6 +25,36 @@ interface IGeologyService {
      * @return The avalanche risk
      */
     fun getAvalancheRisk(inclination: Float): AvalancheRisk
+    /**
+     * Determines the grade (percent)
+     * @param inclination The inclination angle (degrees)
+     * @return The slope grade as a percentage
+     */
+    fun getSlopeGrade(inclination: Float): Float
+
+    /**
+     * Estimates the height of an object
+     * @param distance The distance to the object
+     * @param bottomInclination The inclination angle to the bottom (degrees)
+     * @param topInclination The inclination angle to the top (degrees)
+     * @return The estimated height of the object
+     */
+    fun getHeightFromInclination(distance: Distance, bottomInclination: Float, topInclination: Float): Distance
+
+    /**
+     * Estimates the distance to an object
+     * @param height The height to the object
+     * @param bottomInclination The inclination angle to the bottom (degrees)
+     * @param topInclination The inclination angle to the top (degrees)
+     * @return The estimated distance to the object
+     */
+    fun getDistanceFromInclination(height: Distance, bottomInclination: Float, topInclination: Float): Distance
+
+    /**
+     * Calculates the inclination from a unit angle
+     * @param angle The angle, where 0 is the horizon (front), 90 is the sky (above), 180 is the horizon (behind), and 270 is the ground (below)
+     */
+    fun getInclination(angle: Float): Float
 
     // Coordinates / navigation
 

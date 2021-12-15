@@ -1,10 +1,12 @@
 package com.kylecorry.sol.science.geology
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -69,6 +71,53 @@ class GeologyService : IGeologyService {
 
     override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
         return riskClassifier.classify(inclination)
+    }
+
+    override fun getSlopeGrade(inclination: Float): Float {
+        if (inclination == 90f) {
+            return Float.POSITIVE_INFINITY
+        } else if (inclination == -90f) {
+            return Float.NEGATIVE_INFINITY
+        }
+
+        return SolMath.tanDegrees(inclination) * 100
+    }
+
+    override fun getHeightFromInclination(
+        distance: Distance,
+        bottomInclination: Float,
+        topInclination: Float
+    ): Distance {
+        val up = getSlopeGrade(topInclination) / 100f
+        val down = getSlopeGrade(bottomInclination) / 100f
+
+        if (up.isInfinite() || down.isInfinite()) {
+            return Distance(Float.POSITIVE_INFINITY, distance.units)
+        }
+
+        return Distance(((up - down) * distance.distance).absoluteValue, distance.units)
+    }
+
+    override fun getDistanceFromInclination(
+        height: Distance,
+        bottomInclination: Float,
+        topInclination: Float
+    ): Distance {
+        val up = getSlopeGrade(topInclination) / 100f
+        val down = getSlopeGrade(bottomInclination) / 100f
+
+        if (up.isInfinite() || down.isInfinite()) {
+            return Distance(0f, height.units)
+        }
+        return Distance(height.distance / (up - down), height.units)
+    }
+
+    override fun getInclination(angle: Float): Float {
+        return when (val wrappedAngle = wrap(angle, 0f, 360f)) {
+            in 90f..270f -> 180f - wrappedAngle
+            in 270f..360f -> wrappedAngle - 360f
+            else -> wrappedAngle
+        }
     }
 
     override fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean {
