@@ -3,20 +3,26 @@ package com.kylecorry.sol.math
 interface IInclinationService {
 
     /**
-     * Estimates the height of an object
-     * @param distance The distance to the object (m)
+     * Determines the grade (decimal, not percent)
      * @param inclination The inclination angle (degrees)
-     * @param phoneHeight The phone height (m)
-     * @return The estimated height of the object (m)
      */
-    fun estimateHeight(distance: Float, inclination: Float, phoneHeight: Float): Float
+    fun grade(inclination: Float): Float
 
     /**
      * Estimates the height of an object
-     * @param distance The distance to the object (m)
+     * @param distance The distance to the object
      * @param bottomInclination The inclination angle to the bottom (degrees)
      * @param topInclination The inclination angle to the top (degrees)
-     * @return The estimated height of the object (m)
+     * @return The estimated height of the object
      */
-    fun estimateHeightAngles(distance: Float, bottomInclination: Float, topInclination: Float): Float
+    fun height(distance: Float, bottomInclination: Float, topInclination: Float): Float
+
+    /**
+     * Estimates the distance to an object
+     * @param height The height to the object
+     * @param bottomInclination The inclination angle to the bottom (degrees)
+     * @param topInclination The inclination angle to the top (degrees)
+     * @return The estimated height of the object
+     */
+    fun distance(height: Float, bottomInclination: Float, topInclination: Float): Float
 }

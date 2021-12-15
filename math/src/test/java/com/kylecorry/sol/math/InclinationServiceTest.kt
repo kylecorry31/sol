@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -12,16 +13,18 @@ internal class InclinationServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideHeights")
-    fun calculateHeight(angle: Float, distance: Float, phoneHeight: Float, expected: Float) {
-        val height = inclinationService.estimateHeight(distance, angle, phoneHeight)
+    fun calculateHeights(distance: Float, upAngle: Float, downAngle: Float, expected: Float) {
+        val height = inclinationService.height(distance, downAngle, upAngle)
         assertEquals(expected, height, 0.01f)
     }
 
-    @ParameterizedTest
-    @MethodSource("provideHeightAngles")
-    fun calculateHeightAngles(distance: Float, upAngle: Float, downAngle: Float, expected: Float) {
-        val height = inclinationService.estimateHeightAngles(distance, downAngle, upAngle)
-        assertEquals(expected, height, 0.01f)
+    @Test
+    fun calculateDistance(){
+        val d = inclinationService.distance(15f, 0f, 4.57392126f)
+        assertEquals(187.5f, d, 0.5f)
+
+        val d2 = inclinationService.distance(15f, -1.0f, 3.57392126f)
+        assertEquals(187.5f, d2, 0.5f)
     }
 
 
@@ -29,17 +32,6 @@ internal class InclinationServiceTest {
 
         @JvmStatic
         fun provideHeights(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(35f, 15.6f, 0f, 10.92f),
-                Arguments.of(35f, 15.6f, 1.64f, 12.56f),
-                Arguments.of(0f, 15.6f, 1.64f, 1.64f),
-                Arguments.of(90f, 15.6f, 1.64f, 0f),
-                Arguments.of(-35f, 15.6f, 1.64f, 0f),
-            )
-        }
-
-        @JvmStatic
-        fun provideHeightAngles(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(10f, 45f, 0f, 10f),
                 Arguments.of(10f, 20f, 0f, 3.6397f),
