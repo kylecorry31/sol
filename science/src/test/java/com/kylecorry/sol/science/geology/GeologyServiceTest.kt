@@ -147,13 +147,11 @@ internal class GeologyServiceTest {
         assertEquals(expected, height.distance, 0.01f)
     }
 
-    @Test
-    fun calculateDistance() {
-        val d = service.getDistanceFromInclination(Distance.meters(15f), 0f, 4.57392126f)
-        assertEquals(187.5f, d.distance, 0.5f)
-
-        val d2 = service.getDistanceFromInclination(Distance.meters(15f), -1.0f, 3.57392126f)
-        assertEquals(187.5f, d2.distance, 0.5f)
+    @ParameterizedTest
+    @MethodSource("provideDistances")
+    fun calculateDistance(height: Float, upAngle: Float, downAngle: Float, expected: Float) {
+        val d = service.getDistanceFromInclination(Distance.meters(height), downAngle, upAngle)
+        assertEquals(expected, d.distance, 0.01f)
     }
 
     @ParameterizedTest
@@ -215,6 +213,26 @@ internal class GeologyServiceTest {
                 Arguments.of(10f, 0f, 90f, Float.POSITIVE_INFINITY),
                 Arguments.of(10f, -90f, 0f, Float.POSITIVE_INFINITY),
                 Arguments.of(10f, 0f, -90f, Float.POSITIVE_INFINITY),
+            )
+        }
+
+        @JvmStatic
+        fun provideDistances(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(15f, 0f, 4.5739f, 187.5f),
+                Arguments.of(10f, 45f, 0f, 10f),
+                Arguments.of(3.6397f, 20f, 0f, 10f),
+
+                Arguments.of(10.8748f, 45f, -5f, 10f),
+                Arguments.of(2.764814f, 20f, 5f, 10f),
+
+                Arguments.of(2.764814f, -5f, -20f, 10f),
+
+                Arguments.of(2.7648158f, 5f, 20f, 10f),
+                Arguments.of(10f, 90f, 0f, 0f),
+                Arguments.of(10f, 0f, 90f, 0f),
+                Arguments.of(10f, -90f, 0f, 0f),
+                Arguments.of(10f, 0f, -90f, 0f),
             )
         }
 

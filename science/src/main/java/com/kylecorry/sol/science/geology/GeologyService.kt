@@ -109,7 +109,7 @@ class GeologyService : IGeologyService {
         if (up.isInfinite() || down.isInfinite()) {
             return Distance(0f, height.units)
         }
-        return Distance(height.distance / (up - down), height.units)
+        return Distance((height.distance / (up - down)).absoluteValue, height.units)
     }
 
     override fun getInclination(angle: Float): Float {
