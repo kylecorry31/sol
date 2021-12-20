@@ -11,9 +11,9 @@ import kotlin.math.sqrt
 
 class PhysicsService : IPhysicsService {
 
-    override fun fallHeight(time: Duration): Distance {
+    override fun fallHeight(time: Duration, gravity: Float): Distance {
         val seconds = time.toMillis() / 1000f
-        return Distance(0.5f * GeologyService.GRAVITY * seconds * seconds, DistanceUnits.Meters)
+        return Distance(0.5f * gravity * seconds * seconds, DistanceUnits.Meters)
     }
 
     override fun isMetal(magneticField: Vector3, threshold: Float): Boolean {
