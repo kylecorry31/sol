@@ -1,16 +1,17 @@
 package com.kylecorry.sol.science.oceanography
 
 import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.units.Pressure
-import com.kylecorry.sol.units.PressureUnits
 import com.kylecorry.sol.science.astronomy.AstronomyService
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geology.GeologyService
+import com.kylecorry.sol.time.Time.atStartOfDay
+import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 class OceanographyService : IOceanographyService {
 
@@ -36,7 +37,11 @@ class OceanographyService : IOceanographyService {
         return TidalRange.Normal
     }
 
-    override fun getTideType(referenceHighTide: ZonedDateTime, frequency: TideFrequency, now: ZonedDateTime): TideType {
+    override fun getTideType(
+        referenceHighTide: ZonedDateTime,
+        frequency: TideFrequency,
+        now: ZonedDateTime
+    ): TideType {
         val nextTide = getNextTide(referenceHighTide, frequency, now) ?: return TideType.Half
         val timeToNextTide = Duration.between(now, nextTide.time)
         return if (nextTide.type == TideType.High && timeToNextTide < Duration.ofHours(2) || (nextTide.type == TideType.Low && timeToNextTide > Duration.ofHours(
@@ -54,7 +59,11 @@ class OceanographyService : IOceanographyService {
         }
     }
 
-    override fun getNextTide(referenceHighTide: ZonedDateTime, frequency: TideFrequency, now: ZonedDateTime): Tide? {
+    override fun getNextTide(
+        referenceHighTide: ZonedDateTime,
+        frequency: TideFrequency,
+        now: ZonedDateTime
+    ): Tide? {
         val today = getTides(referenceHighTide, frequency, now.toLocalDate())
         val tomorrow = getTides(referenceHighTide, frequency, now.toLocalDate().plusDays(1))
 
@@ -63,9 +72,13 @@ class OceanographyService : IOceanographyService {
         }
     }
 
-    override fun getTides(referenceHighTide: ZonedDateTime, frequency: TideFrequency, date: LocalDate): List<Tide> {
+    override fun getTides(
+        referenceHighTide: ZonedDateTime,
+        frequency: TideFrequency,
+        date: LocalDate
+    ): List<Tide> {
         val averageLunarDay = Duration.ofHours(24).plusMinutes(50).plusSeconds(30)
-        val tideCycle = when(frequency){
+        val tideCycle = when (frequency) {
             TideFrequency.Diurnal -> averageLunarDay
             TideFrequency.Semidiurnal -> averageLunarDay.dividedBy(2)
         }
@@ -113,10 +126,27 @@ class OceanographyService : IOceanographyService {
         )
     }
 
-    override fun getWaterLevel(time: ZonedDateTime, reference: ZonedDateTime, harmonics: List<TidalHarmonic>): Float {
-        val t = Duration.between(reference, time).seconds / (60f * 60f)
+    override fun getWaterLevel(
+        time: ZonedDateTime,
+        reference: ZonedDateTime,
+        harmonics: List<TidalHarmonic>
+    ): Float {
+        val t = Duration.between(reference, time).seconds / 3600f
         val heights = harmonics.map { it.amplitude * cosDegrees(it.speed * t + it.phase) }
         return heights.sum()
+    }
+
+    private fun calculateLunarHarmonic(
+        time: ZonedDateTime,
+        referenceHighTide: ZonedDateTime
+    ): Float {
+        val period = 12.4206013061504333f
+        val t = Duration.between(referenceHighTide, time).seconds / 3600f
+
+        // TODO: Calculate offset from lunar noon
+        // TODO: Calculate offset from solar noon
+
+        return cos(t * (2 * PI.toFloat()) / period)
     }
 
     companion object {

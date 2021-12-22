@@ -1,12 +1,12 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.math.SolMath.roundPlaces
+import com.kylecorry.sol.science.astronomy.AstronomyService
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
+import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.toUTC
 import com.kylecorry.sol.time.Time.toZonedDateTime
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.units.Pressure
-import com.kylecorry.sol.units.PressureUnits
+import com.kylecorry.sol.units.*
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
+import kotlin.math.absoluteValue
 
 internal class OceanographyServiceTest {
     @Test
@@ -73,27 +74,54 @@ internal class OceanographyServiceTest {
 
     @Test
     fun getWaterLevel() {
-        val m = 0f// 1.86f - 0.23f
-        val reference =
-            LocalDateTime.of(2021, 12, 22, 2, 15).toZonedDateTime().plusHours(12).plusMinutes(25)//.toUniversalTime().toUTC()
-//        val now = LocalDateTime.of(2021, 12, 22, 2, 53).toZonedDateTime()
         val harmonics = listOf(
-            TidalHarmonic(1.5f, 8.2f, 28.984104f),
-            TidalHarmonic(0.32f, 28.2f, 30f),
-            TidalHarmonic(0.36f, 349.2f, 28.43973f),
-            TidalHarmonic(0.21f, 169.9f, 15.041069f),
-            TidalHarmonic(0.08f, 23.9f, 57.96821f),
-            TidalHarmonic(0.16f, 198.1f, 13.943035f),
-            TidalHarmonic(0.04f, 196.9f, 86.95232f),
-            TidalHarmonic(0.01f, 27.6f, 60f),
-            TidalHarmonic(0.02f, 115.4f, 58.984104f),
-            TidalHarmonic(m, 0f, 0f)
+            TidalHarmonic(1.66f, 2.3f, 28.984104f),
+            TidalHarmonic(0.35f, 25f, 30f),
+            TidalHarmonic(0.41f, 345.8f, 28.43973f),
+            TidalHarmonic(0.2f, 166.1f, 15.041069f),
+            TidalHarmonic(0.19f, 35.8f, 57.96821f),
+            TidalHarmonic(0.15f, 202f, 13.943035f),
+            TidalHarmonic(0.02f, 220.1f, 86.95232f)
         )
 
-        val now = LocalDateTime.of(2021, 12, 22, 15, 54).toZonedDateTime()
-            .withZoneSameInstant(ZoneId.of("UTC"))
-        val level = OceanographyService().getWaterLevel(now, reference, harmonics)
-        println(level)
+        val now = LocalDateTime.of(2021, 12, 22, 12, 35).toZonedDateTime()
+
+        /**
+         *
+        2:35 AM	low	0.04 ft.
+        9:27 AM	high	3.33 ft.
+        3:27 PM	low	0.14 ft.
+        10:00 PM	high	2.87 ft.
+         */
+
+
+        val astro = AstronomyService()
+        val loc = Coordinate.zero
+        val lunarNoon = astro.getMoonEvents(now, loc).transit!!
+
+        val ref = LocalDateTime.of(1983, 1, 1, 0, 0).toZonedDateTime()
+
+
+        var last = OceanographyService().getWaterLevel(now.atStartOfDay(), ref, harmonics)
+        val last2 = OceanographyService().getWaterLevel(now.atStartOfDay().plusSeconds(30), ref, harmonics)
+
+        var decreasing = last2 < last
+
+        for (i in 0..(24 * 60)){
+            val level = OceanographyService().getWaterLevel(now.atStartOfDay().plusMinutes(i.toLong()), ref, harmonics)
+
+            if (decreasing && level > last){
+                println("High: ${now.atStartOfDay().plusMinutes(i.toLong())}")
+                decreasing = false
+            } else if (!decreasing && level < last){
+                println("Low: ${now.atStartOfDay().plusMinutes(i.toLong())}")
+                decreasing = true
+            }
+
+            last = level
+
+//            println("$i: ${level.roundPlaces(1)}")
+        }
 
     }
 
