@@ -15,6 +15,10 @@ object Time {
         return ZonedDateTime.of(this, ZoneId.systemDefault())
     }
 
+    fun LocalDateTime.toUTC(): ZonedDateTime {
+        return ZonedDateTime.of(this, ZoneId.of("UTC"))
+    }
+
     fun LocalDateTime.toEpochMillis(): Long {
         return this.toZonedDateTime().toEpochSecond() * 1000
     }

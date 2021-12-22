@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.units.Pressure
@@ -110,6 +111,12 @@ class OceanographyService : IOceanographyService {
             pressureDiff * 100 / (GeologyService.GRAVITY * waterDensity),
             DistanceUnits.Meters
         )
+    }
+
+    override fun getWaterLevel(time: ZonedDateTime, reference: ZonedDateTime, harmonics: List<TidalHarmonic>): Float {
+        val t = Duration.between(reference, time).seconds / (60f * 60f)
+        val heights = harmonics.map { it.amplitude * cosDegrees(it.speed * t + it.phase) }
+        return heights.sum()
     }
 
     companion object {

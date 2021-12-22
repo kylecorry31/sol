@@ -15,4 +15,6 @@ interface IOceanographyService {
     fun getTides(referenceHighTide: ZonedDateTime, frequency: TideFrequency, date: LocalDate = LocalDate.now()): List<Tide>
 
     fun getDepth(pressure: Pressure, seaLevelPressure: Pressure, isSaltWater: Boolean = true): Distance
+
+    fun getWaterLevel(time: ZonedDateTime, reference: ZonedDateTime, harmonics: List<TidalHarmonic>): Float
 }

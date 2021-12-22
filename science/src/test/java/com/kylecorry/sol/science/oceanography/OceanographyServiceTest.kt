@@ -1,5 +1,8 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.science.astronomy.units.toUniversalTime
+import com.kylecorry.sol.time.Time.toUTC
+import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.units.Pressure
@@ -68,6 +71,32 @@ internal class OceanographyServiceTest {
         Assert.assertEquals(expected, tide)
     }
 
+    @Test
+    fun getWaterLevel() {
+        val m = 0f// 1.86f - 0.23f
+        val reference =
+            LocalDateTime.of(2021, 12, 22, 2, 15).toZonedDateTime().plusHours(12).plusMinutes(25)//.toUniversalTime().toUTC()
+//        val now = LocalDateTime.of(2021, 12, 22, 2, 53).toZonedDateTime()
+        val harmonics = listOf(
+            TidalHarmonic(1.5f, 8.2f, 28.984104f),
+            TidalHarmonic(0.32f, 28.2f, 30f),
+            TidalHarmonic(0.36f, 349.2f, 28.43973f),
+            TidalHarmonic(0.21f, 169.9f, 15.041069f),
+            TidalHarmonic(0.08f, 23.9f, 57.96821f),
+            TidalHarmonic(0.16f, 198.1f, 13.943035f),
+            TidalHarmonic(0.04f, 196.9f, 86.95232f),
+            TidalHarmonic(0.01f, 27.6f, 60f),
+            TidalHarmonic(0.02f, 115.4f, 58.984104f),
+            TidalHarmonic(m, 0f, 0f)
+        )
+
+        val now = LocalDateTime.of(2021, 12, 22, 15, 54).toZonedDateTime()
+            .withZoneSameInstant(ZoneId.of("UTC"))
+        val level = OceanographyService().getWaterLevel(now, reference, harmonics)
+        println(level)
+
+    }
+
 
     private fun timeEquals(actual: ZonedDateTime?, expected: ZonedDateTime?, precision: Duration) {
         val duration = Duration.between(actual, expected).abs()
@@ -80,7 +109,7 @@ internal class OceanographyServiceTest {
     }
 
     @Test
-    fun canCalculateDepth(){
+    fun canCalculateDepth() {
         val currentPressure = Pressure(2222.516f, PressureUnits.Hpa)
         val service = OceanographyService()
 
@@ -92,11 +121,11 @@ internal class OceanographyServiceTest {
     }
 
     @Test
-    fun depthReturnsZeroWhenAboveWater(){
+    fun depthReturnsZeroWhenAboveWater() {
         val currentPressure = Pressure(1000f, PressureUnits.Hpa)
         val service = OceanographyService()
 
-        val depth = service.getDepth(currentPressure,  Pressure(1013f, PressureUnits.Hpa))
+        val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
 
         val expected = Distance(0f, DistanceUnits.Meters)
 
