@@ -6,9 +6,7 @@ import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geology.GeologyService
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.*
-import java.time.Duration
-import java.time.LocalDate
-import java.time.ZonedDateTime
+import java.time.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -128,26 +126,19 @@ class OceanographyService : IOceanographyService {
 
     override fun getWaterLevel(
         time: ZonedDateTime,
-        reference: ZonedDateTime,
         harmonics: List<TidalHarmonic>
     ): Float {
-        val t = Duration.between(reference, time).seconds / 3600f
-        val heights = harmonics.map { it.amplitude * cosDegrees(it.speed * t + it.phase) }
+        val start = ZonedDateTime.of(LocalDateTime.of(time.year, 1, 1, 0, 0), ZoneId.of("UTC"))
+        val t = Duration.between(start, time).seconds / 3600f
+        val year = time.year
+        val heights = harmonics.map {
+            val constituentPhase = AstronomicalArgumentCalculator.get(it.constituent, year)
+            val nodeFactor = NodeFactorCalculator.get(it.constituent, year)
+            nodeFactor * it.amplitude * cosDegrees(it.constituent.speed * t + constituentPhase - it.phase)
+        }
         return heights.sum()
     }
 
-    private fun calculateLunarHarmonic(
-        time: ZonedDateTime,
-        referenceHighTide: ZonedDateTime
-    ): Float {
-        val period = 12.4206013061504333f
-        val t = Duration.between(referenceHighTide, time).seconds / 3600f
-
-        // TODO: Calculate offset from lunar noon
-        // TODO: Calculate offset from solar noon
-
-        return cos(t * (2 * PI.toFloat()) / period)
-    }
 
     companion object {
         const val DENSITY_SALT_WATER = 1023.6f

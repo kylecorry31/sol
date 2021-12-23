@@ -16,5 +16,5 @@ interface IOceanographyService {
 
     fun getDepth(pressure: Pressure, seaLevelPressure: Pressure, isSaltWater: Boolean = true): Distance
 
-    fun getWaterLevel(time: ZonedDateTime, reference: ZonedDateTime, harmonics: List<TidalHarmonic>): Float
+    fun getWaterLevel(time: ZonedDateTime, harmonics: List<TidalHarmonic>): Float
 }

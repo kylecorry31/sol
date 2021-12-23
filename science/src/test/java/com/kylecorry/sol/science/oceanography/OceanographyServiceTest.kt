@@ -75,16 +75,20 @@ internal class OceanographyServiceTest {
     @Test
     fun getWaterLevel() {
         val harmonics = listOf(
-            TidalHarmonic(1.66f, 2.3f, 28.984104f),
-            TidalHarmonic(0.35f, 25f, 30f),
-            TidalHarmonic(0.41f, 345.8f, 28.43973f),
-            TidalHarmonic(0.2f, 166.1f, 15.041069f),
-            TidalHarmonic(0.19f, 35.8f, 57.96821f),
-            TidalHarmonic(0.15f, 202f, 13.943035f),
-            TidalHarmonic(0.02f, 220.1f, 86.95232f)
+            TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
+            TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
+            TidalHarmonic(TideConstituent.N2, 0.41f, 345.8f),
+            TidalHarmonic(TideConstituent.K1, 0.2f, 166.1f),
+            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
+            TidalHarmonic(TideConstituent.O1, 0.15f, 202f),
+            TidalHarmonic(TideConstituent.P1, 0.07f, 176.6f),
+            TidalHarmonic(TideConstituent.K2, 0.1f, 21.7f),
+            TidalHarmonic(TideConstituent.L2, 0.04f, 349.9f),
+            TidalHarmonic(TideConstituent.MS4, 0.05f, 106.4f),
+            TidalHarmonic(TideConstituent.Z0, 1.88f, 0f)
         )
 
-        val now = LocalDateTime.of(2021, 12, 22, 12, 35).toZonedDateTime()
+        val now = LocalDateTime.of(2021, 12, 22, 0, 0).toZonedDateTime()
 
         /**
          *
@@ -95,33 +99,59 @@ internal class OceanographyServiceTest {
          */
 
 
-        val astro = AstronomyService()
-        val loc = Coordinate.zero
-        val lunarNoon = astro.getMoonEvents(now, loc).transit!!
 
-        val ref = LocalDateTime.of(1983, 1, 1, 0, 0).toZonedDateTime()
-
-
-        var last = OceanographyService().getWaterLevel(now.atStartOfDay(), ref, harmonics)
-        val last2 = OceanographyService().getWaterLevel(now.atStartOfDay().plusSeconds(30), ref, harmonics)
+        val last = OceanographyService().getWaterLevel(now.atStartOfDay(), harmonics)
+        val last2 = OceanographyService().getWaterLevel(now.atStartOfDay().plusMinutes(30), harmonics)
 
         var decreasing = last2 < last
 
-        for (i in 0..(24 * 60)){
-            val level = OceanographyService().getWaterLevel(now.atStartOfDay().plusMinutes(i.toLong()), ref, harmonics)
+        val highs = mutableListOf<ZonedDateTime>()
+        val lows = mutableListOf<ZonedDateTime>()
 
-            if (decreasing && level > last){
-                println("High: ${now.atStartOfDay().plusMinutes(i.toLong())}")
-                decreasing = false
-            } else if (!decreasing && level < last){
-                println("Low: ${now.atStartOfDay().plusMinutes(i.toLong())}")
-                decreasing = true
+        var count = 0
+        var saved = 0L
+        var savedLevel = last
+        val x = 10
+
+        for (i in 0..(24 * 60) step 1){
+            val level = OceanographyService().getWaterLevel(now.atStartOfDay().plusMinutes(i.toLong()), harmonics)
+
+            if (decreasing){
+                if (level < savedLevel){
+                    savedLevel = level
+                    saved = i.toLong()
+                    count = 0
+                } else {
+                    count++
+                }
+
+                if (count > x){
+                    decreasing = false
+                    count = 0
+                    lows.add(now.plusMinutes(saved))
+                }
+            } else {
+                if (level > savedLevel){
+                    savedLevel = level
+                    saved = i.toLong()
+                    count = 0
+                } else {
+                    count++
+                }
+
+                if (count > x){
+                    decreasing = true
+                    count = 0
+                    highs.add(now.plusMinutes(saved))
+                }
             }
 
-            last = level
-
-//            println("$i: ${level.roundPlaces(1)}")
+            print("$level,")
         }
+        println()
+
+        println(highs.map { it })
+        println(lows.map { it })
 
     }
 
