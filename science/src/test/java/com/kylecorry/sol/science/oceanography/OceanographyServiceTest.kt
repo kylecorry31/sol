@@ -7,6 +7,7 @@ import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.toUTC
 import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.*
+import junit.framework.Assert.assertEquals
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -79,80 +80,21 @@ internal class OceanographyServiceTest {
             TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
             TidalHarmonic(TideConstituent.N2, 0.41f, 345.8f),
             TidalHarmonic(TideConstituent.K1, 0.2f, 166.1f),
-            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
             TidalHarmonic(TideConstituent.O1, 0.15f, 202f),
             TidalHarmonic(TideConstituent.P1, 0.07f, 176.6f),
+            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
             TidalHarmonic(TideConstituent.K2, 0.1f, 21.7f),
             TidalHarmonic(TideConstituent.L2, 0.04f, 349.9f),
             TidalHarmonic(TideConstituent.MS4, 0.05f, 106.4f),
-            TidalHarmonic(TideConstituent.Z0, 1.88f, 0f)
+            TidalHarmonic(TideConstituent.Z0, 0f, 0f)
         )
 
-        val now = LocalDateTime.of(2021, 12, 22, 0, 0).toZonedDateTime()
-
-        /**
-         *
-        2:35 AM	low	0.04 ft.
-        9:27 AM	high	3.33 ft.
-        3:27 PM	low	0.14 ft.
-        10:00 PM	high	2.87 ft.
-         */
-
-
-
-        val last = OceanographyService().getWaterLevel(now.atStartOfDay(), harmonics)
-        val last2 = OceanographyService().getWaterLevel(now.atStartOfDay().plusMinutes(30), harmonics)
-
-        var decreasing = last2 < last
-
-        val highs = mutableListOf<ZonedDateTime>()
-        val lows = mutableListOf<ZonedDateTime>()
-
-        var count = 0
-        var saved = 0L
-        var savedLevel = last
-        val x = 10
-
-        for (i in 0..(24 * 60) step 1){
-            val level = OceanographyService().getWaterLevel(now.atStartOfDay().plusMinutes(i.toLong()), harmonics)
-
-            if (decreasing){
-                if (level < savedLevel){
-                    savedLevel = level
-                    saved = i.toLong()
-                    count = 0
-                } else {
-                    count++
-                }
-
-                if (count > x){
-                    decreasing = false
-                    count = 0
-                    lows.add(now.plusMinutes(saved))
-                }
-            } else {
-                if (level > savedLevel){
-                    savedLevel = level
-                    saved = i.toLong()
-                    count = 0
-                } else {
-                    count++
-                }
-
-                if (count > x){
-                    decreasing = true
-                    count = 0
-                    highs.add(now.plusMinutes(saved))
-                }
-            }
-
-            print("$level,")
-        }
-        println()
-
-        println(highs.map { it })
-        println(lows.map { it })
-
+        val service = OceanographyService()
+        val delta = 0.35f
+        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 2, 35).toZonedDateTime(), harmonics), -1.69f, delta)
+        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 9, 27).toZonedDateTime(), harmonics), 1.59f, delta)
+        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 15, 27).toZonedDateTime(), harmonics), -1.59f, delta)
+        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 22, 0).toZonedDateTime(), harmonics), 1.13f, delta)
     }
 
 

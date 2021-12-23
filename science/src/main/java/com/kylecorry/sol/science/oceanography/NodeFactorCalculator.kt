@@ -6,6 +6,7 @@ internal object NodeFactorCalculator {
     // TODO: Use Schureman equations to calculate (https://github.com/sam-cox/pytides/blob/master/pytides/nodal_corrections.py)
 
     fun get(constituent: TideConstituent, year: Int): Float {
+        // From https://www.dfo-mpo.gc.ca/science/data-donnees/tidal-marees/facteur-node-factor-eng.html
         return if (year <= 2021) {
             get2021(constituent)
         } else {
@@ -22,9 +23,9 @@ internal object NodeFactorCalculator {
             TideConstituent.M4 -> square(0.986f)
             TideConstituent.O1 -> 1.088f
             TideConstituent.P1 -> 0.997f
-            TideConstituent.L2 -> 0.8537f
+            TideConstituent.L2 -> 0.8537f // Calculated
             TideConstituent.K2 -> 1.125f
-            TideConstituent.MS4 -> square(0.986f) * square(1.001f)
+            TideConstituent.MS4 -> 0.986f * 1.001f // M2 * S2
             TideConstituent.Z0 -> 1f
         }
     }
@@ -40,7 +41,7 @@ internal object NodeFactorCalculator {
             TideConstituent.P1 -> 0.995f
             TideConstituent.L2 -> 1.2437f
             TideConstituent.K2 -> 1.214f
-            TideConstituent.MS4 -> square(0.975f) * square(1.001f)
+            TideConstituent.MS4 -> 0.975f * 1.001f
             TideConstituent.Z0 -> 1f
         }
     }

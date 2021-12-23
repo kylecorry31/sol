@@ -16,5 +16,11 @@ interface IOceanographyService {
 
     fun getDepth(pressure: Pressure, seaLevelPressure: Pressure, isSaltWater: Boolean = true): Distance
 
+    /**
+     * Get the water level at a given time
+     * @param time the time to get the water level
+     * @param harmonics the harmonics, referenced to GMT and MSL
+     * @return the water level, in the same units as the harmonic amplitude
+     */
     fun getWaterLevel(time: ZonedDateTime, harmonics: List<TidalHarmonic>): Float
 }
