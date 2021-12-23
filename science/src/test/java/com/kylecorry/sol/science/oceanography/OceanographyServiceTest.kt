@@ -89,12 +89,16 @@ internal class OceanographyServiceTest {
             TidalHarmonic(TideConstituent.Z0, 0f, 0f)
         )
 
+        val zone = ZoneId.of("America/New_York")
+        val date = LocalDate.of(2021, 12, 22)
+
+
         val service = OceanographyService()
         val delta = 0.35f
-        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 2, 35).toZonedDateTime(), harmonics), -1.69f, delta)
-        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 9, 27).toZonedDateTime(), harmonics), 1.59f, delta)
-        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 15, 27).toZonedDateTime(), harmonics), -1.59f, delta)
-        assertEquals(service.getWaterLevel(LocalDateTime.of(2021, 12, 22, 22, 0).toZonedDateTime(), harmonics), 1.13f, delta)
+        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of(2, 35), zone), harmonics), -1.69f, delta)
+        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of( 9, 27), zone), harmonics), 1.59f, delta)
+        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of( 15, 27), zone), harmonics), -1.59f, delta)
+        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of( 22, 0), zone), harmonics), 1.13f, delta)
     }
 
 
