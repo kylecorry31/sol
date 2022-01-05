@@ -1,21 +1,18 @@
 package com.kylecorry.sol.science.oceanography
 
-import com.kylecorry.sol.math.SolMath.roundPlaces
-import com.kylecorry.sol.science.astronomy.AstronomyService
-import com.kylecorry.sol.science.astronomy.units.toUniversalTime
-import com.kylecorry.sol.time.Time.atStartOfDay
-import com.kylecorry.sol.time.Time.toUTC
-import com.kylecorry.sol.time.Time.toZonedDateTime
-import com.kylecorry.sol.units.*
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.units.Pressure
+import com.kylecorry.sol.units.PressureUnits
 import junit.framework.Assert.assertEquals
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.io.File
 import java.time.*
 import java.util.stream.Stream
-import kotlin.math.absoluteValue
 
 internal class OceanographyServiceTest {
     @Test
@@ -73,6 +70,46 @@ internal class OceanographyServiceTest {
         Assert.assertEquals(expected, tide)
     }
 
+//    @Test
+    fun generateHarmonicFile(){
+        val harmonics = listOf(
+            TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
+            TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
+            TidalHarmonic(TideConstituent.N2, 0.41f, 345.8f),
+            TidalHarmonic(TideConstituent.K1, 0.2f, 166.1f),
+            TidalHarmonic(TideConstituent.O1, 0.15f, 202f),
+            TidalHarmonic(TideConstituent.P1, 0.07f, 176.6f),
+            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
+            TidalHarmonic(TideConstituent.K2, 0.1f, 21.7f),
+            TidalHarmonic(TideConstituent.L2, 0.04f, 349.9f),
+            TidalHarmonic(TideConstituent.MS4, 0.05f, 106.4f),
+            TidalHarmonic(TideConstituent.Z0, 0f, 0f)
+        )
+
+        val zone = ZoneId.of("America/New_York")
+        val date = LocalDate.of(2021, 1, 1)
+
+
+        val service = OceanographyService()
+
+        val levels = mutableListOf<Float>()
+
+        val file = File("harmonics.csv")
+        var time = date.atStartOfDay()
+        while (time.toLocalDate() <= date.plusDays(30)){
+            val level = service.getWaterLevel(
+                ZonedDateTime.of(time, zone),
+                harmonics
+            )
+
+            levels.add(level)
+
+            time = time.plusMinutes(1)
+        }
+
+        file.writeText(levels.joinToString(","))
+    }
+
     @Test
     fun getWaterLevel() {
         val harmonics = listOf(
@@ -92,13 +129,33 @@ internal class OceanographyServiceTest {
         val zone = ZoneId.of("America/New_York")
         val date = LocalDate.of(2021, 12, 22)
 
-
         val service = OceanographyService()
+
         val delta = 0.35f
-        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of(2, 35), zone), harmonics), -1.69f, delta)
-        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of( 9, 27), zone), harmonics), 1.59f, delta)
-        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of( 15, 27), zone), harmonics), -1.59f, delta)
-        assertEquals(service.getWaterLevel(ZonedDateTime.of(date, LocalTime.of( 22, 0), zone), harmonics), 1.13f, delta)
+        assertEquals(
+            service.getWaterLevel(
+                ZonedDateTime.of(date, LocalTime.of(2, 35), zone),
+                harmonics
+            ), -1.69f, delta
+        )
+        assertEquals(
+            service.getWaterLevel(
+                ZonedDateTime.of(date, LocalTime.of(9, 27), zone),
+                harmonics
+            ), 1.59f, delta
+        )
+        assertEquals(
+            service.getWaterLevel(
+                ZonedDateTime.of(date, LocalTime.of(15, 27), zone),
+                harmonics
+            ), -1.59f, delta
+        )
+        assertEquals(
+            service.getWaterLevel(
+                ZonedDateTime.of(date, LocalTime.of(22, 0), zone),
+                harmonics
+            ), 1.13f, delta
+        )
     }
 
 

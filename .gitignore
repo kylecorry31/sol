@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 *.apk
+/science/harmonics.csv

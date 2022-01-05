@@ -126,14 +126,20 @@ class OceanographyService : IOceanographyService {
 
     override fun getWaterLevel(
         time: ZonedDateTime,
-        harmonics: List<TidalHarmonic>
+        harmonics: List<TidalHarmonic>,
+        isLocal: Boolean,
+        referenceTime: ZonedDateTime?
     ): Float {
-        val start = ZonedDateTime.of(LocalDateTime.of(time.year, 1, 1, 0, 0), ZoneId.of("UTC"))
+        val start = referenceTime ?: ZonedDateTime.of(
+            LocalDateTime.of(time.year, 1, 1, 0, 0),
+            ZoneId.of("UTC")
+        )
         val t = Duration.between(start, time).seconds / 3600f
         val year = time.year
         val heights = harmonics.map {
-            val constituentPhase = AstronomicalArgumentCalculator.get(it.constituent, year)
-            val nodeFactor = NodeFactorCalculator.get(it.constituent, year)
+            val constituentPhase =
+                if (isLocal) 0f else AstronomicalArgumentCalculator.get(it.constituent, year)
+            val nodeFactor = NodeFactorCalculator.get(it.constituent, year) // TODO: Is this needed if the reference date is provided?
             nodeFactor * it.amplitude * cosDegrees(it.constituent.speed * t + constituentPhase - it.phase)
         }
         return heights.sum()

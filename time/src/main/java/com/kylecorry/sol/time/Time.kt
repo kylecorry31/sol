@@ -98,4 +98,12 @@ object Time {
             .minByOrNull { Duration.between(it, currentTime).abs() }
     }
 
+    fun getClosestPastTime(
+        currentTime: ZonedDateTime,
+        times: List<ZonedDateTime?>
+    ): ZonedDateTime? {
+        return times.filterNotNull().filter { it.isBefore(currentTime) }
+            .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
+
 }
