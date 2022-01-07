@@ -70,7 +70,7 @@ internal class OceanographyServiceTest {
 
         for (i in tides.indices) {
             Assert.assertEquals(expected[i].type, tides[i].type)
-            timeEquals(tides[i].time, expected[i].time, Duration.ofHours(1))
+            timeEquals(tides[i].time, expected[i].time, Duration.ofMinutes(30))
         }
     }
 

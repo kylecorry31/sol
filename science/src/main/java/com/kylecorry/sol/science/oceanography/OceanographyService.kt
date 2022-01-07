@@ -33,29 +33,55 @@ class OceanographyService : IOceanographyService {
     }
 
     override fun getTides(harmonics: List<TidalHarmonic>, date: ZonedDateTime): List<Tide> {
-        // Get water levels for the day
-        val levels = mutableListOf<Float>()
-        var time = date.atStartOfDay()
-        while (time.toLocalDate() == date.toLocalDate()) {
-            levels.add(getWaterLevel(harmonics, time))
-            time = time.plusMinutes(1)
-        }
+        // TODO: Create a more robust algorithm - this could miss identify if the tide is increasing / decreasing if there is a tide around midnight
+        val last = getWaterLevel(harmonics, date.atStartOfDay().minusMinutes(10))
+        val last2 = getWaterLevel(harmonics, date.atStartOfDay())
 
-        // Find highs / lows
+        var decreasing = last2 < last
+
         val tides = mutableListOf<Tide>()
-        for (i in 1 until levels.lastIndex) {
-            val isHigh = levels[i - 1] < levels[i] && levels[i + 1] < levels[i]
-            val isLow = levels[i - 1] > levels[i] && levels[i + 1] > levels[i]
 
-            if (isHigh) {
-                val tideTime = date.atStartOfDay().plusMinutes(i.toLong())
-                tides.add(Tide.high(tideTime))
+        var count = 0
+        var savedLevel = last
+        val threshold = 10
+
+        var time = date.atStartOfDay()
+        var saved = time
+
+        while (time.toLocalDate() == date.toLocalDate()) {
+            val level = getWaterLevel(harmonics, time)
+
+            if (decreasing) {
+                if (level < savedLevel) {
+                    savedLevel = level
+                    saved = time
+                    count = 0
+                } else {
+                    count++
+                }
+
+                if (count > threshold) {
+                    decreasing = false
+                    count = 0
+                    tides.add(Tide.low(saved))
+                }
+            } else {
+                if (level > savedLevel) {
+                    savedLevel = level
+                    saved = time
+                    count = 0
+                } else {
+                    count++
+                }
+
+                if (count > threshold) {
+                    decreasing = true
+                    count = 0
+                    tides.add(Tide.high(saved))
+                }
             }
 
-            if (isLow) {
-                val tideTime = date.atStartOfDay().plusMinutes(i.toLong())
-                tides.add(Tide.low(tideTime))
-            }
+            time = time.plusMinutes(1)
         }
 
         return tides
@@ -121,7 +147,7 @@ class OceanographyService : IOceanographyService {
             val nodeFactor = NodeFactorCalculator.get(
                 it.constituent,
                 year
-            ) // TODO: Is this needed if the reference date is provided?
+            )
             nodeFactor * it.amplitude * cosDegrees(it.constituent.speed * t + constituentPhase - it.phase)
         }
         return heights.sum()
