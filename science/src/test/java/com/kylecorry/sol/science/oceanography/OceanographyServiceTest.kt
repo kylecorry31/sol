@@ -33,12 +33,58 @@ internal class OceanographyServiceTest {
 
     }
 
+    @Test
+    fun getTidesHarmonics(){
+        val harmonics = listOf(
+            TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
+            TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
+            TidalHarmonic(TideConstituent.N2, 0.41f, 345.8f),
+            TidalHarmonic(TideConstituent.K1, 0.2f, 166.1f),
+            TidalHarmonic(TideConstituent.O1, 0.15f, 202f),
+            TidalHarmonic(TideConstituent.P1, 0.07f, 176.6f),
+            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
+            TidalHarmonic(TideConstituent.K2, 0.1f, 21.7f),
+            TidalHarmonic(TideConstituent.L2, 0.04f, 349.9f),
+            TidalHarmonic(TideConstituent.MS4, 0.05f, 106.4f),
+            TidalHarmonic(TideConstituent.Z0, 0f, 0f)
+        )
+
+        val zone = ZoneId.of("America/New_York")
+        val date = LocalDate.of(2021, 12, 22).atStartOfDay(zone)
+
+        val expected = listOf(
+            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(2, 35), zone)),
+            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(9, 27), zone)),
+            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(15, 27), zone)),
+            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(22, 0), zone))
+        )
+
+        val service = OceanographyService()
+
+        val tides = service.getTides(
+            harmonics,
+            date
+        )
+
+        Assert.assertEquals(expected.size, tides.size)
+
+        for (i in tides.indices) {
+            Assert.assertEquals(expected[i].type, tides[i].type)
+            timeEquals(tides[i].time, expected[i].time, Duration.ofHours(1))
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("provideTides")
     fun getTides(reference: ZonedDateTime, date: LocalDate, expected: List<Tide>) {
         val service = OceanographyService()
 
-        val tides = service.getTides(reference, TideFrequency.Semidiurnal, date)
+        val harmonics = service.estimateHarmonics(reference, TideFrequency.Semidiurnal)
+
+        val tides = service.getTides(
+            harmonics,
+            date.atStartOfDay(reference.zone)
+        )
 
         Assert.assertEquals(expected.size, tides.size)
 
@@ -49,29 +95,9 @@ internal class OceanographyServiceTest {
 
     }
 
-    @ParameterizedTest
-    @MethodSource("provideNextTide")
-    fun getNextTide(reference: ZonedDateTime, time: ZonedDateTime, expected: Tide) {
-        val service = OceanographyService()
-
-        val tide = service.getNextTide(reference, TideFrequency.Semidiurnal, time)
-
-        Assert.assertEquals(expected.type, tide?.type)
-        timeEquals(tide?.time, expected.time, Duration.ofHours(2))
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideTideType")
-    fun getTideType(reference: ZonedDateTime, time: ZonedDateTime, expected: TideType) {
-        val service = OceanographyService()
-
-        val tide = service.getTideType(reference, TideFrequency.Semidiurnal, time)
-
-        Assert.assertEquals(expected, tide)
-    }
 
 //    @Test
-    fun generateHarmonicFile(){
+    fun generateHarmonicFile() {
         val harmonics = listOf(
             TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
             TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
@@ -96,10 +122,10 @@ internal class OceanographyServiceTest {
 
         val file = File("harmonics.csv")
         var time = date.atStartOfDay()
-        while (time.toLocalDate() <= date.plusDays(30)){
+        while (time.toLocalDate() <= date.plusDays(30)) {
             val level = service.getWaterLevel(
-                ZonedDateTime.of(time, zone),
-                harmonics
+                harmonics,
+                ZonedDateTime.of(time, zone)
             )
 
             levels.add(level)
@@ -134,26 +160,26 @@ internal class OceanographyServiceTest {
         val delta = 0.35f
         assertEquals(
             service.getWaterLevel(
-                ZonedDateTime.of(date, LocalTime.of(2, 35), zone),
-                harmonics
+                harmonics,
+                ZonedDateTime.of(date, LocalTime.of(2, 35), zone)
             ), -1.69f, delta
         )
         assertEquals(
             service.getWaterLevel(
-                ZonedDateTime.of(date, LocalTime.of(9, 27), zone),
-                harmonics
+                harmonics,
+                ZonedDateTime.of(date, LocalTime.of(9, 27), zone)
             ), 1.59f, delta
         )
         assertEquals(
             service.getWaterLevel(
-                ZonedDateTime.of(date, LocalTime.of(15, 27), zone),
-                harmonics
+                harmonics,
+                ZonedDateTime.of(date, LocalTime.of(15, 27), zone)
             ), -1.59f, delta
         )
         assertEquals(
             service.getWaterLevel(
-                ZonedDateTime.of(date, LocalTime.of(22, 0), zone),
-                harmonics
+                harmonics,
+                ZonedDateTime.of(date, LocalTime.of(22, 0), zone)
             ), 1.13f, delta
         )
     }
@@ -207,44 +233,6 @@ internal class OceanographyServiceTest {
                         Tide.low(time(2021, 3, 16, 16, 9, "America/New_York")),
                         Tide.high(time(2021, 3, 16, 22, 57, "America/New_York"))
                     )
-                )
-            )
-        }
-
-        @JvmStatic
-        fun provideNextTide(): Stream<Arguments> {
-            val reference1 = time(2021, 3, 15, 10, 7, "America/New_York")
-            return Stream.of(
-                Arguments.of(
-                    reference1, time(2021, 3, 16, 2, 0, "America/New_York"),
-                    Tide.low(time(2021, 3, 16, 4, 31, "America/New_York"))
-                ),
-                Arguments.of(
-                    reference1, time(2021, 3, 16, 23, 50, "America/New_York"),
-                    Tide.low(time(2021, 3, 17, 5, 4, "America/New_York"))
-                ),
-                Arguments.of(
-                    reference1, time(2021, 3, 14, 21, 0, "America/New_York"),
-                    Tide.high(time(2021, 3, 14, 21, 50, "America/New_York"))
-                )
-            )
-        }
-
-        @JvmStatic
-        fun provideTideType(): Stream<Arguments> {
-            val reference1 = time(2021, 3, 15, 10, 7, "America/New_York")
-            return Stream.of(
-                Arguments.of(
-                    reference1, time(2021, 3, 16, 2, 0, "America/New_York"),
-                    TideType.Half
-                ),
-                Arguments.of(
-                    reference1, time(2021, 3, 16, 3, 0, "America/New_York"),
-                    TideType.Low
-                ),
-                Arguments.of(
-                    reference1, time(2021, 3, 14, 21, 0, "America/New_York"),
-                    TideType.High
                 )
             )
         }

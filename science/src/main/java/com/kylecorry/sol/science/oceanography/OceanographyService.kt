@@ -7,9 +7,6 @@ import com.kylecorry.sol.science.geology.GeologyService
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.*
 import java.time.*
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 class OceanographyService : IOceanographyService {
 
@@ -35,72 +32,33 @@ class OceanographyService : IOceanographyService {
         return TidalRange.Normal
     }
 
-    override fun getTideType(
-        referenceHighTide: ZonedDateTime,
-        frequency: TideFrequency,
-        now: ZonedDateTime
-    ): TideType {
-        val nextTide = getNextTide(referenceHighTide, frequency, now) ?: return TideType.Half
-        val timeToNextTide = Duration.between(now, nextTide.time)
-        return if (nextTide.type == TideType.High && timeToNextTide < Duration.ofHours(2) || (nextTide.type == TideType.Low && timeToNextTide > Duration.ofHours(
-                4
-            ))
-        ) {
-            TideType.High
-        } else if (nextTide.type == TideType.Low && timeToNextTide < Duration.ofHours(2) || (nextTide.type == TideType.High && timeToNextTide > Duration.ofHours(
-                4
-            ))
-        ) {
-            TideType.Low
-        } else {
-            TideType.Half
+    override fun getTides(harmonics: List<TidalHarmonic>, date: ZonedDateTime): List<Tide> {
+        // Get water levels for the day
+        val levels = mutableListOf<Float>()
+        var time = date.atStartOfDay()
+        while (time.toLocalDate() == date.toLocalDate()) {
+            levels.add(getWaterLevel(harmonics, time))
+            time = time.plusMinutes(1)
         }
-    }
 
-    override fun getNextTide(
-        referenceHighTide: ZonedDateTime,
-        frequency: TideFrequency,
-        now: ZonedDateTime
-    ): Tide? {
-        val today = getTides(referenceHighTide, frequency, now.toLocalDate())
-        val tomorrow = getTides(referenceHighTide, frequency, now.toLocalDate().plusDays(1))
+        // Find highs / lows
+        val tides = mutableListOf<Tide>()
+        for (i in 1 until levels.lastIndex) {
+            val isHigh = levels[i - 1] < levels[i] && levels[i + 1] < levels[i]
+            val isLow = levels[i - 1] > levels[i] && levels[i + 1] > levels[i]
 
-        return (today + tomorrow).firstOrNull {
-            it.time > now
-        }
-    }
+            if (isHigh) {
+                val tideTime = date.atStartOfDay().plusMinutes(i.toLong())
+                tides.add(Tide.high(tideTime))
+            }
 
-    override fun getTides(
-        referenceHighTide: ZonedDateTime,
-        frequency: TideFrequency,
-        date: LocalDate
-    ): List<Tide> {
-        val averageLunarDay = Duration.ofHours(24).plusMinutes(50).plusSeconds(30)
-        val tideCycle = when (frequency) {
-            TideFrequency.Diurnal -> averageLunarDay
-            TideFrequency.Semidiurnal -> averageLunarDay.dividedBy(2)
-        }
-        val halfTideCycle = tideCycle.dividedBy(2)
-        var highTideOnDate = referenceHighTide
-        while (highTideOnDate.toLocalDate() != date) {
-            highTideOnDate = if (highTideOnDate.toLocalDate() > date) {
-                highTideOnDate.minus(tideCycle)
-            } else {
-                highTideOnDate.plus(tideCycle)
+            if (isLow) {
+                val tideTime = date.atStartOfDay().plusMinutes(i.toLong())
+                tides.add(Tide.low(tideTime))
             }
         }
 
-        val tides = listOf(
-            Tide(highTideOnDate.minus(tideCycle), TideType.High),
-            Tide(highTideOnDate, TideType.High),
-            Tide(highTideOnDate.plus(tideCycle), TideType.High),
-            Tide(highTideOnDate.minus(tideCycle).minus(halfTideCycle), TideType.Low),
-            Tide(highTideOnDate.minus(halfTideCycle), TideType.Low),
-            Tide(highTideOnDate.plus(halfTideCycle), TideType.Low),
-            Tide(highTideOnDate.plus(tideCycle).plus(halfTideCycle), TideType.Low),
-        )
-
-        return tides.filter { it.time.toLocalDate() == date }.sortedBy { it.time }
+        return tides
     }
 
     override fun getDepth(
@@ -124,22 +82,46 @@ class OceanographyService : IOceanographyService {
         )
     }
 
+    override fun estimateHarmonics(
+        highTide: ZonedDateTime,
+        frequency: TideFrequency,
+        amplitude: Float
+    ): List<TidalHarmonic> {
+        val start = ZonedDateTime.of(
+            LocalDateTime.of(highTide.year, 1, 1, 0, 0),
+            ZoneId.of("UTC")
+        )
+        val t = Duration.between(start, highTide).seconds / 3600f
+        val year = highTide.year
+        val constituent = when (frequency) {
+            TideFrequency.Diurnal -> TideConstituent.K1
+            TideFrequency.Semidiurnal -> TideConstituent.M2
+        }
+        val constituentPhase = AstronomicalArgumentCalculator.get(constituent, year)
+
+        val phase = constituentPhase + constituent.speed * t
+
+        return listOf(
+            TidalHarmonic(constituent, amplitude, phase)
+        )
+    }
+
     override fun getWaterLevel(
-        time: ZonedDateTime,
         harmonics: List<TidalHarmonic>,
-        isLocal: Boolean,
-        referenceTime: ZonedDateTime?
+        time: ZonedDateTime
     ): Float {
-        val start = referenceTime ?: ZonedDateTime.of(
+        val start = ZonedDateTime.of(
             LocalDateTime.of(time.year, 1, 1, 0, 0),
             ZoneId.of("UTC")
         )
         val t = Duration.between(start, time).seconds / 3600f
         val year = time.year
         val heights = harmonics.map {
-            val constituentPhase =
-                if (isLocal) 0f else AstronomicalArgumentCalculator.get(it.constituent, year)
-            val nodeFactor = NodeFactorCalculator.get(it.constituent, year) // TODO: Is this needed if the reference date is provided?
+            val constituentPhase = AstronomicalArgumentCalculator.get(it.constituent, year)
+            val nodeFactor = NodeFactorCalculator.get(
+                it.constituent,
+                year
+            ) // TODO: Is this needed if the reference date is provided?
             nodeFactor * it.amplitude * cosDegrees(it.constituent.speed * t + constituentPhase - it.phase)
         }
         return heights.sum()
