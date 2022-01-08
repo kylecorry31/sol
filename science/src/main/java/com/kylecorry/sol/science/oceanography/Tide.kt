@@ -9,8 +9,8 @@ data class Tide(
 ) {
     companion object {
 
-        private val defaultHighHeight = 1f
-        private val defaultLowHeight = -1f
+        private const val defaultHighHeight = 1f
+        private const val defaultLowHeight = -1f
 
         fun high(time: ZonedDateTime, height: Float = defaultHighHeight): Tide {
             return Tide(time, TideType.High, height)
