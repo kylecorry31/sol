@@ -63,7 +63,7 @@ class OceanographyService : IOceanographyService {
                 if (count > threshold) {
                     decreasing = false
                     count = 0
-                    tides.add(Tide.low(saved))
+                    tides.add(Tide.low(saved, savedLevel))
                 }
             } else {
                 if (level > savedLevel) {
@@ -77,7 +77,7 @@ class OceanographyService : IOceanographyService {
                 if (count > threshold) {
                     decreasing = true
                     count = 0
-                    tides.add(Tide.high(saved))
+                    tides.add(Tide.high(saved, savedLevel))
                 }
             }
 
