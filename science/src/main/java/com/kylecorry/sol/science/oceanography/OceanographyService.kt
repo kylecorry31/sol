@@ -1,9 +1,14 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.optimization.IExtremaFinder
+import com.kylecorry.sol.math.optimization.NoisyExtremaFinder
+import com.kylecorry.sol.math.optimization.SimpleExtremaFinder
 import com.kylecorry.sol.science.astronomy.AstronomyService
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geology.GeologyService
+import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.*
 import java.time.*
@@ -32,59 +37,17 @@ class OceanographyService : IOceanographyService {
         return TidalRange.Normal
     }
 
-    override fun getTides(harmonics: List<TidalHarmonic>, date: ZonedDateTime): List<Tide> {
-        // TODO: Create a more robust algorithm - this could miss identify if the tide is increasing / decreasing if there is a tide around midnight
-        val last = getWaterLevel(harmonics, date.atStartOfDay().minusMinutes(10))
-        val last2 = getWaterLevel(harmonics, date.atStartOfDay())
-
-        var decreasing = last2 < last
-
-        val tides = mutableListOf<Tide>()
-
-        var count = 0
-        var savedLevel = last
-        val threshold = 10
-
-        var time = date.atStartOfDay()
-        var saved = time
-
-        while (time.toLocalDate() == date.toLocalDate()) {
-            val level = getWaterLevel(harmonics, time)
-
-            if (decreasing) {
-                if (level < savedLevel) {
-                    savedLevel = level
-                    saved = time
-                    count = 0
-                } else {
-                    count++
-                }
-
-                if (count > threshold) {
-                    decreasing = false
-                    count = 0
-                    tides.add(Tide.low(saved, savedLevel))
-                }
-            } else {
-                if (level > savedLevel) {
-                    savedLevel = level
-                    saved = time
-                    count = 0
-                } else {
-                    count++
-                }
-
-                if (count > threshold) {
-                    decreasing = true
-                    count = 0
-                    tides.add(Tide.high(saved, savedLevel))
-                }
-            }
-
-            time = time.plusMinutes(1)
+    override fun getTides(
+        harmonics: List<TidalHarmonic>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): List<Tide> {
+        val extremaFinder = NoisyExtremaFinder(1.0, 10)
+        val range = Duration.between(start, end).toMinutes()
+        val extrema = extremaFinder.find(Range(0.0, range.toDouble())) {
+            getWaterLevel(harmonics, start.plusMinutes(it.toLong())).toDouble()
         }
-
-        return tides
+        return extrema.map { Tide(start.plusMinutes(it.point.x.toLong()), it.isHigh, it.point.y) }
     }
 
     override fun getDepth(

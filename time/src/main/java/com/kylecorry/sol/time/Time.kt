@@ -1,6 +1,7 @@
 package com.kylecorry.sol.time
 
 import java.time.*
+import java.time.temporal.Temporal
 
 object Time {
 
@@ -104,6 +105,10 @@ object Time {
     ): ZonedDateTime? {
         return times.filterNotNull().filter { it.isBefore(currentTime) }
             .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
+
+    fun hoursBetween(first: Temporal, second: Temporal): Float {
+        return Duration.between(first, second).seconds / 3600f
     }
 
 }

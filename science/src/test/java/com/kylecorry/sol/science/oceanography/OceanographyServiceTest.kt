@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.units.Pressure
@@ -63,7 +64,8 @@ internal class OceanographyServiceTest {
 
         val tides = service.getTides(
             harmonics,
-            date
+            date,
+            date.atEndOfDay()
         )
 
         Assert.assertEquals(expected.size, tides.size)
@@ -83,7 +85,8 @@ internal class OceanographyServiceTest {
 
         val tides = service.getTides(
             harmonics,
-            date.atStartOfDay(reference.zone)
+            date.atStartOfDay(reference.zone),
+            date.atStartOfDay(reference.zone).atEndOfDay()
         )
 
         Assert.assertEquals(expected.size, tides.size)

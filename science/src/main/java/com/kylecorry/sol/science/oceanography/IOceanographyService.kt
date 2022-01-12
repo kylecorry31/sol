@@ -1,5 +1,7 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.math.optimization.IExtremaFinder
+import com.kylecorry.sol.math.optimization.NoisyExtremaFinder
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Pressure
 import java.time.LocalDate
@@ -20,7 +22,8 @@ interface IOceanographyService {
      */
     fun getTides(
         harmonics: List<TidalHarmonic>,
-        date: ZonedDateTime = ZonedDateTime.now()
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): List<Tide>
 
     /**
