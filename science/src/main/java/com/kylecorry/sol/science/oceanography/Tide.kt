@@ -4,20 +4,17 @@ import java.time.ZonedDateTime
 
 data class Tide(
     val time: ZonedDateTime,
-    val type: TideType,
-    val height: Float = if (type == TideType.High) defaultHighHeight else defaultLowHeight
+    val isHigh: Boolean,
+    val height: Float? = null
 ) {
     companion object {
 
-        private const val defaultHighHeight = 1f
-        private const val defaultLowHeight = -1f
-
-        fun high(time: ZonedDateTime, height: Float = defaultHighHeight): Tide {
-            return Tide(time, TideType.High, height)
+        fun high(time: ZonedDateTime, height: Float? = null): Tide {
+            return Tide(time, true, height)
         }
 
-        fun low(time: ZonedDateTime, height: Float = defaultLowHeight): Tide {
-            return Tide(time, TideType.Low, height)
+        fun low(time: ZonedDateTime, height: Float? = null): Tide {
+            return Tide(time, false, height)
         }
     }
 }

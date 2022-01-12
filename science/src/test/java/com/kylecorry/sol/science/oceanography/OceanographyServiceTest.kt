@@ -69,7 +69,7 @@ internal class OceanographyServiceTest {
         Assert.assertEquals(expected.size, tides.size)
 
         for (i in tides.indices) {
-            Assert.assertEquals(expected[i].type, tides[i].type)
+            Assert.assertEquals(expected[i].isHigh, tides[i].isHigh)
             timeEquals(tides[i].time, expected[i].time, Duration.ofMinutes(30))
         }
     }
@@ -89,7 +89,7 @@ internal class OceanographyServiceTest {
         Assert.assertEquals(expected.size, tides.size)
 
         for (i in tides.indices) {
-            Assert.assertEquals(expected[i].type, tides[i].type)
+            Assert.assertEquals(expected[i].isHigh, tides[i].isHigh)
             timeEquals(tides[i].time, expected[i].time, Duration.ofHours(2))
         }
 
