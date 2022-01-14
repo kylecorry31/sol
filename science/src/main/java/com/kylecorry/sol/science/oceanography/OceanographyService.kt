@@ -8,6 +8,8 @@ import com.kylecorry.sol.math.optimization.SimpleExtremaFinder
 import com.kylecorry.sol.science.astronomy.AstronomyService
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geology.GeologyService
+import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
+import com.kylecorry.sol.science.oceanography.waterlevel.RuleOfTwelfthsWaterLevelCalculator
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.*
@@ -38,14 +40,14 @@ class OceanographyService : IOceanographyService {
     }
 
     override fun getTides(
-        harmonics: List<TidalHarmonic>,
+        waterLevelCalculator: IWaterLevelCalculator,
         start: ZonedDateTime,
-        end: ZonedDateTime
+        end: ZonedDateTime,
+        extremaFinder: IExtremaFinder
     ): List<Tide> {
-        val extremaFinder = NoisyExtremaFinder(1.0, 10)
         val range = Duration.between(start, end).toMinutes()
         val extrema = extremaFinder.find(Range(0.0, range.toDouble())) {
-            getWaterLevel(harmonics, start.plusMinutes(it.toLong())).toDouble()
+            waterLevelCalculator.calculate(start.plusMinutes(it.toLong())).toDouble()
         }
         return extrema.map { Tide(start.plusMinutes(it.point.x.toLong()), it.isHigh, it.point.y) }
     }
@@ -70,52 +72,6 @@ class OceanographyService : IOceanographyService {
             DistanceUnits.Meters
         )
     }
-
-    override fun estimateHarmonics(
-        highTide: ZonedDateTime,
-        frequency: TideFrequency,
-        amplitude: Float
-    ): List<TidalHarmonic> {
-        val start = ZonedDateTime.of(
-            LocalDateTime.of(highTide.year, 1, 1, 0, 0),
-            ZoneId.of("UTC")
-        )
-        val t = Duration.between(start, highTide).seconds / 3600f
-        val year = highTide.year
-        val constituent = when (frequency) {
-            TideFrequency.Diurnal -> TideConstituent.K1
-            TideFrequency.Semidiurnal -> TideConstituent.M2
-        }
-        val constituentPhase = AstronomicalArgumentCalculator.get(constituent, year)
-
-        val phase = constituentPhase + constituent.speed * t
-
-        return listOf(
-            TidalHarmonic(constituent, amplitude, phase)
-        )
-    }
-
-    override fun getWaterLevel(
-        harmonics: List<TidalHarmonic>,
-        time: ZonedDateTime
-    ): Float {
-        val start = ZonedDateTime.of(
-            LocalDateTime.of(time.year, 1, 1, 0, 0),
-            ZoneId.of("UTC")
-        )
-        val t = Duration.between(start, time).seconds / 3600f
-        val year = time.year
-        val heights = harmonics.map {
-            val constituentPhase = AstronomicalArgumentCalculator.get(it.constituent, year)
-            val nodeFactor = NodeFactorCalculator.get(
-                it.constituent,
-                year
-            )
-            nodeFactor * it.amplitude * cosDegrees(it.constituent.speed * t + constituentPhase - it.phase)
-        }
-        return heights.sum()
-    }
-
 
     companion object {
         const val DENSITY_SALT_WATER = 1023.6f

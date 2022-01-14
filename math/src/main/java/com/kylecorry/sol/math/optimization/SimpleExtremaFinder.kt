@@ -7,7 +7,7 @@ class SimpleExtremaFinder(private val step: Double = 1.0) : IExtremaFinder {
 
     override fun find(range: Range<Double>, fn: (x: Double) -> Double): List<Extremum> {
         val extrema = mutableListOf<Extremum>()
-        var previous = range.start - step
+        var previous = fn(range.start - step)
         var x = range.start
         var next = fn(x)
         while (x <= range.end) {

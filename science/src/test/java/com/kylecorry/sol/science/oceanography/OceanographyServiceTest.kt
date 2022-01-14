@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.science.oceanography.waterlevel.HarmonicWaterLevelCalculator
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
@@ -35,7 +36,7 @@ internal class OceanographyServiceTest {
     }
 
     @Test
-    fun getTidesHarmonics(){
+    fun getTidesHarmonics() {
         val harmonics = listOf(
             TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
             TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
@@ -63,7 +64,7 @@ internal class OceanographyServiceTest {
         val service = OceanographyService()
 
         val tides = service.getTides(
-            harmonics,
+            HarmonicWaterLevelCalculator(harmonics),
             date,
             date.atEndOfDay()
         )
@@ -76,30 +77,8 @@ internal class OceanographyServiceTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("provideTides")
-    fun getTides(reference: ZonedDateTime, date: LocalDate, expected: List<Tide>) {
-        val service = OceanographyService()
 
-        val harmonics = service.estimateHarmonics(reference, TideFrequency.Semidiurnal)
-
-        val tides = service.getTides(
-            harmonics,
-            date.atStartOfDay(reference.zone),
-            date.atStartOfDay(reference.zone).atEndOfDay()
-        )
-
-        Assert.assertEquals(expected.size, tides.size)
-
-        for (i in tides.indices) {
-            Assert.assertEquals(expected[i].isHigh, tides[i].isHigh)
-            timeEquals(tides[i].time, expected[i].time, Duration.ofHours(2))
-        }
-
-    }
-
-
-//    @Test
+    //    @Test
     fun generateHarmonicFile() {
         val harmonics = listOf(
             TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
@@ -126,8 +105,7 @@ internal class OceanographyServiceTest {
         val file = File("harmonics.csv")
         var time = date.atStartOfDay()
         while (time.toLocalDate() <= date.plusDays(30)) {
-            val level = service.getWaterLevel(
-                harmonics,
+            val level = HarmonicWaterLevelCalculator(harmonics).calculate(
                 ZonedDateTime.of(time, zone)
             )
 
@@ -141,50 +119,7 @@ internal class OceanographyServiceTest {
 
     @Test
     fun getWaterLevel() {
-        val harmonics = listOf(
-            TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
-            TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
-            TidalHarmonic(TideConstituent.N2, 0.41f, 345.8f),
-            TidalHarmonic(TideConstituent.K1, 0.2f, 166.1f),
-            TidalHarmonic(TideConstituent.O1, 0.15f, 202f),
-            TidalHarmonic(TideConstituent.P1, 0.07f, 176.6f),
-            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
-            TidalHarmonic(TideConstituent.K2, 0.1f, 21.7f),
-            TidalHarmonic(TideConstituent.L2, 0.04f, 349.9f),
-            TidalHarmonic(TideConstituent.MS4, 0.05f, 106.4f),
-            TidalHarmonic(TideConstituent.Z0, 0f, 0f)
-        )
 
-        val zone = ZoneId.of("America/New_York")
-        val date = LocalDate.of(2021, 12, 22)
-
-        val service = OceanographyService()
-
-        val delta = 0.35f
-        assertEquals(
-            service.getWaterLevel(
-                harmonics,
-                ZonedDateTime.of(date, LocalTime.of(2, 35), zone)
-            ), -1.69f, delta
-        )
-        assertEquals(
-            service.getWaterLevel(
-                harmonics,
-                ZonedDateTime.of(date, LocalTime.of(9, 27), zone)
-            ), 1.59f, delta
-        )
-        assertEquals(
-            service.getWaterLevel(
-                harmonics,
-                ZonedDateTime.of(date, LocalTime.of(15, 27), zone)
-            ), -1.59f, delta
-        )
-        assertEquals(
-            service.getWaterLevel(
-                harmonics,
-                ZonedDateTime.of(date, LocalTime.of(22, 0), zone)
-            ), 1.13f, delta
-        )
     }
 
 
