@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.calculus
 
 import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.algebra.QuadraticEquation
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -73,6 +74,25 @@ class CalculusService {
         }
 
         return multiplier * total
+    }
+
+    /**
+     * Calculate the root of the provided function using Newton's Method
+     */
+    fun root(
+        fn: (x: Double) -> Double,
+        fnPrime: (x: Double) -> Double = { derivative(it, fn = fn) },
+        guess: Double = 0.0,
+        maxIterations: Int = 5,
+        threshold: Double = 0.0
+    ): Double {
+        var x = guess
+        for (i in 0 until maxIterations) {
+            val delta = fn(x) / fnPrime(x)
+            x -= delta
+            if (abs(delta) < threshold) break
+        }
+        return x
     }
 
 
