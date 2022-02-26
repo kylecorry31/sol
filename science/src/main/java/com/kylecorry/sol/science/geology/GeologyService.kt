@@ -273,6 +273,56 @@ class GeologyService : IGeologyService {
         return Distance.meters(crossTrackDistance.toFloat())
     }
 
+    override fun getAlongTrackDistance(
+        point: Coordinate,
+        start: Coordinate,
+        end: Coordinate
+    ): Distance {
+
+        if (point == start) {
+            return Distance.meters(0f)
+        }
+
+        if (point == end) {
+            return Distance.meters(point.distanceTo(end))
+        }
+
+        val startToPoint = DistanceCalculator.haversine(start, point, EARTH_AVERAGE_RADIUS)
+        val startToEnd = DistanceCalculator.haversine(start, end, EARTH_AVERAGE_RADIUS)
+
+        val distanceFromStart = startToPoint[0] / EARTH_AVERAGE_RADIUS
+        val bearingFromStart = startToPoint[1].toRadians()
+        val bearingLine = startToEnd[1].toRadians()
+
+        val crossTrackDistanceRadians =
+            asin(sin(distanceFromStart) * sin(bearingFromStart - bearingLine))
+
+        val radians = acos(cos(distanceFromStart) / abs(cos(crossTrackDistanceRadians)))
+        val distance = radians * EARTH_AVERAGE_RADIUS * sign(cos(bearingLine - bearingFromStart))
+        return Distance.meters(distance.toFloat())
+    }
+
+    override fun getNearestPoint(
+        point: Coordinate,
+        start: Coordinate,
+        end: Coordinate
+    ): Coordinate {
+        val alongTrack = getAlongTrackDistance(point, start, end)
+
+        if (alongTrack.distance < 0) {
+            return start
+        }
+
+        val lineDistance = start.distanceTo(end)
+        if (alongTrack.distance > lineDistance) {
+            return end
+        }
+
+
+        val bearing = start.bearingTo(end)
+        return start.plus(alongTrack, bearing)
+    }
+
     override fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
         return from.plus(distance.toDouble(), bearing)
     }

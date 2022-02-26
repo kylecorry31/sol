@@ -82,6 +82,10 @@ interface IGeologyService {
 
     fun getCrossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Distance
 
+    fun getAlongTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Distance
+
+    fun getNearestPoint(point: Coordinate, start: Coordinate, end: Coordinate): Coordinate
+
     fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate
 
     fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Distance

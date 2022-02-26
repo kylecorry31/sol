@@ -156,16 +156,40 @@ internal class GeologyServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideInclination")
-    fun getInclination(angle: Float, expected: Float){
+    fun getInclination(angle: Float, expected: Float) {
         val inclination = service.getInclination(angle)
         assertEquals(expected, inclination, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideGrade")
-    fun getSlopeGrade(angle: Float, expected: Float){
+    fun getSlopeGrade(angle: Float, expected: Float) {
         val grade = service.getSlopeGrade(angle)
         assertEquals(expected, grade, 0.01f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAlongTrack")
+    fun getAlongTrackDistance(
+        point: Coordinate,
+        start: Coordinate,
+        end: Coordinate,
+        expected: Float
+    ) {
+        val actual = service.getAlongTrackDistance(point, start, end)
+        assertThat(actual).isCloseTo(Distance.meters(expected), 1f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNearestPoint")
+    fun getNearestPoint(
+        point: Coordinate,
+        start: Coordinate,
+        end: Coordinate,
+        expected: Coordinate
+    ) {
+        val actual = service.getNearestPoint(point, start, end)
+        assertThat(actual).isCloseTo(expected, 1f)
     }
 
     companion object {
@@ -233,6 +257,108 @@ internal class GeologyServiceTest {
                 Arguments.of(10f, 0f, 90f, 0f),
                 Arguments.of(10f, -90f, 0f, 0f),
                 Arguments.of(10f, 0f, -90f, 0f),
+            )
+        }
+
+        @JvmStatic
+        fun provideAlongTrack(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Coordinate(53.2611, -0.7972),
+                    Coordinate(53.3206, -1.7297),
+                    Coordinate(53.1887,  0.1334),
+                    Distance.kilometers(62.333f).meters().distance
+                ),
+                Arguments.of(
+                    Coordinate(1.0, 1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Distance.meters(1.11198e5f).distance
+                ),
+                Arguments.of(
+                    Coordinate(-1.0, 1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Distance.meters(1.11198e5f).distance
+                ),
+                Arguments.of(
+                    Coordinate(-1.0, -1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Distance.meters(-1.11198e5f).distance
+                ),
+                Arguments.of(
+                    Coordinate(1.0, -1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Distance.meters(-1.11198e5f).distance
+                )
+            )
+        }
+
+        @JvmStatic
+        fun provideNearestPoint(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Coordinate(0.5, -0.5),
+                    Coordinate.zero,
+                    Coordinate(1.0, -1.0),
+                    Coordinate(0.49835, -0.50165)
+                ),
+                Arguments.of(
+                    Coordinate(0.8, -0.5),
+                    Coordinate.zero,
+                    Coordinate(1.0, -1.0),
+                    Coordinate(0.64785, -0.65216)
+                ),
+                Arguments.of(
+                    Coordinate(1.2, -0.5),
+                    Coordinate.zero,
+                    Coordinate(1.0, -1.0),
+                    Coordinate(0.84719, -0.85286)
+                ),
+                Arguments.of(
+                    Coordinate(0.0, 0.5),
+                    Coordinate.zero,
+                    Coordinate(1.0, -1.0),
+                    Coordinate.zero
+                ),
+                Arguments.of(
+                    Coordinate(1.0, -1.5),
+                    Coordinate.zero,
+                    Coordinate(1.0, -1.0),
+                    Coordinate(1.0, -1.0)
+                ),
+                Arguments.of(
+                    Coordinate(1.0, 1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Coordinate(0.0, 1.0)
+                ),
+                Arguments.of(
+                    Coordinate(-1.0, 1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Coordinate(0.0, 1.0)
+                ),
+                Arguments.of(
+                    Coordinate(-1.0, -1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Coordinate.zero
+                ),
+                Arguments.of(
+                    Coordinate(1.0, -1.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Coordinate.zero
+                ),
+                Arguments.of(
+                    Coordinate(1.0, 3.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Coordinate(0.0, 2.0)
+                )
             )
         }
 
