@@ -32,7 +32,19 @@ object Time {
         return ZonedDateTime.of(this.toLocalDate(), LocalTime.MAX, this.zone)
     }
 
+    fun LocalDate.atEndOfDay(): LocalDateTime {
+        return atTime(LocalTime.MAX)
+    }
+
     fun LocalDateTime.roundNearestMinute(minutes: Long): LocalDateTime {
+        val minute = this.minute
+        val newMinute = (minute / minutes) * minutes
+
+        val diff = newMinute - minute
+        return this.plusMinutes(diff)
+    }
+
+    fun ZonedDateTime.roundNearestMinute(minutes: Long): ZonedDateTime {
         val minute = this.minute
         val newMinute = (minute / minutes) * minutes
 
@@ -66,6 +78,10 @@ object Time {
 
     fun duration(hours: Long = 0L, minutes: Long = 0L, seconds: Long = 0L): Duration {
         return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+    }
+
+    fun Instant.hoursUntil(other: Instant): Float {
+        return Duration.between(this, other).seconds / (60f * 60f)
     }
 
     fun getClosestPastTime(
