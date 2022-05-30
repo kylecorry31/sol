@@ -27,6 +27,7 @@ internal class MeteorShowerLocator(private val shower: MeteorShower) : ICelestia
             MeteorShower.Leonids -> EquatorialCoordinate(21.6, timeToAngle(10, 16, 0))
             MeteorShower.Geminids -> EquatorialCoordinate(32.2, timeToAngle(7, 36, 0))
             MeteorShower.Ursids -> EquatorialCoordinate(75.3, timeToAngle(14, 36, 0))
+            MeteorShower.TauHerculids -> EquatorialCoordinate(41.0, 236.0)
         }
     }
 
