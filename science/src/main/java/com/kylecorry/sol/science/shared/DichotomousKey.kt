@@ -9,10 +9,10 @@ data class DichotomousKey<T>(
     companion object {
         fun <T> question(
             label: String,
-            left: DichotomousKey<T>,
-            right: DichotomousKey<T>
+            yes: DichotomousKey<T>,
+            no: DichotomousKey<T>
         ): DichotomousKey<T> {
-            return DichotomousKey(label, left, right, null)
+            return DichotomousKey(label, yes, no, null)
         }
 
         fun <T> answer(label: String, value: T): DichotomousKey<T> {
