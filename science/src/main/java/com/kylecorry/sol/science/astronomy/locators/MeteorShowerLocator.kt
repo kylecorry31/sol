@@ -19,15 +19,14 @@ internal class MeteorShowerLocator(private val shower: MeteorShower) : ICelestia
                 timeToAngle(22, 30, 0)
             )
             MeteorShower.DeltaAquariids -> EquatorialCoordinate(
-                -16.4,
+                -16.3,
                 timeToAngle(22, 42, 0)
             )
             MeteorShower.Perseids -> EquatorialCoordinate(58.0, timeToAngle(3, 13, 0))
-            MeteorShower.Orionids -> EquatorialCoordinate(15.6, timeToAngle(6, 19, 0))
-            MeteorShower.Leonids -> EquatorialCoordinate(21.6, timeToAngle(10, 16, 0))
-            MeteorShower.Geminids -> EquatorialCoordinate(32.2, timeToAngle(7, 36, 0))
+            MeteorShower.Orionids -> EquatorialCoordinate(15.6, timeToAngle(6, 21, 0))
+            MeteorShower.Leonids -> EquatorialCoordinate(21.6, timeToAngle(10, 17, 0))
+            MeteorShower.Geminids -> EquatorialCoordinate(32.3, timeToAngle(7, 34, 0))
             MeteorShower.Ursids -> EquatorialCoordinate(75.3, timeToAngle(14, 36, 0))
-            MeteorShower.TauHerculids -> EquatorialCoordinate(28.0, timeToAngle(13, 56, 0))
         }
     }
 
