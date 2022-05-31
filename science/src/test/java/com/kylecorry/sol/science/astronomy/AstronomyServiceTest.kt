@@ -599,16 +599,16 @@ class AstronomyServiceTest {
         val location = Coordinate(40.7128, -74.0060)
 
         listOf<Pair<MeteorShower?, LocalDate>>(
-            MeteorShower.Quadrantids to LocalDate.of(2021, 1, 3),
-            MeteorShower.Lyrids to LocalDate.of(2021, 4, 22),
-            MeteorShower.EtaAquariids to LocalDate.of(2021, 5, 6),
-            MeteorShower.DeltaAquariids to LocalDate.of(2021, 7, 30),
-            MeteorShower.Perseids to LocalDate.of(2021, 8, 12),
-            MeteorShower.Orionids to LocalDate.of(2021, 10, 20),
-            MeteorShower.Leonids to LocalDate.of(2021, 11, 18),
-            MeteorShower.Geminids to LocalDate.of(2021, 12, 14),
-            MeteorShower.Ursids to LocalDate.of(2021, 12, 21),
-            null to LocalDate.of(2021, 1, 1)
+            MeteorShower.Quadrantids to LocalDate.of(2022, 1, 3),
+            MeteorShower.Lyrids to LocalDate.of(2022, 4, 22),
+            MeteorShower.EtaAquariids to LocalDate.of(2022, 5, 6),
+            MeteorShower.DeltaAquariids to LocalDate.of(2022, 7, 30),
+            MeteorShower.Perseids to LocalDate.of(2022, 8, 12),
+            MeteorShower.Orionids to LocalDate.of(2022, 10, 21),
+            MeteorShower.Leonids to LocalDate.of(2022, 11, 18),
+            MeteorShower.Geminids to LocalDate.of(2022, 12, 14),
+            MeteorShower.Ursids to LocalDate.of(2022, 12, 22),
+            null to LocalDate.of(2022, 1, 1)
         ).forEach {
             val shower = service.getMeteorShower(
                 location,
