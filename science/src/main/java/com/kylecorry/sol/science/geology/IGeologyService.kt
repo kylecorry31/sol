@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.Pressure
 
 interface IGeologyService {
 
@@ -15,6 +16,9 @@ interface IGeologyService {
     fun getGeomagneticField(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Vector3
 
     fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing
+
+    // Altitude
+    fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance
 
     // Gravity
     fun getGravity(coordinate: Coordinate): Float

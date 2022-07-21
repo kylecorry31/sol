@@ -18,9 +18,16 @@ internal class GeologyServiceTest {
 
     private val service = GeologyService()
 
+    @ParameterizedTest
+    @MethodSource("provideAltitudes")
+    fun altitude(pressure: Float, seaLevel: Float, altitude: Float) {
+        val actual = service.getAltitude(Pressure.hpa(pressure), Pressure.hpa(seaLevel))
+        val expected = Distance.meters(altitude)
+        assertThat(actual).isCloseTo(expected, 1f)
+    }
+
     @Test
     fun gravity() {
-        val service = GeologyService()
         assertThat(service.getGravity(Coordinate.zero)).isCloseTo(9.78032677f, 0.00001f)
         assertThat(service.getGravity(Coordinate(90.0, 0.0))).isCloseTo(
             9.83218493786340046183f,
@@ -261,12 +268,21 @@ internal class GeologyServiceTest {
         }
 
         @JvmStatic
+        fun provideAltitudes(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(1000f, 1000f, 0f),
+                Arguments.of(1100f, 1000f, -811.3525f),
+                Arguments.of(900f, 1000f, 879.9459f),
+            )
+        }
+
+        @JvmStatic
         fun provideAlongTrack(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
                     Coordinate(53.2611, -0.7972),
                     Coordinate(53.3206, -1.7297),
-                    Coordinate(53.1887,  0.1334),
+                    Coordinate(53.1887, 0.1334),
                     Distance.kilometers(62.333f).meters().distance
                 ),
                 Arguments.of(

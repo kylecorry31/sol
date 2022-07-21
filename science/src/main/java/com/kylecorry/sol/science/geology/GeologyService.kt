@@ -8,10 +8,7 @@ import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceCalculator
+import com.kylecorry.sol.units.*
 import kotlin.math.*
 
 class GeologyService : IGeologyService {
@@ -126,6 +123,14 @@ class GeologyService : IGeologyService {
 
     override fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing {
         return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing(0f)
+    }
+
+    override fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance {
+        // TODO: Factor in temperature
+        val hpa = pressure.hpa().pressure
+        val seaHpa = seaLevelPressure.hpa().pressure
+        val meters = 44330.0 * (1 - (hpa / seaHpa).toDouble().pow(1 / 5.255))
+        return Distance.meters(meters.toFloat())
     }
 
     override fun getRegion(coordinate: Coordinate): Region {
