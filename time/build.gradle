@@ -55,6 +55,7 @@ dependencies {
     implementation project(':math')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation project(path: ':units')
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.junit.platform:junit-platform-runner:1.8.0"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.0"
