@@ -37,6 +37,25 @@ interface IGeologyService {
     fun getSlopeGrade(inclination: Float): Float
 
     /**
+     * Determines the grade (percent)
+     * @param horizontal The horizontal distance
+     * @param vertical The vertical distance
+     * @return The slope grade as a percentage
+     */
+    fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float
+
+    /**
+     * Determines the grade (percent)
+     * @param start The starting coordinate
+     * @param startElevation The starting elevation
+     * @param end The ending coordinate
+     * @param endElevation The ending elevation
+     * @return The slope grade as a percentage
+     */
+    fun getSlopeGrade(start: Coordinate, startElevation: Distance, end: Coordinate, endElevation: Distance): Float
+
+
+    /**
      * Estimates the height of an object
      * @param distance The distance to the object
      * @param bottomInclination The inclination angle to the bottom (degrees)

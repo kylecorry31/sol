@@ -117,6 +117,37 @@ class GeologyService : IGeologyService {
         }
     }
 
+    override fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float {
+        val y = vertical.meters().distance
+        val x = horizontal.meters().distance
+
+        if (x == 0f && y > 0f) {
+            return Float.POSITIVE_INFINITY
+        }
+
+        if (x == 0f && y < 0f) {
+            return Float.NEGATIVE_INFINITY
+        }
+
+        if (x == 0f && y == 0f) {
+            return 0f
+        }
+
+        return y / x * 100
+    }
+
+    override fun getSlopeGrade(
+        start: Coordinate,
+        startElevation: Distance,
+        end: Coordinate,
+        endElevation: Distance
+    ): Float {
+        return getSlopeGrade(
+            Distance.meters(start.distanceTo(end)),
+            Distance.meters(endElevation.meters().distance - startElevation.meters().distance)
+        )
+    }
+
     override fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean {
         return area.contains(coordinate)
     }

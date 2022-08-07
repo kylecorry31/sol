@@ -176,6 +176,13 @@ internal class GeologyServiceTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideGradeDistance")
+    fun getSlopeGradeFromDistance(vertical: Distance, horizontal: Distance, expected: Float) {
+        val grade = service.getSlopeGrade(vertical, horizontal)
+        assertEquals(expected, grade, 0.01f)
+    }
+
+    @ParameterizedTest
     @MethodSource("provideAlongTrack")
     fun getAlongTrackDistance(
         point: Coordinate,
@@ -214,6 +221,22 @@ internal class GeologyServiceTest {
                 Arguments.of(50f, 119.18f),
             )
         }
+
+        @JvmStatic
+        fun provideGradeDistance(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(Distance.meters(1f), Distance.meters(1f), 100f),
+                Arguments.of(Distance.feet(20f), Distance.feet(1f), 5f),
+                Arguments.of(Distance.feet(20f), Distance.feet(1f).meters(), 5f),
+                Arguments.of(Distance.feet(0f), Distance.feet(10f), Float.POSITIVE_INFINITY),
+                Arguments.of(Distance.feet(0f), Distance.feet(0f), 0f),
+                Arguments.of(Distance.feet(0f), Distance.feet(-10f), Float.NEGATIVE_INFINITY),
+                Arguments.of(Distance.feet(20f), Distance.feet(-1f).meters(), -5f),
+                Arguments.of(Distance.feet(20f), Distance.feet(-1f), -5f),
+                Arguments.of(Distance.meters(1f), Distance.meters(-1f), -100f),
+            )
+        }
+
 
         @JvmStatic
         fun provideInclination(): Stream<Arguments> {
