@@ -4,6 +4,7 @@ import kotlin.math.abs
 
 class ProximityChangeFilter<T>(
     private val changeThreshold: Float,
+    private val fillFn: ((previous: T, current: T) -> T)? = null,
     private val distanceFn: (start: T, end: T) -> Float
 ) {
 
@@ -24,6 +25,8 @@ class ProximityChangeFilter<T>(
             if (change >= changeThreshold) {
                 lastValid = current
                 filtered.add(current)
+            } else if (fillFn != null) {
+                filtered.add(fillFn.invoke(filtered.last(), current))
             }
         }
 
