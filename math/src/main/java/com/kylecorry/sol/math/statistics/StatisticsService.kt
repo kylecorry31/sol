@@ -3,6 +3,7 @@ package com.kylecorry.sol.math.statistics
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.regression.LinearRegression
 import java.lang.Math.pow
 import kotlin.math.exp
 import kotlin.math.pow
@@ -96,23 +97,6 @@ class StatisticsService {
      * Calculates the slope of the best fit line
      */
     fun slope(data: List<Vector2>): Float {
-        if (data.size <= 1) {
-            return 0f
-        }
-
-        val xBar = data.map { it.x }.average().toFloat()
-        val yBar = data.map { it.y }.average().toFloat()
-
-        var ssxx = 0.0f
-        var ssxy = 0.0f
-        var ssto = 0.0f
-
-        for (i in data.indices) {
-            ssxx += (data[i].x - xBar).pow(2)
-            ssxy += (data[i].x - xBar) * (data[i].y - yBar)
-            ssto += (data[i].y - yBar).pow(2)
-        }
-
-        return ssxy / ssxx
+        return LinearRegression(data).equation.m
     }
 }
