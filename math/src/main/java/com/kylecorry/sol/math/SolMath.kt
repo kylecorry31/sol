@@ -191,7 +191,7 @@ object SolMath {
     fun movingAverage(data: List<Float>, window: Int = 5): List<Float> {
         val filter = MovingAverageFilter(window)
 
-        return data.map { filter.filter(it.toDouble()).toFloat() }
+        return data.map { filter.filter(it) }
     }
 
     fun removeOutliers(

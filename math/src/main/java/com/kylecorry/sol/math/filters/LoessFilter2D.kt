@@ -16,18 +16,18 @@ import kotlin.math.pow
  * @param robustnessIterations the number of iterations to do for the robustness step for outlier removal
  * @param accuracy the threshold to stop the robustness at (short circuit)
  */
-class LoessFilter(
+class LoessFilter2D(
     private val span: Float = 0.3f,
     private val robustnessIterations: Int = 2,
     private val accuracy: Float = 1e-12f
-) {
+): IFilter2D {
 
     private val statistics = StatisticsService()
 
     /**
      * Smooth the data, the output will have the same x values as the input
      */
-    fun filter(data: List<Vector2>): List<Vector2> {
+    override fun filter(data: List<Vector2>): List<Vector2> {
         val n = data.size
         if (n < 3) {
             return data

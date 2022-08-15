@@ -2,35 +2,22 @@ package com.kylecorry.sol.math.filters
 
 import kotlin.math.abs
 
-class ProximityChangeFilter<T>(
-    private val changeThreshold: Float,
-    private val fillFn: ((previous: T, current: T) -> T)? = null,
-    private val distanceFn: (start: T, end: T) -> Float
-) {
+class ProximityChangeFilter(private val changeThreshold: Float) {
 
-    fun filter(points: List<T>): List<T> {
+    private var lastValid: Float = Float.NaN
 
-        if (points.isEmpty()) {
-            return emptyList()
+    fun filter(measurement: Float): Float {
+        if (lastValid.isNaN()) {
+            lastValid = measurement
+            return lastValid
         }
 
-        val filtered = mutableListOf<T>()
-        var lastValid = points.first()
-        filtered.add(lastValid)
-
-        for (i in 1 until points.size) {
-            val current = points[i]
-            val change = abs(distanceFn(current, lastValid))
-
-            if (change >= changeThreshold) {
-                lastValid = current
-                filtered.add(current)
-            } else if (fillFn != null) {
-                filtered.add(fillFn.invoke(filtered.last(), current))
-            }
+        val distance = abs(measurement - lastValid)
+        if (distance >= changeThreshold) {
+            lastValid = measurement
         }
 
-        return filtered
+        return lastValid
     }
 
 }

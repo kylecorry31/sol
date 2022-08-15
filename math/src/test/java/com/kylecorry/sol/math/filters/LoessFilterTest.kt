@@ -18,7 +18,7 @@ internal class LoessFilterTest {
         val values = (0..100).map { it / 100f to sin(it / 100f) + (random.nextFloat() - 0.5f) * 0.1f }.map { it.toVector2() }
         val expected = (0..100).map { it / 100f to sin(it / 100f) }.map { it.toVector2() }
 
-        val filter = LoessFilter(0.3f, 4)
+        val filter = LoessFilter2D(0.3f, 4)
 
         val actual = filter.filter(values)
 
@@ -38,7 +38,7 @@ internal class LoessFilterTest {
     fun filterLine() {
         val values = (0..100).map { it.toFloat() to it.toFloat() }.map { it.toVector2() }
 
-        val filter = LoessFilter(0.3f, 4)
+        val filter = LoessFilter2D(0.3f, 4)
 
         val actual = filter.filter(values)
 
@@ -53,7 +53,7 @@ internal class LoessFilterTest {
     fun filterPoints() {
         val values = (0..1).map { it.toFloat() to it.toFloat() }.map { it.toVector2() }
 
-        val filter = LoessFilter(0.3f, 4)
+        val filter = LoessFilter2D(0.3f, 4)
 
         val actual = filter.filter(values)
 
@@ -68,7 +68,7 @@ internal class LoessFilterTest {
     fun filterPoint() {
         val values = listOf(Vector2(1f, 2f))
 
-        val filter = LoessFilter(0.3f, 4)
+        val filter = LoessFilter2D(0.3f, 4)
 
         val actual = filter.filter(values)
 
