@@ -11,13 +11,16 @@ import com.kylecorry.sol.math.Vector2
 class LoessFilter1D(
     private val span: Float = 0.3f,
     private val robustnessIterations: Int = 2,
-    private val accuracy: Float = 1e-12f
+    private val accuracy: Float = 1e-12f,
+    private val minimumSpanSize: Int = 0,
+    private val maximumSpanSize: Int = Int.MAX_VALUE
 ) : IFilter1D {
 
 
     override fun filter(data: List<Float>): List<Float> {
 
-        val filter = LoessFilter2D(span, robustnessIterations, accuracy)
+        val filter =
+            LoessFilter2D(span, robustnessIterations, accuracy, minimumSpanSize, maximumSpanSize)
         return filter.filter(data.mapIndexed { index, value -> Vector2(index.toFloat(), value) })
             .map { it.y }
 

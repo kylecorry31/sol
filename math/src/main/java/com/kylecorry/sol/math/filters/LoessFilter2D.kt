@@ -16,11 +16,15 @@ import kotlin.math.pow
  * @param span the percentage of the dataset to use for smoothing each point
  * @param robustnessIterations the number of iterations to do for the robustness step for outlier removal
  * @param accuracy the threshold to stop the robustness at (short circuit)
+ * @param minimumSpanSize the minimum number of points to be considered in the span
+ * @param maximumSpanSize the maximum number of points to be considered in the span
  */
 class LoessFilter2D(
     private val span: Float = 0.3f,
     private val robustnessIterations: Int = 2,
-    private val accuracy: Float = 1e-12f
+    private val accuracy: Float = 1e-12f,
+    private val minimumSpanSize: Int = 0,
+    private val maximumSpanSize: Int = Int.MAX_VALUE
 ) : IFilter2D {
 
     private val statistics = StatisticsService()
@@ -106,7 +110,7 @@ class LoessFilter2D(
     }
 
     private fun getNearest(points: List<Vector2>, i: Int): Pair<Int, Int> {
-        val size = floor(span * points.size).toInt()
+        val size = floor(span * points.size).toInt().coerceIn(minimumSpanSize, maximumSpanSize)
         var start = i
         var end = i
         val x = points[i].x
