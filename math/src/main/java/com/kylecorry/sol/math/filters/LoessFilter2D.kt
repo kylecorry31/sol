@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.filters
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.regression.WeightedLinearRegression
 import com.kylecorry.sol.math.statistics.StatisticsService
@@ -20,7 +21,7 @@ class LoessFilter2D(
     private val span: Float = 0.3f,
     private val robustnessIterations: Int = 2,
     private val accuracy: Float = 1e-12f
-): IFilter2D {
+) : IFilter2D {
 
     private val statistics = StatisticsService()
 
@@ -33,26 +34,37 @@ class LoessFilter2D(
             return data
         }
 
+        val wasResorted = !SolMath.isIncreasingX(data)
+        var sortOrder = data.indices.toList()
+
+        val sortedData = if (wasResorted) {
+            sortOrder = SolMath.sortIndices(data.map { it.x })
+            SolMath.reorder(data, sortOrder)
+        } else {
+            data
+        }
+
         val weights = MutableList(n) { 1f }
-        val res = data.toMutableList()
+        val res = sortedData.toMutableList()
         val residuals = MutableList(n) { 0f }
         val robustnessWeights = MutableList(n) { 1f }
 
         for (iteration in 0..robustnessIterations) {
-            for (i in data.indices) {
-                val point = data[i]
+            for (i in sortedData.indices) {
+                val point = sortedData[i]
                 val x = point.x
                 val y = point.y
 
-                val interval = getNearest(data, i)
+                val interval = getNearest(sortedData, i)
 
                 if (interval.second - interval.first < 2) {
                     continue
                 }
 
-                val nearest = data.subList(interval.first, interval.second).mapIndexed { index, p ->
-                    Triple(p, abs(point.x - p.x), interval.first + index)
-                }.sortedBy { it.second }
+                val nearest =
+                    sortedData.subList(interval.first, interval.second).mapIndexed { index, p ->
+                        Triple(p, abs(point.x - p.x), interval.first + index)
+                    }.sortedBy { it.second }
 
                 val maxDistance = nearest.last().second
 
@@ -76,7 +88,7 @@ class LoessFilter2D(
                 break
             }
 
-            for (i in data.indices) {
+            for (i in sortedData.indices) {
                 val a = residuals[i] / (6 * medianResidual)
                 robustnessWeights[i] = if (a >= 1) {
                     0f
@@ -86,7 +98,11 @@ class LoessFilter2D(
             }
         }
 
-        return res
+        return if (wasResorted) {
+            SolMath.reorder(res, sortOrder, true)
+        } else {
+            res
+        }
     }
 
     private fun getNearest(points: List<Vector2>, i: Int): Pair<Int, Int> {

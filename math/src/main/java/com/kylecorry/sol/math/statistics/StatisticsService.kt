@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.regression.LinearRegression
+import com.kylecorry.sol.math.sumOfFloat
 import java.lang.Math.pow
 import kotlin.math.exp
 import kotlin.math.pow
@@ -98,5 +99,26 @@ class StatisticsService {
      */
     fun slope(data: List<Vector2>): Float {
         return LinearRegression(data).equation.m
+    }
+
+    /**
+     * Calculates the root mean square errors between the datasets. Actual and predicted must correspond 1-1 with eachother.
+     */
+    fun rmse(actual: List<Float>, predicted: List<Float>): Float {
+        val n = actual.size
+        return sqrt(sse(actual, predicted) / n)
+    }
+
+    /**
+     * Calculates the sum of squared errors between the datasets. Actual and predicted must correspond 1-1 with eachother.
+     */
+    fun sse(actual: List<Float>, predicted: List<Float>): Float {
+
+        var sum = 0f
+        for (i in actual.indices) {
+            sum += (actual[i] - predicted[i]).pow(2)
+        }
+
+        return sum
     }
 }

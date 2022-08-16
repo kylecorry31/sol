@@ -317,4 +317,43 @@ object SolMath {
         return (a - b).absoluteValue <= tolerance
     }
 
+    fun isIncreasingX(data: List<Vector2>): Boolean {
+        for (i in 1 until data.size) {
+            if (data[i].x < data[i - 1].x) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun <T> reorder(data: List<T>, indices: List<Int>, inverse: Boolean = false): List<T> {
+        return if (inverse) {
+            val newIndices = MutableList(indices.size) { it }
+            for (i in indices.indices) {
+                val index = indices[i]
+                newIndices[index] = i
+            }
+            reorder(data, newIndices, false)
+        } else {
+            val newData = data.toMutableList()
+            for (i in data.indices) {
+                val index = indices[i]
+                newData[i] = data[index]
+            }
+            newData
+        }
+    }
+
+    fun <T : Comparable<T>> sortIndices(data: List<T>): List<Int> {
+        return data.mapIndexed { index, value ->
+            index to value
+        }.sortedBy { it.second }.map { it.first }
+    }
+
+    fun <T : Comparable<T>> sortIndicesDescending(data: List<T>): List<Int> {
+        return data.mapIndexed { index, value ->
+            index to value
+        }.sortedByDescending { it.second }.map { it.first }
+    }
+
 }

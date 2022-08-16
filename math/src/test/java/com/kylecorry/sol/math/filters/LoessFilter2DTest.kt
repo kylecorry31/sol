@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.filters
 
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.statistics.StatisticsService
 import com.kylecorry.sol.math.sumOfFloat
 import com.kylecorry.sol.math.toVector2
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,28 +11,26 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.random.Random
 
-internal class LoessFilterTest {
+internal class LoessFilter2DTest {
+
+    private val statistics = StatisticsService()
 
     @Test
     fun filterSin() {
         val random = Random(1)
-        val values = (0..100).map { it / 100f to sin(it / 100f) + (random.nextFloat() - 0.5f) * 0.1f }.map { it.toVector2() }
-        val expected = (0..100).map { it / 100f to sin(it / 100f) }.map { it.toVector2() }
+        val indices = (0..100).map { it / 100f }
+        val values = indices.map { it to sin(it) + (random.nextFloat() - 0.5f) * 0.1f }.map { it.toVector2() }
+        val expected = indices.map { it to sin(it) }.map { it.toVector2() }
 
         val filter = LoessFilter2D(0.3f, 4)
 
         val actual = filter.filter(values)
 
-        val fitResiduals = expected.zip(actual).sumOfFloat {
-            (it.second.y - it.first.y).pow(2)
-        }
-
-        val originalResiduals = expected.zip(values).sumOfFloat {
-            (it.second.y - it.first.y).pow(2)
-        }
+        val fitResiduals = statistics.rmse(expected.map { it.y }, actual.map { it.y })
+        val originalResiduals = statistics.rmse(expected.map { it.y }, values.map { it.y })
 
         assertTrue(fitResiduals < originalResiduals)
-        assertEquals(0.003f, fitResiduals, 0.001f)
+        assertEquals(0.006f, fitResiduals, 0.001f)
     }
 
     @Test
