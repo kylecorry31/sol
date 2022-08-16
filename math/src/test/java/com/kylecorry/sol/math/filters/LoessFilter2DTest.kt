@@ -19,7 +19,8 @@ internal class LoessFilter2DTest {
     fun filterSin() {
         val random = Random(1)
         val indices = (0..100).map { it / 100f }
-        val values = indices.map { it to sin(it) + (random.nextFloat() - 0.5f) * 0.1f }.map { it.toVector2() }
+        val values = indices.map { it to sin(it) + (random.nextFloat() - 0.5f) * 0.1f }
+            .map { it.toVector2() }
         val expected = indices.map { it to sin(it) }.map { it.toVector2() }
 
         val filter = LoessFilter2D(0.3f, 4)
@@ -45,6 +46,26 @@ internal class LoessFilter2DTest {
             (it.second.y - it.first.y).pow(2)
         }
 
+        assertEquals(0.0f, fitResiduals, 0.00001f)
+    }
+
+    @Test
+    fun filterSamePoint() {
+        val values = listOf(
+            Vector2(x = 1f, y = 1.0f),
+            Vector2(x = 1f, y = 1.0f),
+            Vector2(x = 1f, y = 1.0f)
+        )
+
+        val filter = LoessFilter2D(0.25f, 2, minimumSpanSize = 10)
+
+        val actual = filter.filter(values)
+
+        val fitResiduals = actual.zip(values).sumOfFloat {
+            (it.second.y - it.first.y).pow(2)
+        }
+
+        assertEquals(listOf(Vector2(1f, 1f), Vector2(1f, 1f), Vector2(1f, 1f)), values)
         assertEquals(0.0f, fitResiduals, 0.00001f)
     }
 

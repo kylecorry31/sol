@@ -73,7 +73,11 @@ class LoessFilter2D(
                 val maxDistance = nearest.last().second
 
                 val w = nearest.map {
-                    tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                    if (maxDistance == 0f){
+                        1f
+                    } else {
+                        tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                    }
                 }
 
                 val regression = WeightedLinearRegression(nearest.map { it.first }, w, accuracy)
