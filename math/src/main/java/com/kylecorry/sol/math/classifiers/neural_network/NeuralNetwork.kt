@@ -45,7 +45,7 @@ class NeuralNetwork(private val layers: List<NeuralNetworkLayer>) {
                 // Hidden layers
                 for (l in (1..layers.size - 2).reversed()) {
                     val previousDelta = layers[l + 1].weights.transpose().dot(previousDelta)
-                        .multiply(layers[l].output.transpose())
+                        .multiply(layers[l].derivative(layers[l].input))
                     val change = previousDelta.dot(layers[l - 1].output.transpose())
                         .add(layers[l].weights.multiply(regularization))
                     layers[l].weights = layers[l].weights.subtract(change.multiply(learningRate))
@@ -128,8 +128,8 @@ class NeuralNetworkLayer(
         this.input = weights.dot(input).add(bias)
         this.output = if (isSoftmax) {
             this.input.mapped(activationFn).let {
-                val sum = it.sum()
-                if (sum != 0f) it.multiply(1 / sum) else it
+                val sum = it.sum().coerceAtLeast(0.0001f)
+                it.multiply(1 / sum)
             }
         } else {
             this.input.mapped(activationFn)
@@ -140,9 +140,9 @@ class NeuralNetworkLayer(
     internal fun derivative(input: Matrix): Matrix {
         return if (isSoftmax) {
             input.mapped(activationDerivativeFn).let {
-                val sum = this.input.sum()
-                if (sum != 0f) it.multiply(1 / sum) else it
-            }.subtract(input)
+                val sum = it.sum().coerceAtLeast(0.0001f)
+                it.multiply(1 / sum)
+            }.subtract(input).mapped(activationFn)
         } else {
             input.mapped(activationDerivativeFn)
         }

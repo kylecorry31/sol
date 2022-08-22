@@ -57,7 +57,7 @@ internal class NeuralNetworkTest {
             rowMatrix(0f, 0f)
         )
 
-        val error = network.fit(x, y, epochs = 200){ error, epoch -> println("$epoch: $error")}
+        val error = network.fit(x, y, epochs = 2000){ error, epoch -> println("$epoch: $error")}
         println(error)
         val prediction = network.predict(listOf(1f, 0f))
 
