@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.classifiers.neural_network
 
+import com.kylecorry.sol.math.algebra.rowMatrix
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -31,5 +32,37 @@ internal class NeuralNetworkTest {
         assertEquals(2, prediction.size)
         assertEquals(0.44026583f, prediction[0], 0.0001f)
         assertEquals(0.55973417f, prediction[1], 0.0001f)
+    }
+
+//    @Test
+    fun train() {
+        val network = NeuralNetwork(
+            listOf(
+                NeuralNetworkLayer.sigmoid(2, 5),
+                NeuralNetworkLayer.softmax(5, 2)
+            )
+        )
+
+       val x = listOf(
+           rowMatrix(0f, 1f),
+           rowMatrix(1f, 1f),
+           rowMatrix(1f, 0f),
+           rowMatrix(0f, 0f),
+       )
+
+        val y = listOf(
+            rowMatrix(0f, 1f),
+            rowMatrix(1f, 0f),
+            rowMatrix(0f, 1f),
+            rowMatrix(0f, 0f)
+        )
+
+        val error = network.fit(x, y, epochs = 200){ error, epoch -> println("$epoch: $error")}
+        println(error)
+        val prediction = network.predict(listOf(1f, 0f))
+
+        assertEquals(2, prediction.size)
+        assertEquals(0f, prediction[0], 0.2f)
+        assertEquals(1f, prediction[1], 0.2f)
     }
 }

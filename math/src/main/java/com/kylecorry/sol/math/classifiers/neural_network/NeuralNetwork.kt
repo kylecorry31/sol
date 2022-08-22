@@ -1,19 +1,67 @@
 package com.kylecorry.sol.math.classifiers.neural_network
 
 import com.kylecorry.sol.math.algebra.*
+import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.exp
 import kotlin.math.ln
+import kotlin.math.log
 import kotlin.math.pow
 
-class NeuralNetwork(
-    private val layers: List<NeuralNetworkLayer>,
-    private val learningRate: Float = 0.1f,
-    private val regularization: Float = 0f
-) {
+class NeuralNetwork(private val layers: List<NeuralNetworkLayer>) {
     fun predict(x: List<Float>): List<Float> {
         var input = columnMatrix(values = x.toFloatArray())
         layers.forEach { input = it.activate(input) }
         return input.transpose()[0].toList()
+    }
+
+    fun fit(
+        input: List<Matrix>,
+        output: List<Matrix>,
+        epochs: Int = 100,
+        learningRate: Float = 0.1f,
+        regularization: Float = 0f,
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
+    ): Float {
+        // TODO: Check input and output sizes
+        // TODO: Update bias weights
+        // TODO: Merge output and hidden layer code
+        var totalError = 0f
+        for (epoch in 0 until epochs) {
+            totalError = 0f
+            for (i in input.indices) {
+                val inputRow = input[i]
+                val outputRow = output[i].transpose()
+                val predicted =
+                    columnMatrix(values = predict(inputRow[0].toList()).toFloatArray())
+
+                // Output layer
+                val previousDelta = outputRow.subtract(predicted).multiply(-1f)
+                    .multiply(layers.last().derivative(layers.last().input))
+                val change = previousDelta.dot(layers[layers.size - 2].output.transpose())
+                    .add(layers.last().weights.multiply(regularization))
+                layers.last().weights =
+                    layers.last().weights.subtract(change.multiply(learningRate))
+
+                // Hidden layers
+                for (l in (1..layers.size - 2).reversed()) {
+                    val previousDelta = layers[l + 1].weights.transpose().dot(previousDelta)
+                        .multiply(layers[l].output.transpose())
+                    val change = previousDelta.dot(layers[l - 1].output.transpose())
+                        .add(layers[l].weights.multiply(regularization))
+                    layers[l].weights = layers[l].weights.subtract(change.multiply(learningRate))
+                }
+                totalError += squaredError(inputRow, outputRow, regularization)
+            }
+            onEpochCompleteFn(totalError, epoch)
+        }
+        return totalError
+    }
+
+    private fun squaredError(x: Matrix, y: Matrix, regularization: Float): Float {
+        val y_ = columnMatrix(values = predict(x[0].toList()).toFloatArray())
+        val sumSquareWeights = layers.sumOfFloat { it.weights.mapped { it.pow(2) }.sum() }
+        return 0.5f * y_.subtract(y).mapped { it.pow(2) }
+            .sum() / layers.first().inputSize + regularization / 2 * sumSquareWeights
     }
 
     fun load(weights: List<NeuralNetworkLayerWeights>) {
@@ -57,8 +105,8 @@ class NeuralNetworkLayerWeights(val weights: Matrix, val bias: Matrix) {
 }
 
 class NeuralNetworkLayer(
-    private val inputSize: Int,
-    private val outputSize: Int,
+    val inputSize: Int,
+    val outputSize: Int,
     private val activationFn: (Float) -> Float,
     private val activationDerivativeFn: (Float) -> Float,
     private val isSoftmax: Boolean = false
