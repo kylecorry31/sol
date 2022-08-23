@@ -39,6 +39,7 @@ internal class NeuralNetworkTest {
         val network = NeuralNetwork(
             listOf(
                 NeuralNetworkLayer.sigmoid(2, 5),
+                NeuralNetworkLayer.sigmoid(5, 5),
                 NeuralNetworkLayer.softmax(5, 2)
             )
         )
@@ -57,8 +58,8 @@ internal class NeuralNetworkTest {
             rowMatrix(0f, 0f)
         )
 
-        val error = network.fit(x, y, epochs = 2000){ error, epoch -> println("$epoch: $error")}
-        println(error)
+        val error = network.fit(x, y, epochs = 200){ error, epoch -> println("$epoch: $error")}
+        println(network.dump().joinToString("\n\n"){ it.format() })
         val prediction = network.predict(listOf(1f, 0f))
 
         assertEquals(2, prediction.size)

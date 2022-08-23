@@ -26,6 +26,7 @@ class NeuralNetwork(private val layers: List<NeuralNetworkLayer>) {
         // TODO: Update bias weights
         // TODO: Merge output and hidden layer code
         var totalError = 0f
+        val ones = columnMatrix(values = FloatArray(1) { 1f })
         for (epoch in 0 until epochs) {
             totalError = 0f
             for (i in input.indices) {
@@ -34,37 +35,24 @@ class NeuralNetwork(private val layers: List<NeuralNetworkLayer>) {
                 val predicted =
                     columnMatrix(values = predict(inputRow[0].toList()).toFloatArray())
 
-                // Output layer
-                var previousDelta = outputRow.subtract(predicted).multiply(-1f)
-                    .multiply(layers.last().derivative(layers.last().input))
-                var change = previousDelta.dot(layers[layers.size - 2].output.transpose())
-                    .add(layers.last().weights.multiply(regularization))
-                    .multiply(learningRate)
-                layers.last().weights = layers.last().weights.subtract(change)
-                val ones = columnMatrix(values = FloatArray(1) { 1f })
-                var db = previousDelta.dot(ones).multiply(learningRate)
-                layers.last().bias = layers.last().bias.subtract(db)
+                val previousLayerOutputs =
+                    listOf(inputRow) + layers.map { it.output.transpose() }.take(layers.size - 1)
+//                val layerInputs = layers.map { it.input }
 
-                // Hidden layers
-                for (l in (1..layers.size - 2).reversed()) {
-                    previousDelta =
-                        layers[l + 1].weights.transpose().dot(previousDelta).multiply(-1f)
-                            .multiply(layers[l].derivative(layers[l].input))
-                    change = previousDelta.dot(layers[l - 1].output.transpose())
+                // Output layer
+                var previousDelta: Matrix = createMatrix(0, 0, 0f)
+                for (l in layers.indices.reversed()) {
+                    previousDelta = if (l == layers.lastIndex) {
+                        outputRow.subtract(predicted)
+                    } else {
+                        layers[l + 1].weights.transpose().dot(previousDelta)
+                    }.multiply(-1f).multiply(layers[l].derivative(layers[l].input))
+                    val change = previousDelta.dot(previousLayerOutputs[l])
                         .add(layers[l].weights.multiply(regularization))
                     layers[l].weights = layers[l].weights.subtract(change.multiply(learningRate))
-                    db = previousDelta.dot(ones).multiply(learningRate)
+                    val db = previousDelta.dot(ones).multiply(learningRate)
                     layers[l].bias = layers[l].bias.subtract(db)
                 }
-
-                // Input layer
-                previousDelta = layers[1].weights.transpose().dot(previousDelta).multiply(-1f)
-                    .multiply(layers[0].derivative(layers[0].input))
-                change = previousDelta.dot(inputRow)
-                    .add(layers[0].weights.multiply(regularization))
-                layers[0].weights = layers[0].weights.subtract(change.multiply(learningRate))
-                db = previousDelta.dot(ones).multiply(learningRate)
-                layers[0].bias = layers[0].bias.subtract(db)
 
                 totalError += squaredError(inputRow, outputRow, regularization)
             }
