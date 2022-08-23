@@ -1,6 +1,5 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.statistics.StatisticsService
 import com.kylecorry.sol.math.sumOfFloat
