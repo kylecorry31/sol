@@ -88,7 +88,7 @@ class StatisticsService {
         if (values.isEmpty()) {
             return emptyList()
         }
-        val maxZ = values.maxOrNull() ?: values[0]
+        val maxZ = values.max()
         val exponents = values.map { exp(it - maxZ) }
         val sumExp = exponents.sum()
         return exponents.map { if (sumExp == 0f) 0f else it / sumExp }

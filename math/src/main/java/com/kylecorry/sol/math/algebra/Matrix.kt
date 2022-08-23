@@ -72,15 +72,47 @@ fun Matrix.mapped(fn: (Float) -> Float): Matrix {
     return service.map(this, fn)
 }
 
+fun Matrix.mapRows(fn: (FloatArray) -> FloatArray): Matrix {
+    return service.mapRows(this, fn)
+}
+
+fun Matrix.mapColumns(fn: (FloatArray) -> FloatArray): Matrix {
+    return service.mapColumns(this, fn)
+}
+
 fun Matrix.sum(): Float {
     return service.sum(this)
+}
+
+fun Matrix.sumRows(): Matrix {
+    return service.sumRows(this)
+}
+
+fun Matrix.sumColumns(): Matrix {
+    return service.sumColumns(this)
+}
+
+fun Matrix.max(): Float {
+    return service.max(this)
+}
+
+fun Matrix.maxRows(): Matrix {
+    return service.maxRows(this)
+}
+
+fun Matrix.maxColumns(): Matrix {
+    return service.maxColumns(this)
 }
 
 /**
  * Creates an identity matrix
  */
 fun identityMatrix(size: Int): Matrix {
-    return createMatrix(size, size) { r, c -> if (r == c) 1f else 0f }
+    return diagonalMatrix(values = FloatArray(size) { 1f })
+}
+
+fun diagonalMatrix(vararg values: Float): Matrix {
+    return createMatrix(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
 }
 
 /**
