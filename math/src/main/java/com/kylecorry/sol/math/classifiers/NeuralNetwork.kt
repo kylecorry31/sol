@@ -1,11 +1,10 @@
 package com.kylecorry.sol.math.classifiers
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.statistics.StatisticsService
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.exp
-import kotlin.math.ln
-import kotlin.math.pow
+import kotlin.math.*
 
 class NeuralNetwork(
     private val layers: List<Layer>,
@@ -49,10 +48,9 @@ class NeuralNetwork(
         epochs: Int = 100,
         learningRate: Float = 0.1f,
         regularization: Float = 0f,
+        batchSize: Int = input.size,
         onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
-        // TODO: Support minibatch
-
         if (input.size != output.size) {
             throw IllegalArgumentException("Input and output have the same number of elements")
         }
@@ -81,39 +79,62 @@ class NeuralNetwork(
         }
 
         var totalError = 0f
-        val inputMatrix = input.map { it[0] }.toTypedArray().transpose()
-        val outputMatrix = output.map { it[0] }.toTypedArray().transpose()
+        val randomized = randomize(input, output)
+        val batches = ceil(input.size / batchSize.toFloat()).toInt()
         for (epoch in 0 until epochs) {
-            totalError = 0f
-            val inputRow = inputMatrix
-            val outputRow = outputMatrix
-            val predicted = predict(inputRow)
-            val samples = inputRow.columns()
-            val ones = columnMatrix(values = FloatArray(samples) { 1f })
+            for (n in 0 until batches) {
+                totalError = 0f
+                val batch = getBatch(randomized.first, randomized.second, batchSize, n * batchSize)
+                val inputRow = batch.first
+                val outputRow = batch.second
+                val predicted = predict(inputRow)
+                val samples = inputRow.columns()
+                val ones = columnMatrix(values = FloatArray(samples) { 1f })
 
-            val previousLayerOutputs =
-                listOf(inputRow.transpose()) + layers.map { it.output.transpose() }
-                    .take(layers.size - 1)
+                val previousLayerOutputs =
+                    listOf(inputRow.transpose()) + layers.map { it.output.transpose() }
+                        .take(layers.size - 1)
 
-            var previousDelta: Matrix = createMatrix(0, 0, 0f)
-            for (l in layers.indices.reversed()) {
-                previousDelta = if (l == layers.lastIndex) {
-                    outputRow.subtract(predicted)
-                } else {
-                    layers[l + 1].weights.transpose().dot(previousDelta)
-                }.multiply(-1f).multiply(layers[l].derivative(layers[l].input))
-                val change = previousDelta.dot(previousLayerOutputs[l])
-                    .add(layers[l].weights.multiply(regularization))
-                layers[l].weights =
-                    layers[l].weights.subtract(change.multiply(learningRate / samples))
-                val db = previousDelta.dot(ones).multiply(learningRate / samples)
-                layers[l].bias = layers[l].bias.subtract(db)
+                var previousDelta: Matrix = createMatrix(0, 0, 0f)
+                for (l in layers.indices.reversed()) {
+                    previousDelta = if (l == layers.lastIndex) {
+                        outputRow.subtract(predicted)
+                    } else {
+                        layers[l + 1].weights.transpose().dot(previousDelta)
+                    }.multiply(-1f).multiply(layers[l].derivative(layers[l].input))
+                    val change = previousDelta.dot(previousLayerOutputs[l])
+                        .add(layers[l].weights.multiply(regularization))
+                    layers[l].weights =
+                        layers[l].weights.subtract(change.multiply(learningRate / samples))
+                    val db = previousDelta.dot(ones).multiply(learningRate / samples)
+                    layers[l].bias = layers[l].bias.subtract(db)
+                }
+
+                totalError += squaredError(inputRow, outputRow, regularization)
             }
-
-            totalError += squaredError(inputRow, outputRow, regularization)
             onEpochCompleteFn(totalError, epoch)
         }
         return totalError
+    }
+
+    private fun randomize(x: List<Matrix>, y: List<Matrix>): Pair<List<Matrix>, List<Matrix>> {
+        return x.zip(y).shuffled().unzip()
+    }
+
+    private fun getBatch(
+        x: List<Matrix>,
+        y: List<Matrix>,
+        batchSize: Int,
+        start: Int
+    ): Pair<Matrix, Matrix> {
+        val end = min(start + batchSize, x.size) - 1
+        val range = IntRange(start, end)
+
+        val batch = x.zip(y).slice(range).unzip()
+
+        val inputMatrix = batch.first.map { it[0] }.toTypedArray().transpose()
+        val outputMatrix = batch.second.map { it[0] }.toTypedArray().transpose()
+        return inputMatrix to outputMatrix
     }
 
     private fun squaredError(x: Matrix, y: Matrix, regularization: Float): Float {
