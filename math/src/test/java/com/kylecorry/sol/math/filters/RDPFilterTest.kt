@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.filters
 
 import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.geometry.GeometryService
+import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.geometry.Line
 import org.junit.jupiter.api.Assertions.*
 
@@ -35,7 +35,7 @@ internal class RDPFilterTest {
 
         val rdp1 =
             RDPFilter<Vector2>(0.5f) { point, start, end ->
-                GeometryService().pointLineDistance(
+                Geometry.pointLineDistance(
                     point,
                     Line(start, end)
                 )
@@ -43,7 +43,7 @@ internal class RDPFilterTest {
 
         val rdp2 =
             RDPFilter<Vector2>(0.01f) { point, start, end ->
-                GeometryService().pointLineDistance(
+                Geometry.pointLineDistance(
                     point,
                     Line(start, end)
                 )

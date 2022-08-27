@@ -5,18 +5,16 @@ import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 
-internal class GeometryServiceTest {
-
-    private val service = GeometryService()
-
+internal class GeometryTest {
+    
     @Test
     fun containsCircle() {
         val circle1 = Circle(Vector2(0f, 0f), 1f)
 
-        assertTrue(service.contains(circle1, Vector2(0f, 0f)))
-        assertTrue(service.contains(circle1, Vector2(1f, 0f)))
-        assertTrue(service.contains(circle1, Vector2(0f, 1f)))
-        assertTrue(service.contains(circle1, Vector2(0.5f, 0.5f)))
+        assertTrue(Geometry.contains(circle1, Vector2(0f, 0f)))
+        assertTrue(Geometry.contains(circle1, Vector2(1f, 0f)))
+        assertTrue(Geometry.contains(circle1, Vector2(0f, 1f)))
+        assertTrue(Geometry.contains(circle1, Vector2(0.5f, 0.5f)))
     }
 
     @Test
@@ -31,12 +29,12 @@ internal class GeometryServiceTest {
         val circle1 = Circle(Vector2(0f, 0f), 1f)
         val circle2 = Circle(Vector2(4f, 3f), 2f)
 
-        val intersection1 = service.getIntersection(line1, circle1)
-        val intersection2 = service.getIntersection(line2, circle1)
-        val intersection3 = service.getIntersection(line2, circle2)
-        val intersection4 = service.getIntersection(line1, circle2)
-        val intersection5 = service.getIntersection(line3, circle1)
-        val intersection6 = service.getIntersection(line4, circle1)
+        val intersection1 = Geometry.getIntersection(line1, circle1)
+        val intersection2 = Geometry.getIntersection(line2, circle1)
+        val intersection3 = Geometry.getIntersection(line2, circle2)
+        val intersection4 = Geometry.getIntersection(line1, circle2)
+        val intersection5 = Geometry.getIntersection(line3, circle1)
+        val intersection6 = Geometry.getIntersection(line4, circle1)
 
         assertEquals(Line(Vector2(0f, 0f), Vector2(1f, 0f)), intersection1!!, 0.00001f)
         assertEquals(Line(Vector2(0f, -1f), Vector2(1f, 0f)), intersection2!!, 0.00001f)

@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.classifiers
 
 import com.kylecorry.sol.math.algebra.*
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
 
@@ -9,8 +9,6 @@ class NeuralNetwork(
     private val layers: List<Layer>,
     weights: List<LayerWeights>? = null
 ) : IClassifier {
-
-    private val stats = StatisticsService()
 
     init {
         layers.zipWithNext().forEach {
@@ -31,7 +29,7 @@ class NeuralNetwork(
         return if (layers.last().isClassifier) {
             prediction
         } else {
-            stats.softmax(prediction)
+            Statistics.softmax(prediction)
         }
     }
 
@@ -235,9 +233,8 @@ class NeuralNetwork(
             }
 
             fun softmax(input: Int, output: Int): Layer {
-                val stats = StatisticsService()
                 val grad = { x: FloatArray ->
-                    val softmax = stats.softmax(x.toList()).toFloatArray()
+                    val softmax = Statistics.softmax(x.toList()).toFloatArray()
                     val diag = diagonalMatrix(values = softmax)
                     val col = arrayOf(softmax.toTypedArray())
                     // This should be diag - col*colT but for some reason that cause error to increase
@@ -247,7 +244,7 @@ class NeuralNetwork(
                 return Layer(
                     input,
                     output,
-                    { it.mapColumns { stats.softmax(it.toList()).toFloatArray() } },
+                    { it.mapColumns { Statistics.softmax(it.toList()).toFloatArray() } },
                     { it.mapColumns(grad) },
                     isClassifier = true
                 )

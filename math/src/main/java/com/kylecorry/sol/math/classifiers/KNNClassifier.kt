@@ -2,7 +2,7 @@ package com.kylecorry.sol.math.classifiers
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.sqrt
 
 class KNNClassifier(
@@ -11,8 +11,6 @@ class KNNClassifier(
     private val labels: Array<Array<Int>>
 ) :
     IClassifier {
-
-    private val statistics = StatisticsService()
 
     override fun classify(x: List<Float>): List<Float> {
         val xArr = x.toTypedArray()
@@ -33,7 +31,7 @@ class KNNClassifier(
             }
         }
 
-        return statistics.probability(sumLabels)
+        return Statistics.probability(sumLabels)
     }
 
     private fun distance(p1: Array<Float>, p2: Array<Float>): Float {

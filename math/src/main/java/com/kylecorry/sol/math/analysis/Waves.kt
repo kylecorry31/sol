@@ -4,7 +4,7 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import kotlin.math.*
 
-class WaveService {
+object Waves {
 
     /**
      * Connects two points with a waveform where one point is the high, and the other the low

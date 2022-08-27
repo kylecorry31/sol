@@ -1,9 +1,9 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.algebra.LinearAlgebraService
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.createMatrix
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.algebra.dot
+import com.kylecorry.sol.math.statistics.Statistics
 
 /**
  * A logistic regression classifier
@@ -11,12 +11,9 @@ import com.kylecorry.sol.math.statistics.StatisticsService
  */
 class LogisticRegressionClassifier(private val weights: Matrix) : IClassifier {
 
-    private val statistics = StatisticsService()
-    private val linearAlgebra = LinearAlgebraService()
-
     override fun classify(x: List<Float>): List<Float> {
         val input = createMatrix(1, x.size) { _, c -> x[c] }
-        val z = linearAlgebra.dot(input, weights)[0].toList()
-        return statistics.softmax(z)
+        val z = input.dot(weights)[0].toList()
+        return Statistics.softmax(z)
     }
 }

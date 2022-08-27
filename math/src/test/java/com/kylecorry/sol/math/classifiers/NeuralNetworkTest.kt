@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.classifiers
 
 import com.kylecorry.sol.math.algebra.rowMatrix
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.statistics.Statistics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -80,13 +80,11 @@ internal class NeuralNetworkTest {
             rowMatrix(classification, 1 - classification)
         }
 
-        val stats = StatisticsService()
-
         val before = (0..100).map {
             val res = sin(it / 100f) * sin(it / 50f)
             val classification = if (res < 0f) 0f else 1f
             val expected = listOf(classification, 1 - classification)
-            stats.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
+            Statistics.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
         }.average()
 
         val error = network.fit(
@@ -100,7 +98,7 @@ internal class NeuralNetworkTest {
             val res = sin(it / 100f) * sin(it / 50f)
             val classification = if (res < 0f) 0f else 1f
             val expected = listOf(classification, 1 - classification)
-            stats.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
+            Statistics.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
         }.average()
 
         assertTrue(before > after)

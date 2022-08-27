@@ -2,7 +2,7 @@ package com.kylecorry.sol.math.algebra
 
 import kotlin.math.sqrt
 
-class AlgebraService {
+object Algebra {
 
     /**
      * Solves an equation of form mx + b = 0

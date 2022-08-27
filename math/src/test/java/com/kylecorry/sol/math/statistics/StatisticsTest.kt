@@ -7,21 +7,19 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-internal class StatisticsServiceTest {
-
-    private val service = StatisticsService()
-
+internal class StatisticsTest {
+    
     @ParameterizedTest
     @MethodSource("provideWeightedSum")
     fun weightedSum(values: List<Pair<Float, Float>>, expected: Float) {
-        val actual = service.weightedMean(values)
+        val actual = Statistics.weightedMean(values)
         assertEquals(expected, actual, 0.00001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideProbability")
     fun probability(values: List<Float>, expected: List<Float>){
-        val actual = service.probability(values)
+        val actual = Statistics.probability(values)
         for (i in values.indices){
             assertEquals(expected[i], actual[i], 0.00001f)
         }
@@ -30,7 +28,7 @@ internal class StatisticsServiceTest {
     @ParameterizedTest
     @MethodSource("provideSoftmax")
     fun softmax(values: List<Float>, expected: List<Float>){
-        val actual = service.softmax(values)
+        val actual = Statistics.softmax(values)
         for (i in values.indices){
             assertEquals(expected[i], actual[i], 0.001f)
         }

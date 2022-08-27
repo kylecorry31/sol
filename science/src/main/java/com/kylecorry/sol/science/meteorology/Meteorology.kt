@@ -12,7 +12,7 @@ import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
 
-class WeatherService : IWeatherService {
+object Meteorology : IWeatherService {
 
     private val cloudService = CloudService()
 

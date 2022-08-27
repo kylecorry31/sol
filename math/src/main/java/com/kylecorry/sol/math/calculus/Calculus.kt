@@ -6,7 +6,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class CalculusService {
+object Calculus {
 
     fun derivative(equation: QuadraticEquation): LinearEquation {
         return LinearEquation(equation.a * 2, equation.b)

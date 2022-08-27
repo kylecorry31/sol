@@ -1,16 +1,13 @@
 package com.kylecorry.sol.math.calculus
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cube
 import com.kylecorry.sol.math.SolMath.square
 import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 
-internal class CalculusServiceTest {
-
-    private val service = CalculusService()
-
+internal class CalculusTest {
+    
     @Test
     fun derivative1Var() {
         val fn1 = { x: Double -> x * x }
@@ -21,12 +18,12 @@ internal class CalculusServiceTest {
 
         assertEquals(
             gradFn1(1.0),
-            service.derivative(1.0, step = 0.000001, fn = fn1),
+            Calculus.derivative(1.0, step = 0.000001, fn = fn1),
             0.0001
         )
         assertEquals(
             gradFn2(4.0),
-            service.derivative(4.0, step = 0.000001, fn = fn2),
+            Calculus.derivative(4.0, step = 0.000001, fn = fn2),
             0.0001
         )
     }
@@ -41,23 +38,23 @@ internal class CalculusServiceTest {
 
         assertEquals(
             gradFn1(1.0, 3.0).first,
-            service.derivative(1.0, 3.0, step = 0.000001, fn = fn1).first,
+            Calculus.derivative(1.0, 3.0, step = 0.000001, fn = fn1).first,
             0.0001
         )
         assertEquals(
             gradFn1(1.0, 3.0).second,
-            service.derivative(1.0, 3.0, step = 0.000001, fn = fn1).second,
+            Calculus.derivative(1.0, 3.0, step = 0.000001, fn = fn1).second,
             0.0001
         )
 
         assertEquals(
             gradFn2(4.0, 3.0).first,
-            service.derivative(4.0, 3.0, step = 0.000001, fn = fn2).first,
+            Calculus.derivative(4.0, 3.0, step = 0.000001, fn = fn2).first,
             0.0001
         )
         assertEquals(
             gradFn2(4.0, 3.0).second,
-            service.derivative(4.0, 3.0, step = 0.000001, fn = fn2).second,
+            Calculus.derivative(4.0, 3.0, step = 0.000001, fn = fn2).second,
             0.0001
         )
     }
@@ -69,7 +66,7 @@ internal class CalculusServiceTest {
 
         assertEquals(
             integralFn1(5.0) - integralFn1(1.0),
-            service.integral(1.0, 5.0, step = 0.000001, fn = fn1),
+            Calculus.integral(1.0, 5.0, step = 0.000001, fn = fn1),
             0.0001
         )
 

@@ -4,13 +4,11 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.science.geology.GeologyService
+import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.geology.Region
 import com.kylecorry.sol.science.meteorology.Precipitation
 
-class CloudService : ICloudService {
-
-    private val geoService = GeologyService()
+internal class CloudService : ICloudService {
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
         return when (cloud) {
@@ -76,7 +74,7 @@ class CloudService : ICloudService {
             )
         }
 
-        val region = geoService.getRegion(location)
+        val region = Geology.getRegion(location)
         val highStart = when (region) {
             Region.Polar -> 3f
             Region.Temperate -> 5f

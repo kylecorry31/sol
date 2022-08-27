@@ -2,16 +2,11 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.algebra.AlgebraService
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
-class GeometryService {
-
-    private val algebra = AlgebraService()
-    private val intersection = IntersectionService(algebra)
-
+object Geometry {
     // INTERSECTIONS
 
     fun getIntersection(line: Line, circle: Circle): Line? {
@@ -53,7 +48,7 @@ class GeometryService {
             }
         }
 
-        val intersection = intersection.getIntersection(line, circle) ?: return null
+        val intersection = IntersectionMath.getIntersection(line, circle) ?: return null
         val intersectionLine = Line(intersection.first, intersection.second)
 
         val left = intersectionLine.left()
@@ -82,7 +77,7 @@ class GeometryService {
     }
 
     fun getIntersection(line1: Line, line2: Line): Vector2? {
-        return intersection.getIntersection(line1, line2)
+        return IntersectionMath.getIntersection(line1, line2)
     }
 
     fun intersects(line: Line, circle: Circle): Boolean {

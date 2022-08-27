@@ -1,10 +1,8 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.statistics.Statistics
 
 class EnsembleClassifier(private val classifiers: List<IClassifier>) : IClassifier {
-
-    private val statistics = StatisticsService()
 
     override fun classify(x: List<Float>): List<Float> {
         if (classifiers.isEmpty()) {
@@ -21,6 +19,6 @@ class EnsembleClassifier(private val classifiers: List<IClassifier>) : IClassifi
             }
         }
 
-        return statistics.probability(sumLabels)
+        return Statistics.probability(sumLabels)
     }
 }

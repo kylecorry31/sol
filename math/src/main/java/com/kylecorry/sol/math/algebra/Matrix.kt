@@ -2,8 +2,6 @@ package com.kylecorry.sol.math.algebra
 
 typealias Matrix = Array<Array<Float>>
 
-val service = LinearAlgebraService()
-
 fun Matrix.rows(): Int {
     return size
 }
@@ -37,71 +35,71 @@ fun createMatrix(rows: Int, columns: Int, init: Float): Matrix {
 }
 
 fun Matrix.dot(other: Matrix): Matrix {
-    return service.dot(this, other)
+    return LinearAlgebra.dot(this, other)
 }
 
 fun Matrix.add(other: Matrix): Matrix {
-    return service.add(this, other)
+    return LinearAlgebra.add(this, other)
 }
 
 fun Matrix.subtract(other: Matrix): Matrix {
-    return service.subtract(this, other)
+    return LinearAlgebra.subtract(this, other)
 }
 
 fun Matrix.multiply(other: Matrix): Matrix {
-    return service.multiply(this, other)
+    return LinearAlgebra.multiply(this, other)
 }
 
 fun Matrix.multiply(scale: Float): Matrix {
-    return service.multiply(this, scale)
+    return LinearAlgebra.multiply(this, scale)
 }
 
 fun Matrix.divide(other: Matrix): Matrix {
-    return service.divide(this, other)
+    return LinearAlgebra.divide(this, other)
 }
 
 fun Matrix.divide(scale: Float): Matrix {
-    return service.divide(this, scale)
+    return LinearAlgebra.divide(this, scale)
 }
 
 fun Matrix.transpose(): Matrix {
-    return service.transpose(this)
+    return LinearAlgebra.transpose(this)
 }
 
 fun Matrix.mapped(fn: (Float) -> Float): Matrix {
-    return service.map(this, fn)
+    return LinearAlgebra.map(this, fn)
 }
 
 fun Matrix.mapRows(fn: (FloatArray) -> FloatArray): Matrix {
-    return service.mapRows(this, fn)
+    return LinearAlgebra.mapRows(this, fn)
 }
 
 fun Matrix.mapColumns(fn: (FloatArray) -> FloatArray): Matrix {
-    return service.mapColumns(this, fn)
+    return LinearAlgebra.mapColumns(this, fn)
 }
 
 fun Matrix.sum(): Float {
-    return service.sum(this)
+    return LinearAlgebra.sum(this)
 }
 
 fun Matrix.sumRows(): Matrix {
-    return service.sumRows(this)
+    return LinearAlgebra.sumRows(this)
 }
 
 fun Matrix.sumColumns(): Matrix {
-    return service.sumColumns(this)
+    return LinearAlgebra.sumColumns(this)
 }
 
 fun Matrix.max(): Float {
-    return service.max(this)
+    return LinearAlgebra.max(this)
 }
 
 fun Matrix.maxRows(): Matrix {
-    return service.maxRows(this)
+    return LinearAlgebra.maxRows(this)
 }
 
 fun Matrix.maxColumns(): Matrix {
-    return service.maxColumns(this)
+    return LinearAlgebra.maxColumns(this)
 }
 
 /**

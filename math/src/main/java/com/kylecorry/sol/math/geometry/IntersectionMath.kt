@@ -2,10 +2,10 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.algebra.AlgebraService
+import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.algebra.QuadraticEquation
 
-internal class IntersectionService(private val algebra: AlgebraService) {
+internal object IntersectionMath {
 
     fun getIntersection(line: Line, circle: Circle): Pair<Vector2, Vector2>? {
         val centeredLine = Line(line.start - circle.center, line.end - circle.center)
@@ -15,7 +15,7 @@ internal class IntersectionService(private val algebra: AlgebraService) {
         val a = (1 + square(m))
         val b = 2 * yIntercept * m
         val c = square(yIntercept) - square(circle.radius)
-        val solutions = algebra.solve(QuadraticEquation(a, b, c)) ?: return null
+        val solutions = Algebra.solve(QuadraticEquation(a, b, c)) ?: return null
 
         val y1 = centeredLine.equation().evaluate(solutions.first)
         val y2 = centeredLine.equation().evaluate(solutions.second)

@@ -5,7 +5,7 @@ import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.science.geology.GeologyService
+import com.kylecorry.sol.science.geology.Geology
 import java.time.Duration
 import kotlin.math.sqrt
 
@@ -38,7 +38,7 @@ class PhysicsService : IPhysicsService {
         magneticField: Vector3,
         gravity: Vector3
     ): Pair<Bearing, Bearing> {
-        val azimuth = GeologyService().getAzimuth(gravity, magneticField)
+        val azimuth = Geology.getAzimuth(gravity, magneticField)
         return azimuth to azimuth.inverse()
     }
 

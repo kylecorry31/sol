@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy.eclipse
 
+import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.science.astronomy.AstronomyService
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -57,9 +57,8 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
             )
         }
 
-        val astronomyService = AstronomyService()
-        val upAtStart = astronomyService.isMoonUp(time.start.atZone(ZoneId.of("UTC")), location)
-        val upAtEnd = astronomyService.isMoonUp(time.end.atZone(ZoneId.of("UTC")), location)
+        val upAtStart = Astronomy.isMoonUp(time.start.atZone(ZoneId.of("UTC")), location)
+        val upAtEnd = Astronomy.isMoonUp(time.end.atZone(ZoneId.of("UTC")), location)
 
 
         if (upAtStart || upAtEnd) {

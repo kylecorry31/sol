@@ -4,7 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.regression.WeightedLinearRegression
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
@@ -29,8 +29,6 @@ class LoessFilter2D(
     private val maximumSpanSize: Int = Int.MAX_VALUE,
     private val maximumSpanDistance: Float? = null
 ) : IFilter2D {
-
-    private val statistics = StatisticsService()
 
     /**
      * Smooth the data, the output will have the same x values as the input
@@ -102,7 +100,7 @@ class LoessFilter2D(
                 break
             }
 
-            val medianResidual = statistics.median(residuals)
+            val medianResidual = Statistics.median(residuals)
 
             if (abs(medianResidual) < accuracy) {
                 break

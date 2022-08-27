@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.filters
 
 import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.statistics.StatisticsService
+import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.sumOfFloat
 import com.kylecorry.sol.math.toVector2
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -12,8 +12,6 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 internal class LoessFilter2DTest {
-
-    private val statistics = StatisticsService()
 
     @Test
     fun filterSin() {
@@ -27,8 +25,8 @@ internal class LoessFilter2DTest {
 
         val actual = filter.filter(values)
 
-        val fitResiduals = statistics.rmse(expected.map { it.y }, actual.map { it.y })
-        val originalResiduals = statistics.rmse(expected.map { it.y }, values.map { it.y })
+        val fitResiduals = Statistics.rmse(expected.map { it.y }, actual.map { it.y })
+        val originalResiduals = Statistics.rmse(expected.map { it.y }, values.map { it.y })
 
         assertTrue(fitResiduals < originalResiduals)
         assertEquals(0.006f, fitResiduals, 0.001f)

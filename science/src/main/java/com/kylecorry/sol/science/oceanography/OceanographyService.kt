@@ -1,27 +1,19 @@
 package com.kylecorry.sol.science.oceanography
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.optimization.IExtremaFinder
-import com.kylecorry.sol.math.optimization.NoisyExtremaFinder
-import com.kylecorry.sol.math.optimization.SimpleExtremaFinder
-import com.kylecorry.sol.science.astronomy.AstronomyService
+import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
-import com.kylecorry.sol.science.geology.GeologyService
+import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
-import com.kylecorry.sol.science.oceanography.waterlevel.RuleOfTwelfthsWaterLevelCalculator
-import com.kylecorry.sol.time.Time.atEndOfDay
-import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.*
 import java.time.*
 
 class OceanographyService : IOceanographyService {
 
-    private val astronomyService = AstronomyService()
-
     override fun getTidalRange(time: ZonedDateTime): TidalRange {
         for (i in 0..3) {
-            val phase = astronomyService.getMoonPhase(time.minusDays(i.toLong()))
+            val phase = Astronomy.getMoonPhase(time.minusDays(i.toLong()))
 
             when (phase.phase) {
                 MoonTruePhase.New, MoonTruePhase.Full -> {
@@ -68,7 +60,7 @@ class OceanographyService : IOceanographyService {
             ).pressure
 
         return Distance(
-            pressureDiff * 100 / (GeologyService.GRAVITY * waterDensity),
+            pressureDiff * 100 / (Geology.GRAVITY * waterDensity),
             DistanceUnits.Meters
         )
     }

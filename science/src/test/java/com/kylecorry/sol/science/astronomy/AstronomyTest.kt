@@ -18,37 +18,35 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
 
-class AstronomyServiceTest {
-
-    private val service = AstronomyService()
-
+class AstronomyTest {
+    
     // TODO: Verify sun events other than actual time
 
     @Test
     fun isSuperMoonTrue(){
         val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 26, 12, 0), ZoneId.of("UTC"))
-        val isSuperMoon = service.isSuperMoon(date)
+        val isSuperMoon = Astronomy.isSuperMoon(date)
         assertTrue(isSuperMoon)
     }
 
     @Test
     fun isSuperMoonNotFull(){
         val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 21, 12, 0), ZoneId.of("UTC"))
-        val isSuperMoon = service.isSuperMoon(date)
+        val isSuperMoon = Astronomy.isSuperMoon(date)
         assertFalse(isSuperMoon)
     }
 
     @Test
     fun isSuperMoonNotCloseEnough(){
         val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.SEPTEMBER, 21, 12, 0), ZoneId.of("UTC"))
-        val isSuperMoon = service.isSuperMoon(date)
+        val isSuperMoon = Astronomy.isSuperMoon(date)
         assertFalse(isSuperMoon)
     }
 
     @Test
     fun canGetMoonDistance(){
         val date = ZonedDateTime.of(LocalDateTime.of(1992, Month.APRIL, 12, 0, 0), ZoneId.of("UTC"))
-        val distance = service.getMoonDistance(date)
+        val distance = Astronomy.getMoonDistance(date)
         assertEquals(368409.7f, distance.distance, 0.1f)
     }
 
@@ -57,7 +55,7 @@ class AstronomyServiceTest {
         val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
         val location = Coordinate(42.0, -70.0)
 
-        val actual = service.getNextEclipse(date, location, EclipseType.PartialLunar)
+        val actual = Astronomy.getNextEclipse(date, location, EclipseType.PartialLunar)
 
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2021, 11, 19, 7, 18), ZoneId.of("UTC")),
@@ -79,7 +77,7 @@ class AstronomyServiceTest {
         val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
         val location = Coordinate(42.0, -70.0)
 
-        val actual = service.getNextEclipse(date, location, EclipseType.TotalLunar)
+        val actual = Astronomy.getNextEclipse(date, location, EclipseType.TotalLunar)
 
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 3, 29), ZoneId.of("UTC")),
@@ -177,7 +175,7 @@ class AstronomyServiceTest {
                     .withMinute(case.set.minute) else null
             )
 
-            val actual = service.getSunEvents(date, case.location, SunTimesMode.Actual)
+            val actual = Astronomy.getSunEvents(date, case.location, SunTimesMode.Actual)
             assertRst(expected, actual)
         }
     }
@@ -192,7 +190,7 @@ class AstronomyServiceTest {
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 22, 6, 51), 0.9f),
             )
         ) {
-            val altitude = service.getSunAltitude(
+            val altitude = Astronomy.getSunAltitude(
                 ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
                 ny,
                 true
@@ -211,7 +209,7 @@ class AstronomyServiceTest {
             )
         ) {
             val azimuth =
-                service.getSunAzimuth(ZonedDateTime.of(it.first, ZoneId.of("America/New_York")), ny)
+                Astronomy.getSunAzimuth(ZonedDateTime.of(it.first, ZoneId.of("America/New_York")), ny)
             assertEquals(it.second, azimuth.value, 0.5f)
         }
     }
@@ -248,7 +246,7 @@ class AstronomyServiceTest {
                 )
             )
         ) {
-            val sunset = service.getNextSunset(
+            val sunset = Astronomy.getNextSunset(
                 ZonedDateTime.of(
                     it[0] as LocalDateTime,
                     ZoneId.of(it[2] as String)
@@ -294,7 +292,7 @@ class AstronomyServiceTest {
                 )
             )
         ) {
-            val sunrise = service.getNextSunrise(
+            val sunrise = Astronomy.getNextSunrise(
                 ZonedDateTime.of(
                     it[0] as LocalDateTime,
                     ZoneId.of(it[2] as String)
@@ -361,7 +359,7 @@ class AstronomyServiceTest {
                     .withMinute(case.set.minute) else null
             )
 
-            val actual = service.getMoonEvents(date, case.location)
+            val actual = Astronomy.getMoonEvents(date, case.location)
             assertRst(expected, actual)
         }
     }
@@ -375,7 +373,7 @@ class AstronomyServiceTest {
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -28f),
             )
         ) {
-            val altitude = service.getMoonAltitude(
+            val altitude = Astronomy.getMoonAltitude(
                 ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
                 ny
             )
@@ -392,7 +390,7 @@ class AstronomyServiceTest {
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), 360f),
             )
         ) {
-            val azimuth = service.getMoonAzimuth(
+            val azimuth = Astronomy.getMoonAzimuth(
                 ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
                 ny
             )
@@ -426,7 +424,7 @@ class AstronomyServiceTest {
                 )
             )
         ) {
-            val moonset = service.getNextMoonset(
+            val moonset = Astronomy.getNextMoonset(
                 ZonedDateTime.of(
                     it[0] as LocalDateTime,
                     ZoneId.of(it[2] as String)
@@ -466,7 +464,7 @@ class AstronomyServiceTest {
                 )
             )
         ) {
-            val moonrise = service.getNextMoonrise(
+            val moonrise = Astronomy.getNextMoonrise(
                 ZonedDateTime.of(
                     it[0] as LocalDateTime,
                     ZoneId.of(it[2] as String)
@@ -487,44 +485,44 @@ class AstronomyServiceTest {
         // Main phases
         assertMoonPhases(
             MoonPhase(MoonTruePhase.FirstQuarter, 50f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 2, 14, 58))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 2, 14, 58))),
             tolerance
         )
         assertMoonPhases(
             MoonPhase(MoonTruePhase.Full, 100f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 9, 13, 48))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 9, 13, 48))),
             tolerance
         )
         assertMoonPhases(
             MoonPhase(MoonTruePhase.ThirdQuarter, 50f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 16, 5, 35))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 16, 5, 35))),
             tolerance
         )
         assertMoonPhases(
             MoonPhase(MoonTruePhase.New, 0f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 24, 5, 29))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 24, 5, 29))),
             tolerance
         )
 
         // Intermediate phases
         assertMoonPhases(
             MoonPhase(MoonTruePhase.WaxingCrescent, 23f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 29, 12, 0))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 29, 12, 0))),
             tolerance
         )
         assertMoonPhases(
             MoonPhase(MoonTruePhase.WaxingGibbous, 79f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 5, 12, 0))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 5, 12, 0))),
             tolerance
         )
         assertMoonPhases(
             MoonPhase(MoonTruePhase.WaningGibbous, 79f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 13, 12, 0))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 13, 12, 0))),
             tolerance
         )
         assertMoonPhases(
             MoonPhase(MoonTruePhase.WaningCrescent, 28f),
-            service.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 18, 12, 0))),
+            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 18, 12, 0))),
             tolerance
         )
     }
@@ -534,7 +532,7 @@ class AstronomyServiceTest {
         val ny = Coordinate(40.7128, -74.0060)
         val zoneNy = ZoneId.of("America/New_York")
         assertTrue(
-            service.isSunUp(
+            Astronomy.isSunUp(
                 ZonedDateTime.of(
                     LocalDateTime.of(
                         2020,
@@ -547,7 +545,7 @@ class AstronomyServiceTest {
             )
         )
         assertFalse(
-            service.isSunUp(
+            Astronomy.isSunUp(
                 ZonedDateTime.of(
                     LocalDateTime.of(
                         2020,
@@ -566,7 +564,7 @@ class AstronomyServiceTest {
         val ny = Coordinate(40.7128, -74.0060)
         val zoneNy = ZoneId.of("America/New_York")
         assertTrue(
-            service.isMoonUp(
+            Astronomy.isMoonUp(
                 ZonedDateTime.of(
                     LocalDateTime.of(
                         2020,
@@ -579,7 +577,7 @@ class AstronomyServiceTest {
             )
         )
         assertFalse(
-            service.isMoonUp(
+            Astronomy.isMoonUp(
                 ZonedDateTime.of(
                     LocalDateTime.of(
                         2020,
@@ -595,7 +593,6 @@ class AstronomyServiceTest {
 
     @Test
     fun getMeteorShower() {
-        val service = AstronomyService()
         val location = Coordinate(40.7128, -74.0060)
 
         listOf<Pair<MeteorShower?, LocalDate>>(
@@ -610,7 +607,7 @@ class AstronomyServiceTest {
             MeteorShower.Ursids to LocalDate.of(2022, 12, 22),
             null to LocalDate.of(2022, 1, 1)
         ).forEach {
-            val shower = service.getMeteorShower(
+            val shower = Astronomy.getMeteorShower(
                 location,
                 getDate(LocalDateTime.of(it.second, LocalTime.MIN))
             )
@@ -620,7 +617,6 @@ class AstronomyServiceTest {
 
     @Test
     fun getAstronomicalSeasonNorthern() {
-        val service = AstronomyService()
         val location = Coordinate(40.7128, -74.0060)
 
         listOf<Pair<Season, LocalDate>>(
@@ -635,7 +631,7 @@ class AstronomyServiceTest {
             Season.Winter to LocalDate.of(2021, 12, 21),
             Season.Winter to LocalDate.of(2021, 12, 31),
         ).forEach {
-            val season = service.getSeason(
+            val season = Astronomy.getSeason(
                 location,
                 getDate(LocalDateTime.of(it.second, LocalTime.MAX))
             )
@@ -645,7 +641,6 @@ class AstronomyServiceTest {
 
     @Test
     fun getAstronomicalSeasonSouthern() {
-        val service = AstronomyService()
         val location = Coordinate(-40.7128, -74.0060)
 
         listOf<Pair<Season, LocalDate>>(
@@ -660,7 +655,7 @@ class AstronomyServiceTest {
             Season.Summer to LocalDate.of(2021, 12, 21),
             Season.Summer to LocalDate.of(2021, 12, 31),
         ).forEach {
-            val season = service.getSeason(
+            val season = Astronomy.getSeason(
                 location,
                 getDate(LocalDateTime.of(it.second, LocalTime.MAX))
             )
@@ -692,14 +687,14 @@ class AstronomyServiceTest {
                 .withMinute(expected.set.minute) else null
         )
 
-        val actual = service.getSunEvents(date, expected.location)
+        val actual = Astronomy.getSunEvents(date, expected.location)
         assertRst(e, actual)
     }
 
     @ParameterizedTest
     @MethodSource("provideDayLengths")
     fun getDaylightLength(date: ZonedDateTime, location: Coordinate, expected: Duration) {
-        val length = service.getDaylightLength(date, location)
+        val length = Astronomy.getDaylightLength(date, location)
         assertDuration(expected, length, Duration.ofSeconds(30))
     }
 

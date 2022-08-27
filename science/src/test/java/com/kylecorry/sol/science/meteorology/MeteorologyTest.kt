@@ -11,10 +11,8 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
 
-class WeatherServiceTest {
-
-    private val weatherService = WeatherService()
-
+class MeteorologyTest {
+    
     @ParameterizedTest
     @MethodSource("provideForecasts")
     fun forecast(
@@ -24,7 +22,7 @@ class WeatherServiceTest {
         expectedWeather: Weather
     ) {
         val tendency = PressureTendency(characteristic, tendencyAmount)
-        val weather = weatherService.forecast(tendency, stormThresh)
+        val weather = Meteorology.forecast(tendency, stormThresh)
         assertEquals(expectedWeather, weather)
     }
 
@@ -37,49 +35,49 @@ class WeatherServiceTest {
         threshold: Float,
         expectedTendency: PressureTendency
     ) {
-        val tendency = weatherService.getTendency(last, current, duration, threshold)
+        val tendency = Meteorology.getTendency(last, current, duration, threshold)
         assertEquals(expectedTendency, tendency)
     }
 
     @ParameterizedTest
     @MethodSource("provideHeatIndex")
     fun heatIndex(temperature: Float, humidity: Float, expected: Float) {
-        val hi = weatherService.getHeatIndex(temperature, humidity)
+        val hi = Meteorology.getHeatIndex(temperature, humidity)
         assertEquals(expected, hi, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideHeatAlert")
     fun heatAlert(heatIndex: Float, expected: HeatAlert) {
-        val alert = weatherService.getHeatAlert(heatIndex)
+        val alert = Meteorology.getHeatAlert(heatIndex)
         assertEquals(expected, alert)
     }
 
     @ParameterizedTest
     @MethodSource("provideDewPoint")
     fun dewPoint(temperature: Float, humidity: Float, expected: Float) {
-        val dew = weatherService.getDewPoint(temperature, humidity)
+        val dew = Meteorology.getDewPoint(temperature, humidity)
         assertEquals(expected, dew, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikes")
     fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float) {
-        val distance = weatherService.getLightningStrikeDistance(lightning, thunder)
+        val distance = Meteorology.getLightningStrikeDistance(lightning, thunder)
         assertEquals(expected, distance, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikeDistances")
     fun lightningStrikeDanger(distance: Distance, expected: Boolean) {
-        val danger = weatherService.isLightningStrikeDangerous(distance)
+        val danger = Meteorology.isLightningStrikeDangerous(distance)
         assertEquals(expected, danger)
     }
 
     @ParameterizedTest
     @MethodSource("provideSeasons")
     fun seasons(expected: Season, isNorth: Boolean, date: LocalDate) {
-        val season = weatherService.getSeason(
+        val season = Meteorology.getSeason(
             Coordinate(if (isNorth) 1.0 else -1.0, 0.0),
             ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault())
         )
@@ -88,7 +86,7 @@ class WeatherServiceTest {
 
     @Test
     fun ambientTemperature() {
-        val temp = weatherService.getAmbientTemperature(170f, 125f, 100f)
+        val temp = Meteorology.getAmbientTemperature(170f, 125f, 100f)
         assertEquals(68.75f, temp)
     }
 
@@ -100,7 +98,7 @@ class WeatherServiceTest {
         temperature: Temperature?,
         expected: Pressure
     ) {
-        val reading = weatherService.getSeaLevelPressure(pressure, altitude, temperature)
+        val reading = Meteorology.getSeaLevelPressure(pressure, altitude, temperature)
         assertEquals(expected.pressure, reading.pressure, 0.1f)
         assertEquals(expected.units, reading.units)
     }
@@ -108,14 +106,14 @@ class WeatherServiceTest {
     @ParameterizedTest
     @MethodSource("provideHighPressures")
     fun isHigh(pressure: Pressure, isHigh: Boolean) {
-        val ret = weatherService.isHighPressure(pressure)
+        val ret = Meteorology.isHighPressure(pressure)
         assertEquals(isHigh, ret)
     }
 
     @ParameterizedTest
     @MethodSource("provideLowPressures")
     fun isLow(pressure: Pressure, isLow: Boolean) {
-        val ret = weatherService.isLowPressure(pressure)
+        val ret = Meteorology.isLowPressure(pressure)
         assertEquals(isLow, ret)
     }
 

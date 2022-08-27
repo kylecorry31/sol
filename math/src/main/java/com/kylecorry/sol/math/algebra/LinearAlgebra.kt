@@ -1,9 +1,8 @@
 package com.kylecorry.sol.math.algebra
 
-import kotlin.math.max
 import kotlin.math.min
 
-class LinearAlgebraService {
+object LinearAlgebra {
 
     fun dot(mat1: Matrix, mat2: Matrix): Matrix {
         if (mat1.columns() != mat2.rows()) {

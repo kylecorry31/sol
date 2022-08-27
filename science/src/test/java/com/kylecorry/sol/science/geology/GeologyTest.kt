@@ -14,26 +14,24 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-internal class GeologyServiceTest {
-
-    private val service = GeologyService()
-
+internal class GeologyTest {
+    
     @ParameterizedTest
     @MethodSource("provideAltitudes")
     fun altitude(pressure: Float, seaLevel: Float, altitude: Float) {
-        val actual = service.getAltitude(Pressure.hpa(pressure), Pressure.hpa(seaLevel))
+        val actual = Geology.getAltitude(Pressure.hpa(pressure), Pressure.hpa(seaLevel))
         val expected = Distance.meters(altitude)
         assertThat(actual).isCloseTo(expected, 1f)
     }
 
     @Test
     fun gravity() {
-        assertThat(service.getGravity(Coordinate.zero)).isCloseTo(9.78032677f, 0.00001f)
-        assertThat(service.getGravity(Coordinate(90.0, 0.0))).isCloseTo(
+        assertThat(Geology.getGravity(Coordinate.zero)).isCloseTo(9.78032677f, 0.00001f)
+        assertThat(Geology.getGravity(Coordinate(90.0, 0.0))).isCloseTo(
             9.83218493786340046183f,
             0.00001f
         )
-        assertThat(service.getGravity(Coordinate(-90.0, 0.0))).isCloseTo(
+        assertThat(Geology.getGravity(Coordinate(-90.0, 0.0))).isCloseTo(
             9.83218493786340046183f,
             0.00001f
         )
@@ -41,38 +39,35 @@ internal class GeologyServiceTest {
 
     @Test
     fun triangulate() {
-        val service = GeologyService()
         val pointA = Coordinate(40.0, 10.0)
         val bearingA = Bearing(220f)
         val pointB = Coordinate(40.5, 9.5)
         val bearingB = Bearing(295f)
 
         val expected = Coordinate(40.229722, 10.252778)
-        val actual = service.triangulate(pointA, bearingA, pointB, bearingB)
+        val actual = Geology.triangulate(pointA, bearingA, pointB, bearingB)
 
         assertThat(actual).isNotNull().isCloseTo(expected, 20f)
     }
 
     @Test
     fun deadReckon() {
-        val service = GeologyService()
         val start = Coordinate(40.0, 10.0)
         val bearing = Bearing(280f)
         val distance = 10000f
 
         val expected = Coordinate(39.984444, 10.115556)
-        val actual = service.deadReckon(start, distance, bearing)
+        val actual = Geology.deadReckon(start, distance, bearing)
 
         assertThat(actual).isCloseTo(expected, 20f)
     }
 
     @Test
     fun navigate() {
-        val service = GeologyService()
         val start = Coordinate(0.0, 1.0)
         val end = Coordinate(10.0, -8.0)
 
-        val vector = service.navigate(start, end, 0f, true)
+        val vector = Geology.navigate(start, end, 0f, true)
 
         assertThat(vector.direction.value).isCloseTo(Bearing(-41.7683f).value, 0.005f)
         assertThat(vector.distance).isCloseTo(1488793.6f, 0.005f)
@@ -80,18 +75,16 @@ internal class GeologyServiceTest {
 
     @Test
     fun getDeclination() {
-        val service = GeologyService()
         val ny = Coordinate(40.7128, -74.0060)
         val altitude = 10f
-        val dec = service.getGeomagneticDeclination(ny, altitude, 1608151299005)
+        val dec = Geology.getGeomagneticDeclination(ny, altitude, 1608151299005)
         Assert.assertEquals(-12.708426f, dec, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideAvalancheRisk")
     fun getAvalancheRisk(angle: Float, expected: AvalancheRisk) {
-        val service = GeologyService()
-        val risk = service.getAvalancheRisk(angle)
+        val risk = Geology.getAvalancheRisk(angle)
         assertEquals(expected, risk)
     }
 
@@ -103,8 +96,7 @@ internal class GeologyServiceTest {
 
         val expected = Distance(0.635f, DistanceUnits.Kilometers)
 
-        val service = GeologyService()
-        val actual = service.getMapDistance(measurement, scaleFrom, scaleTo)
+        val actual = Geology.getMapDistance(measurement, scaleFrom, scaleTo)
 
         assertThat(actual).isCloseTo(expected, 0.001f)
     }
@@ -117,8 +109,7 @@ internal class GeologyServiceTest {
 
         val expected = Distance(2.5f, DistanceUnits.Inches)
 
-        val service = GeologyService()
-        val actual = service.getMapDistance(measurement, ratioFrom, ratioTo)
+        val actual = Geology.getMapDistance(measurement, ratioFrom, ratioTo)
 
         assertThat(actual).isCloseTo(expected, 0.001f)
     }
@@ -126,9 +117,7 @@ internal class GeologyServiceTest {
     @ParameterizedTest
     @MethodSource("provideCrossTrack")
     fun crossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate, expected: Float) {
-        val service = GeologyService()
-
-        val actual = service.getCrossTrackDistance(point, start, end)
+        val actual = Geology.getCrossTrackDistance(point, start, end)
 
         assertThat(actual).isCloseTo(Distance.meters(expected), 1f)
     }
@@ -138,10 +127,9 @@ internal class GeologyServiceTest {
         val elevations = listOf(5f, 1f, 2f, 4f, 2f, 4f, 4f).map { Distance.meters(it) }
         val expectedGain = Distance.meters(5f)
         val expectedLoss = Distance.meters(-6f)
-        val service = GeologyService()
 
-        val gain = service.getElevationGain(elevations)
-        val loss = service.getElevationLoss(elevations)
+        val gain = Geology.getElevationGain(elevations)
+        val loss = Geology.getElevationLoss(elevations)
 
         assertThat(gain).isEqualTo(expectedGain)
         assertThat(loss).isEqualTo(expectedLoss)
@@ -150,35 +138,35 @@ internal class GeologyServiceTest {
     @ParameterizedTest
     @MethodSource("provideHeights")
     fun calculateHeights(distance: Float, upAngle: Float, downAngle: Float, expected: Float) {
-        val height = service.getHeightFromInclination(Distance.meters(distance), downAngle, upAngle)
+        val height = Geology.getHeightFromInclination(Distance.meters(distance), downAngle, upAngle)
         assertEquals(expected, height.distance, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideDistances")
     fun calculateDistance(height: Float, upAngle: Float, downAngle: Float, expected: Float) {
-        val d = service.getDistanceFromInclination(Distance.meters(height), downAngle, upAngle)
+        val d = Geology.getDistanceFromInclination(Distance.meters(height), downAngle, upAngle)
         assertEquals(expected, d.distance, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideInclination")
     fun getInclination(angle: Float, expected: Float) {
-        val inclination = service.getInclination(angle)
+        val inclination = Geology.getInclination(angle)
         assertEquals(expected, inclination, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideGrade")
     fun getSlopeGrade(angle: Float, expected: Float) {
-        val grade = service.getSlopeGrade(angle)
+        val grade = Geology.getSlopeGrade(angle)
         assertEquals(expected, grade, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideGradeDistance")
     fun getSlopeGradeFromDistance(vertical: Distance, horizontal: Distance, expected: Float) {
-        val grade = service.getSlopeGrade(vertical, horizontal)
+        val grade = Geology.getSlopeGrade(vertical, horizontal)
         assertEquals(expected, grade, 0.01f)
     }
 
@@ -190,7 +178,7 @@ internal class GeologyServiceTest {
         end: Coordinate,
         expected: Float
     ) {
-        val actual = service.getAlongTrackDistance(point, start, end)
+        val actual = Geology.getAlongTrackDistance(point, start, end)
         assertThat(actual).isCloseTo(Distance.meters(expected), 1f)
     }
 
@@ -202,7 +190,7 @@ internal class GeologyServiceTest {
         end: Coordinate,
         expected: Coordinate
     ) {
-        val actual = service.getNearestPoint(point, start, end)
+        val actual = Geology.getNearestPoint(point, start, end)
         assertThat(actual).isCloseTo(expected, 1f)
     }
 

@@ -11,7 +11,11 @@ import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.*
 import kotlin.math.*
 
-class GeologyService : IGeologyService {
+object Geology : IGeologyService {
+
+    const val GRAVITY = 9.81f
+    const val EARTH_AVERAGE_RADIUS = 6371.2e3
+
     private val riskClassifier = AvalancheRiskClassifier()
 
     override fun getGeomagneticDeclination(
@@ -410,10 +414,5 @@ class GeologyService : IGeologyService {
             }
         }
         return Distance.meters(sum)
-    }
-
-    companion object {
-        const val GRAVITY = 9.81f
-        const val EARTH_AVERAGE_RADIUS = 6371.2e3
     }
 }

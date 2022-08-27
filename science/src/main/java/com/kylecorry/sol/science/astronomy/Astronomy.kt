@@ -25,7 +25,7 @@ import com.kylecorry.sol.units.*
 import java.time.*
 import kotlin.math.absoluteValue
 
-class AstronomyService : IAstronomyService {
+object Astronomy : IAstronomyService {
 
     private val sun = Sun()
     private val moon = Moon()

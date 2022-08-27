@@ -10,7 +10,7 @@ import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class StatisticsService {
+object Statistics {
 
     /**
      * Calculate the weighted sum of the provided values
