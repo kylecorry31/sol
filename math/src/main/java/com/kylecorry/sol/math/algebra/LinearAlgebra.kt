@@ -37,6 +37,10 @@ object LinearAlgebra {
         }
     }
 
+    fun subtract(mat1: Matrix, value: Float): Matrix {
+        return add(mat1, -value)
+    }
+
     fun add(mat1: Matrix, mat2: Matrix): Matrix {
         if (mat1.columns() != mat2.columns() && mat2.columns() != 1) {
             throw Exception("Matrix 1 columns must be the same size as matrix 2 columns")
@@ -48,6 +52,12 @@ object LinearAlgebra {
 
         return createMatrix(mat1.rows(), mat1.columns()) { row, col ->
             mat1[row, col] + mat2[min(row, mat2.rows() - 1), min(col, mat2.columns() - 1)]
+        }
+    }
+
+    fun add(mat1: Matrix, value: Float): Matrix {
+        return createMatrix(mat1.rows(), mat1.columns()) { row, col ->
+            mat1[row, col] + value
         }
     }
 
@@ -86,9 +96,7 @@ object LinearAlgebra {
     }
 
     fun divide(mat1: Matrix, scale: Float): Matrix {
-        return createMatrix(mat1.rows(), mat1.columns()) { row, col ->
-            mat1[row, col] / scale
-        }
+        return multiply(mat1, 1 / scale)
     }
 
     fun transpose(mat: Matrix): Matrix {
@@ -104,10 +112,12 @@ object LinearAlgebra {
     }
 
     fun mapRows(mat: Matrix, fn: (row: FloatArray) -> FloatArray): Matrix {
+        // TODO: Verify it is a valid matrix
         return mat.map { fn(it.toFloatArray()).toTypedArray() }.toTypedArray()
     }
 
     fun mapColumns(mat: Matrix, fn: (row: FloatArray) -> FloatArray): Matrix {
+        // TODO: Verify it is a valid matrix
         return mapRows(mat.transpose(), fn).transpose()
     }
 
