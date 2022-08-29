@@ -112,12 +112,10 @@ object LinearAlgebra {
     }
 
     fun mapRows(mat: Matrix, fn: (row: FloatArray) -> FloatArray): Matrix {
-        // TODO: Verify it is a valid matrix
         return mat.map { fn(it.toFloatArray()).toTypedArray() }.toTypedArray()
     }
 
     fun mapColumns(mat: Matrix, fn: (row: FloatArray) -> FloatArray): Matrix {
-        // TODO: Verify it is a valid matrix
         return mapRows(mat.transpose(), fn).transpose()
     }
 

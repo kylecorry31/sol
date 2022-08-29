@@ -8,7 +8,6 @@ import kotlin.math.atan2
 
 // From https://stackoverflow.com/questions/16317599/android-compass-that-can-compensate-for-tilt-and-pitch
 
-// TODO: Expose this via Andromeda or do compass math here
 internal object AzimuthCalculator {
 
     fun calculate(gravity: FloatArray, magneticField: FloatArray): Bearing? {

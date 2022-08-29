@@ -2,11 +2,27 @@ package com.kylecorry.sol.math.calculus
 
 import com.kylecorry.sol.math.SolMath.cube
 import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.algebra.QuadraticEquation
 import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 
 internal class CalculusTest {
+
+    @Test
+    fun derivativeLinear(){
+        val eq = LinearEquation(2f, 5f)
+        assertEquals(2f, Calculus.derivative(eq))
+    }
+
+    @Test
+    fun derivativeQuadratic(){
+        val eq = QuadraticEquation(1f, 4f, 5f)
+        val d = Calculus.derivative(eq)
+        assertEquals(d.m, 2f)
+        assertEquals(d.b, 4f)
+    }
     
     @Test
     fun derivative1Var() {
@@ -69,6 +85,14 @@ internal class CalculusTest {
             Calculus.integral(1.0, 5.0, step = 0.000001, fn = fn1),
             0.0001
         )
+    }
 
+    @Test
+    fun root(){
+        val fn = { x: Double -> square(x) - 9 }
+        val root1 = Calculus.root(fn, guess = 0.1, maxIterations = 15)
+        val root2 = Calculus.root(fn, guess = -0.1, maxIterations = 15)
+        assertEquals(3.0, root1, 0.0001)
+        assertEquals(-3.0, root2, 0.0001)
     }
 }

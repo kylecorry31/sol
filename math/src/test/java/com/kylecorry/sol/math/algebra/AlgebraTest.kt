@@ -24,6 +24,12 @@ internal class AlgebraTest {
         assertNull(Algebra.solve(QuadraticEquation(8f, -2f, 5f)))
     }
 
+    @Test
+    fun inverse(){
+        val inverted = Algebra.inverse(LinearEquation(5f, 2f))
+        assertEquals(0.2f to -0.4f, inverted.m to inverted.b, 0.0001f)
+    }
+
     fun assertEquals(
         expected: Pair<Float, Float>,
         actual: Pair<Float, Float>,
