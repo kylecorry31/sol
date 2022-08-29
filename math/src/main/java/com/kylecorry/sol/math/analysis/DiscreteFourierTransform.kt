@@ -5,7 +5,7 @@ import com.kylecorry.sol.math.Range
 import kotlin.math.cos
 import kotlin.math.sin
 
-class DiscreteFourierTransform {
+object DiscreteFourierTransform {
 
     fun single(x: List<Float>, y: List<Float>, frequency: Float): ComplexNumber {
         var real = 0f

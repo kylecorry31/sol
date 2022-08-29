@@ -14,7 +14,7 @@ internal class GradientDescentOptimizerTest {
         }
         val optimizer = GradientDescentOptimizer(
             0.1,
-            10000,
+            1000,
         ) { x: Double, y: Double ->
             val xGrad = 2 * x
             val yGrad = 2 * y

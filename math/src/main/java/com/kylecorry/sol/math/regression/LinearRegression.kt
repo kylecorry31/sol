@@ -4,11 +4,11 @@ import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
 import kotlin.math.pow
 
-class LinearRegression(data: List<Vector2>) {
+class LinearRegression(data: List<Vector2>): IRegression {
 
     val equation = fit(data)
 
-    fun predict(x: Float): Float {
+    override fun predict(x: Float): Float {
         return equation.evaluate(x)
     }
 
