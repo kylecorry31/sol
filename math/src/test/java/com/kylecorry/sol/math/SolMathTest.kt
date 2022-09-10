@@ -582,6 +582,11 @@ class SolMathTest {
                 Arguments.of(15.11, -2, 0.0),
                 Arguments.of(55.11, -2, 100.0),
                 Arguments.of(155.11, -2, 200.0),
+
+                // Large
+                Arguments.of(8000000.0, 5, 8000000.0),
+                Arguments.of(8000000.125555, 5, 8000000.12556),
+                Arguments.of(8000000.125555555555, 8, 8000000.12555556),
             )
         }
     }

@@ -165,11 +165,11 @@ object SolMath {
     }
 
     fun Double.roundPlaces(places: Int): Double {
-        return (this * 10.0.pow(places)).roundToInt() / 10.0.pow(places)
+        return (this * 10.0.pow(places)).roundToLong() / 10.0.pow(places)
     }
 
     fun Float.roundPlaces(places: Int): Float {
-        return (this * 10f.pow(places)).roundToInt() / 10f.pow(places)
+        return (this * 10f.pow(places)).roundToLong() / 10f.pow(places)
     }
 
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
