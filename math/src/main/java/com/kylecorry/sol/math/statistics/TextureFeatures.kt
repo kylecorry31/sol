@@ -6,5 +6,11 @@ data class TextureFeatures(
     val contrast: Float,
     val homogeneity: Float,
     val dissimilarity: Float,
-    val angularSecondMoment: Float
+    val angularSecondMoment: Float,
+    val horizontalMean: Float,
+    val verticalMean: Float,
+    val horizontalVariance: Float,
+    val verticalVariance: Float,
+    val correlation: Float,
+    var max: Float
 )

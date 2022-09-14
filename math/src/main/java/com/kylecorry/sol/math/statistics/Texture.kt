@@ -4,39 +4,72 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.columns
 import com.kylecorry.sol.math.algebra.rows
-import kotlin.math.abs
-import kotlin.math.log2
+import kotlin.math.*
 
 object Texture {
 
     fun features(glcm: Matrix): TextureFeatures {
-        var energy = 0f
         var entropy = 0f
         var contrast = 0f
         var homogeneity = 0f
         var dissimilarity = 0f
         var angularSecondMoment = 0f
-        for (a in 0 until glcm.rows()) {
-            for (b in 0 until glcm.columns()) {
-                val p = glcm[a][b]
-                val abSquare = square((a - b).toFloat())
+        var meanI = 0f
+        var meanJ = 0f
+        var maximum = 0f
+        var varianceI = 0f
+        var varianceJ = 0f
+        var correlation = 0f
+
+        // Texture measures and mean
+        for (i in 0 until glcm.rows()) {
+            for (j in 0 until glcm.columns()) {
+                val p = glcm[i][j]
+                val ijSquare = square((i - j).toFloat())
                 angularSecondMoment += square(p)
-                energy += square(p)
                 if (p > 0) {
-                    entropy += -p * log2(p)
+                    entropy += -p * ln(p)
                 }
-                contrast += abSquare * p
-                homogeneity += p / (1 + abSquare)
-                dissimilarity += p * abs(a - b)
+                contrast += ijSquare * p
+                homogeneity += p / (1 + ijSquare)
+                dissimilarity += p * abs(i - j)
+                maximum = max(maximum, p)
+                meanI += i * p
+                meanJ += j * p
             }
         }
+
+        // Variance calculation
+        for (i in 0 until glcm.rows()) {
+            for (j in 0 until glcm.columns()) {
+                val p = glcm[i][j]
+                varianceI += p * square(i - meanI)
+                varianceJ += p * square(j - meanJ)
+            }
+        }
+
+        // Correlation calculation
+        val denominator = sqrt(varianceI * varianceJ)
+        for (i in 0 until glcm.rows()) {
+            for (j in 0 until glcm.columns()) {
+                val p = glcm[i][j]
+                correlation += p * ((i - meanI) * (j - meanJ)) / denominator
+            }
+        }
+
         return TextureFeatures(
-            energy,
+            sqrt(angularSecondMoment),
             entropy,
             contrast,
             homogeneity,
             dissimilarity,
-            angularSecondMoment
+            angularSecondMoment,
+            meanI,
+            meanJ,
+            varianceI,
+            varianceJ,
+            correlation,
+            maximum
         )
     }
 
