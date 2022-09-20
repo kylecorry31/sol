@@ -87,8 +87,8 @@ class LogisticRegressionClassifier(
             for (n in 0 until batches) {
                 totalError = 0f
                 val batch = getBatch(randomized.first, randomized.second, batchSize, n * batchSize)
-                val inputRow = batch.first
-                val outputRow = batch.second
+                val inputRow = batch.first.transpose()
+                val outputRow = batch.second.transpose()
                 val gradient = crossEntropyGradient(inputRow, outputRow)
                 weights = weights.subtract(gradient.multiply(learningRate))
                 totalError += crossEntropy(inputRow, outputRow)
