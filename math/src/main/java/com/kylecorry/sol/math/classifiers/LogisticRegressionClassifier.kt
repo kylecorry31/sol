@@ -25,7 +25,7 @@ class LogisticRegressionClassifier(
 
     private fun classify(x: Matrix): Matrix {
         val z = x.dot(weights)
-        return z.mapColumns { Statistics.softmax(it.toList()).toFloatArray() }
+        return z.mapRows { Statistics.softmax(it.toList()).toFloatArray() }
     }
 
     fun fitClasses(
@@ -139,7 +139,7 @@ class LogisticRegressionClassifier(
     }
 
     companion object {
-        fun withWeights(weights: Matrix): LogisticRegressionClassifier {
+        fun fromWeights(weights: Matrix): LogisticRegressionClassifier {
             return LogisticRegressionClassifier(weights.rows(), weights.columns(), weights)
         }
     }

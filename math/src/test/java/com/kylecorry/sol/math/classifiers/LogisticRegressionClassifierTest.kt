@@ -19,7 +19,7 @@ internal class LogisticRegressionClassifierTest {
             5.1f, 3.5f, 1.4f, 0.2f
         )
 
-        val clf = LogisticRegressionClassifier(weights)
+        val clf = LogisticRegressionClassifier.fromWeights(weights)
         val y = clf.classify(x)
 
         assertEquals(0.906505470f, y[0], 0.0001f)
