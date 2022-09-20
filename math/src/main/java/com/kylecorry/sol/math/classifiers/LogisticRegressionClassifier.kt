@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.classifiers
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.ceil
@@ -25,6 +26,23 @@ class LogisticRegressionClassifier(
     private fun classify(x: Matrix): Matrix {
         val z = x.dot(weights)
         return z.mapColumns { Statistics.softmax(it.toList()).toFloatArray() }
+    }
+
+    fun fitClasses(
+        input: List<List<Float>>,
+        output: List<Int>,
+        epochs: Int = 100,
+        learningRate: Float = 0.1f,
+        batchSize: Int = input.size,
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
+    ): Float {
+        val x = input.map { rowMatrix(values = it.toFloatArray()) }
+        val y = output.map {
+            rowMatrix(
+                values = SolMath.oneHot(it, this.output, 1f, 0f).toFloatArray()
+            )
+        }
+        return fit(x, y, epochs, learningRate, batchSize, onEpochCompleteFn)
     }
 
     fun fit(
