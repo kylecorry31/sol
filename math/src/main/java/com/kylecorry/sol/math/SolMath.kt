@@ -309,6 +309,10 @@ object SolMath {
         return maxIndex
     }
 
+    fun <T> oneHot(value: Int, classes: Int, on: T, off: T): List<T> {
+        return List(classes) { if (it == value) on else off }
+    }
+
     fun isCloseTo(a: Double, b: Double, tolerance: Double): Boolean {
         return (a - b).absoluteValue <= tolerance
     }
