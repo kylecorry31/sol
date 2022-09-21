@@ -3,9 +3,9 @@ package com.kylecorry.sol.math.statistics
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
-import java.lang.Math.pow
 import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -39,6 +39,10 @@ object Statistics {
             total *= value
         }
         return total.pow(1 / values.size.toDouble()).toFloat()
+    }
+
+    fun harmonicMean(values: List<Float>): Float {
+        return values.size / values.sumOfFloat { 1 / it }
     }
 
     fun variance(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
@@ -120,5 +124,66 @@ object Statistics {
         }
 
         return sum
+    }
+
+    /**
+     * Calculates the accuracy given a confusion matrix (rows = predicted, columns = actual)
+     */
+    fun accuracy(confusion: Matrix): Float {
+        val total = confusion.sum()
+        val correct = confusion.multiply(identityMatrix(confusion.rows())).sum()
+        return correct / total
+    }
+
+    /**
+     * Calculates the F1 score given a confusion matrix (rows = predicted, columns = actual)
+     * @param weighted if true, a weighted average will be used to combine f1 scores by number of examples per class
+     */
+    fun f1Score(confusion: Matrix, weighted: Boolean = false): Float {
+        val all = confusion.sum()
+        val weight = 1 / confusion.rows().toFloat()
+        return confusion.mapIndexed { index, _ ->
+            val total = confusion.transpose()[index].sum()
+            f1Score(confusion, index) * if (weighted) total / all else weight
+        }.sum()
+    }
+
+    /**
+     * Calculates the F1 for a single class given a confusion matrix (rows = predicted, columns = actual)
+     */
+    fun f1Score(confusion: Matrix, classIdx: Int): Float {
+        val precision = precision(confusion, classIdx)
+        val recall = recall(confusion, classIdx)
+        val f = (2 * precision * recall) / (precision + recall)
+        if (f.isNaN()) {
+            return 0f
+        }
+        return f
+    }
+
+    /**
+     * Calculates the recall for a single class given a confusion matrix (rows = predicted, columns = actual)
+     */
+    fun recall(confusion: Matrix, classIdx: Int): Float {
+        val actual = confusion.transpose()[classIdx]
+        val tp = confusion[classIdx][classIdx]
+        val fn = actual.sum() - tp
+        if ((tp + fn) == 0f) {
+            return 0f
+        }
+        return tp / (tp + fn)
+    }
+
+    /**
+     * Calculates the precision for a single class given a confusion matrix (rows = predicted, columns = actual)
+     */
+    fun precision(confusion: Matrix, classIdx: Int): Float {
+        val predicted = confusion[classIdx]
+        val tp = confusion[classIdx][classIdx]
+        val fp = predicted.sum() - tp
+        if ((tp + fp) == 0f) {
+            return 0f
+        }
+        return tp / (tp + fp)
     }
 }

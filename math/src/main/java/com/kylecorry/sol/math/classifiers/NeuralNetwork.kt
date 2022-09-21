@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.classifiers
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
+import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
@@ -37,6 +39,24 @@ class NeuralNetwork(
         var input = x
         layers.forEach { input = it.activate(input) }
         return input
+    }
+
+    fun fitClasses(
+        input: List<List<Float>>,
+        output: List<Int>,
+        epochs: Int = 100,
+        learningRate: Float = 0.1f,
+        regularization: Float = 0f,
+        batchSize: Int = input.size,
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
+    ): Float {
+        val x = input.map { rowMatrix(values = it.toFloatArray()) }
+        val y = output.map {
+            rowMatrix(
+                values = SolMath.oneHot(it, layers.last().outputSize, 1f, 0f).toFloatArray()
+            )
+        }
+        return fit(x, y, epochs, learningRate, regularization, batchSize, onEpochCompleteFn)
     }
 
     fun fit(
@@ -76,14 +96,14 @@ class NeuralNetwork(
         }
 
         var totalError = 0f
-        val randomized = randomize(input, output)
-        val batches = ceil(input.size / batchSize.toFloat()).toInt()
+        val randomized = input.zip(output).shuffled()
+        val batches = randomized.batch(batchSize)
         for (epoch in 0 until epochs) {
-            for (n in 0 until batches) {
+            for (n in batches.indices) {
                 totalError = 0f
-                val batch = getBatch(randomized.first, randomized.second, batchSize, n * batchSize)
-                val inputRow = batch.first
-                val outputRow = batch.second
+                val batch = batches[n].unzip()
+                val inputRow = batch.first.map { it[0] }.toTypedArray().transpose()
+                val outputRow = batch.second.map { it[0] }.toTypedArray().transpose()
                 val predicted = predict(inputRow)
                 val samples = inputRow.columns()
                 val ones = columnMatrix(values = FloatArray(samples) { 1f })
@@ -112,26 +132,6 @@ class NeuralNetwork(
             onEpochCompleteFn(totalError, epoch)
         }
         return totalError
-    }
-
-    private fun randomize(x: List<Matrix>, y: List<Matrix>): Pair<List<Matrix>, List<Matrix>> {
-        return x.zip(y).shuffled().unzip()
-    }
-
-    private fun getBatch(
-        x: List<Matrix>,
-        y: List<Matrix>,
-        batchSize: Int,
-        start: Int
-    ): Pair<Matrix, Matrix> {
-        val end = min(start + batchSize, x.size) - 1
-        val range = IntRange(start, end)
-
-        val batch = x.zip(y).slice(range).unzip()
-
-        val inputMatrix = batch.first.map { it[0] }.toTypedArray().transpose()
-        val outputMatrix = batch.second.map { it[0] }.toTypedArray().transpose()
-        return inputMatrix to outputMatrix
     }
 
     private fun squaredError(x: Matrix, y: Matrix, regularization: Float): Float {

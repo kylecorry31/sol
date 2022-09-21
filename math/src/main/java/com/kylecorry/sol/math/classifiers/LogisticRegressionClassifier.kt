@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.classifiers
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
+import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.ceil
 import kotlin.math.ln
@@ -81,14 +82,14 @@ class LogisticRegressionClassifier(
         }
 
         var totalError = 0f
-        val randomized = randomize(input, output)
-        val batches = ceil(input.size / batchSize.toFloat()).toInt()
+        val randomized = input.zip(output).shuffled()
+        val batches = randomized.batch(batchSize)
         for (epoch in 0 until epochs) {
-            for (n in 0 until batches) {
+            for (n in batches.indices) {
                 totalError = 0f
-                val batch = getBatch(randomized.first, randomized.second, batchSize, n * batchSize)
-                val inputRow = batch.first.transpose()
-                val outputRow = batch.second.transpose()
+                val batch = batches[n].unzip()
+                val inputRow = batch.first.map { it[0] }.toTypedArray()
+                val outputRow = batch.second.map { it[0] }.toTypedArray()
                 val gradient = crossEntropyGradient(inputRow, outputRow)
                 weights = weights.subtract(gradient.multiply(learningRate))
                 totalError += crossEntropy(inputRow, outputRow)
@@ -116,26 +117,6 @@ class LogisticRegressionClassifier(
         val n = y.rows()
         val predictions = classify(x).subtract(y)
         return x.transpose().dot(predictions).divide(n.toFloat())
-    }
-
-    private fun randomize(x: List<Matrix>, y: List<Matrix>): Pair<List<Matrix>, List<Matrix>> {
-        return x.zip(y).shuffled().unzip()
-    }
-
-    private fun getBatch(
-        x: List<Matrix>,
-        y: List<Matrix>,
-        batchSize: Int,
-        start: Int
-    ): Pair<Matrix, Matrix> {
-        val end = min(start + batchSize, x.size) - 1
-        val range = IntRange(start, end)
-
-        val batch = x.zip(y).slice(range).unzip()
-
-        val inputMatrix = batch.first.map { it[0] }.toTypedArray().transpose()
-        val outputMatrix = batch.second.map { it[0] }.toTypedArray().transpose()
-        return inputMatrix to outputMatrix
     }
 
     companion object {
