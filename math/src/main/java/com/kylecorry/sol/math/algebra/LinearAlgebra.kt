@@ -147,4 +147,104 @@ object LinearAlgebra {
         }
     }
 
+    fun inverse(m: Matrix): Matrix {
+        val det = determinant(m)
+        if (det == 0f) {
+            // No inverse exists
+            return createMatrix(m.rows(), m.columns(), 0f)
+        }
+        return adjugate(m).transpose().divide(determinant(m))
+    }
+
+    fun adjugate(m: Matrix): Matrix {
+        var colMultiplier: Int
+        var rowMultiplier: Int
+        return createMatrix(m.rows(), m.columns()) { r, c ->
+            rowMultiplier = if (r % 2 == 0) {
+                1
+            } else {
+                -1
+            }
+            colMultiplier = if (c % 2 == 0) {
+                1
+            } else {
+                -1
+            }
+            val d = determinant(cofactor(m, r, c)) * colMultiplier * rowMultiplier
+            d
+        }
+    }
+
+    fun determinant(m: Matrix): Float {
+        return if (m.rows() == 1 && m.columns() == 1) {
+            m[0, 0]
+        } else if (m.rows() == 2 && m.columns() == 2) {
+            (m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0])
+        } else {
+            var multiplier = 1
+            var sum = 0f
+            for (c in 0 until m.columns()) {
+                sum += m[0, c] * determinant(cofactor(m, 0, c)) * multiplier
+                multiplier *= -1
+            }
+            sum
+        }
+    }
+
+    fun cofactor(m: Matrix, r: Int, c: Int): Matrix {
+        return createMatrix(m.rows() - 1, m.columns() - 1) { r1, c1 ->
+            val sr = if (r1 < r) {
+                r1
+            } else {
+                r1 + 1
+            }
+            val sc = if (c1 < c) {
+                c1
+            } else {
+                c1 + 1
+            }
+            m[sr, sc]
+        }
+    }
+
+    fun appendColumn(m: Matrix, col: FloatArray): Matrix {
+        return createMatrix(m.rows(), m.columns() + 1) { r, c ->
+            if (c < m.columns()) {
+                m[r, c]
+            } else {
+                col[r]
+            }
+        }
+    }
+
+    fun appendColumn(m: Matrix, value: Float): Matrix {
+        return createMatrix(m.rows(), m.columns() + 1) { r, c ->
+            if (c < m.columns()) {
+                m[r, c]
+            } else {
+                value
+            }
+        }
+    }
+
+    fun appendRow(m: Matrix, row: FloatArray): Matrix {
+        return createMatrix(m.rows() + 1, m.columns()) { r, c ->
+            if (r < m.rows()) {
+                m[r, c]
+            } else {
+                row[c]
+            }
+        }
+    }
+
+    fun appendRow(m: Matrix, value: Float): Matrix {
+        return createMatrix(m.rows() + 1, m.columns()) { r, c ->
+            if (r < m.rows()) {
+                m[r, c]
+            } else {
+                value
+            }
+        }
+    }
+
 }

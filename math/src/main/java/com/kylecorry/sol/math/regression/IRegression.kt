@@ -1,5 +1,5 @@
 package com.kylecorry.sol.math.regression
 
 interface IRegression {
-    fun predict(x: Float): Float
+    fun predict(x: List<Float>): Float
 }

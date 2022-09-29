@@ -102,6 +102,38 @@ fun Matrix.maxColumns(): Matrix {
     return LinearAlgebra.maxColumns(this)
 }
 
+fun Matrix.inverse(): Matrix {
+    return LinearAlgebra.inverse(this)
+}
+
+fun Matrix.adjugate(): Matrix {
+    return LinearAlgebra.adjugate(this)
+}
+
+fun Matrix.det(): Float {
+    return LinearAlgebra.determinant(this)
+}
+
+fun Matrix.cofactor(r: Int, c: Int): Matrix {
+    return LinearAlgebra.cofactor(this, r, c)
+}
+
+fun Matrix.appendColumn(col: FloatArray): Matrix {
+    return LinearAlgebra.appendColumn(this, col)
+}
+
+fun Matrix.appendColumn(value: Float): Matrix {
+    return LinearAlgebra.appendColumn(this, value)
+}
+
+fun Matrix.appendRow(row: FloatArray): Matrix {
+    return LinearAlgebra.appendRow(this, row)
+}
+
+fun Matrix.appendRow(value: Float): Matrix {
+    return LinearAlgebra.appendRow(this, value)
+}
+
 /**
  * Creates an identity matrix
  */

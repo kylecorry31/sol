@@ -419,6 +419,54 @@ class LinearAlgebraTest {
         assertEquals(expected, result)
     }
 
+    @Test
+    fun inverse2x2() {
+        val m1 = createMatrix(2, 2, 0f)
+        m1[0, 0] = 1f
+        m1[0, 1] = 2f
+        m1[1, 0] = 3f
+        m1[1, 1] = 4f
+
+        val expected = createMatrix(2, 2, 0f)
+        expected[0, 0] = -2f
+        expected[0, 1] = 1f
+        expected[1, 0] = 3/2f
+        expected[1, 1] = -1/2f
+
+        val actual = LinearAlgebra.inverse(m1)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @Test
+    fun inverse3x3() {
+        val m1 = createMatrix(3, 3, 0f)
+        m1[0, 0] = 1f
+        m1[0, 1] = 2f
+        m1[0, 2] = 3f
+        m1[1, 0] = 0f
+        m1[1, 1] = 1f
+        m1[1, 2] = 4f
+        m1[2, 0] = 5f
+        m1[2, 1] = 6f
+        m1[2, 2] = 0f
+
+        val expected = createMatrix(3, 3, 0f)
+        expected[0, 0] = -24f
+        expected[0, 1] = 18f
+        expected[0, 2] = 5f
+        expected[1, 0] = 20f
+        expected[1, 1] = -15f
+        expected[1, 2] = -4f
+        expected[2, 0] = -5f
+        expected[2, 1] = 4f
+        expected[2, 2] = 1f
+
+        val actual = LinearAlgebra.inverse(m1)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
     private fun assertEquals(m1: Matrix, m2: Matrix, tolerance: Float = 0f) {
         assertEquals(m1.rows(), m2.rows())
         assertEquals(m1.columns(), m2.columns())

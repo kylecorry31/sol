@@ -44,7 +44,7 @@ internal class LoessFilter2DTest {
             (it.second.y - it.first.y).pow(2)
         }
 
-        assertEquals(0.0f, fitResiduals, 0.00001f)
+        assertEquals(0.0f, fitResiduals, 0.0001f)
     }
 
     @Test
