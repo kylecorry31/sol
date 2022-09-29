@@ -148,6 +148,10 @@ object LinearAlgebra {
     }
 
     fun inverse(m: Matrix): Matrix {
+        if (m.rows() != m.columns()) {
+            throw Exception("Matrix must be square to calculate inverse")
+        }
+
         val det = determinant(m)
         if (det == 0f) {
             // No inverse exists
@@ -157,6 +161,10 @@ object LinearAlgebra {
     }
 
     fun adjugate(m: Matrix): Matrix {
+        if (m.rows() != m.columns()) {
+            throw Exception("Matrix must be square to adjugate")
+        }
+
         var colMultiplier: Int
         var rowMultiplier: Int
         return createMatrix(m.rows(), m.columns()) { r, c ->
@@ -176,6 +184,10 @@ object LinearAlgebra {
     }
 
     fun determinant(m: Matrix): Float {
+        if (m.rows() != m.columns()) {
+            throw Exception("Matrix must be square to calculate determinant")
+        }
+
         return if (m.rows() == 1 && m.columns() == 1) {
             m[0, 0]
         } else if (m.rows() == 2 && m.columns() == 2) {
