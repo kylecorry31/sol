@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
@@ -114,5 +115,13 @@ object Geometry {
         val denominator = line.length()
 
         return numerator / denominator
+    }
+
+    fun manhattanDistance(p1: List<Float>, p2: List<Float>): Float {
+        return p1.zip(p2).sumOfFloat { abs(it.first - it.second) }
+    }
+
+    fun euclideanDistance(p1: List<Float>, p2: List<Float>): Float {
+        return sqrt(p1.zip(p2).sumOfFloat { square(it.first - it.second) })
     }
 }

@@ -34,6 +34,7 @@ class LoessFilter2D(
      * Smooth the data, the output will have the same x values as the input
      */
     override fun filter(data: List<Vector2>): List<Vector2> {
+        // Note: This has essentially the same logic as LoessFilter, except there are a few performance optimizations here for the 2D case
         val n = data.size
         if (n < 3) {
             return data
@@ -61,7 +62,8 @@ class LoessFilter2D(
         val res = sortedData.toMutableList()
         val residuals = MutableList(n) { 0f }
         val robustnessWeights = MutableList(n) { 1f }
-        val mappedMaxDistance = maximumSpanDistance?.let { SolMath.norm(maximumSpanDistance, rangeX.start, rangeX.end) }
+        val mappedMaxDistance =
+            maximumSpanDistance?.let { SolMath.norm(maximumSpanDistance, rangeX.start, rangeX.end) }
 
         for (iteration in 0..robustnessIterations) {
             for (i in sortedData.indices) {

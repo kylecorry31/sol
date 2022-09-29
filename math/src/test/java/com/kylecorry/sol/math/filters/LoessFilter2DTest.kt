@@ -63,7 +63,7 @@ internal class LoessFilter2DTest {
             (it.second.y - it.first.y).pow(2)
         }
 
-        assertEquals(listOf(Vector2(1f, 1f), Vector2(1f, 1f), Vector2(1f, 1f)), values)
+        assertEquals(listOf(Vector2(1f, 1f), Vector2(1f, 1f), Vector2(1f, 1f)), actual)
         assertEquals(0.0f, fitResiduals, 0.00001f)
     }
 
