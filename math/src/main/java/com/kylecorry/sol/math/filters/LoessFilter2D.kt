@@ -92,7 +92,7 @@ class LoessFilter2D(
                     }
                 }
 
-                val regression = WeightedLinearRegression(nearest.map { it.first }, w)
+                val regression = WeightedLinearRegression(nearest.map { it.first }, w, accuracy)
 
                 res[i] = Vector2(x, regression.predict(x))
                 residuals[i] = abs(y - res[i].y)
