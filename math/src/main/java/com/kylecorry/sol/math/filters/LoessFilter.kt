@@ -21,6 +21,7 @@ import kotlin.math.pow
  * @param maximumSpanDistance the maximum X distance of the span
  * @param distanceFn
  */
+@RequiresOptIn("This has poor performance when the dimension is > 1, prefer LoessFilter2D if possible")
 class LoessFilter(
     private val span: Float = 0.3f,
     private val robustnessIterations: Int = 2,
