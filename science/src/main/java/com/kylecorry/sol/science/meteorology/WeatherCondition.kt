@@ -1,9 +1,9 @@
 package com.kylecorry.sol.science.meteorology
 
-import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-
-data class WeatherCondition(
-    val precipitation: List<Precipitation>,
-    val clouds: List<CloudGenus?>,
-    val isWindy: Boolean // TODO: Eventually estimate the wind speed
-)
+enum class WeatherCondition(val id: Long) {
+    Clear(1),
+    Overcast(2),
+    Precipitation(3),
+    Storm(4),
+    Wind(5)
+}
