@@ -15,8 +15,23 @@ internal object WeatherForecastService {
         pressures: List<Reading<Pressure>>,
         threshold: Float
     ): PressureTendency {
-        val lastPressure = pressures.last() // TODO: This is not correct
+        if (pressures.size < 2) {
+            return PressureTendency(PressureCharacteristic.Steady, 0f)
+        }
+
         val pressure = pressures.last()
+
+        val targetTime = pressure.time.minus(Duration.ofHours(3))
+        val lastPressure = pressures.minBy {
+            if (it == pressure) {
+                Long.MAX_VALUE
+            } else {
+                Duration.between(
+                    it.time,
+                    targetTime
+                ).abs().seconds
+            }
+        }
         return Meteorology.getTendency(
             lastPressure.value,
             pressure.value,
@@ -175,7 +190,7 @@ internal object WeatherForecastService {
         }
 
         // TODO: Now, soon, and later buckets (or predict next X hours)
-        val now = WeatherForecast(time, conditions, front, system)
+        val now = WeatherForecast(time, conditions, front, system, tendency)
         val after = WeatherForecast(timeAfter, afterConditions, null, afterSystem)
 
         return listOf(now, after)
