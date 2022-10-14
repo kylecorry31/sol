@@ -1,6 +1,8 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
+import com.kylecorry.sol.science.meteorology.clouds.CloudGenusMatcher
+import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
 import java.time.Duration
@@ -37,16 +39,66 @@ internal object WeatherForecastService {
         }
     }
 
+    private fun doRecentCloudsMatchPattern(
+        clouds: List<Reading<CloudGenus?>>,
+        pattern: List<CloudMatcher>
+    ): Boolean {
+        var idx = pattern.lastIndex
+        var hasHit = false
+        var cloudIdx = clouds.lastIndex
+        while (cloudIdx >= 0 && idx >= 0) {
+            val cloud = clouds[cloudIdx].value
+            if (pattern[idx].matches(cloud)) {
+                hasHit = true
+                cloudIdx--
+            } else if (!hasHit) {
+                return false
+            } else {
+                hasHit = false
+                idx--
+            }
+        }
+        return idx == -1 || (idx == 0 && hasHit)
+    }
+
     private fun doCloudsIndicateFront(clouds: List<Reading<CloudGenus?>>): Boolean {
-        TODO("Implement this")
+        val cirro = listOf(CloudGenus.Cirrus, CloudGenus.Cirrocumulus, CloudGenus.Cirrostratus)
+        val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
+        val warm = listOf(CloudGenus.Stratus, CloudGenus.Nimbostratus)
+        val cold = listOf(CloudGenus.Cumulus, CloudGenus.Cumulonimbus)
+        val storm = listOf(CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus)
+        // TODO: Maybe detect very start of storm (cirro) and middle (alto) without further evidence
+        val patterns = listOf(
+            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto)),
+            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(warm)),
+            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(cold)),
+            listOf(CloudGenusMatcher(storm)),
+        )
+        return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
     }
 
     private fun doCloudsIndicateColdFront(clouds: List<Reading<CloudGenus?>>): Boolean {
-        TODO("Implement this")
+        val cirro = listOf(CloudGenus.Cirrus, CloudGenus.Cirrocumulus, CloudGenus.Cirrostratus)
+        val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
+        val cold = listOf(CloudGenus.Cumulus, CloudGenus.Cumulonimbus)
+        val storm = listOf(CloudGenus.Cumulonimbus)
+        val patterns = listOf(
+            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(cold)),
+            listOf(CloudGenusMatcher(storm)),
+        )
+        return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
     }
 
     private fun doCloudsIndicateWarmFront(clouds: List<Reading<CloudGenus?>>): Boolean {
-        TODO("Implement this")
+        val cirro = listOf(CloudGenus.Cirrus, CloudGenus.Cirrocumulus, CloudGenus.Cirrostratus)
+        val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
+        val warm = listOf(CloudGenus.Stratus, CloudGenus.Nimbostratus)
+        val storm = listOf(CloudGenus.Nimbostratus)
+        val patterns = listOf(
+            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(warm)),
+            listOf(CloudGenusMatcher(storm)),
+        )
+        return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
     }
 
     fun forecast(
@@ -106,9 +158,25 @@ internal object WeatherForecastService {
         // TODO: Determine time from clouds / rate of change
         val timeAfter = time.plus(Duration.ofHours(4))
 
+        val front = if (isColdFront) {
+            WeatherFront.Cold
+        } else if (isWarmFront) {
+            WeatherFront.Warm
+        } else {
+            null
+        }
+
+        val afterSystem = if (isColdFront) {
+            PressureSystem.High
+        } else if (isWarmFront) {
+            PressureSystem.Low
+        } else {
+            null
+        }
+
         // TODO: Now, soon, and later buckets (or predict next X hours)
-        val now = WeatherForecast(time, conditions)
-        val after = WeatherForecast(timeAfter, afterConditions)
+        val now = WeatherForecast(time, conditions, front, system)
+        val after = WeatherForecast(timeAfter, afterConditions, null, afterSystem)
 
         return listOf(now, after)
     }
