@@ -1,10 +1,12 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Temperature
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
+import com.kylecorry.sol.units.Reading
 import java.time.Duration
 import java.time.Instant
 
@@ -45,6 +47,23 @@ interface IWeatherService : ICloudService, ISeasonService {
         tendency: PressureTendency,
         stormThreshold: Float? = null
     ): Weather
+
+    /**
+     * Forecast the weather for the next few hours
+     * @param pressures the pressure readings
+     * @param clouds the cloud readings, null cloud genus = Clear
+     * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
+     * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
+     * @param time the time to calculate the forecast after
+     * @return the predicted weather (now and later - times are not accurate yet)
+     */
+    fun forecast(
+        pressures: List<Reading<Pressure>>,
+        clouds: List<Reading<CloudGenus?>>,
+        pressureChangeThreshold: Float = 1.5f,
+        pressureStormChangeThreshold: Float = 2f,
+        time: Instant = Instant.now()
+    ): List<WeatherForecast>
 
     /**
      * Calculates the heat index

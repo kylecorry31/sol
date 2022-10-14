@@ -91,6 +91,22 @@ object Meteorology : IWeatherService {
         }
     }
 
+    override fun forecast(
+        pressures: List<Reading<Pressure>>,
+        clouds: List<Reading<CloudGenus?>>,
+        pressureChangeThreshold: Float,
+        pressureStormChangeThreshold: Float,
+        time: Instant
+    ): List<WeatherForecast> {
+        return WeatherForecastService.forecast(
+            pressures,
+            clouds,
+            time,
+            pressureChangeThreshold,
+            pressureStormChangeThreshold
+        )
+    }
+
     override fun getHeatIndex(temperature: Float, relativeHumidity: Float): Float {
         if (temperature < 27) return temperature
 
