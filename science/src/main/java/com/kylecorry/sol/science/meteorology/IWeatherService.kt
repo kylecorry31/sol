@@ -60,7 +60,7 @@ interface IWeatherService : ICloudService, ISeasonService {
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
-        pressureChangeThreshold: Float = 1.5f,
+        pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
         time: Instant = Instant.now()
     ): List<WeatherForecast>

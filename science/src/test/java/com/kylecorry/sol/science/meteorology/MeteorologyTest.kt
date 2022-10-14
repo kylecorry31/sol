@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import org.junit.Assert
@@ -12,7 +13,7 @@ import java.time.*
 import java.util.stream.Stream
 
 class MeteorologyTest {
-    
+
     @ParameterizedTest
     @MethodSource("provideForecasts")
     fun forecast(
@@ -24,6 +25,19 @@ class MeteorologyTest {
         val tendency = PressureTendency(characteristic, tendencyAmount)
         val weather = Meteorology.forecast(tendency, stormThresh)
         assertEquals(expectedWeather, weather)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideWeatherForecasts")
+    fun forecast(
+        pressures: List<Reading<Pressure>>,
+        clouds: List<Reading<CloudGenus?>>,
+        now: WeatherForecast,
+        then: WeatherForecast
+    ) {
+        val weather = Meteorology.forecast(pressures, clouds, time = weatherTime)
+        assertEquals(now, weather.first())
+        assertEquals(then, weather.last())
     }
 
     @ParameterizedTest
@@ -184,6 +198,373 @@ class MeteorologyTest {
             )
         }
 
+        private val weatherTime = Instant.ofEpochSecond(100000)
+
+        @JvmStatic
+        fun provideWeatherForecasts(): Stream<Arguments> {
+            return Stream.of(
+                // Pressure only - storm
+                Arguments.of(
+                    pressures(1030f, 1021f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.FallingFast, -3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // Pressure only - worsening slow
+                Arguments.of(
+                    pressures(1030f, 1027f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        PressureSystem.High,
+                        PressureTendency(PressureCharacteristic.Falling, -1f),
+                        WeatherCondition.Precipitation
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+                // Pressure only - worsening fast
+                Arguments.of(
+                    pressures(1009f, 1005f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        PressureSystem.Low,
+                        PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+
+                // Pressure only - improving slow
+                Arguments.of(
+                    pressures(1027f, 1030f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        PressureSystem.High,
+                        PressureTendency(PressureCharacteristic.Rising, 1f),
+                        WeatherCondition.Clear
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+                // Pressure only - improving slow (not high pressure)
+                Arguments.of(
+                    pressures(1014f, 1017f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        null,
+                        PressureTendency(PressureCharacteristic.Rising, 1f)
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+                // Pressure only - improving fast
+                Arguments.of(
+                    pressures(1005f, 1009f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        PressureSystem.Low,
+                        PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f),
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+
+                // clouds only - warm front
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Precipitation
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // clouds only - warm front (Ns)
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Nimbostratus),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Precipitation
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // clouds only - cold front
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+                // clouds only - cold front (Cb)
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulonimbus),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+                // clouds only - unknown front
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus),
+                    weatherNow(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Precipitation
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+                // clouds only - no front
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cumulus, CloudGenus.Stratocumulus),
+                    weatherNow(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+
+                // no data
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    emptyList<Reading<CloudGenus?>>(),
+                    weatherNow(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+
+                // warm front (slow)
+                Arguments.of(
+                    pressures(1030f, 1027f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        PressureSystem.High,
+                        PressureTendency(PressureCharacteristic.Falling, -1f),
+                        WeatherCondition.Precipitation
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+                // warm front (fast)
+                Arguments.of(
+                    pressures(1009f, 1005f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        PressureSystem.Low,
+                        PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // warm front (storm)
+                Arguments.of(
+                    pressures(1030f, 1021f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.FallingFast, -3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // cold front (slow)
+                Arguments.of(
+                    pressures(1030f, 1027f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        PressureSystem.High,
+                        PressureTendency(PressureCharacteristic.Falling, -1f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+                // cold front (fast)
+                Arguments.of(
+                    pressures(1009f, 1005f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        PressureSystem.Low,
+                        PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(
+                        null
+                    )
+                ),
+                // cold front (storm)
+                Arguments.of(
+                    pressures(1030f, 1021f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        null,
+                        PressureTendency(PressureCharacteristic.FallingFast, -3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+
+                // Cold front (passing)
+                Arguments.of(
+                    pressures(1027f, 1030f),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        PressureSystem.High,
+                        PressureTendency(PressureCharacteristic.Rising, 1f),
+                        WeatherCondition.Clear
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                )
+            )
+        }
+
+        private fun weatherLater(
+            system: PressureSystem?,
+            vararg conditions: WeatherCondition
+        ): WeatherForecast {
+            return WeatherForecast(
+                weatherTime.plus(Duration.ofHours(4)),
+                conditions.toList(),
+                null,
+                system,
+                null
+            )
+        }
+
+        private fun weatherNow(
+            front: WeatherFront?,
+            system: PressureSystem?,
+            tendency: PressureTendency,
+            vararg conditions: WeatherCondition
+        ): WeatherForecast {
+            return WeatherForecast(
+                weatherTime,
+                conditions.toList(),
+                front,
+                system,
+                tendency
+            )
+        }
+
+        private fun pressures(last: Float, now: Float): List<Reading<Pressure>> {
+            val time = weatherTime
+            return listOf(
+                Reading(Pressure.hpa(last), time.minus(Duration.ofHours(3))),
+                Reading(Pressure.hpa(now), time)
+            )
+        }
+
+        private fun clouds(vararg clouds: CloudGenus?): List<Reading<CloudGenus?>> {
+            var time = weatherTime.minusSeconds(clouds.size.toLong())
+            return clouds.map {
+                val r = Reading(it, time)
+                time = time.plusSeconds(1)
+                r
+            }
+        }
+
         @JvmStatic
         fun provideForecasts(): Stream<Arguments> {
             // First argument not used yet
@@ -191,10 +572,10 @@ class MeteorologyTest {
                 Arguments.of(PressureCharacteristic.Steady, 0f, -6f, Weather.NoChange),
                 Arguments.of(PressureCharacteristic.FallingFast, -6f, -6f, Weather.Storm),
                 Arguments.of(PressureCharacteristic.FallingFast, -8f, -7f, Weather.Storm),
-                Arguments.of(PressureCharacteristic.FallingFast, -6/3f, null, Weather.Storm),
+                Arguments.of(PressureCharacteristic.FallingFast, -6 / 3f, null, Weather.Storm),
                 Arguments.of(
                     PressureCharacteristic.FallingFast,
-                    -5/3f,
+                    -5 / 3f,
                     null,
                     Weather.WorseningFast
                 ),
@@ -229,77 +610,77 @@ class MeteorologyTest {
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1001f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2/3f,
-                    PressureTendency(PressureCharacteristic.Steady, 1/3f)
+                    2 / 3f,
+                    PressureTendency(PressureCharacteristic.Steady, 1 / 3f)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1004f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2/3f,
-                    PressureTendency(PressureCharacteristic.RisingFast, 4/3f)
+                    2 / 3f,
+                    PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1003f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2/3f,
+                    2 / 3f,
                     PressureTendency(PressureCharacteristic.Rising, 1f)
                 ),
                 Arguments.of(
                     Pressure(1004f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2/3f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -4/3f)
+                    2 / 3f,
+                    PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f)
                 ),
                 Arguments.of(
                     Pressure(1002f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    2/3f,
-                    PressureTendency(PressureCharacteristic.Falling, -2/3f)
+                    2 / 3f,
+                    PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
                 ),
                 Arguments.of(
                     Pressure(1002f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    1/3f,
-                    PressureTendency(PressureCharacteristic.Falling, -2/3f)
+                    1 / 3f,
+                    PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
                 ),
                 Arguments.of(
                     Pressure(1003f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(3),
-                    1/3f,
+                    1 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
                     Pressure(1002f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(2),
-                    1/3f,
+                    1 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
                     Pressure(1008f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ofHours(4),
-                    2/3f,
+                    2 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -2f)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ZERO,
-                    2/3f,
+                    2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
                     Pressure(1000.1f, PressureUnits.Hpa),
                     Pressure(1000f, PressureUnits.Hpa),
                     Duration.ZERO,
-                    2/3f,
+                    2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
             )

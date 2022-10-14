@@ -141,7 +141,7 @@ internal object WeatherForecastService {
         val isColdFront = cloudColdFront || tendency.characteristic.isRising
         val isWarmFront = !isColdFront && (tendency.characteristic.isFalling || cloudWarmFront)
 
-        if (cloudColdFront || (tendency.characteristic.isFalling && tendency.amount.absoluteValue >= pressureStormChangeThreshold.absoluteValue)) {
+        if (!tendency.characteristic.isRising && (cloudColdFront || (tendency.characteristic.isFalling && tendency.amount.absoluteValue >= pressureStormChangeThreshold.absoluteValue))) {
             conditions.add(WeatherCondition.Storm)
         }
 
@@ -149,15 +149,15 @@ internal object WeatherForecastService {
             conditions.add(WeatherCondition.Precipitation)
         }
 
-        if (tendency.characteristic.isRapid) {
+        if (tendency.characteristic.isRapid || (cloudColdFront && !tendency.characteristic.isRising)) {
             conditions.add(WeatherCondition.Wind)
         }
 
-        if (system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady) {
+        if (system == PressureSystem.High && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isRising)) {
             conditions.add(WeatherCondition.Clear)
         }
 
-        if (system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady) {
+        if (system == PressureSystem.Low && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isFalling)) {
             conditions.add(WeatherCondition.Overcast)
         }
 
@@ -181,17 +181,17 @@ internal object WeatherForecastService {
             null
         }
 
-        val afterSystem = if (isColdFront) {
+        val afterSystem = if (isColdFront && system != PressureSystem.Low) {
             PressureSystem.High
-        } else if (isWarmFront) {
+        } else if (isWarmFront && system != PressureSystem.High) {
             PressureSystem.Low
         } else {
             null
         }
 
         // TODO: Now, soon, and later buckets (or predict next X hours)
-        val now = WeatherForecast(time, conditions, front, system, tendency)
-        val after = WeatherForecast(timeAfter, afterConditions, null, afterSystem)
+        val now = WeatherForecast(time, conditions.distinct(), front, system, tendency)
+        val after = WeatherForecast(timeAfter, afterConditions.distinct(), null, afterSystem)
 
         return listOf(now, after)
     }
