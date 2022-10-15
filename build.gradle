@@ -1,15 +1,15 @@
 buildscript {
-    ext.kotlin_version = "1.7.10"
+    ext.kotlin_version = '1.7.20'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
     ext.groupId = 'com.kylecorry.sol'
-    ext.versionName = '6.0.0'
+    ext.versionName = '6.1.0'
 }
 
 allprojects {
