@@ -123,12 +123,19 @@ internal object WeatherForecastService {
         pressureChangeThreshold: Float = 1.5f,
         pressureStormChangeThreshold: Float = 2f
     ): List<WeatherForecast> {
-        val history = Duration.ofHours(24)
+        val history = Duration.ofHours(48)
+        val cloudsUpToDateDuration = Duration.ofHours(24)
         val oldest = time.minus(history)
+        val cloudsUpToDateTime = time.minus(cloudsUpToDateDuration)
         val filteredPressures =
             pressures.filter { it.time <= time && it.time >= oldest }.sortedBy { it.time }
-        val filteredClouds =
+        var filteredClouds =
             clouds.filter { it.time <= time && it.time >= oldest }.sortedBy { it.time }
+
+        // Don't look at clouds if none were logged in the last 24 hours
+        if (filteredClouds.none { it.time >= cloudsUpToDateTime }) {
+            filteredClouds = emptyList()
+        }
         val tendency = getTendency(filteredPressures, pressureChangeThreshold)
         val system = getPressureSystem(filteredPressures)
         val cloudFront = doCloudsIndicateFront(filteredClouds)
