@@ -116,6 +116,31 @@ internal object WeatherForecastService {
         return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
     }
 
+    private fun getCurrentCloudConditions(
+        clouds: List<Reading<CloudGenus?>>,
+        time: Instant
+    ): WeatherCondition? {
+        val last = clouds.lastOrNull() ?: return null
+        if (Duration.between(last.time, time).abs() > Duration.ofHours(3)) {
+            return null
+        }
+        if (last.value == null) {
+            return WeatherCondition.Clear
+        }
+
+        val overcastClouds = listOf(
+            CloudGenus.Stratus,
+            CloudGenus.Nimbostratus,
+            CloudGenus.Stratocumulus,
+            CloudGenus.Altostratus
+        )
+        if (overcastClouds.contains(last.value)) {
+            return WeatherCondition.Overcast
+        }
+
+        return null
+    }
+
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
@@ -160,20 +185,26 @@ internal object WeatherForecastService {
             conditions.add(WeatherCondition.Wind)
         }
 
-        if (system == PressureSystem.High && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isRising)) {
+        val currentCloudConditions = getCurrentCloudConditions(filteredClouds, time)
+
+        if (currentCloudConditions == null && system == PressureSystem.High && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isRising)) {
             conditions.add(WeatherCondition.Clear)
         }
 
-        if (system == PressureSystem.Low && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isFalling)) {
+        if (currentCloudConditions == null && system == PressureSystem.Low && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isFalling)) {
             conditions.add(WeatherCondition.Overcast)
         }
 
+        if (currentCloudConditions != null) {
+            conditions.add(currentCloudConditions)
+        }
+
         // After
-        if (isColdFront && system != PressureSystem.Low) {
+        if ((isColdFront && system != PressureSystem.Low) || (currentCloudConditions != null && system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)) {
             afterConditions.add(WeatherCondition.Clear)
         }
 
-        if (isWarmFront && system != PressureSystem.High) {
+        if (isWarmFront && system != PressureSystem.High || (currentCloudConditions != null && system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)) {
             afterConditions.add(WeatherCondition.Overcast)
         }
 
@@ -188,9 +219,9 @@ internal object WeatherForecastService {
             null
         }
 
-        val afterSystem = if (isColdFront && system != PressureSystem.Low) {
+        val afterSystem = if ((isColdFront && system != PressureSystem.Low) || (system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)) {
             PressureSystem.High
-        } else if (isWarmFront && system != PressureSystem.High) {
+        } else if ((isWarmFront && system != PressureSystem.High) || (system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)) {
             PressureSystem.Low
         } else {
             null
