@@ -98,6 +98,26 @@ object Statistics {
         return exponents.map { if (sumExp == 0f) 0f else it / sumExp }
     }
 
+    fun joint(distributions: List<GaussianDistribution>): GaussianDistribution? {
+        if (distributions.isEmpty()) {
+            return null
+        }
+        var mean = distributions.first().mean
+        var variance = distributions.first().variance
+
+        for (i in 1..distributions.lastIndex) {
+            val m2 = distributions[i].mean
+            val var2 = distributions[i].variance
+            val joint = mean * var2 + m2 * variance
+            val sumVar = variance + var2
+            val multVar = variance * var2
+            variance = multVar / sumVar
+            mean = joint / sumVar
+        }
+
+        return GaussianDistribution(mean, sqrt(variance))
+    }
+
     /**
      * Calculates the slope of the best fit line
      */
