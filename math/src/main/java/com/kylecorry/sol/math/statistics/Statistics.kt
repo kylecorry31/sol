@@ -88,6 +88,10 @@ object Statistics {
         return values.map { it / sum }
     }
 
+    fun probability(x: Float, distribution: GaussianDistribution): Float {
+        return distribution.probability(x)
+    }
+
     fun softmax(values: List<Float>): List<Float> {
         if (values.isEmpty()) {
             return emptyList()
@@ -116,6 +120,14 @@ object Statistics {
         }
 
         return GaussianDistribution(mean, sqrt(variance))
+    }
+
+    fun zScore(value: Float, distribution: GaussianDistribution, n: Int = 1): Float {
+        return if (n == 1) {
+            (value - distribution.mean) / distribution.standardDeviation
+        } else {
+            (value - distribution.mean) / (distribution.standardDeviation / sqrt(n.toFloat()))
+        }
     }
 
     /**
