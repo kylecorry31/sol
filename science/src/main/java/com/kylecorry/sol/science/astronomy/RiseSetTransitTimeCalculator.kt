@@ -69,7 +69,7 @@ internal class RiseSetTransitTimeCalculator {
 
         val rise = listOfNotNull(
             today.rise,
-            todayAtNoon.transit,
+            todayAtNoon.rise,
             yesterday.rise,
             tomorrow.rise
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
@@ -81,7 +81,7 @@ internal class RiseSetTransitTimeCalculator {
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
         val set = listOfNotNull(
             today.set,
-            todayAtNoon.transit,
+            todayAtNoon.set,
             yesterday.set,
             tomorrow.set
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }

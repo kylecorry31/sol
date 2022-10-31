@@ -158,6 +158,14 @@ class AstronomyTest {
                 "America/Danmarkshavn"
             ),
             RiseSetTransetTestInput(
+                LocalDate.of(2022, Month.OCTOBER, 29),
+                LocalTime.of(7, 48),
+                LocalTime.of(12, 44),
+                LocalTime.of(17, 39),
+                Coordinate(51.5, -0.13),
+                "Europe/London"
+            ),
+            RiseSetTransetTestInput(
                 LocalDate.of(2022, Month.OCTOBER, 30),
                 LocalTime.of(6, 50),
                 LocalTime.of(11, 44),
