@@ -6,12 +6,34 @@ import com.kylecorry.sol.time.Time.getClosestTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 
 class TimeTest {
+
+    @Test
+    fun getDaylightSavingsTransitions() {
+        val zone = ZoneId.of("America/New_York")
+        val year = 2022
+
+        val times = Time.getDaylightSavingsTransitions(zone, year)
+        assertEquals(
+            times, listOf(
+                zdt(2022, Month.MARCH, 13, 2, zone = zone) to Duration.ofHours(1),
+                zdt(2022, Month.NOVEMBER, 6, 1, zone = zone).plusHours(1) to Duration.ofHours(0),
+            )
+        )
+    }
+
+    @Test
+    fun getDaylightSavingsTransitionsNotObserved() {
+        val zone = ZoneId.of("Asia/Shanghai")
+        val year = 2022
+
+        val times = Time.getDaylightSavingsTransitions(zone, year)
+        assertEquals(
+            times, listOf<Pair<ZonedDateTime, Duration>>()
+        )
+    }
 
     @Test
     fun canGetClosestPastTime() {
@@ -89,12 +111,18 @@ class TimeTest {
     }
 
 
-
     private fun dt(year: Int, month: Month, day: Int, hour: Int, minute: Int = 0): LocalDateTime {
         return LocalDateTime.of(year, month, day, hour, minute)
     }
 
-    private fun zdt(year: Int, month: Month, day: Int, hour: Int, minute: Int = 0, zone: ZoneId = ZoneId.systemDefault()): ZonedDateTime {
+    private fun zdt(
+        year: Int,
+        month: Month,
+        day: Int,
+        hour: Int,
+        minute: Int = 0,
+        zone: ZoneId = ZoneId.systemDefault()
+    ): ZonedDateTime {
         return ZonedDateTime.of(dt(year, month, day, hour, minute), zone)
     }
 }

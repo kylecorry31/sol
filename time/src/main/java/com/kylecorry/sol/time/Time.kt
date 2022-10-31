@@ -1,5 +1,6 @@
 package com.kylecorry.sol.time
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Reading
 import java.time.*
 import java.time.temporal.Temporal
@@ -161,6 +162,31 @@ object Time {
         val start = minByOrNull { it.time } ?: return Duration.ZERO
         val end = maxByOrNull { it.time } ?: return Duration.ZERO
         return Duration.between(start.time, end.time)
+    }
+
+    fun isDaylightSavings(time: ZonedDateTime): Boolean {
+        return time.zone.rules.isDaylightSavings(time.toInstant())
+    }
+
+    fun getDaylightSavings(time: ZonedDateTime): Duration {
+        return time.zone.rules.getDaylightSavings(time.toInstant())
+    }
+
+    fun getDaylightSavingsTransitions(
+        zone: ZoneId,
+        year: Int
+    ): List<Pair<ZonedDateTime, Duration>> {
+        val dates = mutableListOf<Pair<ZonedDateTime, Duration>>()
+        var date = ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, zone)
+        while (date.year == year) {
+            val next = zone.rules.nextTransition(date.toInstant()) ?: break
+            date = ZonedDateTime.ofInstant(next.instant, zone)
+            val savings = getDaylightSavings(date)
+            if (date.year == year && dates.lastOrNull()?.second != savings) {
+                dates.add(date to getDaylightSavings(date))
+            }
+        }
+        return dates
     }
 
 }
