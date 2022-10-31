@@ -40,6 +40,15 @@ internal class RiseSetTransitTimeCalculator {
             return today
         }
 
+        // Get today's times (at noon) - this is needed around DST changes in the UK (I'm not 100% sure why - seems to occur when getting the UT 0)
+        val todayAtNoon = getTransitTimesHelper(
+            date.withHour(12).withMinute(0).withSecond(0).withNano(0),
+            location,
+            standardAltitude,
+            withRefraction,
+            locator
+        )
+
         // Today's times didn't contain all the events / were on the wrong day, check the surrounding days
         val yesterday =
             getTransitTimesHelper(
@@ -60,16 +69,19 @@ internal class RiseSetTransitTimeCalculator {
 
         val rise = listOfNotNull(
             today.rise,
+            todayAtNoon.transit,
             yesterday.rise,
             tomorrow.rise
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
         val transit = listOfNotNull(
             today.transit,
+            todayAtNoon.transit,
             yesterday.transit,
             tomorrow.transit
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
         val set = listOfNotNull(
             today.set,
+            todayAtNoon.transit,
             yesterday.set,
             tomorrow.set
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
