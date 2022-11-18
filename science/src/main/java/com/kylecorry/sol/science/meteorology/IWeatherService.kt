@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
@@ -126,4 +127,14 @@ interface IWeatherService : ICloudService, ISeasonService {
      * Estimates the average annual temperature for the location. This is an approximation using the latitude.
      */
     fun getAverageAnnualTemperature(location: Coordinate, elevation: Distance): Temperature
+
+    /**
+     * Estimates the average annual temperature range for the location. This is an approximation using the latitude.
+     * @param distanceToWestCoast the optional distance to the west coast of the continent for potential improvements to temperature estimation.
+     */
+    fun getAverageAnnualTemperatureRange(
+        location: Coordinate,
+        elevation: Distance,
+        distanceToWestCoast: Distance? = null
+    ): Range<Temperature>
 }

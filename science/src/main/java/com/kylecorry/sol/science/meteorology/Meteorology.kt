@@ -18,9 +18,7 @@ object Meteorology : IWeatherService {
     private val cloudService = CloudService()
 
     override fun getSeaLevelPressure(
-        pressure: Pressure,
-        altitude: Distance,
-        temperature: Temperature?
+        pressure: Pressure, altitude: Distance, temperature: Temperature?
     ): Pressure {
         val hpa = pressure.hpa().pressure
         val meters = altitude.meters().distance
@@ -45,10 +43,7 @@ object Meteorology : IWeatherService {
     }
 
     override fun getTendency(
-        last: Pressure,
-        current: Pressure,
-        duration: Duration,
-        changeThreshold: Float
+        last: Pressure, current: Pressure, duration: Duration, changeThreshold: Float
     ): PressureTendency {
         val diff = current.hpa().pressure - last.hpa().pressure
         val dt = duration.seconds
@@ -74,8 +69,7 @@ object Meteorology : IWeatherService {
     }
 
     override fun forecast(
-        tendency: PressureTendency,
-        stormThreshold: Float?
+        tendency: PressureTendency, stormThreshold: Float?
     ): Weather {
         val isStorm = tendency.amount <= (stormThreshold ?: -2f)
 
@@ -100,11 +94,7 @@ object Meteorology : IWeatherService {
         time: Instant
     ): List<WeatherForecast> {
         return WeatherForecastService.forecast(
-            pressures,
-            clouds,
-            time,
-            pressureChangeThreshold,
-            pressureStormChangeThreshold
+            pressures, clouds, time, pressureChangeThreshold, pressureStormChangeThreshold
         )
     }
 
@@ -121,15 +111,8 @@ object Meteorology : IWeatherService {
         val c8 = 0.00072546
         val c9 = -0.000003582
 
-        val hi = c1 +
-                c2 * temperature +
-                c3 * relativeHumidity +
-                c4 * temperature * relativeHumidity +
-                c5 * temperature * temperature +
-                c6 * relativeHumidity * relativeHumidity +
-                c7 * temperature * temperature * relativeHumidity +
-                c8 * temperature * relativeHumidity * relativeHumidity +
-                c9 * temperature * temperature * relativeHumidity * relativeHumidity
+        val hi =
+            c1 + c2 * temperature + c3 * relativeHumidity + c4 * temperature * relativeHumidity + c5 * temperature * temperature + c6 * relativeHumidity * relativeHumidity + c7 * temperature * temperature * relativeHumidity + c8 * temperature * relativeHumidity * relativeHumidity + c9 * temperature * temperature * relativeHumidity * relativeHumidity
 
         return hi.toFloat()
     }
@@ -197,9 +180,7 @@ object Meteorology : IWeatherService {
     }
 
     override fun getTemperatureAtElevation(
-        temperature: Temperature,
-        baseElevation: Distance,
-        destElevation: Distance
+        temperature: Temperature, baseElevation: Distance, destElevation: Distance
     ): Temperature {
         val celsius = temperature.celsius().temperature
         val baseMeters = baseElevation.meters().distance
@@ -209,8 +190,7 @@ object Meteorology : IWeatherService {
     }
 
     override fun getAverageAnnualTemperature(
-        location: Coordinate,
-        elevation: Distance
+        location: Coordinate, elevation: Distance
     ): Temperature {
         // http://www-das.uwyo.edu/~geerts/cwx/notes/chap16/geo_clim.html
         // Temperatures taken at 1000 hPa ~ 100m above sea level
@@ -224,6 +204,24 @@ object Meteorology : IWeatherService {
         )
 
         return getTemperatureAtElevation(temperature, Distance.meters(100f), elevation)
+    }
+
+    override fun getAverageAnnualTemperatureRange(
+        location: Coordinate,
+        elevation: Distance,
+        distanceToWestCoast: Distance?
+    ): Range<Temperature> {
+        // http://www-das.uwyo.edu/~geerts/cwx/notes/chap16/geo_clim.html
+        val annual = getAverageAnnualTemperature(location, elevation).convertTo(TemperatureUnits.C)
+        val range = if (distanceToWestCoast != null) {
+            val kilometers = distanceToWestCoast.convertTo(DistanceUnits.Kilometers).distance
+            (0.13 * location.latitude * kilometers.pow(0.2f)).toFloat()
+        } else {
+            (0.4 * location.latitude).toFloat()
+        }
+        val min = annual.copy(temperature = annual.temperature - range / 2f)
+        val max = annual.copy(temperature = annual.temperature + range / 2f)
+        return Range(min, max)
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {

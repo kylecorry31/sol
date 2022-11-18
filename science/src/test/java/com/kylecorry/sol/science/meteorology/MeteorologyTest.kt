@@ -4,8 +4,8 @@ import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import org.junit.Assert
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -13,6 +13,18 @@ import java.time.*
 import java.util.stream.Stream
 
 class MeteorologyTest {
+
+    @Test
+    fun annualTemperature() {
+        val coord = Coordinate(42.0, -70.0)
+        val elevation = Distance.meters(250f)
+        val distanceToWestCoast = Distance.kilometers(3000f)
+        val annual = Meteorology.getAverageAnnualTemperature(coord, elevation)
+        val range = Meteorology.getAverageAnnualTemperatureRange(coord, elevation, distanceToWestCoast)
+        println(annual.temperature)
+        println(range.start.temperature)
+        println(range.end.temperature)
+    }
 
     @ParameterizedTest
     @MethodSource("provideForecasts")
