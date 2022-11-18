@@ -1,12 +1,9 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Pressure
-import com.kylecorry.sol.units.Temperature
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
-import com.kylecorry.sol.units.Reading
+import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
 
@@ -124,4 +121,9 @@ interface IWeatherService : ICloudService, ISeasonService {
         baseElevation: Distance,
         destElevation: Distance
     ): Temperature
+
+    /**
+     * Estimates the average annual temperature for the location. This is an approximation using the latitude.
+     */
+    fun getAverageAnnualTemperature(location: Coordinate, elevation: Distance): Temperature
 }

@@ -9,6 +9,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -205,6 +206,24 @@ object Meteorology : IWeatherService {
         val destMeters = destElevation.meters().distance
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
         return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
+    }
+
+    override fun getAverageAnnualTemperature(
+        location: Coordinate,
+        elevation: Distance
+    ): Temperature {
+        // http://www-das.uwyo.edu/~geerts/cwx/notes/chap16/geo_clim.html
+        // Temperatures taken at 1000 hPa ~ 100m above sea level
+        val latitude = location.latitude
+        val temperature = Temperature.celsius(
+            when {
+                latitude > 16 -> 27 - 0.86 * (latitude - 16)
+                latitude < -20 -> 27 - 0.63 * (latitude.absoluteValue - 20)
+                else -> 27.0
+            }.toFloat()
+        )
+
+        return getTemperatureAtElevation(temperature, Distance.meters(100f), elevation)
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
