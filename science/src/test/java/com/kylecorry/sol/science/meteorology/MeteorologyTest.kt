@@ -18,12 +18,33 @@ class MeteorologyTest {
     fun annualTemperature() {
         val coord = Coordinate(42.0, -70.0)
         val elevation = Distance.meters(250f)
-        val distanceToWestCoast = Distance.kilometers(3000f)
+        val distanceDownwindOfOcean = Distance.kilometers(3000f)
         val annual = Meteorology.getAverageAnnualTemperature(coord, elevation)
-        val range = Meteorology.getAverageAnnualTemperatureRange(coord, elevation, distanceToWestCoast)
+        val range =
+            Meteorology.getAverageAnnualTemperatureRange(coord, elevation, distanceDownwindOfOcean)
+        val now = Meteorology.getAverageTemperature(
+            coord,
+            elevation,
+            LocalDate.now(),
+            distanceDownwindOfOcean
+        )
         println(annual.temperature)
         println(range.start.temperature)
         println(range.end.temperature)
+        println(now.convertTo(TemperatureUnits.F).temperature)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAverageTemperatures")
+    fun getAverageTemperature(
+        location: Coordinate,
+        elevation: Float,
+        distanceDownwindOfOcean: Float?,
+        date: LocalDate,
+        expected: Float
+    ) {
+        val actual = Meteorology.getAverageTemperature(location, Distance.meters(elevation), date, distanceDownwindOfOcean?.let { Distance.kilometers(it) })
+        assertEquals(expected, actual.temperature, 4f)
     }
 
     @ParameterizedTest
@@ -145,6 +166,41 @@ class MeteorologyTest {
 
 
     companion object {
+
+        @JvmStatic
+        fun provideAverageTemperatures(): Stream<Arguments> {
+            val newHampshire = Coordinate(44.05,-71.13)
+            val newHampshireEle = 135f
+            val newHampshireDistCoast = 4000f // Pacific, west coast US
+
+            val sydney = Coordinate(-33.8651,151.2099)
+            val sydneyEle = 19f
+            val sydneyDistCoast = 5f // Pacific, east coast Australia
+
+            val brazil = Coordinate(-3.4702498,-51.2006913)
+            val brazilEle = 85f
+            val brazilDistCoast = 500f // Atlantic, east coast Brazil
+
+            return Stream.of(
+                // North Conway
+                Arguments.of(newHampshire, newHampshireEle, newHampshireDistCoast, LocalDate.of(2022, 11, 15), -4.4f),
+                Arguments.of(newHampshire, newHampshireEle, newHampshireDistCoast, LocalDate.of(2022, 6, 15), 18.3f),
+                Arguments.of(newHampshire, newHampshireEle, newHampshireDistCoast, LocalDate.of(2022, 1, 15), -9.4f),
+                Arguments.of(newHampshire, newHampshireEle, newHampshireDistCoast, LocalDate.of(2022, 4, 15), 4.4f),
+
+                // Sydney
+                Arguments.of(sydney, sydneyEle, sydneyDistCoast, LocalDate.of(2022, 11, 15), 20f),
+                Arguments.of(sydney, sydneyEle, sydneyDistCoast, LocalDate.of(2022, 6, 15), 12.7f),
+                Arguments.of(sydney, sydneyEle, sydneyDistCoast, LocalDate.of(2022, 1, 15), 23.3f),
+                Arguments.of(sydney, sydneyEle, sydneyDistCoast, LocalDate.of(2022, 4, 15), 18.9f),
+
+                // Brazil
+                Arguments.of(brazil, brazilEle, brazilDistCoast, LocalDate.of(2022, 11, 15), 27.7f),
+                Arguments.of(brazil, brazilEle, brazilDistCoast, LocalDate.of(2022, 6, 15), 27.7f),
+                Arguments.of(brazil, brazilEle, brazilDistCoast, LocalDate.of(2022, 1, 15), 27.7f),
+                Arguments.of(brazil, brazilEle, brazilDistCoast, LocalDate.of(2022, 4, 15), 27.7f),
+            )
+        }
 
         @JvmStatic
         fun provideLowPressures(): Stream<Arguments> {

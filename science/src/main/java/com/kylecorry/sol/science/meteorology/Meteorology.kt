@@ -1,6 +1,8 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.science.meteorology.clouds.*
@@ -209,19 +211,41 @@ object Meteorology : IWeatherService {
     override fun getAverageAnnualTemperatureRange(
         location: Coordinate,
         elevation: Distance,
-        distanceToWestCoast: Distance?
+        distanceDownwindOfOcean: Distance?
     ): Range<Temperature> {
         // http://www-das.uwyo.edu/~geerts/cwx/notes/chap16/geo_clim.html
         val annual = getAverageAnnualTemperature(location, elevation).convertTo(TemperatureUnits.C)
-        val range = if (distanceToWestCoast != null) {
-            val kilometers = distanceToWestCoast.convertTo(DistanceUnits.Kilometers).distance
+        val range = if (distanceDownwindOfOcean != null) {
+            val kilometers = distanceDownwindOfOcean.convertTo(DistanceUnits.Kilometers).distance.coerceAtLeast(1f)
             (0.13 * location.latitude * kilometers.pow(0.2f)).toFloat()
         } else {
             (0.4 * location.latitude).toFloat()
-        }
+        }.absoluteValue
         val min = annual.copy(temperature = annual.temperature - range / 2f)
         val max = annual.copy(temperature = annual.temperature + range / 2f)
         return Range(min, max)
+    }
+
+    override fun getAverageTemperature(
+        location: Coordinate,
+        elevation: Distance,
+        date: LocalDate,
+        distanceDownwindOfOcean: Distance?
+    ): Temperature {
+        val range = getAverageAnnualTemperatureRange(location, elevation, distanceDownwindOfOcean)
+        val january =
+            if (location.isNorthernHemisphere) Vector2(0f, range.start.temperature) else Vector2(
+                0f,
+                range.end.temperature
+            )
+        val july =
+            if (location.isNorthernHemisphere) Vector2(0.5f, range.end.temperature) else Vector2(
+                0.5f,
+                range.start.temperature
+            )
+        val wave = Trigonometry.connect(january, july, 1f)
+        val percent = date.dayOfYear / 365f
+        return Temperature.celsius(wave.calculate(percent))
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
