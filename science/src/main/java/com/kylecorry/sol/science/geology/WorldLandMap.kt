@@ -3,10 +3,21 @@ package com.kylecorry.sol.science.geology
 // Derived from https://github.com/nvkelso/natural-earth-vector
 internal object WorldLandMap {
 
-    // TODO: Pre-calculate simple bounds for each
     // TODO: Points are currently in the format longitude, latitude
 
-    val madagascar = arrayOf(
+    object Bounds {
+        val Americas = CoordinateBounds(70.377, -35.128, -53.531, -168.11)
+        val Australia = CoordinateBounds(-11.787, 152.892, -39.036, 113.394)
+        val EurasiaAfrica = CoordinateBounds(70.974, 180.0, -34.819, -16.614)
+        val UnitedKingdom = CoordinateBounds(58.635, 0.55, 50.766, -5.267)
+        val Greenland = CoordinateBounds(83.52, -19.705, 60.098, -73.159)
+        val Indonesia = CoordinateBounds(6.143, 117.876, -3.657, 109.663)
+        val Madagascar = CoordinateBounds(-13.556, 50.057, -24.988, 43.963)
+        val PapuaNewGuinea = CoordinateBounds(-1.152, 144.584, -9.327, 134.143)
+    }
+
+
+    val Madagascar = arrayOf(
         doubleArrayOf(50.057, -13.556),
         doubleArrayOf(43.963, -17.41),
         doubleArrayOf(44.04, -24.988),
@@ -14,7 +25,7 @@ internal object WorldLandMap {
         doubleArrayOf(50.057, -13.556)
     )
 
-    val australia = arrayOf(
+    val Australia = arrayOf(
         doubleArrayOf(143.562, -13.764),
         doubleArrayOf(139.261, -17.372),
         doubleArrayOf(133.551, -11.787),
@@ -35,14 +46,14 @@ internal object WorldLandMap {
         doubleArrayOf(143.562, -13.764)
     )
 
-    val papauNewGuinea = arrayOf(
+    val PapuaNewGuinea = arrayOf(
         doubleArrayOf(134.143, -1.152),
         doubleArrayOf(142.628, -9.327),
         doubleArrayOf(144.584, -3.861),
         doubleArrayOf(134.143, -1.152)
     )
 
-    val indonesia = arrayOf(
+    val Indonesia = arrayOf(
         doubleArrayOf(117.876, 1.828),
         doubleArrayOf(116.221, 6.143),
         doubleArrayOf(109.663, 2.006),
@@ -51,14 +62,14 @@ internal object WorldLandMap {
         doubleArrayOf(117.876, 1.828)
     )
 
-    val uk = arrayOf(
+    val UnitedKingdom = arrayOf(
         doubleArrayOf(-3.005, 58.635),
         doubleArrayOf(-5.267, 51.991),
         doubleArrayOf(0.55, 50.766),
         doubleArrayOf(-3.005, 58.635)
     )
 
-    val americas = arrayOf(
+    val Americas = arrayOf(
         doubleArrayOf(-90.547, 69.498),
         doubleArrayOf(-98.443, 67.782),
         doubleArrayOf(-109.946, 67.981),
@@ -137,17 +148,7 @@ internal object WorldLandMap {
         doubleArrayOf(-90.547, 69.498)
     )
 
-    val canada = arrayOf(
-        doubleArrayOf(-86.562, 73.157),
-        doubleArrayOf(-72.651, 67.285),
-        doubleArrayOf(-77.897, 65.309),
-        doubleArrayOf(-66.166, 61.931),
-        doubleArrayOf(-62.163, 66.16),
-        doubleArrayOf(-82.316, 73.751),
-        doubleArrayOf(-86.562, 73.157)
-    )
-
-    val eurasiaAfrica = arrayOf(
+    val EurasiaAfrica = arrayOf(
         doubleArrayOf(106.97, 76.974),
         doubleArrayOf(80.511, 73.648),
         doubleArrayOf(63.504, 69.547),
@@ -252,7 +253,7 @@ internal object WorldLandMap {
         doubleArrayOf(106.97, 76.974)
     )
 
-    val greenland = arrayOf(
+    val Greenland = arrayOf(
         doubleArrayOf(-27.1, 83.52),
         doubleArrayOf(-73.159, 78.433),
         doubleArrayOf(-58.585, 75.517),

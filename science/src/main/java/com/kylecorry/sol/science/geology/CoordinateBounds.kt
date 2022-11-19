@@ -6,6 +6,7 @@ import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.CompassDirection
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import kotlin.math.absoluteValue
 import kotlin.math.max
 
 class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) :
@@ -19,7 +20,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     val center: Coordinate
         get() {
             val lat = (north + south) / 2
-            val lon = west + deltaAngle(west.toFloat() + 180, east.toFloat() + 180).toDouble() / 2
+            val lon = west + deltaAngle(west.toFloat() + 180, east.toFloat() + 180).toDouble().absoluteValue / 2
             return Coordinate(lat, lon)
         }
 

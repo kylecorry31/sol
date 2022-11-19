@@ -132,22 +132,22 @@ interface IWeatherService : ICloudService, ISeasonService {
 
     /**
      * Estimates the average annual temperature range for the location. This is an approximation using the latitude.
-     * @param distanceDownwindOfOcean the optional distance to the west coast of the continent for potential improvements to temperature estimation. This will be replaced by a lookup soon. West coast in northern hemisphere, east coast in southern.
+     * @param factorInOceanWind determine if the distance to ocean should factor in - more accurate, but more intensive.
      */
     fun getAverageAnnualTemperatureRange(
         location: Coordinate,
         elevation: Distance,
-        distanceDownwindOfOcean: Distance? = null
+        factorInOceanWind: Boolean = true
     ): Range<Temperature>
 
     /**
      * Estimates the average temperature for the location. This is an approximation using the latitude.
-     * @param distanceDownwindOfOcean the optional distance to the west coast of the continent for potential improvements to temperature estimation. This will be replaced by a lookup soon. West coast in northern hemisphere, east coast in southern.
+     * @param factorInOceanWind determine if the distance to ocean should factor in - more accurate, but more intensive.
      */
     fun getAverageTemperature(
         location: Coordinate,
         elevation: Distance,
         date: LocalDate,
-        distanceDownwindOfOcean: Distance? = null
+        factorInOceanWind: Boolean = true
     ): Temperature
 }
