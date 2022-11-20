@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class GeologyTest {
-    
+
     @ParameterizedTest
     @MethodSource("provideAltitudes")
     fun altitude(pressure: Float, seaLevel: Float, altitude: Float) {
@@ -194,7 +194,74 @@ internal class GeologyTest {
         assertThat(actual).isCloseTo(expected, 1f)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideBounds")
+    fun getBounds(points: List<Coordinate>, expected: CoordinateBounds) {
+        val actual = Geology.getBounds(points)
+        assertThat(actual.north).isCloseTo(expected.north, 0.0001)
+        assertThat(actual.south).isCloseTo(expected.south, 0.0001)
+        assertThat(actual.east).isCloseTo(expected.east, 0.0001)
+        assertThat(actual.west).isCloseTo(expected.west, 0.0001)
+    }
+
     companion object {
+
+        @JvmStatic
+        fun provideBounds(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    listOf(Coordinate(0.0, 10.0), Coordinate(0.0, 20.0), Coordinate(0.0, 40.0)),
+                    CoordinateBounds(0.0, 40.0, 0.0, 10.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(-10.0, 0.0), Coordinate(0.0, 0.0), Coordinate(10.0, 0.0)),
+                    CoordinateBounds(10.0, 0.0, -10.0, 0.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(0.0, 40.0), Coordinate(0.0, 10.0), Coordinate(0.0, 20.0)),
+                    CoordinateBounds(0.0, 40.0, 0.0, 10.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(0.0, 0.0), Coordinate(-10.0, 0.0), Coordinate(10.0, 0.0)),
+                    CoordinateBounds(10.0, 0.0, -10.0, 0.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(10.0, 1.0), Coordinate(20.0, -5.0), Coordinate(30.0, 8.0)),
+                    CoordinateBounds(30.0, 8.0, 10.0, -5.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(10.0, -120.0), Coordinate(20.0, 120.0)),
+                    CoordinateBounds(20.0, -120.0, 10.0, 120.0)
+                ),
+                Arguments.of(
+                    listOf(
+                        Coordinate(10.0, -120.0),
+                        Coordinate(20.0, 120.0),
+                        Coordinate(20.0, 0.0)
+                    ),
+                    CoordinateBounds(20.0, 0.0, 10.0, 120.0)
+                ),
+                Arguments.of(
+                    listOf(
+                        Coordinate(10.0, -160.0),
+                        Coordinate(20.0, 160.0)
+                    ),
+                    CoordinateBounds(20.0, -160.0, 10.0, 160.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(-90.0, 180.0), Coordinate(90.0, -180.0)),
+                    CoordinateBounds(90.0, 180.0, -90.0, -180.0)
+                ),
+                Arguments.of(
+                    listOf(Coordinate(10.0, 1.0)),
+                    CoordinateBounds(10.0, 1.0, 10.0, 1.0)
+                ),
+                Arguments.of(
+                    emptyList<Coordinate>(),
+                    CoordinateBounds.empty
+                ),
+            )
+        }
 
         @JvmStatic
         fun provideGrade(): Stream<Arguments> {

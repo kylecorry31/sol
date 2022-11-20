@@ -1,6 +1,7 @@
 package com.kylecorry.sol.units
 
 import android.os.Parcelable
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
@@ -73,6 +74,10 @@ data class Coordinate(val latitude: Double, val longitude: Double) : Parcelable 
 
         val zero = Coordinate(0.0, 0.0)
         private const val EARTH_AVERAGE_RADIUS = 6371.2e3
+
+        fun toLongitude(degrees: Double): Double {
+            return SolMath.wrap(degrees, -180.0, 180.0)
+        }
 
     }
 }

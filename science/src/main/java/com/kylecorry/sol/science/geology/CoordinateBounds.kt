@@ -20,8 +20,13 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     val center: Coordinate
         get() {
             val lat = (north + south) / 2
-            val lon = west + deltaAngle(west.toFloat() + 180, east.toFloat() + 180).toDouble().absoluteValue / 2
-            return Coordinate(lat, lon)
+            val lon = if (west <= east){
+                (west + east) / 2
+            } else {
+                (west + east + 360) / 2
+            }
+
+            return Coordinate(lat, Coordinate.toLongitude(lon))
         }
 
     fun height(): Distance {

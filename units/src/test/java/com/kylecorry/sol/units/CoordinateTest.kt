@@ -1,9 +1,22 @@
 package com.kylecorry.sol.units
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 
 class CoordinateTest {
+
+    @Test
+    fun canRestrictLongitude(){
+        assertThat(Coordinate.toLongitude(10.0)).isEqualTo(10.0)
+        assertThat(Coordinate.toLongitude(-180.0)).isEqualTo(-180.0)
+        assertThat(Coordinate.toLongitude(180.0)).isEqualTo(180.0)
+        assertThat(Coordinate.toLongitude(200.0)).isEqualTo(-160.0)
+        assertThat(Coordinate.toLongitude(-200.0)).isEqualTo(160.0)
+        assertThat(Coordinate.toLongitude(570.0)).isEqualTo(-150.0)
+        assertThat(Coordinate.toLongitude(-660.0)).isEqualTo(60.0)
+    }
 
     @Test
     fun isNorthernHemisphere() {

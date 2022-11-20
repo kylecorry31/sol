@@ -9,5 +9,4 @@ enum class CompassDirection(val azimuth: Float) {
     SouthWest(225f),
     West(270f),
     NorthWest(315f)
-
 }
