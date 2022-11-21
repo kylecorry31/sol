@@ -124,30 +124,4 @@ interface IWeatherService : ICloudService, ISeasonService {
         baseElevation: Distance,
         destElevation: Distance
     ): Temperature
-
-    /**
-     * Estimates the average annual temperature for the location. This is an approximation using the latitude.
-     */
-    fun getAverageAnnualTemperature(location: Coordinate, elevation: Distance): Temperature
-
-    /**
-     * Estimates the average annual temperature range for the location. This is an approximation using the latitude.
-     * @param factorInOceanWind determine if the distance to ocean should factor in - more accurate, but more intensive.
-     */
-    fun getAverageAnnualTemperatureRange(
-        location: Coordinate,
-        elevation: Distance,
-        factorInOceanWind: Boolean = true
-    ): Range<Temperature>
-
-    /**
-     * Estimates the average temperature for the location. This is an approximation using the latitude.
-     * @param factorInOceanWind determine if the distance to ocean should factor in - more accurate, but more intensive.
-     */
-    fun getAverageTemperature(
-        location: Coordinate,
-        elevation: Distance,
-        date: LocalDate,
-        factorInOceanWind: Boolean = true
-    ): Temperature
 }

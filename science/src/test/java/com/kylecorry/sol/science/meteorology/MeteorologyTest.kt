@@ -15,18 +15,6 @@ import java.util.stream.Stream
 class MeteorologyTest {
 
     @ParameterizedTest
-    @MethodSource("provideAverageTemperatures")
-    fun getAverageTemperature(
-        location: Coordinate,
-        elevation: Float,
-        date: LocalDate,
-        expected: Float
-    ) {
-        val actual = Meteorology.getAverageTemperature(location, Distance.meters(elevation), date)
-        assertEquals(expected, actual.temperature, 4f)
-    }
-
-    @ParameterizedTest
     @MethodSource("provideForecasts")
     fun forecast(
         characteristic: PressureCharacteristic,
@@ -145,38 +133,6 @@ class MeteorologyTest {
 
 
     companion object {
-
-        @JvmStatic
-        fun provideAverageTemperatures(): Stream<Arguments> {
-            val newHampshire = Coordinate(44.05,-71.13)
-            val newHampshireEle = 135f
-
-            val sydney = Coordinate(-33.8651,151.2099)
-            val sydneyEle = 19f
-
-            val brazil = Coordinate(-3.4702498,-51.2006913)
-            val brazilEle = 85f
-
-            return Stream.of(
-                // North Conway
-                Arguments.of(newHampshire, newHampshireEle, LocalDate.of(2022, 11, 15), -4.4f),
-                Arguments.of(newHampshire, newHampshireEle, LocalDate.of(2022, 6, 15), 18.3f),
-                Arguments.of(newHampshire, newHampshireEle, LocalDate.of(2022, 1, 15), -9.4f),
-                Arguments.of(newHampshire, newHampshireEle, LocalDate.of(2022, 4, 15), 4.4f),
-
-                // Sydney
-                Arguments.of(sydney, sydneyEle, LocalDate.of(2022, 11, 15), 20f),
-                Arguments.of(sydney, sydneyEle, LocalDate.of(2022, 6, 15), 12.7f),
-                Arguments.of(sydney, sydneyEle, LocalDate.of(2022, 1, 15), 23.3f),
-                Arguments.of(sydney, sydneyEle, LocalDate.of(2022, 4, 15), 18.9f),
-
-                // Brazil
-                Arguments.of(brazil, brazilEle, LocalDate.of(2022, 11, 15), 27.7f),
-                Arguments.of(brazil, brazilEle, LocalDate.of(2022, 6, 15), 27.7f),
-                Arguments.of(brazil, brazilEle, LocalDate.of(2022, 1, 15), 27.7f),
-                Arguments.of(brazil, brazilEle, LocalDate.of(2022, 4, 15), 27.7f),
-            )
-        }
 
         @JvmStatic
         fun provideLowPressures(): Stream<Arguments> {

@@ -1,11 +1,6 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.science.geology.CoordinateBounds
-import com.kylecorry.sol.science.geology.Geology
-import com.kylecorry.sol.science.geology.WorldLandMap
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.science.meteorology.clouds.*
@@ -192,123 +187,6 @@ object Meteorology : IWeatherService {
         val destMeters = destElevation.meters().distance
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
         return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
-    }
-
-    override fun getAverageAnnualTemperature(
-        location: Coordinate, elevation: Distance
-    ): Temperature {
-        // http://www-das.uwyo.edu/~geerts/cwx/notes/chap16/geo_clim.html
-        // Temperatures taken at 1000 hPa ~ 100m above sea level
-        val latitude = location.latitude
-        val temperature = Temperature.celsius(
-            when {
-                latitude > 16 -> 27 - 0.86 * (latitude - 16)
-                latitude < -20 -> 27 - 0.63 * (latitude.absoluteValue - 20)
-                else -> 27.0
-            }.toFloat()
-        )
-
-        return getTemperatureAtElevation(temperature, Distance.meters(100f), elevation)
-    }
-
-    override fun getAverageAnnualTemperatureRange(
-        location: Coordinate,
-        elevation: Distance,
-        factorInOceanWind: Boolean
-    ): Range<Temperature> {
-        // http://www-das.uwyo.edu/~geerts/cwx/notes/chap16/geo_clim.html
-        val annual = getAverageAnnualTemperature(location, elevation).convertTo(TemperatureUnits.C)
-        val distanceDownwindOfOcean =
-            if (factorInOceanWind) getDistanceDownwindOfOcean(location) else null
-        val range = if (distanceDownwindOfOcean != null) {
-            val kilometers =
-                distanceDownwindOfOcean.convertTo(DistanceUnits.Kilometers).distance.coerceAtLeast(
-                    1f
-                )
-            (0.13 * location.latitude * kilometers.pow(0.2f)).toFloat()
-        } else {
-            (0.4 * location.latitude).toFloat()
-        }.absoluteValue
-        val min = annual.copy(temperature = annual.temperature - range / 2f)
-        val max = annual.copy(temperature = annual.temperature + range / 2f)
-        return Range(min, max)
-    }
-
-    override fun getAverageTemperature(
-        location: Coordinate,
-        elevation: Distance,
-        date: LocalDate,
-        factorInOceanWind: Boolean
-    ): Temperature {
-        val range = getAverageAnnualTemperatureRange(location, elevation, factorInOceanWind)
-        val january =
-            if (location.isNorthernHemisphere) Vector2(0f, range.start.temperature) else Vector2(
-                0f,
-                range.end.temperature
-            )
-        val july =
-            if (location.isNorthernHemisphere) Vector2(0.5f, range.end.temperature) else Vector2(
-                0.5f,
-                range.start.temperature
-            )
-        val wave = Trigonometry.connect(january, july, 1f)
-        val percent = date.dayOfYear / 365f
-        return Temperature.celsius(wave.calculate(percent))
-    }
-
-    private fun getDistanceDownwindOfOcean(location: Coordinate): Distance? {
-        var bounds: CoordinateBounds? = null
-        var polygon: Array<DoubleArray>? = null
-
-        val pairs = listOf(
-            WorldLandMap.PapuaNewGuinea to WorldLandMap.Bounds.PapuaNewGuinea,
-            WorldLandMap.Indonesia to WorldLandMap.Bounds.Indonesia,
-            WorldLandMap.Australia to WorldLandMap.Bounds.Australia,
-            WorldLandMap.Madagascar to WorldLandMap.Bounds.Madagascar,
-            WorldLandMap.Greenland to WorldLandMap.Bounds.Greenland,
-            WorldLandMap.UnitedKingdom to WorldLandMap.Bounds.UnitedKingdom,
-            WorldLandMap.EurasiaAfrica to WorldLandMap.Bounds.EurasiaAfrica,
-            WorldLandMap.Americas to WorldLandMap.Bounds.Americas,
-        )
-
-        for (pair in pairs) {
-            if (pair.second.contains(location)) {
-                bounds = pair.second
-                polygon = pair.first
-                break
-            }
-        }
-
-
-        if (bounds == null || polygon == null) {
-            return null
-        }
-
-        val halfBounds = if (location.isNorthernHemisphere) {
-            val eastern = CoordinateBounds.from(listOf(location, bounds.center)).west
-            CoordinateBounds(bounds.north, eastern, bounds.south, bounds.west)
-        } else {
-            val western = CoordinateBounds.from(listOf(location, bounds.center)).east
-            CoordinateBounds(bounds.north, bounds.east, bounds.south, western)
-        }
-
-        val nearest = mutableListOf<Coordinate>()
-        for (i in 1 until polygon.size) {
-            val start = Coordinate(polygon[i - 1][1], polygon[i - 1][0])
-            val end = Coordinate(polygon[i][1], polygon[i][0])
-            val intersection = Geology.getNearestPoint(location, start, end)
-            val latDiff = abs(intersection.latitude - location.latitude)
-            if (halfBounds.contains(intersection) && latDiff < 10f) {
-                nearest.add(Geology.getNearestPoint(location, start, end))
-            }
-        }
-
-        if (nearest.isEmpty()) {
-            return null
-        }
-
-        val closest = nearest.minBy { it.distanceTo(location) }
-        return Distance.meters(closest.distanceTo(location))
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
