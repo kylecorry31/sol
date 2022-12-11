@@ -52,6 +52,7 @@ interface IWeatherService : ICloudService, ISeasonService {
      * Forecast the weather for the next few hours
      * @param pressures the pressure readings
      * @param clouds the cloud readings, null cloud genus = Clear
+     * @param dailyTemperatureRange the daily temperature range for the given time (the next 24 hours, but can be less than that)
      * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
      * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
      * @param time the time to calculate the forecast after
@@ -60,6 +61,7 @@ interface IWeatherService : ICloudService, ISeasonService {
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
+        dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
         time: Instant = Instant.now()

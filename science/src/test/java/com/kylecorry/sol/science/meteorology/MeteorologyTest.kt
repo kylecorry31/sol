@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
@@ -32,10 +33,11 @@ class MeteorologyTest {
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
+        temperatures: Range<Temperature>?,
         now: WeatherForecast,
         then: WeatherForecast
     ) {
-        val weather = Meteorology.forecast(pressures, clouds, time = weatherTime)
+        val weather = Meteorology.forecast(pressures, clouds, temperatures, time = weatherTime)
         assertEquals(now, weather.first())
         assertEquals(then, weather.last())
     }
@@ -203,10 +205,67 @@ class MeteorologyTest {
         @JvmStatic
         fun provideWeatherForecasts(): Stream<Arguments> {
             return Stream.of(
-                // Pressure only - storm
+                // Pressure only - storm (warm temps)
                 Arguments.of(
                     pressures(1030f, 1021f),
                     emptyList<Reading<CloudGenus?>>(),
+                    temperatures(10f, 20f),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.FallingFast, -3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Rain
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // Pressure only - storm (cold temps)
+                Arguments.of(
+                    pressures(1030f, 1021f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    temperatures(-10f, 0f),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.FallingFast, -3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Snow
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // Pressure only - storm (slightly warm temps)
+                Arguments.of(
+                    pressures(1030f, 1021f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    temperatures(-2f, 8f),
+                    weatherNow(
+                        WeatherFront.Warm,
+                        null,
+                        PressureTendency(PressureCharacteristic.FallingFast, -3f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Overcast
+                    )
+                ),
+                // Pressure only - storm (slightly cold temps)
+                Arguments.of(
+                    pressures(1030f, 1021f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    temperatures(-5f, 2f),
                     weatherNow(
                         WeatherFront.Warm,
                         null,
@@ -224,6 +283,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1030f, 1027f),
                     emptyList<Reading<CloudGenus?>>(),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         PressureSystem.High,
@@ -238,6 +298,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1009f, 1005f),
                     emptyList<Reading<CloudGenus?>>(),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         PressureSystem.Low,
@@ -256,6 +317,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1027f, 1030f),
                     emptyList<Reading<CloudGenus?>>(),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         PressureSystem.High,
@@ -271,6 +333,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1014f, 1017f),
                     emptyList<Reading<CloudGenus?>>(),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         null,
@@ -285,6 +348,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1005f, 1009f),
                     emptyList<Reading<CloudGenus?>>(),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         PressureSystem.Low,
@@ -300,6 +364,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         null,
@@ -316,6 +381,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Nimbostratus),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         null,
@@ -332,6 +398,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         null,
@@ -349,6 +416,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulonimbus),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         null,
@@ -366,6 +434,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus),
+                    null,
                     weatherNow(
                         null,
                         null,
@@ -380,6 +449,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cumulus, CloudGenus.Stratocumulus),
+                    null,
                     weatherNow(
                         null,
                         null,
@@ -395,6 +465,7 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     emptyList<Reading<CloudGenus?>>(),
+                    null,
                     weatherNow(
                         null,
                         null,
@@ -409,6 +480,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1030f, 1027f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         PressureSystem.High,
@@ -424,6 +496,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1009f, 1005f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         PressureSystem.Low,
@@ -441,6 +514,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1030f, 1021f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
+                    null,
                     weatherNow(
                         WeatherFront.Warm,
                         null,
@@ -459,6 +533,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1030f, 1027f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         PressureSystem.High,
@@ -476,6 +551,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1009f, 1005f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         PressureSystem.Low,
@@ -493,6 +569,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1030f, 1021f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         null,
@@ -511,6 +588,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1027f, 1030f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
+                    null,
                     weatherNow(
                         WeatherFront.Cold,
                         PressureSystem.High,
@@ -527,6 +605,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1030f, 1030f),
                     clouds(CloudGenus.Stratus),
+                    null,
                     weatherNow(
                         null,
                         PressureSystem.High,
@@ -543,6 +622,7 @@ class MeteorologyTest {
                 Arguments.of(
                     pressures(1000f, 1000f),
                     clouds(null),
+                    null,
                     weatherNow(
                         null,
                         PressureSystem.Low,
@@ -555,6 +635,10 @@ class MeteorologyTest {
                     )
                 )
             )
+        }
+
+        private fun temperatures(low: Float, high: Float): Range<Temperature> {
+            return Range(Temperature.celsius(low), Temperature.celsius(high))
         }
 
         private fun weatherLater(

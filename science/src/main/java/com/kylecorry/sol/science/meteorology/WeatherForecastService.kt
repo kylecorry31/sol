@@ -1,10 +1,12 @@
 package com.kylecorry.sol.science.meteorology
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenusMatcher
 import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
+import com.kylecorry.sol.units.Temperature
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.absoluteValue
@@ -144,6 +146,7 @@ internal object WeatherForecastService {
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
+        dailyTemperatureRange: Range<Temperature>? = null,
         time: Instant = Instant.now(),
         pressureChangeThreshold: Float = 1.5f,
         pressureStormChangeThreshold: Float = 2f
@@ -219,12 +222,21 @@ internal object WeatherForecastService {
             null
         }
 
-        val afterSystem = if ((isColdFront && system != PressureSystem.Low) || (system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)) {
-            PressureSystem.High
-        } else if ((isWarmFront && system != PressureSystem.High) || (system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)) {
-            PressureSystem.Low
-        } else {
-            null
+        val afterSystem =
+            if ((isColdFront && system != PressureSystem.Low) || (system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)) {
+                PressureSystem.High
+            } else if ((isWarmFront && system != PressureSystem.High) || (system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)) {
+                PressureSystem.Low
+            } else {
+                null
+            }
+
+        if (conditions.contains(WeatherCondition.Precipitation)){
+            getPrecipitationType(dailyTemperatureRange)?.let { conditions.add(it) }
+        }
+
+        if (afterConditions.contains(WeatherCondition.Precipitation)){
+            getPrecipitationType(dailyTemperatureRange)?.let { afterConditions.add(it) }
         }
 
         // TODO: Now, soon, and later buckets (or predict next X hours)
@@ -232,6 +244,20 @@ internal object WeatherForecastService {
         val after = WeatherForecast(timeAfter, afterConditions.distinct(), null, afterSystem)
 
         return listOf(now, after)
+    }
+
+    private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {
+        temperatures ?: return null
+
+        if (temperatures.start.celsius().temperature > 0) {
+            return WeatherCondition.Rain
+        }
+
+        if (temperatures.end.celsius().temperature <= 0){
+            return WeatherCondition.Snow
+        }
+
+        return null
     }
 
 }

@@ -89,12 +89,13 @@ object Meteorology : IWeatherService {
     override fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
+        dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
         time: Instant
     ): List<WeatherForecast> {
         return WeatherForecastService.forecast(
-            pressures, clouds, time, pressureChangeThreshold, pressureStormChangeThreshold
+            pressures, clouds, dailyTemperatureRange, time, pressureChangeThreshold, pressureStormChangeThreshold
         )
     }
 
