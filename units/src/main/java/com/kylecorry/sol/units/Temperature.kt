@@ -22,8 +22,14 @@ data class Temperature(val temperature: Float, val units: TemperatureUnits) :
     }
 
     companion object {
+        val zero = celsius(0f)
+
         fun celsius(temperature: Float): Temperature {
             return Temperature(temperature, TemperatureUnits.C)
+        }
+
+        fun fahrenheit(temperature: Float): Temperature {
+            return Temperature(temperature, TemperatureUnits.F)
         }
     }
 
