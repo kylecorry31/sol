@@ -7,5 +7,6 @@ enum class WeatherCondition(val id: Long) {
     Storm(4),
     Wind(5),
     Rain(6),
-    Snow(7)
+    Snow(7),
+    Thunderstorm(8)
 }

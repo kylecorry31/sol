@@ -398,14 +398,16 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
-                    null,
+                    temperatures(10f, 20f),
                     weatherNow(
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
                         WeatherCondition.Storm,
+                        WeatherCondition.Thunderstorm,
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
+                        WeatherCondition.Rain
                     ),
                     weatherLater(
                         PressureSystem.High,
@@ -416,7 +418,27 @@ class MeteorologyTest {
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulonimbus),
-                    null,
+                    temperatures(10f, 20f),
+                    weatherNow(
+                        WeatherFront.Cold,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Thunderstorm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Rain
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
+                // clouds only - cold front (Cb, cold temps)
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulonimbus),
+                    temperatures(-10f, 10f),
                     weatherNow(
                         WeatherFront.Cold,
                         null,

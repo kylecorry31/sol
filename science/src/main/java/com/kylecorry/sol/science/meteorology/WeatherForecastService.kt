@@ -7,11 +7,14 @@ import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
+import com.kylecorry.sol.units.TemperatureUnits
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.absoluteValue
 
 internal object WeatherForecastService {
+
+    private val thunderstormMinTemperature = Temperature(55f, TemperatureUnits.F).celsius()
 
     private fun getTendency(
         pressures: List<Reading<Pressure>>,
@@ -178,6 +181,10 @@ internal object WeatherForecastService {
 
         if (!tendency.characteristic.isRising && (cloudColdFront || (tendency.characteristic.isFalling && tendency.amount.absoluteValue >= pressureStormChangeThreshold.absoluteValue))) {
             conditions.add(WeatherCondition.Storm)
+            val temp = dailyTemperatureRange?.end?.celsius() ?: Temperature.zero
+            if (isColdFront && temp > thunderstormMinTemperature){
+                conditions.add(WeatherCondition.Thunderstorm)
+            }
         }
 
         if ((isWarmFront || cloudFront) && !tendency.characteristic.isRising) {
