@@ -655,6 +655,56 @@ class MeteorologyTest {
                         PressureSystem.Low,
                         WeatherCondition.Overcast
                     )
+                ),
+
+                // Unknown
+                Arguments.of(
+                    pressures(1022f, 1022f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weatherNow(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                    ),
+                    weatherLater(null)
+                ),
+
+                // Replaces unknown forecast (using pressure)
+                Arguments.of(
+                    pressures(
+                        1024f,
+                        1023f
+                    ).map { it.copy(time = it.time.minus(Duration.ofHours(6))) } + pressures(
+                        1022f,
+                        1022f
+                    ),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weatherNow(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Clear
+                    ),
+                    weatherLater(null)
+                ),
+
+                // Replaces unknown forecast (using clouds)
+                Arguments.of(
+                    pressures(
+                        1022f,
+                        1022f
+                    ),
+                    clouds(CloudGenus.Stratus).map { it.copy(time = it.time.minus(Duration.ofHours(6))) },
+                    null,
+                    weatherNow(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(null)
                 )
             )
         }

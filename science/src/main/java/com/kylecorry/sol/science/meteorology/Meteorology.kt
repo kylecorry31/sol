@@ -95,7 +95,12 @@ object Meteorology : IWeatherService {
         time: Instant
     ): List<WeatherForecast> {
         return WeatherForecastService.forecast(
-            pressures, clouds, dailyTemperatureRange, time, pressureChangeThreshold, pressureStormChangeThreshold
+            pressures,
+            clouds,
+            dailyTemperatureRange,
+            time,
+            pressureChangeThreshold,
+            pressureStormChangeThreshold
         )
     }
 

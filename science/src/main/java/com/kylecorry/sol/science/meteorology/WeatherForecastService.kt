@@ -154,6 +154,72 @@ internal object WeatherForecastService {
         pressureChangeThreshold: Float = 1.5f,
         pressureStormChangeThreshold: Float = 2f
     ): List<WeatherForecast> {
+        val forecast = forecastHelper(
+            pressures,
+            clouds,
+            dailyTemperatureRange,
+            time,
+            pressureChangeThreshold,
+            pressureStormChangeThreshold
+        )
+
+        // There are current conditions, so just return the forecast
+        if (forecast.first().conditions.isNotEmpty()) {
+            return forecast
+        }
+
+        // Try to figure out what the current conditions are based on past predictions
+        var startTime = time.minus(noChangePopulationStep)
+        val maxTime = time.minus(noChangeMaxHistory)
+        while (startTime.isAfter(maxTime)) {
+            val hasReadings =
+                pressures.any { it.time <= startTime } || clouds.any { it.time <= startTime }
+            if (!hasReadings) {
+                return forecast
+            }
+
+            val previous = forecastHelper(
+                pressures,
+                clouds,
+                dailyTemperatureRange,
+                startTime,
+                pressureChangeThreshold,
+                pressureStormChangeThreshold
+            )
+
+            // Get the conditions of the previous prediction, starting with the furthest out prediction
+            val conditions =
+                previous.reversed().firstOrNull { it.conditions.isNotEmpty() }?.conditions
+                    ?: emptyList()
+
+            if (conditions.isNotEmpty()) {
+                return forecast.withCurrentConditions(conditions)
+            }
+
+            startTime = startTime.minus(noChangePopulationStep)
+        }
+
+        return forecast
+    }
+
+    private fun List<WeatherForecast>.withCurrentConditions(conditions: List<WeatherCondition>): List<WeatherForecast> {
+        return mapIndexed { index, value ->
+            if (index == 0) {
+                value.copy(conditions = conditions)
+            } else {
+                value
+            }
+        }
+    }
+
+    private fun forecastHelper(
+        pressures: List<Reading<Pressure>>,
+        clouds: List<Reading<CloudGenus?>>,
+        dailyTemperatureRange: Range<Temperature>? = null,
+        time: Instant = Instant.now(),
+        pressureChangeThreshold: Float = 1.5f,
+        pressureStormChangeThreshold: Float = 2f
+    ): List<WeatherForecast> {
         val history = Duration.ofHours(48)
         val cloudsUpToDateDuration = Duration.ofHours(24)
         val oldest = time.minus(history)
@@ -182,7 +248,7 @@ internal object WeatherForecastService {
         if (!tendency.characteristic.isRising && (cloudColdFront || (tendency.characteristic.isFalling && tendency.amount.absoluteValue >= pressureStormChangeThreshold.absoluteValue))) {
             conditions.add(WeatherCondition.Storm)
             val temp = dailyTemperatureRange?.end?.celsius() ?: Temperature.zero
-            if (isColdFront && temp > thunderstormMinTemperature){
+            if (isColdFront && temp > thunderstormMinTemperature) {
                 conditions.add(WeatherCondition.Thunderstorm)
             }
         }
@@ -238,11 +304,11 @@ internal object WeatherForecastService {
                 null
             }
 
-        if (conditions.contains(WeatherCondition.Precipitation)){
+        if (conditions.contains(WeatherCondition.Precipitation)) {
             getPrecipitationType(dailyTemperatureRange)?.let { conditions.add(it) }
         }
 
-        if (afterConditions.contains(WeatherCondition.Precipitation)){
+        if (afterConditions.contains(WeatherCondition.Precipitation)) {
             getPrecipitationType(dailyTemperatureRange)?.let { afterConditions.add(it) }
         }
 
@@ -260,11 +326,14 @@ internal object WeatherForecastService {
             return WeatherCondition.Rain
         }
 
-        if (temperatures.end.celsius().temperature <= 0){
+        if (temperatures.end.celsius().temperature <= 0) {
             return WeatherCondition.Snow
         }
 
         return null
     }
+
+    private val noChangePopulationStep = Duration.ofMinutes(10)
+    private val noChangeMaxHistory = Duration.ofHours(8)
 
 }
