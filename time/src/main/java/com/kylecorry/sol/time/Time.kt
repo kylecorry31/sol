@@ -87,6 +87,14 @@ object Time {
     }
 
     fun getClosestPastTime(
+        currentTime: Instant,
+        times: List<Instant?>
+    ): Instant? {
+        return times.filterNotNull().filter { it.isBefore(currentTime) }
+            .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
+
+    fun getClosestPastTime(
         currentTime: LocalDateTime,
         times: List<LocalDateTime?>
     ): LocalDateTime? {

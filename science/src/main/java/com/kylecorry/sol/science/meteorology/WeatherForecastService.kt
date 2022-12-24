@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenusMatcher
 import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
@@ -169,15 +170,9 @@ internal object WeatherForecastService {
         }
 
         // Try to figure out what the current conditions are based on past predictions
-        var startTime = time.minus(noChangePopulationStep)
+        var startTime = getNextStartTime(time, pressures, clouds)
         val maxTime = time.minus(noChangeMaxHistory)
-        while (startTime.isAfter(maxTime)) {
-            val hasReadings =
-                pressures.any { it.time <= startTime } || clouds.any { it.time <= startTime }
-            if (!hasReadings) {
-                return forecast
-            }
-
+        while (startTime != null && startTime.isAfter(maxTime)) {
             val previous = forecastHelper(
                 pressures,
                 clouds,
@@ -196,10 +191,24 @@ internal object WeatherForecastService {
                 return forecast.withCurrentConditions(conditions)
             }
 
-            startTime = startTime.minus(noChangePopulationStep)
+            val newTime = getNextStartTime(startTime, pressures, clouds)
+            // Prevents an infinite loop (shouldn't be possible, but just in case)
+            if (startTime == newTime){
+                break
+            }
+            startTime = newTime
         }
 
         return forecast
+    }
+
+    private fun getNextStartTime(
+        time: Instant,
+        pressures: List<Reading<Pressure>>,
+        clouds: List<Reading<CloudGenus?>>
+    ): Instant? {
+        val times = pressures.map { it.time } + clouds.map { it.time }
+        return Time.getClosestPastTime(time, times)
     }
 
     private fun List<WeatherForecast>.withCurrentConditions(conditions: List<WeatherCondition>): List<WeatherForecast> {
@@ -333,7 +342,6 @@ internal object WeatherForecastService {
         return null
     }
 
-    private val noChangePopulationStep = Duration.ofMinutes(10)
     private val noChangeMaxHistory = Duration.ofHours(8)
 
 }
