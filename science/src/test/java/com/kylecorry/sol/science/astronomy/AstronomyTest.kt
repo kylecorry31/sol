@@ -97,43 +97,43 @@ class AstronomyTest {
     @Test
     fun getSunEventsActual() {
         val cases = listOf(
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 12),
                 LocalTime.of(6, 34),
                 LocalTime.of(12, 52, 5),
                 LocalTime.of(19, 9)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 22),
                 LocalTime.of(6, 44),
                 LocalTime.of(12, 48, 32),
                 LocalTime.of(18, 52)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.MARCH, 21),
                 LocalTime.of(6, 57),
                 LocalTime.of(13, 2, 58),
                 LocalTime.of(19, 10)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.DECEMBER, 21),
                 LocalTime.of(7, 17),
                 LocalTime.of(11, 54, 26),
                 LocalTime.of(16, 32)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.DECEMBER, 21),
                 LocalTime.of(7, 17),
                 LocalTime.of(11, 54, 26),
                 LocalTime.of(16, 32)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.JUNE, 21),
                 LocalTime.of(5, 25),
                 LocalTime.of(12, 57, 59),
                 LocalTime.of(20, 31)
             ),
-            RiseSetTransetTestInput( // UP ALL DAY
+            RiseSetTransitTestInput( // UP ALL DAY
                 LocalDate.of(2020, Month.JUNE, 4),
                 null,
                 null,
@@ -141,7 +141,7 @@ class AstronomyTest {
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
             ),
-            RiseSetTransetTestInput( // DOWN ALL DAY
+            RiseSetTransitTestInput( // DOWN ALL DAY
                 LocalDate.of(2020, Month.OCTOBER, 31),
                 null,
                 null,
@@ -149,7 +149,7 @@ class AstronomyTest {
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.OCTOBER, 30),
                 LocalTime.of(12, 41),
                 LocalTime.of(12, 58),
@@ -157,7 +157,7 @@ class AstronomyTest {
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2022, Month.OCTOBER, 29),
                 LocalTime.of(7, 48),
                 LocalTime.of(12, 44),
@@ -165,13 +165,21 @@ class AstronomyTest {
                 Coordinate(51.5, -0.13),
                 "Europe/London"
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2022, Month.OCTOBER, 30),
                 LocalTime.of(6, 50),
                 LocalTime.of(11, 44),
                 LocalTime.of(16, 37),
                 Coordinate(51.5, -0.13),
                 "Europe/London"
+            ),
+            RiseSetTransitTestInput(
+                LocalDate.of(2022, Month.DECEMBER, 27),
+                LocalTime.of(8, 0),
+                LocalTime.of(12, 3),
+                LocalTime.of(16, 5),
+                Coordinate(50.087778, 14.420556),
+                "Europe/Prague"
             )
         )
 
@@ -325,25 +333,25 @@ class AstronomyTest {
     @Test
     fun getMoonEvents() {
         val cases = listOf(
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 12),
                 LocalTime.of(0, 46),
                 LocalTime.of(8, 34),
                 LocalTime.of(16, 21)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 11),
                 null,
                 LocalTime.of(7, 39),
                 LocalTime.of(15, 27)
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 24),
                 LocalTime.of(15, 1),
                 LocalTime.of(19, 38),
                 null
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 11),
                 null,
                 null,
@@ -351,7 +359,7 @@ class AstronomyTest {
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
             ),
-            RiseSetTransetTestInput(
+            RiseSetTransitTestInput(
                 LocalDate.of(2021, Month.FEBRUARY, 28),
                 LocalTime.of(19, 28),
                 LocalTime.of(1, 1),
@@ -681,7 +689,7 @@ class AstronomyTest {
 
     @Test
     fun defaultGetSunEvents() {
-        val expected = RiseSetTransetTestInput(
+        val expected = RiseSetTransitTestInput(
             LocalDate.of(2020, Month.SEPTEMBER, 12),
             LocalTime.of(6, 34),
             LocalTime.of(12, 52),
@@ -734,7 +742,7 @@ class AstronomyTest {
         assertDate(expected.set, actual.set, maxDifference)
     }
 
-    data class RiseSetTransetTestInput(
+    data class RiseSetTransitTestInput(
         val date: LocalDate,
         val rise: LocalTime?,
         val transit: LocalTime?,
