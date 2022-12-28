@@ -104,18 +104,19 @@ object Astronomy : IAstronomyService {
     override fun getDaylightLength(
         date: ZonedDateTime,
         location: Coordinate,
-        sunTimesMode: SunTimesMode
+        sunTimesMode: SunTimesMode,
+        withRefraction: Boolean
     ): Duration {
         val startOfDay = date.atStartOfDay()
-        val sunrise = getNextSunrise(startOfDay, location, sunTimesMode)
-        val sunset = getNextSunset(startOfDay, location, sunTimesMode)
+        val sunrise = getNextSunrise(startOfDay, location, sunTimesMode, withRefraction)
+        val sunset = getNextSunset(startOfDay, location, sunTimesMode, withRefraction)
 
         if (sunrise != null && sunset != null && sunset > sunrise) {
             // Rise in morning, set at night
             return Duration.between(sunrise, sunset)
         } else if (sunrise == null && sunset == null) {
             // Sun doesn't rise or set
-            return if (isSunUp(startOfDay, location)) Duration.between(
+            return if (isSunUp(startOfDay, location, withRefraction)) Duration.between(
                 startOfDay,
                 startOfDay.plusDays(1)
             ) else Duration.ZERO
@@ -136,17 +137,32 @@ object Astronomy : IAstronomyService {
         return sun.getDistance(time.toUniversalTime())
     }
 
-    override fun getSolarRadiation(date: ZonedDateTime, location: Coordinate): Double {
-        return radiation.getRadiation(date.toUniversalTime(), location)
+    override fun getSolarRadiation(
+        date: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean
+    ): Double {
+        return radiation.getRadiation(
+            date.toUniversalTime(),
+            location,
+            withRefraction = withRefraction
+        )
     }
 
     override fun getSolarRadiation(
         date: ZonedDateTime,
         location: Coordinate,
         tilt: Float,
-        azimuth: Bearing
+        azimuth: Bearing,
+        withRefraction: Boolean
     ): Double {
-        return radiation.getRadiation(date.toUniversalTime(), location, tilt, azimuth)
+        return radiation.getRadiation(
+            date.toUniversalTime(),
+            location,
+            tilt,
+            azimuth,
+            withRefraction
+        )
     }
 
     override fun getMoonEvents(

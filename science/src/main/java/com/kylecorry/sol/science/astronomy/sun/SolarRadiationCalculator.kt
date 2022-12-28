@@ -20,9 +20,10 @@ internal class SolarRadiationCalculator {
         ut: UniversalTime,
         location: Coordinate,
         tilt: Float? = null,
-        bearing: Bearing? = null
+        bearing: Bearing? = null,
+        withRefraction: Boolean = false
     ): Double {
-        val altitude = AstroUtils.getAltitude(sun, ut, location, false).toDouble()
+        val altitude = AstroUtils.getAltitude(sun, ut, location, withRefraction).toDouble()
         if (altitude < 0) {
             return 0.0
         }

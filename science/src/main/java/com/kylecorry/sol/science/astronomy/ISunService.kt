@@ -42,7 +42,8 @@ interface ISunService {
     fun getDaylightLength(
         date: ZonedDateTime,
         location: Coordinate,
-        sunTimesMode: SunTimesMode = SunTimesMode.Actual
+        sunTimesMode: SunTimesMode = SunTimesMode.Actual,
+        withRefraction: Boolean = false
     ): Duration
 
     fun getSunDistance(time: ZonedDateTime): Distance
@@ -50,7 +51,11 @@ interface ISunService {
     /**
      * Gets the solar radiation for the given time in kW/m^2
      */
-    fun getSolarRadiation(date: ZonedDateTime, location: Coordinate): Double
+    fun getSolarRadiation(
+        date: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean = false
+    ): Double
 
     /**
      * Gets the solar radiation for the given time in kW/m^2
@@ -59,7 +64,8 @@ interface ISunService {
         date: ZonedDateTime,
         location: Coordinate,
         tilt: Float,
-        azimuth: Bearing
+        azimuth: Bearing,
+        withRefraction: Boolean = false
     ): Double
 
 }
