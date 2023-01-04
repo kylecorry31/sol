@@ -193,7 +193,7 @@ internal object WeatherForecastService {
 
             val newTime = getNextStartTime(startTime, pressures, clouds)
             // Prevents an infinite loop (shouldn't be possible, but just in case)
-            if (startTime == newTime){
+            if (startTime == newTime) {
                 break
             }
             startTime = newTime
@@ -293,9 +293,6 @@ internal object WeatherForecastService {
             afterConditions.add(WeatherCondition.Overcast)
         }
 
-        // TODO: Determine time from clouds / rate of change
-        val timeAfter = time.plus(Duration.ofHours(4))
-
         val front = if (isColdFront) {
             WeatherFront.Cold
         } else if (isWarmFront) {
@@ -322,10 +319,55 @@ internal object WeatherForecastService {
         }
 
         // TODO: Now, soon, and later buckets (or predict next X hours)
-        val now = WeatherForecast(time, conditions.distinct(), front, system, tendency)
-        val after = WeatherForecast(timeAfter, afterConditions.distinct(), null, afterSystem)
+        val now = WeatherForecast(null, conditions.distinct(), front, system, tendency)
+        val after = WeatherForecast(null, afterConditions.distinct(), null, afterSystem)
 
-        return listOf(now, after)
+        val arrivalTime = getArrivalTime(time, now, filteredClouds)
+
+        return listOf(now.copy(time = arrivalTime), after)
+    }
+
+    private fun getArrivalTime(
+        time: Instant,
+        forecast: WeatherForecast,
+        clouds: List<Reading<CloudGenus?>>
+    ): Instant? {
+
+        val hasSkyCondition =
+            forecast.conditions.contains(WeatherCondition.Clear) || forecast.conditions.contains(
+                WeatherCondition.Overcast
+            )
+        val isSteady = forecast.tendency?.characteristic == PressureCharacteristic.Steady
+        val hasSingleCondition = forecast.conditions.size == 1
+        val hasWindCondition = forecast.conditions.contains(WeatherCondition.Wind)
+
+        if (hasSingleCondition && ((hasSkyCondition && isSteady) || hasWindCondition)) {
+            return time
+        }
+
+        // Can't currently predict the time for other conditions
+        if (!forecast.conditions.contains(WeatherCondition.Precipitation)) {
+            return null
+        }
+
+        val lastCloud = clouds.lastOrNull() ?: return null
+
+        val timeFromCloud = getCloudPrecipitationTime(lastCloud.value) ?: return null
+
+        return lastCloud.time.plus(timeFromCloud)
+    }
+
+    private fun getCloudPrecipitationTime(cloud: CloudGenus?): Duration? {
+        return when (cloud) {
+            CloudGenus.Cirrus -> Duration.ofHours(24)
+            CloudGenus.Cirrocumulus -> Duration.ofHours(12)
+            CloudGenus.Cirrostratus -> Duration.ofHours(15)
+            CloudGenus.Altocumulus -> Duration.ofHours(12)
+            CloudGenus.Altostratus -> Duration.ofHours(8)
+            CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus -> Duration.ZERO
+            CloudGenus.Stratus, CloudGenus.Cumulus -> Duration.ofHours(3)
+            CloudGenus.Stratocumulus, null -> null
+        }
     }
 
     private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {

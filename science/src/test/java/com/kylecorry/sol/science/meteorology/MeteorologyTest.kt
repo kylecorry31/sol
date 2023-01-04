@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.time.Time.plusHours
 import org.junit.Assert
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -210,7 +211,7 @@ class MeteorologyTest {
                     pressures(1030f, 1021f),
                     emptyList<Reading<CloudGenus?>>(),
                     temperatures(10f, 20f),
-                    weatherNow(
+                    weather(
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -229,7 +230,7 @@ class MeteorologyTest {
                     pressures(1030f, 1021f),
                     emptyList<Reading<CloudGenus?>>(),
                     temperatures(-10f, 0f),
-                    weatherNow(
+                    weather(
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -248,7 +249,7 @@ class MeteorologyTest {
                     pressures(1030f, 1021f),
                     emptyList<Reading<CloudGenus?>>(),
                     temperatures(-2f, 8f),
-                    weatherNow(
+                    weather(
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -266,7 +267,7 @@ class MeteorologyTest {
                     pressures(1030f, 1021f),
                     emptyList<Reading<CloudGenus?>>(),
                     temperatures(-5f, 2f),
-                    weatherNow(
+                    weather(
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -284,7 +285,7 @@ class MeteorologyTest {
                     pressures(1030f, 1027f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         WeatherFront.Warm,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
@@ -299,7 +300,7 @@ class MeteorologyTest {
                     pressures(1009f, 1005f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         WeatherFront.Warm,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
@@ -318,7 +319,7 @@ class MeteorologyTest {
                     pressures(1027f, 1030f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Rising, 1f),
@@ -334,7 +335,7 @@ class MeteorologyTest {
                     pressures(1014f, 1017f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.Rising, 1f)
@@ -349,7 +350,8 @@ class MeteorologyTest {
                     pressures(1005f, 1009f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime,
                         WeatherFront.Cold,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f),
@@ -365,7 +367,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -382,7 +385,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Nimbostratus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1),
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -399,7 +403,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     temperatures(10f, 20f),
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -419,7 +424,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulonimbus),
                     temperatures(10f, 20f),
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1),
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -439,7 +445,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulonimbus),
                     temperatures(-10f, 10f),
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1),
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -457,7 +464,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(12),
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -472,7 +480,8 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     clouds(CloudGenus.Cumulus, CloudGenus.Stratocumulus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime,
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -488,7 +497,7 @@ class MeteorologyTest {
                     emptyList<Reading<Pressure>>(),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f)
@@ -503,7 +512,8 @@ class MeteorologyTest {
                     pressures(1030f, 1027f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Warm,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
@@ -519,7 +529,8 @@ class MeteorologyTest {
                     pressures(1009f, 1005f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Warm,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
@@ -537,7 +548,8 @@ class MeteorologyTest {
                     pressures(1030f, 1021f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -556,7 +568,8 @@ class MeteorologyTest {
                     pressures(1030f, 1027f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
@@ -574,7 +587,8 @@ class MeteorologyTest {
                     pressures(1009f, 1005f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Cold,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
@@ -592,7 +606,8 @@ class MeteorologyTest {
                     pressures(1030f, 1021f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime.minusSeconds(1).plusHours(3),
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -611,7 +626,7 @@ class MeteorologyTest {
                     pressures(1027f, 1030f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
-                    weatherNow(
+                    weather(
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Rising, 1f),
@@ -628,7 +643,8 @@ class MeteorologyTest {
                     pressures(1030f, 1030f),
                     clouds(CloudGenus.Stratus),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime,
                         null,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -645,7 +661,8 @@ class MeteorologyTest {
                     pressures(1000f, 1000f),
                     clouds(null),
                     null,
-                    weatherNow(
+                    weatherAt(
+                        weatherTime,
                         null,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -662,7 +679,7 @@ class MeteorologyTest {
                     pressures(1022f, 1022f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f)
@@ -681,7 +698,7 @@ class MeteorologyTest {
                     ),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherNow(
+                    weather(
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -698,7 +715,7 @@ class MeteorologyTest {
                     ),
                     clouds(CloudGenus.Stratus).map { it.copy(time = it.time.minus(Duration.ofHours(6))) },
                     null,
-                    weatherNow(
+                    weather(
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -718,7 +735,7 @@ class MeteorologyTest {
             vararg conditions: WeatherCondition
         ): WeatherForecast {
             return WeatherForecast(
-                weatherTime.plus(Duration.ofHours(4)),
+                null,
                 conditions.toList(),
                 null,
                 system,
@@ -726,14 +743,30 @@ class MeteorologyTest {
             )
         }
 
-        private fun weatherNow(
+        private fun weatherAt(
+            time: Instant,
             front: WeatherFront?,
             system: PressureSystem?,
             tendency: PressureTendency,
             vararg conditions: WeatherCondition
         ): WeatherForecast {
             return WeatherForecast(
-                weatherTime,
+                time,
+                conditions.toList(),
+                front,
+                system,
+                tendency
+            )
+        }
+
+        private fun weather(
+            front: WeatherFront?,
+            system: PressureSystem?,
+            tendency: PressureTendency,
+            vararg conditions: WeatherCondition
+        ): WeatherForecast {
+            return WeatherForecast(
+                null,
                 conditions.toList(),
                 front,
                 system,

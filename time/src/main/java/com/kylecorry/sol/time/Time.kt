@@ -86,6 +86,10 @@ object Time {
         return Duration.between(this, other).seconds / (60f * 60f)
     }
 
+    fun Instant.plusHours(hours: Long): Instant {
+        return plus(Duration.ofHours(hours))
+    }
+
     fun getClosestPastTime(
         currentTime: Instant,
         times: List<Instant?>
