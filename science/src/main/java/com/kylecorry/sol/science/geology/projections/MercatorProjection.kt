@@ -17,7 +17,7 @@ class MercatorProjection(private val scale: Float = 1f) : IMapProjection {
         val latitude = (atan(sinh(pixel.y / scale))).toDegrees()
         return Coordinate(
             clamp(latitude.toDouble(), -90.0, 90.0),
-            clamp(longitude.toDouble(), -180.0, 180.0)
+            Coordinate.toLongitude(longitude.toDouble())
         )
     }
 
