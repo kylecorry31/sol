@@ -86,7 +86,7 @@ class SolMathTest {
 
     @ParameterizedTest
     @MethodSource("provideDeltaAngle")
-    fun square(angle1: Float, angle2: Float, expected: Float) {
+    fun deltaAngle(angle1: Float, angle2: Float, expected: Float) {
         val actual = SolMath.deltaAngle(angle1, angle2)
         assertEquals(expected, actual, 0.00001f)
     }
@@ -293,7 +293,12 @@ class SolMathTest {
                 Arguments.of(-0.75, 0.0, 1.0, 0.25),
                 Arguments.of(0.0, 1.0, 4.0, 3.0),
                 Arguments.of(5.0, 1.0, 4.0, 2.0),
-                Arguments.of(6.0, 5.0, 4.0, 6.0),
+                Arguments.of(6.0, 5.0, 4.0, 5.0),
+                Arguments.of(0.0, 0.0, 0.0, 0.0),
+                Arguments.of(1800.0, 0.0, 360.0, 0.0),
+                Arguments.of(-1800.0, 0.0, 360.0, 360.0),
+                Arguments.of(1799.0, 0.0, 360.0, 359.0),
+                Arguments.of(-1799.0, 0.0, 360.0, 1.0),
             )
         }
 
@@ -307,7 +312,12 @@ class SolMathTest {
                 Arguments.of(-0.75f, 0.0f, 1.0f, 0.25f),
                 Arguments.of(0.0f, 1.0f, 4.0f, 3.0f),
                 Arguments.of(5.0f, 1.0f, 4.0f, 2.0f),
-                Arguments.of(6.0f, 5.0f, 4.0f, 6.0f),
+                Arguments.of(6.0f, 5.0f, 4.0f, 5.0f),
+                Arguments.of(0.0f, 0.0f, 0.0f, 0.0f),
+                Arguments.of(1800.0f, 0.0f, 360.0f, 0.0f),
+                Arguments.of(-1800.0f, 0.0f, 360.0f, 360.0f),
+                Arguments.of(1799.0f, 0.0f, 360.0f, 359.0f),
+                Arguments.of(-1799.0f, 0.0f, 360.0f, 1.0f),
             )
         }
 

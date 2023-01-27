@@ -11,24 +11,17 @@ object SolMath {
     }
 
     fun wrap(value: Double, min: Double, max: Double): Double {
-
-        if (min >= max) {
-            return value
-        }
-
+        // https://stackoverflow.com/questions/14415753/wrap-value-into-range-min-max-without-division
         val range = max - min
-
-        var newValue = value
-
-        while (newValue > max) {
-            newValue -= range
+        if (value < min) {
+            return max - (min - value) % range
         }
 
-        while (newValue < min) {
-            newValue += range
+        if (value > max) {
+            return min + (value - min) % range
         }
 
-        return newValue
+        return value
     }
 
     fun power(x: Int, power: Int): Int {
@@ -36,14 +29,14 @@ object SolMath {
             return 1
         }
 
-
-        var total = 1
-        for (i in 0 until abs(power)) {
-            total *= x
-        }
-
         if (power < 0) {
             return 0
+        }
+
+
+        var total = 1
+        for (i in 0 until power) {
+            total *= x
         }
 
         return total
