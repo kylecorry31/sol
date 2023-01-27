@@ -139,14 +139,14 @@ object SolMath {
     }
 
     fun deltaAngle(angle1: Float, angle2: Float): Float {
-        var delta = angle2 - angle1
-        delta += 180
-        delta -= floor(delta / 360) * 360
-        delta -= 180
-        if (abs(abs(delta) - 180) <= Float.MIN_VALUE) {
-            delta = 180f
+        // These will be at most 360 degrees apart, so normalize them to restrict that
+        val a = normalizeAngle(angle1 - angle2)
+        val b = normalizeAngle(angle2 - angle1)
+        return if (a < b) {
+            -a
+        } else {
+            b
         }
-        return delta
     }
 
     fun clamp(value: Double, minimum: Double, maximum: Double): Double {
