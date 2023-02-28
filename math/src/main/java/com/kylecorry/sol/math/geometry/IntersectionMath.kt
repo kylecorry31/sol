@@ -38,8 +38,53 @@ internal object IntersectionMath {
         return Vector2(x, line1.equation().evaluate(x))
     }
 
-    /**
-     * Line and rectangle - just evaluate at x = left, right and y = top, bottom
-     */
+    fun getIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
+        if (line.isVertical) {
+            val x = line.start.x
+            if (x !in rectangle.left..rectangle.right) {
+                return emptyList()
+            }
+            val top = Vector2(x, rectangle.top)
+            val bottom = Vector2(x, rectangle.bottom)
+            return listOf(top, bottom)
+        }
 
+        val equation = line.equation()
+        val inverse = Algebra.inverse(equation)
+        val left = Vector2(rectangle.left, equation.evaluate(rectangle.left))
+        val right = Vector2(rectangle.right, equation.evaluate(rectangle.right))
+        val top = Vector2(inverse.evaluate(rectangle.top), rectangle.top)
+        val bottom = Vector2(inverse.evaluate(rectangle.bottom), rectangle.bottom)
+
+        val intersections = mutableSetOf<Vector2>()
+
+        if (rectangle.contains(left)) {
+            intersections.add(left)
+        }
+
+        if (rectangle.contains(right)) {
+            intersections.add(right)
+        }
+
+        if (rectangle.contains(top)) {
+            intersections.add(top)
+        }
+
+        if (rectangle.contains(bottom)) {
+            intersections.add(bottom)
+        }
+
+        return intersections.toList()
+    }
+
+    fun getIntersection(a: Vector2, b: Vector2, rectangle: Rectangle): List<Vector2> {
+        val line = Line(a, b)
+        val intersection = getIntersection(line, rectangle)
+        // Only include the intersection if it's on the line segment between A and B
+        val minX = minOf(a.x, b.x)
+        val maxX = maxOf(a.x, b.x)
+        val minY = minOf(a.y, b.y)
+        val maxY = maxOf(a.y, b.y)
+        return intersection.filter { it.x in minX..maxX && it.y in minY..maxY }
+    }
 }
