@@ -81,6 +81,14 @@ object Geometry {
         return IntersectionMath.getIntersection(line1, line2)
     }
 
+    fun getIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
+        return IntersectionMath.getIntersection(line, rectangle)
+    }
+
+    fun getIntersection(a: Vector2, b: Vector2, rectangle: Rectangle): List<Vector2> {
+        return IntersectionMath.getIntersection(a, b, rectangle)
+    }
+
     fun intersects(line: Line, circle: Circle): Boolean {
         return getIntersection(line, circle) != null
     }
@@ -107,11 +115,12 @@ object Geometry {
     }
 
     fun pointLineDistance(point: Vector2, line: Line): Float {
-        if (line.start == line.end){
+        if (line.start == line.end) {
             return point.distanceTo(line.start)
         }
 
-        val numerator = abs((line.end.x - line.start.x) * (line.start.y - point.y) - (line.start.x - point.x) * (line.end.y - line.start.y))
+        val numerator =
+            abs((line.end.x - line.start.x) * (line.start.y - point.y) - (line.start.x - point.x) * (line.end.y - line.start.y))
         val denominator = line.length()
 
         return numerator / denominator
