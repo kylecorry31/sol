@@ -1,5 +1,7 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
 import kotlin.math.sqrt
 
 data class Vector2(val x: Float, val y: Float) {
@@ -27,6 +29,22 @@ data class Vector2(val x: Float, val y: Float) {
 
     fun distanceTo(other: Vector2): Float {
         return (other - this).magnitude()
+    }
+
+    fun rotate(angle: Float, origin: Vector2 = zero): Vector2 {
+        if (angle % 360f == 0f) return this
+        val x = this.x - origin.x
+        val y = this.y - origin.y
+        val cos = cosDegrees(angle)
+        val sin = sinDegrees(angle)
+        return Vector2(
+            x * cos - y * sin + origin.x,
+            x * sin + y * cos + origin.y
+        )
+    }
+
+    companion object {
+        val zero = Vector2(0f, 0f)
     }
 
 }
