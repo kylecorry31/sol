@@ -5,8 +5,9 @@ import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
-import com.kylecorry.sol.science.astronomy.eclipse.PartialLunarEclipseCalculator
-import com.kylecorry.sol.science.astronomy.eclipse.TotalLunarEclipseCalculator
+import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
+import com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalculator
+import com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.locators.MeteorShowerLocator
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Sun
@@ -256,6 +257,8 @@ object Astronomy : IAstronomyService {
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
+            EclipseType.PartialSolar -> SolarEclipseCalculator()
+            EclipseType.TotalSolar -> SolarEclipseCalculator(totalOnly = true)
         }
         return calculator.getNextEclipse(time.toInstant(), location)
     }

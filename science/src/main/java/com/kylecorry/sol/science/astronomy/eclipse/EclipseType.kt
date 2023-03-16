@@ -2,5 +2,7 @@ package com.kylecorry.sol.science.astronomy.eclipse
 
 enum class EclipseType {
     PartialLunar,
-    TotalLunar
+    TotalLunar,
+    PartialSolar,
+    TotalSolar
 }

@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse
 
+import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.tests.assertDate
 import org.junit.jupiter.api.Test

@@ -43,10 +43,8 @@ internal class Sun : ICelestialLocator {
     }
 
     fun getAngularDiameter(ut: UniversalTime): Double {
-        val trueAnomaly = getTrueAnomaly(ut)
-        val f =
-            (1 + getEccentricity(ut) * cosDegrees(trueAnomaly)) / (1 - getEccentricity(ut).pow(2))
-        return angularDiameter0 * f
+        val au = getDistance(ut).meters().distance / 149597870700.0
+        return 2 * 959.63 / (3600 * au)
     }
 
     fun getMeanAnomaly(ut: UniversalTime): Double {

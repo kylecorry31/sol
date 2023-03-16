@@ -94,6 +94,36 @@ class AstronomyTest {
         assertEquals(1.414f, actual.magnitude, 0.005f)
     }
 
+    @ParameterizedTest
+    @MethodSource("providePartialSolarEclipses")
+    fun canGetNextPartialSolarEclipse(latitude: Double, longitude: Double, date: String, start: String?, end: String?, magnitude: Float) {
+        val datetime = ZonedDateTime.parse(date)
+        val location = Coordinate(latitude, longitude)
+
+        val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.PartialSolar)
+
+        if (start == null || end == null){
+            assertNull(actual)
+            return
+        }
+
+        assertNotNull(actual)
+
+        assertDate(
+            ZonedDateTime.parse(start),
+            actual!!.start.atZone(ZoneId.of("UTC")),
+            Duration.ofMinutes(2)
+        )
+
+        assertDate(
+            ZonedDateTime.parse(end),
+            actual.end.atZone(ZoneId.of("UTC")),
+            Duration.ofMinutes(2)
+        )
+
+        assertEquals(magnitude, actual.magnitude, 0.005f)
+    }
+
     @Test
     fun getSunEventsActual() {
         val cases = listOf(
@@ -753,6 +783,26 @@ class AstronomyTest {
 
 
     companion object {
+
+        @JvmStatic
+        fun providePartialSolarEclipses(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(42.0, -70.0, "2023-01-01T00:00:00Z", "2023-10-14T17:11:00Z", "2023-10-14T18:50:00Z", 0.21305887f),
+                Arguments.of(42.0, -70.0, "2023-10-15T00:00:00Z", "2024-04-08T17:36:00Z", "2024-04-08T19:02:00Z", 0.26172453f),
+                Arguments.of(42.0, -70.0, "2024-04-09T00:00:00Z", "2024-10-02T17:53:00Z", "2024-10-02T19:41:00Z", 0.25291818f),
+                Arguments.of(25.28, -104.12, "2023-10-15T00:00:00Z", "2024-04-08T17:36:00Z", "2024-04-08T19:02:00Z", 0.2636494f), // This should be a total eclipse
+                Arguments.of(40.0, 120.0, "2023-01-01T00:00:00Z", "2023-04-20T03:37:00Z", "2023-04-20T05:00:00Z", 0.17502789f),
+                Arguments.of(40.0, 120.0, "2023-10-15T00:00:00Z", "2027-08-02T09:16:00Z", "2027-08-02T11:03:00Z", 0.7091805f),
+
+                // Search starts at start of eclipse
+                Arguments.of(42.0, -70.0, "2023-10-14T17:11:00Z", "2023-10-14T17:11:00Z", "2023-10-14T18:50:00Z", 0.21309373f),
+                // Search starts during eclipse
+                Arguments.of(42.0, -70.0, "2023-10-14T18:00:00Z", "2023-10-14T18:00:00Z", "2023-10-14T18:50:00Z", 0.21309373f),
+                // Search starts at end of eclipse
+                Arguments.of(42.0, -70.0, "2023-10-14T18:50:00Z", "2023-10-14T18:50:00Z", "2023-10-14T18:50:00Z", 0.00019f)
+            )
+        }
+
         @JvmStatic
         fun provideDayLengths(): Stream<Arguments> {
             val ny = Coordinate(40.7128, -74.0060)

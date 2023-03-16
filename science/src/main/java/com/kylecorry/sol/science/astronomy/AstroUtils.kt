@@ -41,7 +41,15 @@ internal object AstroUtils {
         location: Coordinate
     ): Bearing {
         val coords = locator.getCoordinates(ut)
-        val horizon = HorizonCoordinate.fromEquatorial(coords, ut, location)
+        return getAzimuth(coords, ut, location)
+    }
+
+    fun getAzimuth(
+        coordinate: EquatorialCoordinate,
+        ut: UniversalTime,
+        location: Coordinate
+    ): Bearing {
+        val horizon = HorizonCoordinate.fromEquatorial(coordinate, ut, location)
         return Bearing(horizon.azimuth.toFloat())
     }
 }

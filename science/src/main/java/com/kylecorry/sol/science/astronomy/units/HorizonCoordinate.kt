@@ -15,6 +15,7 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
 
     val azimuth = wrap(_azimuth, 0.0, 360.0)
     val altitude = wrap(_altitude, -90.0, 90.0)
+    val zenith = 90 - altitude
 
     fun toEquatorial(siderealTime: SiderealTime, latitude: Double): EquatorialCoordinate {
         val sinH = sinDegrees(altitude)
@@ -81,6 +82,14 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
         }
 
         return -20.774 / tanElev / 3600.0
+    }
+
+    fun angularDistanceTo(coordinate: HorizonCoordinate): Double {
+        return acos(
+            cosDegrees(zenith) * cosDegrees(coordinate.zenith) +
+                    sinDegrees(zenith) * sinDegrees(coordinate.zenith) *
+                    cosDegrees(azimuth - coordinate.azimuth)
+        ).toDegrees()
     }
 
     companion object {

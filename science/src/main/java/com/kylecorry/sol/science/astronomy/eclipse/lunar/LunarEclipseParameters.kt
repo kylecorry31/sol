@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.astronomy.eclipse
+package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
 import java.time.Instant
 

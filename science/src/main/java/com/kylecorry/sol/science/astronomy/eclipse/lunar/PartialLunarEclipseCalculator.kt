@@ -1,19 +1,18 @@
-package com.kylecorry.sol.science.astronomy.eclipse
-
+package com.kylecorry.sol.science.astronomy.eclipse.lunar
 import com.kylecorry.sol.math.SolMath.power
 import java.time.Duration
 import kotlin.math.sqrt
 
-internal class TotalLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculator() {
+internal class PartialLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculator() {
 
     override fun getMagnitudeThreshold(): Double {
-        return 1.0
+        return 0.0
     }
 
     override fun getSemiDuration(parameters: LunarEclipseParameters): Duration {
-        val t = 0.4678 - parameters.umbralConeRadius
+        val p = 1.0128 - parameters.umbralConeRadius
         val minutes =
-            (60 / parameters.n) * sqrt(power(t, 2) - power(parameters.minDistanceFromCenter, 2))
+            (60 / parameters.n) * sqrt(power(p, 2) - power(parameters.minDistanceFromCenter, 2))
         return Duration.ofSeconds((minutes * 60).toLong())
     }
 }

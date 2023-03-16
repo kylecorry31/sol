@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.astronomy.eclipse
+package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees

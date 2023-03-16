@@ -108,6 +108,10 @@ fun UniversalTime.toLocal(zone: ZoneId): ZonedDateTime {
     return atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
 }
 
+fun UniversalTime.toInstant(): Instant {
+    return atZone(ZoneId.of("UTC")).toInstant()
+}
+
 fun ut0hOnDate(date: ZonedDateTime): UniversalTime {
     val localDate = date.toLocalDate()
 
