@@ -36,13 +36,14 @@ class SolarEclipseCalculator(
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
         val nextEclipseTime = getNextEclipseTime(after, location) ?: return null
 
-        var maxMagnitude = 0f
-
-        // Search for the start of the eclipse
+        // Search parameters
         val maxSearch = Duration.ofHours(24)
         val minTime = nextEclipseTime.minus(maxSearch)
         val maxTime = nextEclipseTime.plus(maxSearch)
 
+        var maxMagnitude = 0f
+
+        // Search for the start of the eclipse
         var currentTime = nextEclipseTime.toUniversalTime()
 
         var start = nextEclipseTime
@@ -62,10 +63,11 @@ class SolarEclipseCalculator(
                 break
             }
 
-            start = currentTime.toInstant()
             if (magnitude > maxMagnitude) {
                 maxMagnitude = magnitude
             }
+
+            start = currentTime.toInstant()
             currentTime = currentTime.minus(precision)
         }
 
@@ -89,10 +91,11 @@ class SolarEclipseCalculator(
                 break
             }
 
-            end = currentTime.toInstant()
             if (magnitude > maxMagnitude) {
                 maxMagnitude = magnitude
             }
+
+            end = currentTime.toInstant()
             currentTime = currentTime.plus(precision)
         }
 
