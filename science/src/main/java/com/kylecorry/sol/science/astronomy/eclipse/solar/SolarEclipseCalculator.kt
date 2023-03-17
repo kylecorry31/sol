@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
 import com.kylecorry.sol.math.SolMath.square
-import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.SunTimesMode
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
@@ -14,7 +13,6 @@ import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toInstant
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -34,93 +32,145 @@ class SolarEclipseCalculator(
     private val moon = Moon()
 
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
-        var timeFromStart = Duration.ZERO
+        val nextEclipseTime = getNextEclipseTime(after, location) ?: return null
 
+        var maxMagnitude = 0f
+
+        // Search for the start of the eclipse
+        val maxSearch = Duration.ofHours(24)
+        val minTime = nextEclipseTime.minus(maxSearch)
+        val maxTime = nextEclipseTime.plus(maxSearch)
+
+        var currentTime = nextEclipseTime.toUniversalTime()
+
+        var start = nextEclipseTime
+        while (start > minTime) {
+            val sunCoordinates = getCoordinates(sun, currentTime, location)
+            val moonCoordinates = getCoordinates(moon, currentTime, location)
+
+            // Sun or moon is below the horizon
+            if (sunCoordinates.altitude < 0 || moonCoordinates.altitude < 0) {
+                break
+            }
+
+            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates)
+
+            // Eclipse was not found
+            if (magnitude == 0f) {
+                break
+            }
+
+            start = currentTime.toInstant()
+            if (magnitude > maxMagnitude) {
+                maxMagnitude = magnitude
+            }
+            currentTime = currentTime.minus(precision)
+        }
+
+        // Search for the end of the eclipse
+        currentTime = nextEclipseTime.toUniversalTime()
+        var end = nextEclipseTime
+
+        while (end < maxTime) {
+            val sunCoordinates = getCoordinates(sun, currentTime, location)
+            val moonCoordinates = getCoordinates(moon, currentTime, location)
+
+            // Sun or moon is below the horizon
+            if (sunCoordinates.altitude < 0 || moonCoordinates.altitude < 0) {
+                break
+            }
+
+            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates)
+
+            // Eclipse was not found
+            if (magnitude == 0f) {
+                break
+            }
+
+            end = currentTime.toInstant()
+            if (magnitude > maxMagnitude) {
+                maxMagnitude = magnitude
+            }
+            currentTime = currentTime.plus(precision)
+        }
+
+        return Eclipse(start, end, maxMagnitude)
+    }
+
+    private fun getNextEclipseTime(after: Instant, location: Coordinate): Instant? {
+        var timeFromStart = Duration.ZERO
         val startUT = after.toUniversalTime()
 
-        var start: Instant? = null
-        var end: Instant? = null
-        var maxMagnitude = 0f
-        var minDistance = 360.0
+        val defaultSkip = Duration.ofMinutes(15)
 
         while (timeFromStart < maxDuration) {
             val currentTime = startUT.plus(timeFromStart)
 
-            // Skip check if the moon is close to full
-            if (moon.getPhase(currentTime).illumination > 0.5f) {
-                timeFromStart = timeFromStart.plus(Duration.ofHours(6))
+            val sunCoordinates = getCoordinates(sun, currentTime, location)
+            val moonCoordinates = getCoordinates(moon, currentTime, location)
+
+            // Skip ahead if conditions are not right for an eclipse
+            val nextSkip =
+                getNextSkip(currentTime, location, sunCoordinates, moonCoordinates, defaultSkip)
+            if (nextSkip > defaultSkip) {
+                timeFromStart = timeFromStart.plus(nextSkip)
                 continue
             }
 
-            val sunLocation =
-                getCoordinates(sun, currentTime, location)
-
-            // If the sun is below the horizon, skip to the next sunrise
-            if (sunLocation.altitude < 0) {
-                if (start != null) {
-                    end = currentTime.toInstant()
-                    break
-                }
-                timeFromStart =
-                    timeFromStart.plus(timeUntilSunrise(currentTime, location) ?: precision)
-                continue
+            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates)
+            if (magnitude > 0) {
+                return currentTime.toInstant()
             }
 
-            val moonLocation = getCoordinates(moon, currentTime, location)
-
-            // If the moon is below the horizon, skip to the next moonrise
-            if (moonLocation.altitude < 0) {
-                if (start != null) {
-                    end = currentTime.toInstant()
-                    break
-                }
-
-                timeFromStart =
-                    timeFromStart.plus(timeUntilMoonrise(currentTime, location) ?: precision)
-                continue
-            }
-
-            val angularDistance = sunLocation.angularDistanceTo(moonLocation)
-            if (angularDistance < minDistance) {
-                minDistance = angularDistance
-            }
-
-            // Not close enough to even consider
-            if (angularDistance > 1) {
-                if (start != null) {
-                    end = currentTime.toInstant()
-                    break
-                }
-                timeFromStart = timeFromStart.plus(precision)
-                continue
-            }
-
-            val moonRadius = moon.getAngularDiameter(currentTime, location) / 2.0
-            val sunRadius = sun.getAngularDiameter(currentTime) / 2.0
-
-            if (isEclipse(angularDistance, moonRadius, sunRadius)) {
-                if (start == null) {
-                    start = currentTime.toInstant()
-                }
-                val magnitude = getMagnitude(angularDistance, moonRadius, sunRadius)
-                if (magnitude > maxMagnitude) {
-                    maxMagnitude = magnitude
-                }
-            } else {
-                if (start != null) {
-                    end = currentTime.toInstant()
-                    break
-                }
-            }
-
-            timeFromStart = timeFromStart.plus(precision)
+            timeFromStart = timeFromStart.plus(defaultSkip)
         }
 
-        if (start == null || end == null) {
-            return null
+        return null
+    }
+
+    private fun getNextSkip(
+        time: UniversalTime,
+        location: Coordinate,
+        sunCoordinates: HorizonCoordinate,
+        moonCoordinates: HorizonCoordinate,
+        defaultSkip: Duration
+    ): Duration {
+        // If the sun is down, skip to the next sunrise
+        if (sunCoordinates.altitude < 0) {
+            return timeUntilSunrise(time, location) ?: defaultSkip
         }
 
-        return Eclipse(start, end, maxMagnitude)
+        // If the moon is down, skip to the next moonrise
+        if (moonCoordinates.altitude < 0) {
+            return timeUntilMoonrise(time, location) ?: defaultSkip
+        }
+
+        // If the moon is close to full, skip a bit
+        if (moon.getPhase(time).illumination > 0.5f) {
+            return Duration.ofHours(6)
+        }
+
+        // If the moon is not close to the sun, skip a bit
+        // TODO: Skip more if the moon is further away
+        val distance = sunCoordinates.angularDistanceTo(moonCoordinates)
+        if (distance > 1) {
+            return defaultSkip
+        }
+
+        return defaultSkip
+    }
+
+    private fun getMagnitude(
+        time: UniversalTime,
+        location: Coordinate,
+        sunCoordinates: HorizonCoordinate,
+        moonCoordinates: HorizonCoordinate
+    ): Float {
+        val angularDistance = sunCoordinates.angularDistanceTo(moonCoordinates)
+        val moonRadius = moon.getAngularDiameter(time, location) / 2.0
+        val sunRadius = sun.getAngularDiameter(time) / 2.0
+
+        return getMagnitude(angularDistance, moonRadius, sunRadius)
     }
 
     private fun timeUntilSunrise(time: UniversalTime, location: Coordinate): Duration? {
@@ -225,5 +275,10 @@ class SolarEclipseCalculator(
     ): Boolean {
         return angularDistance <= abs(moonRadius - sunRadius)
     }
+
+    private data class EclipseInfo(
+        val time: Instant,
+        val magnitude: Float
+    )
 
 }

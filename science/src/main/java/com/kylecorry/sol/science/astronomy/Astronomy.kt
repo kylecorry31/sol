@@ -308,18 +308,10 @@ object Astronomy : IAstronomyService {
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
-            EclipseType.PartialSolar -> if (maxSearch != null) {
+            EclipseType.Solar -> if (maxSearch != null) {
                 SolarEclipseCalculator(maxDuration = maxSearch)
             } else {
                 SolarEclipseCalculator()
-            }
-            EclipseType.TotalSolar -> if (maxSearch != null) {
-                SolarEclipseCalculator(
-                    maxDuration = maxSearch,
-                    totalOnly = true
-                )
-            } else {
-                SolarEclipseCalculator(totalOnly = true)
             }
         }
         return calculator.getNextEclipse(time.toInstant(), location)

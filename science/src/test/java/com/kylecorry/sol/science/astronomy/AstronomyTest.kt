@@ -100,7 +100,7 @@ class AstronomyTest {
         val datetime = ZonedDateTime.parse(date)
         val location = Coordinate(latitude, longitude)
 
-        val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.PartialSolar)
+        val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.Solar)
 
         if (start == null || end == null){
             assertNull(actual)
@@ -781,10 +781,10 @@ class AstronomyTest {
         @JvmStatic
         fun providePartialSolarEclipses(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(24.61167, 143.36167, "2009-07-22T01:33:00Z", "2009-07-22T01:33:00Z", "2009-07-22T03:42:00Z", 0.69520104f),
+                Arguments.of(24.61167, 143.36167, "2009-07-22T00:00:00Z", "2009-07-22T00:58:00Z", "2009-07-22T03:42:00Z", 0.69520104f),
                 Arguments.of(42.0, -70.0, "2023-01-01T00:00:00Z", "2023-10-14T16:21:00Z", "2023-10-14T18:38:00Z", 0.17762049f),
                 Arguments.of(42.0, -70.0, "2023-10-15T00:00:00Z", "2024-04-08T18:18:00Z", "2024-04-08T20:41:00Z", 0.91496944f),
-                Arguments.of(42.0, -70.0, "2024-04-09T00:00:00Z", "2025-03-29T10:44:00Z", "2025-03-29T11:08:00Z", 0.30317676f),
+                Arguments.of(42.0, -70.0, "2024-04-09T00:00:00Z", "2025-03-29T10:29:00Z", "2025-03-29T11:08:00Z", 0.6000332f),
                 Arguments.of(25.28, -104.12, "2023-10-15T00:00:00Z", "2024-04-08T17:03:00Z", "2024-04-08T19:46:00Z", 0.94278395f), // This should be a total eclipse
 
                 // No eclipses
@@ -794,7 +794,7 @@ class AstronomyTest {
                 // Search starts at start of eclipse
                 Arguments.of(42.0, -70.0, "2023-10-14T16:21:00Z", "2023-10-14T16:21:00Z", "2023-10-14T18:38:00Z", 0.17762049f),
                 // Search starts during eclipse
-                Arguments.of(42.0, -70.0, "2023-10-14T18:00:00Z", "2023-10-14T18:00:00Z", "2023-10-14T18:38:00Z", 0.12157123f),
+                Arguments.of(42.0, -70.0, "2023-10-14T18:00:00Z", "2023-10-14T16:21:00Z", "2023-10-14T18:38:00Z", 0.17762049f),
                 // Search starts at end of eclipse
                 Arguments.of(42.0, -70.0, "2023-10-14T18:38:00Z", "2024-04-08T18:18:00Z", "2024-04-08T20:41:00Z", 0.91496944f)
             )
