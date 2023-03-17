@@ -252,13 +252,26 @@ object Astronomy : IAstronomyService {
     override fun getNextEclipse(
         time: ZonedDateTime,
         location: Coordinate,
-        type: EclipseType
+        type: EclipseType,
+        maxSearch: Duration?
     ): Eclipse? {
+        // TODO: Apply max search to lunar as well
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
-            EclipseType.PartialSolar -> SolarEclipseCalculator()
-            EclipseType.TotalSolar -> SolarEclipseCalculator(totalOnly = true)
+            EclipseType.PartialSolar -> if (maxSearch != null) {
+                SolarEclipseCalculator(maxDuration = maxSearch)
+            } else {
+                SolarEclipseCalculator()
+            }
+            EclipseType.TotalSolar -> if (maxSearch != null) {
+                SolarEclipseCalculator(
+                    maxDuration = maxSearch,
+                    totalOnly = true
+                )
+            } else {
+                SolarEclipseCalculator(totalOnly = true)
+            }
         }
         return calculator.getNextEclipse(time.toInstant(), location)
     }

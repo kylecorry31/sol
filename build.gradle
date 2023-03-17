@@ -9,7 +9,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
     ext.groupId = 'com.kylecorry.sol'
-    ext.versionName = '6.5.0-beta01'
+    ext.versionName = '6.5.0-beta02'
 }
 
 allprojects {
