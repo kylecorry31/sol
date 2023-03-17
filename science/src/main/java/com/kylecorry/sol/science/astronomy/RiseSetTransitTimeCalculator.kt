@@ -11,6 +11,7 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.time.Time.plusHours
+import com.kylecorry.sol.units.Distance
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
@@ -22,7 +23,8 @@ internal class RiseSetTransitTimeCalculator {
         date: ZonedDateTime,
         location: Coordinate,
         standardAltitude: Double = 0.0,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes {
 
         val ld = date.toLocalDate()
@@ -34,6 +36,7 @@ internal class RiseSetTransitTimeCalculator {
                 location,
                 standardAltitude,
                 withRefraction,
+                withParallax,
                 locator
             )
         if (today.rise?.toLocalDate() == ld && today.transit?.toLocalDate() == ld && today.set?.toLocalDate() == ld) {
@@ -46,6 +49,7 @@ internal class RiseSetTransitTimeCalculator {
             location,
             standardAltitude,
             withRefraction,
+            withParallax,
             locator
         )
 
@@ -56,6 +60,7 @@ internal class RiseSetTransitTimeCalculator {
                 location,
                 standardAltitude,
                 withRefraction,
+                withParallax,
                 locator
             )
         val tomorrow =
@@ -64,6 +69,7 @@ internal class RiseSetTransitTimeCalculator {
                 location,
                 standardAltitude,
                 withRefraction,
+                withParallax,
                 locator
             )
 
@@ -94,6 +100,7 @@ internal class RiseSetTransitTimeCalculator {
         coordinate: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
+        withParallax: Boolean,
         locator: ICelestialLocator
     ): RiseSetTransitTimes {
         val ut = ut0hOnDate(date)
@@ -102,12 +109,20 @@ internal class RiseSetTransitTimeCalculator {
         val astroCoords = locator.getCoordinates(ut)
         val astroCoordsy = locator.getCoordinates(uty)
         val astroCoordst = locator.getCoordinates(utt)
+        val distance = if (withParallax) locator.getDistance(ut) else null
+        val distancey = if (withParallax) locator.getDistance(uty) else null
+        val distancet = if (withParallax) locator.getDistance(utt) else null
         val times = getRiseSetTransitTimes(
             ut,
             coordinate,
             standardAltitude,
             withRefraction,
-            Triple(astroCoordsy, astroCoords, astroCoordst)
+            Triple(astroCoordsy, astroCoords, astroCoordst),
+            if (distance != null && distancey != null && distancet != null) Triple(
+                distance,
+                distancey,
+                distancet
+            ) else null
         )
             ?: return RiseSetTransitTimes(null, null, null)
 
@@ -141,7 +156,8 @@ internal class RiseSetTransitTimeCalculator {
         location: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>
+        coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>,
+        distances: Triple<Distance, Distance, Distance>?
     ): Triple<Double, Double, Double>? {
         val apparentSidereal = getApparentSiderealTime(ut)
         val deltaT = TerrestrialTime.getDeltaT(ut.year)
@@ -191,6 +207,10 @@ internal class RiseSetTransitTimeCalculator {
             val c2 =
                 interpolateCoordinate(n2, coordinates.first, coordinates.second, coordinates.third)
 
+            val d0 = distances?.let { interpolateDistance(n0, it.first, it.second, it.third) }
+            val d1 = distances?.let { interpolateDistance(n1, it.first, it.second, it.third) }
+            val d2 = distances?.let { interpolateDistance(n2, it.first, it.second, it.third) }
+
             val hourAngle0 = c0.getHourAngle(sidereal0.atLongitude(location.longitude)) * 15
             val hourAngle1 = c1.getHourAngle(sidereal1.atLongitude(location.longitude)) * 15
             val hourAngle2 = c2.getHourAngle(sidereal2.atLongitude(location.longitude)) * 15
@@ -200,14 +220,16 @@ internal class RiseSetTransitTimeCalculator {
                     c1,
                     sidereal1.toUniversalTime(date),
                     location,
-                    withRefraction
+                    withRefraction,
+                    d1
                 )
             val altitude2 =
                 AstroUtils.getAltitude(
                     c2,
                     sidereal2.toUniversalTime(date),
                     location,
-                    withRefraction
+                    withRefraction,
+                    d2
                 )
 
             val dm0 = -hourAngle0 / 360
@@ -262,6 +284,21 @@ internal class RiseSetTransitTimeCalculator {
             SolMath.interpolate(value, first.declination, second.declination, third.declination)
 
         return EquatorialCoordinate(declination, ra)
+    }
+
+    private fun interpolateDistance(
+        value: Double,
+        first: Distance,
+        second: Distance,
+        third: Distance
+    ): Distance {
+        val distance = SolMath.interpolate(
+            value,
+            first.distance.toDouble(),
+            second.distance.toDouble(),
+            third.distance.toDouble()
+        )
+        return Distance(distance.toFloat(), first.units)
     }
 
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {

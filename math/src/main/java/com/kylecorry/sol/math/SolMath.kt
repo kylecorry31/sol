@@ -62,8 +62,10 @@ object SolMath {
      */
     fun polynomial(x: Double, vararg coefs: Double): Double {
         var runningTotal = 0.0
+        var xPower = 1.0
         for (i in coefs.indices) {
-            runningTotal += power(x, i) * coefs[i]
+            runningTotal += xPower * coefs[i]
+            xPower *= x
         }
 
         return runningTotal

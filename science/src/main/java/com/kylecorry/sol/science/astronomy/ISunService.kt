@@ -12,38 +12,52 @@ interface ISunService {
         date: ZonedDateTime,
         location: Coordinate,
         mode: SunTimesMode = SunTimesMode.Actual,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes
 
     fun getSunAltitude(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Float
 
-    fun getSunAzimuth(time: ZonedDateTime, location: Coordinate): Bearing
+    fun getSunAzimuth(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withParallax: Boolean = false
+    ): Bearing
 
     fun getNextSunset(
         time: ZonedDateTime,
         location: Coordinate,
         mode: SunTimesMode = SunTimesMode.Actual,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime?
 
     fun getNextSunrise(
         time: ZonedDateTime,
         location: Coordinate,
         mode: SunTimesMode = SunTimesMode.Actual,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime?
 
-    fun isSunUp(time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false): Boolean
+    fun isSunUp(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
+    ): Boolean
 
     fun getDaylightLength(
         date: ZonedDateTime,
         location: Coordinate,
         sunTimesMode: SunTimesMode = SunTimesMode.Actual,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Duration
 
     fun getSunDistance(time: ZonedDateTime): Distance
@@ -54,7 +68,8 @@ interface ISunService {
     fun getSolarRadiation(
         date: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Double
 
     /**
@@ -65,7 +80,8 @@ interface ISunService {
         location: Coordinate,
         tilt: Float,
         azimuth: Bearing,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Double
 
 }

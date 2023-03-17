@@ -14,6 +14,7 @@ import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toInstant
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -51,7 +52,8 @@ class SolarEclipseCalculator(
                 continue
             }
 
-            val sunLocation = getCoordinates(sun, currentTime, location)
+            val sunLocation =
+                getCoordinates(sun, currentTime, location)
 
             // If the sun is below the horizon, skip to the next sunrise
             if (sunLocation.altitude < 0) {
@@ -126,20 +128,22 @@ class SolarEclipseCalculator(
             time.atZone(ZoneId.of("UTC")),
             location,
             SunTimesMode.Actual,
-            true
+            withRefraction = true,
+            withParallax = true
         ) ?: return null
 
-        return Duration.between(time.toInstant(), nextSunrise.toInstant()).plusMinutes(5)
+        return Duration.between(time.toInstant(), nextSunrise.toInstant()).plusMinutes(15)
     }
 
     private fun timeUntilMoonrise(time: UniversalTime, location: Coordinate): Duration? {
         val nextMoonrise = Astronomy.getNextMoonrise(
             time.atZone(ZoneId.of("UTC")),
             location,
-            true
+            withRefraction = true,
+            withParallax = true
         ) ?: return null
 
-        return Duration.between(time.toInstant(), nextMoonrise.toInstant()).plusMinutes(5)
+        return Duration.between(time.toInstant(), nextMoonrise.toInstant()).plusMinutes(15)
     }
 
     private fun getCoordinates(
@@ -148,7 +152,12 @@ class SolarEclipseCalculator(
         location: Coordinate
     ): HorizonCoordinate {
         val coordinates = locator.getCoordinates(time)
-        return HorizonCoordinate.fromEquatorial(coordinates, time, location).withRefraction()
+        return HorizonCoordinate.fromEquatorial(
+            coordinates,
+            time,
+            location,
+            locator.getDistance(time)!!
+        ).withRefraction()
     }
 
     private fun getMagnitude(
@@ -177,7 +186,8 @@ class SolarEclipseCalculator(
         val s = (distance2 + sunRadius2 - moonRadius2) / (2 * angularDistance)
         val m = (distance2 + moonRadius2 - sunRadius2) / (2 * angularDistance)
 
-        val h = sqrt(4 * distance2 * sunRadius2 - square(distance2 + sunRadius2 - moonRadius2)) / (2 * angularDistance)
+        val h =
+            sqrt(4 * distance2 * sunRadius2 - square(distance2 + sunRadius2 - moonRadius2)) / (2 * angularDistance)
 
         val triangleSun = h * s
         val triangleMoon = h * m

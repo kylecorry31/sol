@@ -1,15 +1,15 @@
 package com.kylecorry.sol.science.astronomy.units
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.power
+import com.kylecorry.sol.math.SolMath.normalizeAngle
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.tanDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.units.Coordinate
-import kotlin.math.acos
-import kotlin.math.asin
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
+import kotlin.math.*
 
 internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
 
@@ -64,24 +64,7 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
 
 
     private fun getRefraction(): Double {
-        if (altitude > 85.0) {
-            return 0.0
-        }
-
-        val tanElev = tanDegrees(altitude)
-
-        if (altitude > 5.0) {
-            return (58.1 / tanElev - 0.07 / SolMath.cube(tanElev) + 0.000086 / power(
-                tanElev,
-                5
-            )) / 3600.0
-        }
-
-        if (altitude > -0.575) {
-            return SolMath.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
-        }
-
-        return -20.774 / tanElev / 3600.0
+        return 1.02 / tanDegrees(altitude + 10.3 / (altitude + 5.11)) / 60.0
     }
 
     fun angularDistanceTo(coordinate: HorizonCoordinate): Double {
@@ -132,6 +115,73 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
             }
 
             return HorizonCoordinate(a, h)
+        }
+
+        fun fromEquatorial(
+            equatorial: EquatorialCoordinate,
+            ut: UniversalTime,
+            coordinate: Coordinate,
+            distanceToBody: Distance
+        ): HorizonCoordinate {
+            return fromEquatorial(
+                equatorial,
+                ut.toSiderealTime().atLongitude(coordinate.longitude),
+                coordinate.latitude,
+                distanceToBody
+            )
+        }
+
+        fun fromEquatorial(
+            equatorial: EquatorialCoordinate,
+            siderealTime: SiderealTime,
+            latitude: Double,
+            distanceToBody: Distance
+        ): HorizonCoordinate {
+            val sinPi = 6378.14 / distanceToBody.convertTo(DistanceUnits.Kilometers).distance
+            val hourAngle = equatorial.getHourAngle(siderealTime) * 15
+
+            val u = atan(0.99664719 * tanDegrees(latitude))
+            val x = cos(u) // factor in elevation
+            val y = 0.99664719 * sin(u) // factor in elevation
+
+            val deltaAscension = atan2(
+                -x * sinPi * sinDegrees(hourAngle),
+                cosDegrees(equatorial.declination) - x * sinPi * cosDegrees(hourAngle)
+            ).toDegrees()
+
+            val trueDeclination = atan2(
+                (sinDegrees(equatorial.declination) - y * sinPi) * cosDegrees(deltaAscension),
+                cosDegrees(equatorial.declination) - y * sinPi * cosDegrees(hourAngle)
+            ).toDegrees()
+
+            val hPrime = hourAngle - deltaAscension
+
+            var altitude = wrap(asin(
+                sinDegrees(latitude) * sinDegrees(trueDeclination) +
+                        cosDegrees(latitude) * cosDegrees(trueDeclination) * cosDegrees(hPrime)
+            ).toDegrees(), -90.0, 90.0)
+
+            val astronomersAzimuth = atan2(
+                sinDegrees(hPrime),
+                cosDegrees(hPrime) * sinDegrees(latitude) - tanDegrees(trueDeclination) * cosDegrees(
+                    latitude
+                )
+            ).toDegrees()
+
+            val sinH = sinDegrees(hPrime)
+
+            if (sinH > 0) {
+                altitude = 360 - altitude
+            }
+
+            return fromEquatorial(
+                EquatorialCoordinate(trueDeclination, equatorial.rightAscension + deltaAscension),
+                siderealTime,
+                latitude
+            )
+
+//            return HorizonCoordinate(astronomersAzimuth + 180, altitude)
+
         }
     }
 

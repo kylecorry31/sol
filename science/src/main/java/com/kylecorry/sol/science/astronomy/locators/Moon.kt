@@ -9,12 +9,14 @@ import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
+import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
+import java.time.Duration
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 
@@ -23,7 +25,9 @@ internal class Moon : ICelestialLocator {
     private val sun = Sun()
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
-        val T = ut.toJulianCenturies()
+        val delta = TerrestrialTime.getDeltaT(ut.year)
+        val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
+        val T = tt.toJulianCenturies()
         val L = SolMath.normalizeAngle(
             SolMath.polynomial(
                 T,
@@ -35,17 +39,17 @@ internal class Moon : ICelestialLocator {
             )
         )
 
-        val D = getMeanElongation(ut)
+        val D = getMeanElongation(tt)
 
-        val M = sun.getMeanAnomaly(ut)
-        val Mprime = getMeanAnomaly(ut)
+        val M = sun.getMeanAnomaly(tt)
+        val Mprime = getMeanAnomaly(tt)
 
-        val F = getArgumentOfLatitude(ut)
+        val F = getArgumentOfLatitude(tt)
 
         val a1 = SolMath.normalizeAngle(119.75 + 131.849 * T)
-        val a2 = SolMath.normalizeAngle(53.09 + 479264.290 * T)
+        val a2 = SolMath.normalizeAngle(53.09 + 479264.29 * T)
         val a3 = SolMath.normalizeAngle(313.45 + 481266.484 * T)
-        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000074)
         val E2 = SolMath.square(E)
 
         val t47a = table47a()
@@ -78,22 +82,24 @@ internal class Moon : ICelestialLocator {
 
 
         val apparentLongitude =
-            L + sumL / 1000000.0 + LongitudinalNutation.getNutationInLongitude(ut)
+            L + sumL / 1000000.0 + LongitudinalNutation.getNutationInLongitude(tt)
         val eclipticLatitude = sumB / 1000000.0
-        val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(ut)
+        val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(tt)
 
         return EclipticCoordinate(eclipticLatitude, apparentLongitude).toEquatorial(
             eclipticObliquity
         )
     }
 
-    fun getDistance(ut: UniversalTime): Distance {
-        val T = ut.toJulianCenturies()
-        val D = getMeanElongation(ut)
-        val F = getArgumentOfLatitude(ut)
-        val M = sun.getMeanAnomaly(ut)
+    override fun getDistance(ut: UniversalTime): Distance {
+        val delta = TerrestrialTime.getDeltaT(ut.year)
+        val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
+        val T = tt.toJulianCenturies()
+        val D = getMeanElongation(tt)
+        val F = getArgumentOfLatitude(tt)
+        val M = sun.getMeanAnomaly(tt)
 
-        val Mprime = getMeanAnomaly(ut)
+        val Mprime = getMeanAnomaly(tt)
         val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000075)
         val E2 = SolMath.square(E)
         val t47a = table47a()

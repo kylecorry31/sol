@@ -21,9 +21,11 @@ internal class SolarRadiationCalculator {
         location: Coordinate,
         tilt: Float? = null,
         bearing: Bearing? = null,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Double {
-        val altitude = AstroUtils.getAltitude(sun, ut, location, withRefraction).toDouble()
+        val altitude =
+            AstroUtils.getAltitude(sun, ut, location, withRefraction, withParallax).toDouble()
         if (altitude < 0) {
             return 0.0
         }
@@ -35,7 +37,7 @@ internal class SolarRadiationCalculator {
             return incident
         }
 
-        val azimuth = AstroUtils.getAzimuth(sun, ut, location).value.toDouble()
+        val azimuth = AstroUtils.getAzimuth(sun, ut, location, withParallax).value.toDouble()
 
         return incident * (
                 cosDegrees(altitude) * sinDegrees(tilt) * cosDegrees(bearing.value - azimuth) + sinDegrees(

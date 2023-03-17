@@ -8,8 +8,10 @@ import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
+import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
+import java.time.Duration
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.pow
@@ -20,8 +22,10 @@ internal class Sun : ICelestialLocator {
     private val angularDiameter0 = 0.533128
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
-        val apparentLongitude = getApparentLongitude(ut)
-        val correctedObliquity = getObliquityCorrection(ut)
+        val delta = TerrestrialTime.getDeltaT(ut.year)
+        val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
+        val apparentLongitude = getApparentLongitude(tt)
+        val correctedObliquity = getObliquityCorrection(tt)
         val rightAscension = SolMath.normalizeAngle(
             atan2(
                 cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
@@ -35,7 +39,7 @@ internal class Sun : ICelestialLocator {
         return EquatorialCoordinate(declination, rightAscension, true)
     }
 
-    fun getDistance(ut: UniversalTime): Distance {
+    override fun getDistance(ut: UniversalTime): Distance {
         val trueAnomaly = getTrueAnomaly(ut)
         val f =
             (1 + getEccentricity(ut) * cosDegrees(trueAnomaly)) / (1 - getEccentricity(ut).pow(2))
@@ -49,7 +53,7 @@ internal class Sun : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.normalizeAngle(SolMath.polynomial(T, 357.52911, 35999.05029, -0.0001537))//, 1 / 24490000.0))
+        return SolMath.normalizeAngle(SolMath.polynomial(T, 357.5291092, 35999.0502909, -0.0001536, 1 / 24490000.0))
     }
 
     fun getTrueAnomaly(ut: UniversalTime): Double {

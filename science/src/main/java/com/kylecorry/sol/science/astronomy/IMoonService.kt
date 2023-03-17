@@ -10,26 +10,35 @@ interface IMoonService {
     fun getMoonEvents(
         date: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes
 
     fun getMoonAltitude(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Float
 
-    fun getMoonAzimuth(time: ZonedDateTime, location: Coordinate): Bearing
+    fun getMoonAzimuth(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withParallax: Boolean = false
+    ): Bearing
+
     fun getNextMoonset(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime?
 
     fun getNextMoonrise(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime?
 
     fun getMoonPhase(date: ZonedDateTime): MoonPhase
@@ -37,7 +46,8 @@ interface IMoonService {
     fun isMoonUp(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean = false
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Boolean
 
     fun getMoonDistance(time: ZonedDateTime): Distance
