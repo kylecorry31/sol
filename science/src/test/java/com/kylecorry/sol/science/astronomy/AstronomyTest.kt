@@ -253,19 +253,13 @@ class AstronomyTest {
         }
     }
 
-    @Test
-    fun getSunAzimuth() {
-        val ny = Coordinate(40.7128, -74.0060)
-        parametrized(
-            listOf(
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 111f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), 307f),
-            )
-        ) {
-            val azimuth =
-                Astronomy.getSunAzimuth(ZonedDateTime.of(it.first, ZoneId.of("America/New_York")), ny)
-            assertEquals(it.second, azimuth.value, 0.5f)
-        }
+    @ParameterizedTest
+    @MethodSource("provideSunAzimuth")
+    fun getSunAzimuth(latitude: Double, longitude: Double, date: String, expected: Float) {
+        val coordinate = Coordinate(latitude, longitude)
+        val datetime = ZonedDateTime.parse(date)
+        val azimuth = Astronomy.getSunAzimuth(datetime, coordinate)
+        assertEquals(expected, azimuth.value, 0.5f)
     }
 
     @Test
@@ -803,6 +797,15 @@ class AstronomyTest {
                 Arguments.of(42.0, -70.0, "2023-10-14T18:00:00Z", "2023-10-14T18:00:00Z", "2023-10-14T18:38:00Z", 0.12157123f),
                 // Search starts at end of eclipse
                 Arguments.of(42.0, -70.0, "2023-10-14T18:38:00Z", "2024-04-08T18:18:00Z", "2024-04-08T20:41:00Z", 0.91496944f)
+            )
+        }
+
+        @JvmStatic
+        fun provideSunAzimuth(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(40.7128, -74.006, "2020-09-13T09:08:00-04", 111.0f),
+                Arguments.of(40.7128, -74.006, "2020-09-13T21:58:00-04", 307.0f),
+                Arguments.of(-21.48575, -55.54686, "2023-03-17T13:45:00-04", 302.18f)
             )
         }
 
