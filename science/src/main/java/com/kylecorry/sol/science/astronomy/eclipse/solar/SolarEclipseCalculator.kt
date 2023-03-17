@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
+import com.kylecorry.sol.math.SolMath.map
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.SunTimesMode
@@ -8,6 +9,7 @@ import com.kylecorry.sol.science.astronomy.eclipse.EclipseCalculator
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Sun
+import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toInstant
@@ -110,9 +112,8 @@ class SolarEclipseCalculator(
             val moonCoordinates = getCoordinates(moon, currentTime, location)
 
             // Skip ahead if conditions are not right for an eclipse
-            val nextSkip =
-                getNextSkip(currentTime, location, sunCoordinates, moonCoordinates, defaultSkip)
-            if (nextSkip > defaultSkip) {
+            val nextSkip = getNextSkip(currentTime, location, sunCoordinates, moonCoordinates)
+            if (nextSkip != null) {
                 timeFromStart = timeFromStart.plus(nextSkip)
                 continue
             }
@@ -132,32 +133,44 @@ class SolarEclipseCalculator(
         time: UniversalTime,
         location: Coordinate,
         sunCoordinates: HorizonCoordinate,
-        moonCoordinates: HorizonCoordinate,
-        defaultSkip: Duration
-    ): Duration {
+        moonCoordinates: HorizonCoordinate
+    ): Duration? {
+        // If the moon is close to full, skip a bit
+        val phase = moon.getPhase(time)
+
+        val daysUntilNewMoon = when (phase.phase){
+            MoonTruePhase.ThirdQuarter -> 2
+            MoonTruePhase.WaningGibbous -> 4
+            MoonTruePhase.Full -> 8
+            MoonTruePhase.WaxingGibbous -> 12
+            MoonTruePhase.FirstQuarter -> 14
+            MoonTruePhase.WaxingCrescent -> 22
+            else -> 0
+        }
+
+        if (daysUntilNewMoon > 0) {
+            return Duration.ofDays(daysUntilNewMoon.toLong())
+        }
+
         // If the sun is down, skip to the next sunrise
         if (sunCoordinates.altitude < 0) {
-            return timeUntilSunrise(time, location) ?: defaultSkip
+            return timeUntilSunrise(time, location)?.plusMinutes(15)
         }
 
         // If the moon is down, skip to the next moonrise
         if (moonCoordinates.altitude < 0) {
-            return timeUntilMoonrise(time, location) ?: defaultSkip
-        }
-
-        // If the moon is close to full, skip a bit
-        if (moon.getPhase(time).illumination > 0.5f) {
-            return Duration.ofHours(6)
+            return timeUntilMoonrise(time, location)?.plusMinutes(15)
         }
 
         // If the moon is not close to the sun, skip a bit
-        // TODO: Skip more if the moon is further away
         val distance = sunCoordinates.angularDistanceTo(moonCoordinates)
-        if (distance > 1) {
-            return defaultSkip
+        if (distance > 10){
+            return Duration.ofHours(2)
+        } else if (distance > 2) {
+            return Duration.ofMinutes(30)
         }
 
-        return defaultSkip
+        return null
     }
 
     private fun getMagnitude(
@@ -182,7 +195,7 @@ class SolarEclipseCalculator(
             withParallax = true
         ) ?: return null
 
-        return Duration.between(time.toInstant(), nextSunrise.toInstant()).plusMinutes(15)
+        return Duration.between(time.toInstant(), nextSunrise.toInstant())
     }
 
     private fun timeUntilMoonrise(time: UniversalTime, location: Coordinate): Duration? {
@@ -193,7 +206,7 @@ class SolarEclipseCalculator(
             withParallax = true
         ) ?: return null
 
-        return Duration.between(time.toInstant(), nextMoonrise.toInstant()).plusMinutes(15)
+        return Duration.between(time.toInstant(), nextMoonrise.toInstant())
     }
 
     private fun getCoordinates(
