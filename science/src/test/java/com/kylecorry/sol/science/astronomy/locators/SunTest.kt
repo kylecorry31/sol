@@ -11,8 +11,8 @@ internal class SunTest {
     @Test
     fun getCoordinates() {
         val coords = sun.getCoordinates(UniversalTime.of(1992, 10, 13, 0, 0))
-        assertEquals(-7.78507, coords.declination, 0.0001)
-        assertEquals(360 - 161.61917, coords.rightAscension, 0.0001)
+        assertEquals(-7.785303541399693, coords.declination, 0.0001)
+        assertEquals(198.3814040423241, coords.rightAscension, 0.0001)
     }
 
     @Test

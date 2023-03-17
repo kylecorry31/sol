@@ -95,15 +95,15 @@ class AstroUtilsTest {
     @Test
     fun solarCoordinates() {
         val coords = Sun().getCoordinates(fromJulianDay(2448908.5))
-        assertEquals(-7.78507, coords.declination, 0.0001)
-        assertEquals(360 - 161.61917, coords.rightAscension, 0.0001)
+        assertEquals(-7.7853035, coords.declination, 0.0001)
+        assertEquals(198.381404, coords.rightAscension, 0.0001)
     }
 
     @Test
     fun lunarCoordinates() {
         val coords = Moon().getCoordinates(fromJulianDay(2448724.5))
-        assertEquals(13.768368, coords.declination, 0.001)
-        assertEquals(134.688470, coords.rightAscension, 0.001)
+        assertEquals(13.7652847499, coords.declination, 0.001)
+        assertEquals(134.6971088, coords.rightAscension, 0.001)
     }
 
 

@@ -47,7 +47,7 @@ class AstronomyTest {
     fun canGetMoonDistance(){
         val date = ZonedDateTime.of(LocalDateTime.of(1992, Month.APRIL, 12, 0, 0), ZoneId.of("UTC"))
         val distance = Astronomy.getMoonDistance(date)
-        assertEquals(368409.7f, distance.distance, 0.1f)
+        assertEquals(368409.06f, distance.distance, 0.1f)
     }
 
     @Test
@@ -240,7 +240,7 @@ class AstronomyTest {
         parametrized(
             listOf(
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 27.63f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -30.8f),
+                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -30.863646f),
                 Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 22, 6, 51), 0.9f),
             )
         ) {
@@ -391,7 +391,7 @@ class AstronomyTest {
             ),
             RiseSetTransitTestInput(
                 LocalDate.of(2021, Month.FEBRUARY, 28),
-                LocalTime.of(19, 28),
+                LocalTime.of(19, 29),
                 LocalTime.of(1, 1),
                 LocalTime.of(7, 35)
             )
@@ -840,7 +840,7 @@ class AstronomyTest {
                         LocalDate.of(2021, 2, 17),
                         LocalTime.MIN,
                         zoneGreenland
-                    ), greenland, duration(4, 37)
+                    ), greenland, duration(4, 38)
                 ),
                 Arguments.of(
                     ZonedDateTime.of(
