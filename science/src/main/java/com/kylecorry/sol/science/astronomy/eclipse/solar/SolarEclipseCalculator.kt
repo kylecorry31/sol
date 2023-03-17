@@ -25,10 +25,8 @@ import kotlin.math.sqrt
 
 class SolarEclipseCalculator(
     private val precision: Duration = Duration.ofMinutes(1),
-    private val maxDuration: Duration = Duration.ofDays(365 * 5),
-    private val totalOnly: Boolean = false
-) :
-    EclipseCalculator {
+    private val maxDuration: Duration = Duration.ofDays(365 * 5)
+) : EclipseCalculator {
 
     private val sun = Sun()
     private val moon = Moon()
@@ -141,7 +139,7 @@ class SolarEclipseCalculator(
         // If the moon is close to full, skip a bit
         val phase = moon.getPhase(time)
 
-        val daysUntilNewMoon = when (phase.phase){
+        val daysUntilNewMoon = when (phase.phase) {
             MoonTruePhase.ThirdQuarter -> 2
             MoonTruePhase.WaningGibbous -> 4
             MoonTruePhase.Full -> 8
@@ -167,7 +165,7 @@ class SolarEclipseCalculator(
 
         // If the moon is not close to the sun, skip a bit
         val distance = sunCoordinates.angularDistanceTo(moonCoordinates)
-        if (distance > 10){
+        if (distance > 10) {
             return Duration.ofHours(2)
         } else if (distance > 2) {
             return Duration.ofMinutes(30)
@@ -269,13 +267,6 @@ class SolarEclipseCalculator(
         return totalArea / (PI * sunRadius2).toFloat()
     }
 
-    private fun isEclipse(angularDistance: Double, moonRadius: Double, sunRadius: Double): Boolean {
-        return when (totalOnly) {
-            true -> isTotalEclipse(angularDistance, moonRadius, sunRadius)
-            false -> isAnyEclipse(angularDistance, moonRadius, sunRadius)
-        }
-    }
-
     private fun isAnyEclipse(
         angularDistance: Double,
         moonRadius: Double,
@@ -291,10 +282,5 @@ class SolarEclipseCalculator(
     ): Boolean {
         return angularDistance <= abs(moonRadius - sunRadius)
     }
-
-    private data class EclipseInfo(
-        val time: Instant,
-        val magnitude: Float
-    )
 
 }
