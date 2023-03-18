@@ -107,8 +107,8 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
 
             // This is to support the case where the whole map is shown
-            if (minLongitude == -180.0 && maxLongitude == 180.0){
-                return CoordinateBounds(north, 180.0, south, -180.0)
+            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)){
+                return CoordinateBounds(north, maxLongitude!!, south, minLongitude!!)
             }
 
             return CoordinateBounds(north, east, south, west)

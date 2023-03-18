@@ -253,6 +253,10 @@ internal class GeologyTest {
                     CoordinateBounds(90.0, 180.0, -90.0, -180.0)
                 ),
                 Arguments.of(
+                    listOf(Coordinate(-90.0, 179.999999999), Coordinate(90.0, -179.999999999)),
+                    CoordinateBounds(90.0, 179.999999999, -90.0, -179.999999999)
+                ),
+                Arguments.of(
                     listOf(Coordinate(10.0, 1.0)),
                     CoordinateBounds(10.0, 1.0, 10.0, 1.0)
                 ),
