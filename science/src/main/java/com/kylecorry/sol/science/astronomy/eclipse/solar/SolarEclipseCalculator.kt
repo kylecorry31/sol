@@ -22,7 +22,7 @@ import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.sqrt
 
-class SolarEclipseCalculator(
+internal class SolarEclipseCalculator(
     private val precision: Duration = Duration.ofMinutes(1),
     maxDuration: Duration? = null
 ) : EclipseCalculator {
