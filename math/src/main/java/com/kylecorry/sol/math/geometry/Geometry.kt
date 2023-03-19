@@ -3,9 +3,7 @@ package com.kylecorry.sol.math.geometry
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object Geometry {
     // INTERSECTIONS
@@ -133,4 +131,35 @@ object Geometry {
     fun euclideanDistance(p1: List<Float>, p2: List<Float>): Float {
         return sqrt(p1.zip(p2).sumOfFloat { square(it.first - it.second) })
     }
+
+    // Area
+
+    fun getIntersectionArea(circle1: Circle, circle2: Circle): Float {
+        // No intersection
+        val d = circle1.center.distanceTo(circle2.center)
+        if (d >= circle1.radius + circle2.radius) {
+            return 0f
+        }
+
+        // One circle is inside the other
+        if (d <= abs(circle1.radius - circle2.radius)) {
+            val r = minOf(circle1.radius, circle2.radius)
+            return PI.toFloat() * square(r)
+        }
+
+        val r1 = circle1.radius
+        val r2 = circle2.radius
+
+        // First sector area
+        val a1 = square(r1) * acos((square(d) + square(r1) - square(r2)) / (2 * d * r1))
+        // Second sector area
+        val a2 = square(r2) * acos((square(d) + square(r2) - square(r1)) / (2 * d * r2))
+
+        // Triangle area
+        val a3 = 0.5f * sqrt((-d + r1 + r2) * (d + r1 - r2) * (d - r1 + r2) * (d + r1 + r2))
+
+        // Sectors - triangle
+        return a1 + a2 - a3
+    }
+
 }

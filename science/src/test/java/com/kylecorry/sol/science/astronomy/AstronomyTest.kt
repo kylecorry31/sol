@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
-import kotlin.math.max
 
 class AstronomyTest {
 
@@ -63,42 +62,20 @@ class AstronomyTest {
         start: String?,
         maximum: String?,
         end: String?,
-        magnitude: Float
+        magnitude: Float,
+        obscuration: Float
     ) {
-        val datetime = ZonedDateTime.parse(date)
-        val location = Coordinate(latitude, longitude)
-
-        val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.PartialLunar)
-
-        if (start == null || end == null) {
-            assertNull(actual)
-            return
-        }
-
-        assertNotNull(actual)
-
-        val zone = ZonedDateTime.parse(start).zone
-
-        assertDate(
-            ZonedDateTime.parse(start),
-            actual!!.start.atZone(zone),
-            Duration.ofMinutes(2)
+        verifyEclipse(
+            EclipseType.PartialLunar,
+            latitude,
+            longitude,
+            date,
+            start,
+            maximum,
+            end,
+            magnitude,
+            obscuration
         )
-
-        assertDate(
-            ZonedDateTime.parse(maximum),
-            actual.maximum.atZone(zone),
-            Duration.ofMinutes(2)
-        )
-
-        assertDate(
-            ZonedDateTime.parse(end),
-            actual.end.atZone(zone),
-            Duration.ofMinutes(2)
-        )
-
-        assertEquals(magnitude, actual.magnitude, 0.005f)
-
     }
 
     @Test
@@ -124,7 +101,7 @@ class AstronomyTest {
     }
 
     @ParameterizedTest
-    @MethodSource("canGetNextSolarEclipse")
+    @MethodSource("provideNextSolarEclipse")
     fun canGetNextSolarEclipse(
         latitude: Double,
         longitude: Double,
@@ -132,41 +109,20 @@ class AstronomyTest {
         start: String?,
         maximum: String?,
         end: String?,
-        magnitude: Float
+        magnitude: Float,
+        obscuration: Float
     ) {
-        val datetime = ZonedDateTime.parse(date)
-        val location = Coordinate(latitude, longitude)
-
-        val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.Solar)
-
-        if (start == null || end == null) {
-            assertNull(actual)
-            return
-        }
-
-        assertNotNull(actual)
-
-        val zone = ZonedDateTime.parse(start).zone
-
-        assertDate(
-            ZonedDateTime.parse(start),
-            actual!!.start.atZone(zone),
-            Duration.ofMinutes(2)
+        verifyEclipse(
+            EclipseType.Solar,
+            latitude,
+            longitude,
+            date,
+            start,
+            maximum,
+            end,
+            magnitude,
+            obscuration
         )
-
-        assertDate(
-            ZonedDateTime.parse(maximum),
-            actual.maximum.atZone(zone),
-            Duration.ofMinutes(2)
-        )
-
-        assertDate(
-            ZonedDateTime.parse(end),
-            actual.end.atZone(zone),
-            Duration.ofMinutes(2)
-        )
-
-        assertEquals(magnitude, actual.magnitude, 0.005f)
     }
 
     @Test
@@ -820,6 +776,53 @@ class AstronomyTest {
         val zone: String = "America/New_York"
     )
 
+    private fun verifyEclipse(
+        type: EclipseType,
+        latitude: Double,
+        longitude: Double,
+        date: String,
+        start: String?,
+        maximum: String?,
+        end: String?,
+        magnitude: Float,
+        obscuration: Float
+    ) {
+        val datetime = ZonedDateTime.parse(date)
+        val location = Coordinate(latitude, longitude)
+
+        val actual = Astronomy.getNextEclipse(datetime, location, type)
+
+        if (start == null || end == null) {
+            assertNull(actual)
+            return
+        }
+
+        assertNotNull(actual)
+
+        val zone = ZonedDateTime.parse(start).zone
+
+        assertDate(
+            ZonedDateTime.parse(start),
+            actual!!.start.atZone(zone),
+            Duration.ofMinutes(2)
+        )
+
+        assertDate(
+            ZonedDateTime.parse(maximum),
+            actual.maximum.atZone(zone),
+            Duration.ofMinutes(2)
+        )
+
+        assertDate(
+            ZonedDateTime.parse(end),
+            actual.end.atZone(zone),
+            Duration.ofMinutes(2)
+        )
+
+        assertEquals(magnitude, actual.magnitude, 0.005f)
+        assertEquals(obscuration, actual.obscuration, 0.005f)
+    }
+
 
     companion object {
 
@@ -833,7 +836,8 @@ class AstronomyTest {
                     "2021-11-19T07:18:00Z",
                     "2021-11-19T09:03:00Z",
                     "2021-11-19T10:47:00Z",
-                    0.974f
+                    0.974f,
+                    0.991f
                 ),
                 Arguments.of(
                     42.0,
@@ -842,7 +846,28 @@ class AstronomyTest {
                     "2022-05-16T02:28:00Z",
                     "2022-05-16T04:11:00Z",
                     "2022-05-16T05:54:00Z",
-                    1.413f
+                    1.413f,
+                    1f
+                ),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2023-01-01T00:00:00Z",
+                    "2024-09-18T02:13:00Z",
+                    "2024-09-18T02:44:00Z",
+                    "2024-09-18T03:15:00Z",
+                    0.078f,
+                    0.035f
+                ),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2024-09-19T00:00:00Z",
+                    "2025-03-14T05:09:00Z",
+                    "2025-03-14T06:58:00Z",
+                    "2025-03-14T08:47:00Z",
+                    1.178f,
+                    1f
                 ),
                 Arguments.of(
                     42.0,
@@ -851,7 +876,8 @@ class AstronomyTest {
                     "2022-11-08T09:09:00Z",
                     "2022-11-08T10:59:00Z",
                     "2022-11-08T12:49:00Z",
-                    1.359f
+                    1.359f,
+                    1f
                 ),
 
                 // At start
@@ -862,7 +888,8 @@ class AstronomyTest {
                     "2021-11-19T07:18:00Z",
                     "2021-11-19T09:03:00Z",
                     "2021-11-19T10:47:00Z",
-                    0.974f
+                    0.974f,
+                    0.991f
                 ),
 
                 // At middle
@@ -873,7 +900,8 @@ class AstronomyTest {
                     "2021-11-19T07:18:00Z",
                     "2021-11-19T09:03:00Z",
                     "2021-11-19T10:47:00Z",
-                    0.974f
+                    0.974f,
+                    0.991f
                 ),
 
                 // At end
@@ -884,13 +912,14 @@ class AstronomyTest {
                     "2022-05-16T02:28:00Z",
                     "2022-05-16T04:11:00Z",
                     "2022-05-16T05:54:00Z",
-                    1.413f
+                    1.413f,
+                    1f
                 ),
             )
         }
 
         @JvmStatic
-        fun canGetNextSolarEclipse(): Stream<Arguments> {
+        fun provideNextSolarEclipse(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
                     24.61167,
@@ -899,6 +928,7 @@ class AstronomyTest {
                     "2009-07-22T00:58:00Z",
                     "2009-07-22T02:19:00Z",
                     "2009-07-22T03:42:00Z",
+                    0.7456f,
                     0.69520104f
                 ),
                 Arguments.of(
@@ -908,6 +938,7 @@ class AstronomyTest {
                     "2023-10-14T16:21:00Z",
                     "2023-10-14T17:28:00Z",
                     "2023-10-14T18:38:00Z",
+                    0.2913301f,
                     0.17762049f
                 ),
                 Arguments.of(
@@ -917,6 +948,7 @@ class AstronomyTest {
                     "2024-04-08T18:18:00Z",
                     "2024-04-08T19:30:00Z",
                     "2024-04-08T20:41:00Z",
+                    0.92334f,
                     0.91496944f
                 ),
                 Arguments.of(
@@ -926,6 +958,7 @@ class AstronomyTest {
                     "2025-03-29T10:29:00Z",
                     "2025-03-29T10:29:00Z",
                     "2025-03-29T11:08:00Z",
+                    0.6743827f,
                     0.6000332f
                 ),
                 Arguments.of(
@@ -935,12 +968,13 @@ class AstronomyTest {
                     "2024-04-08T17:03:00Z",
                     "2024-04-08T18:23:00Z",
                     "2024-04-08T19:46:00Z",
+                    0.94278395f,
                     0.94278395f
                 ), // This should be a total eclipse
 
                 // No eclipses
-                Arguments.of(40.0, 120.0, "2023-01-01T00:00:00Z", null, null, null, 0.0f),
-                Arguments.of(40.0, 120.0, "2023-10-15T00:00:00Z", null, null, null, 0.0f),
+                Arguments.of(40.0, 120.0, "2023-01-01T00:00:00Z", null, null, null, 0.0f, 0.0f),
+                Arguments.of(40.0, 120.0, "2023-10-15T00:00:00Z", null, null, null, 0.0f, 0.0f),
 
                 // Search starts at start of eclipse
                 Arguments.of(
@@ -950,6 +984,7 @@ class AstronomyTest {
                     "2023-10-14T16:21:00Z",
                     "2023-10-14T17:28:00Z",
                     "2023-10-14T18:38:00Z",
+                    0.29133186f,
                     0.17762049f
                 ),
                 // Search starts during eclipse
@@ -960,6 +995,7 @@ class AstronomyTest {
                     "2023-10-14T16:21:00Z",
                     "2023-10-14T17:28:00Z",
                     "2023-10-14T18:38:00Z",
+                    0.29133186f,
                     0.17762049f
                 ),
                 // Search starts at end of eclipse
@@ -970,6 +1006,7 @@ class AstronomyTest {
                     "2024-04-08T18:18:00Z",
                     "2024-04-08T19:30:00Z",
                     "2024-04-08T20:41:00Z",
+                    0.92334f,
                     0.91496944f
                 )
             )

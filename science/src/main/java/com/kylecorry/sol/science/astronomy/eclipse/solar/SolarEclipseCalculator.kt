@@ -41,6 +41,7 @@ class SolarEclipseCalculator(
         val maxTime = nextEclipseTime.plus(maxSearch)
 
         var maxMagnitude = 0f
+        var maxObscuration = 0f
         var timeOfMaximum = nextEclipseTime
 
         // Search for the start of the eclipse
@@ -59,12 +60,13 @@ class SolarEclipseCalculator(
             val magnitude = getMagnitude(currentStartTime, location, sunCoordinates, moonCoordinates)
 
             // Eclipse was not found
-            if (magnitude == 0f) {
+            if (magnitude.first == 0f) {
                 break
             }
 
-            if (magnitude > maxMagnitude) {
-                maxMagnitude = magnitude
+            if (magnitude.first > maxMagnitude) {
+                maxMagnitude = magnitude.first
+                maxObscuration = magnitude.second
                 timeOfMaximum = currentStartTime.toInstant()
             }
 
@@ -88,12 +90,13 @@ class SolarEclipseCalculator(
             val magnitude = getMagnitude(currentEndTime, location, sunCoordinates, moonCoordinates)
 
             // Eclipse was not found
-            if (magnitude == 0f) {
+            if (magnitude.first == 0f) {
                 break
             }
 
-            if (magnitude > maxMagnitude) {
-                maxMagnitude = magnitude
+            if (magnitude.first > maxMagnitude) {
+                maxMagnitude = magnitude.first
+                maxObscuration = magnitude.second
                 timeOfMaximum = currentEndTime.toInstant()
             }
 
@@ -101,7 +104,7 @@ class SolarEclipseCalculator(
             currentEndTime = currentEndTime.plus(precision)
         }
 
-        return Eclipse(start, end, maxMagnitude, timeOfMaximum)
+        return Eclipse(start, end, maxMagnitude, maxObscuration, timeOfMaximum)
     }
 
     private fun getNextEclipseTime(after: Instant, location: Coordinate): Instant? {
@@ -123,7 +126,7 @@ class SolarEclipseCalculator(
                 continue
             }
 
-            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates)
+            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates).first
             if (magnitude > 0) {
                 return currentTime.toInstant()
             }
@@ -183,7 +186,7 @@ class SolarEclipseCalculator(
         location: Coordinate,
         sunCoordinates: HorizonCoordinate,
         moonCoordinates: HorizonCoordinate
-    ): Float {
+    ): Pair<Float, Float> {
         val angularDistance = sunCoordinates.angularDistanceTo(moonCoordinates)
         val moonRadius = moon.getAngularDiameter(time, location) / 2.0
         val sunRadius = sun.getAngularDiameter(time) / 2.0
@@ -232,18 +235,20 @@ class SolarEclipseCalculator(
         angularDistance: Double,
         moonRadius: Double,
         sunRadius: Double
-    ): Float {
+    ): Pair<Float, Float> {
         if (!isAnyEclipse(angularDistance, moonRadius, sunRadius)) {
-            return 0f
+            return 0f to 0f
         }
 
         if (isTotalEclipse(angularDistance, moonRadius, sunRadius)) {
+            val diameterRatio = (moonRadius / sunRadius).toFloat()
+
             return if (sunRadius <= moonRadius) {
-                1f
+                diameterRatio to 1f
             } else {
                 val sunArea = PI * sunRadius * sunRadius
                 val moonArea = PI * moonRadius * moonRadius
-                (moonArea / sunArea).toFloat()
+                diameterRatio to (moonArea / sunArea).toFloat()
             }
         }
 
@@ -268,7 +273,13 @@ class SolarEclipseCalculator(
 
         val totalArea = (areaSun + areaMoon).toFloat()
 
-        return totalArea / (PI * sunRadius2).toFloat()
+        val obscuration = totalArea / (PI * sunRadius2).toFloat()
+
+        val lengthOverlap = (sunRadius + moonRadius) - abs(s + m)
+
+        val magnitude = (lengthOverlap / (2 * sunRadius)).toFloat()
+
+        return magnitude to obscuration
     }
 
     private fun isAnyEclipse(
