@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
-import com.kylecorry.sol.math.SolMath.map
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.SunTimesMode
@@ -43,19 +42,19 @@ class SolarEclipseCalculator(
         var timeOfMaximum = nextEclipseTime
 
         // Search for the start of the eclipse
-        var currentTime = nextEclipseTime.toUniversalTime()
+        var currentStartTime = nextEclipseTime.toUniversalTime()
 
         var start = nextEclipseTime
         while (start > minTime) {
-            val sunCoordinates = getCoordinates(sun, currentTime, location)
-            val moonCoordinates = getCoordinates(moon, currentTime, location)
+            val sunCoordinates = getCoordinates(sun, currentStartTime, location)
+            val moonCoordinates = getCoordinates(moon, currentStartTime, location)
 
             // Sun or moon is below the horizon
             if (sunCoordinates.altitude < 0 || moonCoordinates.altitude < 0) {
                 break
             }
 
-            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates)
+            val magnitude = getMagnitude(currentStartTime, location, sunCoordinates, moonCoordinates)
 
             // Eclipse was not found
             if (magnitude == 0f) {
@@ -64,27 +63,27 @@ class SolarEclipseCalculator(
 
             if (magnitude > maxMagnitude) {
                 maxMagnitude = magnitude
-                timeOfMaximum = currentTime.toInstant()
+                timeOfMaximum = currentStartTime.toInstant()
             }
 
-            start = currentTime.toInstant()
-            currentTime = currentTime.minus(precision)
+            start = currentStartTime.toInstant()
+            currentStartTime = currentStartTime.minus(precision)
         }
 
         // Search for the end of the eclipse
-        currentTime = nextEclipseTime.toUniversalTime()
+        var currentEndTime = nextEclipseTime.toUniversalTime()
         var end = nextEclipseTime
 
         while (end < maxTime) {
-            val sunCoordinates = getCoordinates(sun, currentTime, location)
-            val moonCoordinates = getCoordinates(moon, currentTime, location)
+            val sunCoordinates = getCoordinates(sun, currentEndTime, location)
+            val moonCoordinates = getCoordinates(moon, currentEndTime, location)
 
             // Sun or moon is below the horizon
             if (sunCoordinates.altitude < 0 || moonCoordinates.altitude < 0) {
                 break
             }
 
-            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates)
+            val magnitude = getMagnitude(currentEndTime, location, sunCoordinates, moonCoordinates)
 
             // Eclipse was not found
             if (magnitude == 0f) {
@@ -93,11 +92,11 @@ class SolarEclipseCalculator(
 
             if (magnitude > maxMagnitude) {
                 maxMagnitude = magnitude
-                timeOfMaximum = currentTime.toInstant()
+                timeOfMaximum = currentEndTime.toInstant()
             }
 
-            end = currentTime.toInstant()
-            currentTime = currentTime.plus(precision)
+            end = currentEndTime.toInstant()
+            currentEndTime = currentEndTime.plus(precision)
         }
 
         return Eclipse(start, end, maxMagnitude, timeOfMaximum)
