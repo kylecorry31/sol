@@ -54,26 +54,51 @@ class AstronomyTest {
         assertEquals(368409.06f, distance.distance, 0.1f)
     }
 
-    @Test
-    fun canGetNextPartialEclipse() {
-        val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
-        val location = Coordinate(42.0, -70.0)
+    @ParameterizedTest
+    @MethodSource("providePartialLunarEclipses")
+    fun canGetNextPartialLunarEclipse(
+        latitude: Double,
+        longitude: Double,
+        date: String,
+        start: String?,
+        maximum: String?,
+        end: String?,
+        magnitude: Float
+    ) {
+        val datetime = ZonedDateTime.parse(date)
+        val location = Coordinate(latitude, longitude)
 
-        val actual = Astronomy.getNextEclipse(date, location, EclipseType.PartialLunar)
+        val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.PartialLunar)
+
+        if (start == null || end == null) {
+            assertNull(actual)
+            return
+        }
+
+        assertNotNull(actual)
+
+        val zone = ZonedDateTime.parse(start).zone
 
         assertDate(
-            ZonedDateTime.of(LocalDateTime.of(2021, 11, 19, 7, 18), ZoneId.of("UTC")),
-            actual!!.start.atZone(ZoneId.of("UTC")),
+            ZonedDateTime.parse(start),
+            actual!!.start.atZone(zone),
             Duration.ofMinutes(2)
         )
 
         assertDate(
-            ZonedDateTime.of(LocalDateTime.of(2021, 11, 19, 10, 47), ZoneId.of("UTC")),
-            actual.end.atZone(ZoneId.of("UTC")),
+            ZonedDateTime.parse(maximum),
+            actual.maximum.atZone(zone),
             Duration.ofMinutes(2)
         )
 
-        assertEquals(0.974f, actual.magnitude, 0.005f)
+        assertDate(
+            ZonedDateTime.parse(end),
+            actual.end.atZone(zone),
+            Duration.ofMinutes(2)
+        )
+
+        assertEquals(magnitude, actual.magnitude, 0.005f)
+
     }
 
     @Test
@@ -797,6 +822,72 @@ class AstronomyTest {
 
 
     companion object {
+
+        @JvmStatic
+        fun providePartialLunarEclipses(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2021-08-29T00:00:00Z",
+                    "2021-11-19T07:18:00Z",
+                    "2021-11-19T09:03:00Z",
+                    "2021-11-19T10:47:00Z",
+                    0.974f
+                ),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2021-12-01T10:47:00Z",
+                    "2022-05-16T02:28:00Z",
+                    "2022-05-16T04:11:00Z",
+                    "2022-05-16T05:54:00Z",
+                    1.413f
+                ),
+                Arguments.of(
+                    42.0,
+                    70.0,
+                    "2021-12-01T10:47:00Z",
+                    "2022-11-08T09:09:00Z",
+                    "2022-11-08T10:59:00Z",
+                    "2022-11-08T12:49:00Z",
+                    1.359f
+                ),
+
+                // At start
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2021-11-19T07:18:00Z",
+                    "2021-11-19T07:18:00Z",
+                    "2021-11-19T09:03:00Z",
+                    "2021-11-19T10:47:00Z",
+                    0.974f
+                ),
+
+                // At middle
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2021-11-19T09:03:00Z",
+                    "2021-11-19T07:18:00Z",
+                    "2021-11-19T09:03:00Z",
+                    "2021-11-19T10:47:00Z",
+                    0.974f
+                ),
+
+                // At end
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2021-11-19T10:47:00Z",
+                    "2022-05-16T02:28:00Z",
+                    "2022-05-16T04:11:00Z",
+                    "2022-05-16T05:54:00Z",
+                    1.413f
+                ),
+            )
+        }
 
         @JvmStatic
         fun canGetNextSolarEclipse(): Stream<Arguments> {
