@@ -24,11 +24,13 @@ import kotlin.math.sqrt
 
 class SolarEclipseCalculator(
     private val precision: Duration = Duration.ofMinutes(1),
-    private val maxDuration: Duration = Duration.ofDays(365 * 5)
+    maxDuration: Duration? = null
 ) : EclipseCalculator {
 
     private val sun = Sun()
     private val moon = Moon()
+
+    private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
 
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
         val nextEclipseTime = getNextEclipseTime(after, location) ?: return null
@@ -108,7 +110,7 @@ class SolarEclipseCalculator(
 
         val defaultSkip = Duration.ofMinutes(15)
 
-        while (timeFromStart < maxDuration) {
+        while (timeFromStart < _maxDuration) {
             val currentTime = startUT.plus(timeFromStart)
 
             val sunCoordinates = getCoordinates(sun, currentTime, location)

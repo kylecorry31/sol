@@ -17,34 +17,38 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
+import kotlin.math.max
 
 class AstronomyTest {
-    
+
     // TODO: Verify sun events other than actual time
 
     @Test
-    fun isSuperMoonTrue(){
-        val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 26, 12, 0), ZoneId.of("UTC"))
+    fun isSuperMoonTrue() {
+        val date =
+            ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 26, 12, 0), ZoneId.of("UTC"))
         val isSuperMoon = Astronomy.isSuperMoon(date)
         assertTrue(isSuperMoon)
     }
 
     @Test
-    fun isSuperMoonNotFull(){
-        val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 21, 12, 0), ZoneId.of("UTC"))
+    fun isSuperMoonNotFull() {
+        val date =
+            ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 21, 12, 0), ZoneId.of("UTC"))
         val isSuperMoon = Astronomy.isSuperMoon(date)
         assertFalse(isSuperMoon)
     }
 
     @Test
-    fun isSuperMoonNotCloseEnough(){
-        val date = ZonedDateTime.of(LocalDateTime.of(2021, Month.SEPTEMBER, 21, 12, 0), ZoneId.of("UTC"))
+    fun isSuperMoonNotCloseEnough() {
+        val date =
+            ZonedDateTime.of(LocalDateTime.of(2021, Month.SEPTEMBER, 21, 12, 0), ZoneId.of("UTC"))
         val isSuperMoon = Astronomy.isSuperMoon(date)
         assertFalse(isSuperMoon)
     }
 
     @Test
-    fun canGetMoonDistance(){
+    fun canGetMoonDistance() {
         val date = ZonedDateTime.of(LocalDateTime.of(1992, Month.APRIL, 12, 0, 0), ZoneId.of("UTC"))
         val distance = Astronomy.getMoonDistance(date)
         assertEquals(368409.06f, distance.distance, 0.1f)
@@ -95,29 +99,45 @@ class AstronomyTest {
     }
 
     @ParameterizedTest
-    @MethodSource("providePartialSolarEclipses")
-    fun canGetNextPartialSolarEclipse(latitude: Double, longitude: Double, date: String, start: String?, end: String?, magnitude: Float) {
+    @MethodSource("canGetNextSolarEclipse")
+    fun canGetNextSolarEclipse(
+        latitude: Double,
+        longitude: Double,
+        date: String,
+        start: String?,
+        maximum: String?,
+        end: String?,
+        magnitude: Float
+    ) {
         val datetime = ZonedDateTime.parse(date)
         val location = Coordinate(latitude, longitude)
 
         val actual = Astronomy.getNextEclipse(datetime, location, EclipseType.Solar)
 
-        if (start == null || end == null){
+        if (start == null || end == null) {
             assertNull(actual)
             return
         }
 
         assertNotNull(actual)
 
+        val zone = ZonedDateTime.parse(start).zone
+
         assertDate(
             ZonedDateTime.parse(start),
-            actual!!.start.atZone(ZoneId.of("UTC")),
+            actual!!.start.atZone(zone),
+            Duration.ofMinutes(2)
+        )
+
+        assertDate(
+            ZonedDateTime.parse(maximum),
+            actual.maximum.atZone(zone),
             Duration.ofMinutes(2)
         )
 
         assertDate(
             ZonedDateTime.parse(end),
-            actual.end.atZone(ZoneId.of("UTC")),
+            actual.end.atZone(zone),
             Duration.ofMinutes(2)
         )
 
@@ -779,24 +799,88 @@ class AstronomyTest {
     companion object {
 
         @JvmStatic
-        fun providePartialSolarEclipses(): Stream<Arguments> {
+        fun canGetNextSolarEclipse(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(24.61167, 143.36167, "2009-07-22T00:00:00Z", "2009-07-22T00:58:00Z", "2009-07-22T03:42:00Z", 0.69520104f),
-                Arguments.of(42.0, -70.0, "2023-01-01T00:00:00Z", "2023-10-14T16:21:00Z", "2023-10-14T18:38:00Z", 0.17762049f),
-                Arguments.of(42.0, -70.0, "2023-10-15T00:00:00Z", "2024-04-08T18:18:00Z", "2024-04-08T20:41:00Z", 0.91496944f),
-                Arguments.of(42.0, -70.0, "2024-04-09T00:00:00Z", "2025-03-29T10:29:00Z", "2025-03-29T11:08:00Z", 0.6000332f),
-                Arguments.of(25.28, -104.12, "2023-10-15T00:00:00Z", "2024-04-08T17:03:00Z", "2024-04-08T19:46:00Z", 0.94278395f), // This should be a total eclipse
+                Arguments.of(
+                    24.61167,
+                    143.36167,
+                    "2009-07-22T00:00:00Z",
+                    "2009-07-22T00:58:00Z",
+                    "2009-07-22T02:19:00Z",
+                    "2009-07-22T03:42:00Z",
+                    0.69520104f
+                ),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2023-01-01T00:00:00Z",
+                    "2023-10-14T16:21:00Z",
+                    "2023-10-14T17:28:00Z",
+                    "2023-10-14T18:38:00Z",
+                    0.17762049f
+                ),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2023-10-15T00:00:00Z",
+                    "2024-04-08T18:18:00Z",
+                    "2024-04-08T19:30:00Z",
+                    "2024-04-08T20:41:00Z",
+                    0.91496944f
+                ),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2024-04-09T00:00:00Z",
+                    "2025-03-29T10:29:00Z",
+                    "2025-03-29T10:29:00Z",
+                    "2025-03-29T11:08:00Z",
+                    0.6000332f
+                ),
+                Arguments.of(
+                    25.28,
+                    -104.12,
+                    "2023-10-15T00:00:00Z",
+                    "2024-04-08T17:03:00Z",
+                    "2024-04-08T18:23:00Z",
+                    "2024-04-08T19:46:00Z",
+                    0.94278395f
+                ), // This should be a total eclipse
 
                 // No eclipses
-                Arguments.of(40.0, 120.0, "2023-01-01T00:00:00Z", null, null, 0.0f),
-                Arguments.of(40.0, 120.0, "2023-10-15T00:00:00Z", null, null, 0.0f),
+                Arguments.of(40.0, 120.0, "2023-01-01T00:00:00Z", null, null, null, 0.0f),
+                Arguments.of(40.0, 120.0, "2023-10-15T00:00:00Z", null, null, null, 0.0f),
 
                 // Search starts at start of eclipse
-                Arguments.of(42.0, -70.0, "2023-10-14T16:21:00Z", "2023-10-14T16:21:00Z", "2023-10-14T18:38:00Z", 0.17762049f),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2023-10-14T16:21:00Z",
+                    "2023-10-14T16:21:00Z",
+                    "2023-10-14T17:28:00Z",
+                    "2023-10-14T18:38:00Z",
+                    0.17762049f
+                ),
                 // Search starts during eclipse
-                Arguments.of(42.0, -70.0, "2023-10-14T18:00:00Z", "2023-10-14T16:21:00Z", "2023-10-14T18:38:00Z", 0.17762049f),
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2023-10-14T18:00:00Z",
+                    "2023-10-14T16:21:00Z",
+                    "2023-10-14T17:28:00Z",
+                    "2023-10-14T18:38:00Z",
+                    0.17762049f
+                ),
                 // Search starts at end of eclipse
-                Arguments.of(42.0, -70.0, "2023-10-14T18:38:00Z", "2024-04-08T18:18:00Z", "2024-04-08T20:41:00Z", 0.91496944f)
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2023-10-14T18:38:00Z",
+                    "2024-04-08T18:18:00Z",
+                    "2024-04-08T19:30:00Z",
+                    "2024-04-08T20:41:00Z",
+                    0.91496944f
+                )
             )
         }
 
