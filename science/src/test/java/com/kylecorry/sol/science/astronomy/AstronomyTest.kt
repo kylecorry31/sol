@@ -188,23 +188,19 @@ class AstronomyTest {
         }
     }
 
-    @Test
-    fun getSunAltitude() {
-        val ny = Coordinate(40.7128, -74.0060)
-        parametrized(
-            listOf(
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 27.63f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -30.863646f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 22, 6, 51), 0.9f),
-            )
-        ) {
-            val altitude = Astronomy.getSunAltitude(
-                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-                ny,
-                true
-            )
-            assertEquals(it.second, altitude, 0.05f)
-        }
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T09:08:00-04, 27.63",
+        "40.7128, -74.0060, 2020-09-13T21:58:00-04, -30.863646",
+        "40.7128, -74.0060, 2020-09-22T06:51:00-04, 0.9",
+    )
+    fun getSunAltitude(latitude: Double, longitude: Double, time: String, altitude: Float) {
+        val coordinate = Coordinate(latitude, longitude)
+        val datetime = ZonedDateTime.parse(time)
+
+        val actual = Astronomy.getSunAltitude(datetime, coordinate, true)
+
+        assertEquals(altitude, actual, 0.05f)
     }
 
     @ParameterizedTest
