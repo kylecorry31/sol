@@ -78,26 +78,29 @@ class AstronomyTest {
         )
     }
 
-    @Test
-    fun canGetNextTotalEclipse() {
-        val date = ZonedDateTime.of(LocalDateTime.of(2021, 8, 29, 0, 0), ZoneId.of("UTC"))
-        val location = Coordinate(42.0, -70.0)
-
-        val actual = Astronomy.getNextEclipse(date, location, EclipseType.TotalLunar)
-
-        assertDate(
-            ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 3, 29), ZoneId.of("UTC")),
-            actual!!.start.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2)
+    @ParameterizedTest
+    @MethodSource("provideTotalLunarEclipses")
+    fun canGetNextTotalEclipse(
+        latitude: Double,
+        longitude: Double,
+        date: String,
+        start: String?,
+        maximum: String?,
+        end: String?,
+        magnitude: Float,
+        obscuration: Float
+    ) {
+        verifyEclipse(
+            EclipseType.TotalLunar,
+            latitude,
+            longitude,
+            date,
+            start,
+            maximum,
+            end,
+            magnitude,
+            obscuration
         )
-
-        assertDate(
-            ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 4, 53), ZoneId.of("UTC")),
-            actual.end.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2)
-        )
-
-        assertEquals(1.414f, actual.magnitude, 0.005f)
     }
 
     @ParameterizedTest
@@ -825,6 +828,21 @@ class AstronomyTest {
 
 
     companion object {
+        @JvmStatic
+        fun provideTotalLunarEclipses(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    42.0,
+                    -70.0,
+                    "2021-08-29T00:00:00Z",
+                    "2022-05-16T03:29:00Z",
+                    "2022-05-16T04:11:00Z",
+                    "2022-05-16T04:53:00Z",
+                    1.414f,
+                    1f
+                )
+            )
+        }
 
         @JvmStatic
         fun providePartialLunarEclipses(): Stream<Arguments> {
