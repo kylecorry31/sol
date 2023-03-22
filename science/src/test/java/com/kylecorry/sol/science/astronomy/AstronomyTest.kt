@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.time.*
 import java.util.stream.Stream
 
@@ -128,113 +130,61 @@ class AstronomyTest {
         )
     }
 
-    @Test
-    fun getSunEventsActual() {
-        val cases = listOf(
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.SEPTEMBER, 12),
-                LocalTime.of(6, 34),
-                LocalTime.of(12, 52, 5),
-                LocalTime.of(19, 9)
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.SEPTEMBER, 22),
-                LocalTime.of(6, 44),
-                LocalTime.of(12, 48, 32),
-                LocalTime.of(18, 52)
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.MARCH, 21),
-                LocalTime.of(6, 57),
-                LocalTime.of(13, 2, 58),
-                LocalTime.of(19, 10)
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.DECEMBER, 21),
-                LocalTime.of(7, 17),
-                LocalTime.of(11, 54, 26),
-                LocalTime.of(16, 32)
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.DECEMBER, 21),
-                LocalTime.of(7, 17),
-                LocalTime.of(11, 54, 26),
-                LocalTime.of(16, 32)
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.JUNE, 21),
-                LocalTime.of(5, 25),
-                LocalTime.of(12, 57, 59),
-                LocalTime.of(20, 31)
-            ),
-            RiseSetTransitTestInput( // UP ALL DAY
-                LocalDate.of(2020, Month.JUNE, 4),
-                null,
-                null,
-                null,
-                Coordinate(76.7667, -18.6667),
-                "America/Danmarkshavn"
-            ),
-            RiseSetTransitTestInput( // DOWN ALL DAY
-                LocalDate.of(2020, Month.OCTOBER, 31),
-                null,
-                null,
-                null,
-                Coordinate(76.7667, -18.6667),
-                "America/Danmarkshavn"
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2020, Month.OCTOBER, 30),
-                LocalTime.of(12, 41),
-                LocalTime.of(12, 58),
-                LocalTime.of(13, 13),
-                Coordinate(76.7667, -18.6667),
-                "America/Danmarkshavn"
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2022, Month.OCTOBER, 29),
-                LocalTime.of(7, 48),
-                LocalTime.of(12, 44),
-                LocalTime.of(17, 39),
-                Coordinate(51.5, -0.13),
-                "Europe/London"
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2022, Month.OCTOBER, 30),
-                LocalTime.of(6, 50),
-                LocalTime.of(11, 44),
-                LocalTime.of(16, 37),
-                Coordinate(51.5, -0.13),
-                "Europe/London"
-            ),
-            RiseSetTransitTestInput(
-                LocalDate.of(2022, Month.DECEMBER, 27),
-                LocalTime.of(8, 0),
-                LocalTime.of(12, 3),
-                LocalTime.of(16, 5),
-                Coordinate(50.087778, 14.420556),
-                "Europe/Prague"
-            )
-        )
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-12T12:00:00-04, 2020-09-12T06:34:00-04, 2020-09-12T12:52:00-04, 2020-09-12T19:09:00-04",
+        "40.7128, -74.0060, 2020-09-22T12:00:00-04, 2020-09-22T06:44:00-04, 2020-09-22T12:48:00-04, 2020-09-22T18:52:00-04",
+        "40.7128, -74.0060, 2020-03-21T12:00:00-04, 2020-03-21T06:57:00-04, 2020-03-21T13:02:00-04, 2020-03-21T19:10:00-04",
+        "40.7128, -74.0060, 2020-12-21T12:00:00-05, 2020-12-21T07:17:00-05, 2020-12-21T11:54:00-05, 2020-12-21T16:32:00-05",
+        "40.7128, -74.0060, 2020-06-21T12:00:00-04, 2020-06-21T05:25:00-04, 2020-06-21T12:58:00-04, 2020-06-21T20:31:00-04",
+        "76.7667, -18.6667, 2020-06-04T12:00:00Z, , ,",
+        "76.7667, -18.6667, 2020-10-31T12:00:00Z, , ,",
+        "76.7667, -18.6667, 2020-10-30T12:00:00Z, 2020-10-30T12:41:00Z, 2020-10-30T12:58:00Z, 2020-10-30T13:13:00Z",
+        "51.5, -0.13, 2020-10-29T12:00:00+01, 2020-10-29T07:48:00+01, 2020-10-29T12:44:00+01, 2020-10-29T17:39:00+01",
+        "51.5, -0.13, 2020-10-30T12:00:00Z, 2020-10-30T06:50:00Z, 2020-10-30T11:44:00Z, 2020-10-30T16:37:00Z",
+        "50.087778, 14.420556, 2022-12-27T12:00:00+01, 2022-12-27T08:00:00+01, 2022-12-27T12:03:00+01, 2022-12-27T16:05:00+01",
+    )
+    fun getSunEventsActual(
+        latitude: Double,
+        longitude: Double,
+        date: String,
+        rise: String?,
+        transit: String?,
+        set: String?
+    ) {
+        val coordinate = Coordinate(latitude, longitude)
+        val lookupDate = ZonedDateTime.parse(date)
 
-        for (case in cases) {
-            val date = ZonedDateTime.of(
-                case.date,
-                LocalTime.of(12, 0),
-                ZoneId.of(case.zone)
-            )
+        val sunEvents = Astronomy.getSunEvents(lookupDate, coordinate, SunTimesMode.Actual)
 
-            val expected = RiseSetTransitTimes(
-                if (case.rise != null) date.withHour(case.rise.hour)
-                    .withMinute(case.rise.minute) else null,
-                if (case.transit != null) date.withHour(case.transit.hour)
-                    .withMinute(case.transit.minute) else null,
-                if (case.set != null) date.withHour(case.set.hour)
-                    .withMinute(case.set.minute) else null
+        if (rise != null) {
+            assertDate(
+                ZonedDateTime.parse(rise),
+                sunEvents.rise,
+                Duration.ofMinutes(2)
             )
+        } else {
+            assertNull(sunEvents.rise)
+        }
 
-            val actual = Astronomy.getSunEvents(date, case.location, SunTimesMode.Actual)
-            assertRst(expected, actual)
+        if (transit != null) {
+            assertDate(
+                ZonedDateTime.parse(transit),
+                sunEvents.transit,
+                Duration.ofMinutes(2)
+            )
+        } else {
+            assertNull(sunEvents.transit)
+        }
+
+        if (set != null) {
+            assertDate(
+                ZonedDateTime.parse(set),
+                sunEvents.set,
+                Duration.ofMinutes(2)
+            )
+        } else {
+            assertNull(sunEvents.set)
         }
     }
 
