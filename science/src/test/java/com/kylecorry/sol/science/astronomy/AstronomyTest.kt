@@ -440,7 +440,7 @@ class AstronomyTest {
         "2020-03-13T12:00:00-04, WaningGibbous, 79.0",
         "2020-03-18T12:00:00-04, WaningCrescent, 28.0",
 
-    )
+        )
     fun getMoonPhase(date: String, phase: MoonTruePhase, illumination: Float) {
         val tolerance = 0.5f
 
@@ -452,68 +452,32 @@ class AstronomyTest {
         )
     }
 
-    @Test
-    fun isSunUp() {
-        val ny = Coordinate(40.7128, -74.0060)
-        val zoneNy = ZoneId.of("America/New_York")
-        assertTrue(
-            Astronomy.isSunUp(
-                ZonedDateTime.of(
-                    LocalDateTime.of(
-                        2020,
-                        Month.SEPTEMBER,
-                        13,
-                        12,
-                        0
-                    ), zoneNy
-                ), ny
-            )
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T12:00:00-04, true",
+        "40.7128, -74.0060, 2020-09-13T23:00:00-04, false"
+    )
+    fun isSunUp(latitude: Double, longitude: Double, time: String, isUp: Boolean) {
+        val actual = Astronomy.isSunUp(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
         )
-        assertFalse(
-            Astronomy.isSunUp(
-                ZonedDateTime.of(
-                    LocalDateTime.of(
-                        2020,
-                        Month.SEPTEMBER,
-                        13,
-                        23,
-                        0
-                    ), zoneNy
-                ), ny
-            )
-        )
+
+        assertEquals(isUp, actual)
     }
 
-    @Test
-    fun isMoonUp() {
-        val ny = Coordinate(40.7128, -74.0060)
-        val zoneNy = ZoneId.of("America/New_York")
-        assertTrue(
-            Astronomy.isMoonUp(
-                ZonedDateTime.of(
-                    LocalDateTime.of(
-                        2020,
-                        Month.SEPTEMBER,
-                        13,
-                        9,
-                        8
-                    ), zoneNy
-                ), ny
-            )
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T09:08:00-04, true",
+        "40.7128, -74.0060, 2020-09-13T21:58:00-04, false"
+    )
+    fun isMoonUp(latitude: Double, longitude: Double, time: String, isUp: Boolean) {
+        val actual = Astronomy.isMoonUp(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
         )
-        assertFalse(
-            Astronomy.isMoonUp(
-                ZonedDateTime.of(
-                    LocalDateTime.of(
-                        2020,
-                        Month.SEPTEMBER,
-                        13,
-                        21,
-                        58
-                    ), zoneNy
-                ), ny
-            )
-        )
+
+        assertEquals(isUp, actual)
     }
 
     @Test
