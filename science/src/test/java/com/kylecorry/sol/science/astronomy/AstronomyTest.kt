@@ -204,7 +204,11 @@ class AstronomyTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideSunAzimuth")
+    @CsvSource(
+        "40.7128, -74.006, 2020-09-13T09:08:00-04, 111.0",
+        "40.7128, -74.006, 2020-09-13T21:58:00-04, 307.0",
+        "-21.48575, -55.54686, 2023-03-17T13:45:00-04, 302.18"
+    )
     fun getSunAzimuth(latitude: Double, longitude: Double, date: String, expected: Float) {
         val coordinate = Coordinate(latitude, longitude)
         val datetime = ZonedDateTime.parse(date)
@@ -362,21 +366,18 @@ class AstronomyTest {
         }
     }
 
-    @Test
-    fun getMoonAltitude() {
-        val ny = Coordinate(40.7128, -74.0060)
-        parametrized(
-            listOf(
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 72f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), -28f),
-            )
-        ) {
-            val altitude = Astronomy.getMoonAltitude(
-                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-                ny
-            )
-            assertEquals(it.second, altitude, 0.8f)
-        }
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T09:08:00-04, 72.0",
+        "40.7128, -74.0060, 2020-09-13T21:58:00-04, -28.0"
+    )
+    fun getMoonAltitude(latitude: Double, longitude: Double, time: String, altitude: Float) {
+        val actual = Astronomy.getMoonAltitude(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude),
+            true
+        )
+        assertEquals(altitude, actual, 0.8f)
     }
 
     @Test
@@ -973,15 +974,6 @@ class AstronomyTest {
                     0.92334f,
                     0.91496944f
                 )
-            )
-        }
-
-        @JvmStatic
-        fun provideSunAzimuth(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(40.7128, -74.006, "2020-09-13T09:08:00-04", 111.0f),
-                Arguments.of(40.7128, -74.006, "2020-09-13T21:58:00-04", 307.0f),
-                Arguments.of(-21.48575, -55.54686, "2023-03-17T13:45:00-04", 302.18f)
             )
         }
 
