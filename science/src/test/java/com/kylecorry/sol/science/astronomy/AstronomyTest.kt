@@ -380,148 +380,74 @@ class AstronomyTest {
         assertEquals(altitude, actual, 0.8f)
     }
 
-    @Test
-    fun getMoonAzimuth() {
-        val ny = Coordinate(40.7128, -74.0060)
-        parametrized(
-            listOf(
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 8), 165f),
-                Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 21, 58), 360f),
-            )
-        ) {
-            val azimuth = Astronomy.getMoonAzimuth(
-                ZonedDateTime.of(it.first, ZoneId.of("America/New_York")),
-                ny
-            )
-            assertEquals(it.second, azimuth.value, 2f)
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T09:08:00-04, 165.0",
+        "40.7128, -74.0060, 2020-09-13T21:58:00-04, 360.0"
+    )
+    fun getMoonAzimuth(latitude: Double, longitude: Double, time: String, azimuth: Float) {
+        val actual = Astronomy.getMoonAzimuth(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
+        )
+        assertEquals(azimuth, actual.value, 2f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T09:00:00-04, 2020-09-13T17:10:00-04",
+        "40.7128, -74.0060, 2020-09-13T20:00:00-04, 2020-09-14T17:53:00-04",
+        "76.7667, -18.6667, 2020-09-08T12:00:00-01, ",
+    )
+    fun getNextMoonset(latitude: Double, longitude: Double, time: String, moonset: String?) {
+        val actual = Astronomy.getNextMoonset(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
+        )
+        if (moonset != null) {
+            assertDate(ZonedDateTime.parse(moonset), actual, Duration.ofMinutes(1))
+        } else {
+            assertNull(actual)
         }
     }
 
-    @Test
-    fun getNextMoonset() {
-        val ny = Coordinate(40.7128, -74.0060)
-        val gl = Coordinate(76.7667, -18.6667)
-        parametrized(
-            listOf<List<Any?>>(
-                listOf(
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 0),
-                    ny,
-                    "America/New_York",
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 13, 17, 10)
-                ),
-                listOf(
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 13, 20, 0),
-                    ny,
-                    "America/New_York",
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 14, 17, 53)
-                ),
-                listOf(
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 8, 12, 0),
-                    gl,
-                    "America/Danmarkshavn",
-                    null
-                )
-            )
-        ) {
-            val moonset = Astronomy.getNextMoonset(
-                ZonedDateTime.of(
-                    it[0] as LocalDateTime,
-                    ZoneId.of(it[2] as String)
-                ), it[1] as Coordinate
-            )
-            val expected = if (it[3] == null) null else ZonedDateTime.of(
-                it[3] as LocalDateTime,
-                ZoneId.of(it[2] as String)
-            )
-            assertDate(expected, moonset, Duration.ofMinutes(1))
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-13T00:00:00-04, 2020-09-13T01:45:00-04",
+        "40.7128, -74.0060, 2020-09-13T02:00:00-04, 2020-09-14T02:51:00-04",
+        "76.7667, -18.6667, 2020-09-08T12:00:00-01, ",
+    )
+    fun getNextMoonrise(latitude: Double, longitude: Double, time: String, moonrise: String?) {
+        val actual = Astronomy.getNextMoonrise(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
+        )
+        if (moonrise != null) {
+            assertDate(ZonedDateTime.parse(moonrise), actual, Duration.ofMinutes(1))
+        } else {
+            assertNull(actual)
         }
     }
 
-    @Test
-    fun getNextMoonrise() {
-        val ny = Coordinate(40.7128, -74.0060)
-        val gl = Coordinate(76.7667, -18.6667)
-        parametrized(
-            listOf<List<Any?>>(
-                listOf(
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 13, 0, 0),
-                    ny,
-                    "America/New_York",
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 13, 1, 45)
-                ),
-                listOf(
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 13, 2, 0),
-                    ny,
-                    "America/New_York",
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 14, 2, 51)
-                ),
-                listOf(
-                    LocalDateTime.of(2020, Month.SEPTEMBER, 8, 12, 0),
-                    gl,
-                    "America/Danmarkshavn",
-                    null
-                )
-            )
-        ) {
-            val moonrise = Astronomy.getNextMoonrise(
-                ZonedDateTime.of(
-                    it[0] as LocalDateTime,
-                    ZoneId.of(it[2] as String)
-                ), it[1] as Coordinate
-            )
-            val expected = if (it[3] == null) null else ZonedDateTime.of(
-                it[3] as LocalDateTime,
-                ZoneId.of(it[2] as String)
-            )
-            assertDate(expected, moonrise, Duration.ofMinutes(1))
-        }
-    }
+    @ParameterizedTest
+    @CsvSource(
+        "2020-03-02T14:58:00-05, FirstQuarter, 50.0",
+        "2020-03-09T13:48:00-05, Full, 100.0",
+        "2020-03-16T05:35:00-04, ThirdQuarter, 50.0",
+        "2020-03-24T05:29:00-04, New, 0.0",
+        "2020-03-29T12:00:00-04, WaxingCrescent, 23.0",
+        "2020-03-05T12:00:00-05, WaxingGibbous, 79.0",
+        "2020-03-13T12:00:00-04, WaningGibbous, 79.0",
+        "2020-03-18T12:00:00-04, WaningCrescent, 28.0",
 
-    @Test
-    fun getMoonPhase() {
+    )
+    fun getMoonPhase(date: String, phase: MoonTruePhase, illumination: Float) {
         val tolerance = 0.5f
 
-        // Main phases
+        val actual = Astronomy.getMoonPhase(ZonedDateTime.parse(date))
         assertMoonPhases(
-            MoonPhase(MoonTruePhase.FirstQuarter, 50f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 2, 14, 58))),
-            tolerance
-        )
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.Full, 100f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 9, 13, 48))),
-            tolerance
-        )
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.ThirdQuarter, 50f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 16, 5, 35))),
-            tolerance
-        )
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.New, 0f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 24, 5, 29))),
-            tolerance
-        )
-
-        // Intermediate phases
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.WaxingCrescent, 23f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 29, 12, 0))),
-            tolerance
-        )
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.WaxingGibbous, 79f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 5, 12, 0))),
-            tolerance
-        )
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.WaningGibbous, 79f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 13, 12, 0))),
-            tolerance
-        )
-        assertMoonPhases(
-            MoonPhase(MoonTruePhase.WaningCrescent, 28f),
-            Astronomy.getMoonPhase(getDate(LocalDateTime.of(2020, Month.MARCH, 18, 12, 0))),
+            MoonPhase(phase, illumination),
+            actual,
             tolerance
         )
     }
