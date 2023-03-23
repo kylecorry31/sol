@@ -513,52 +513,38 @@ class AstronomyTest {
         }
     }
 
-    @Test
-    fun getAstronomicalSeasonNorthern() {
-        val location = Coordinate(40.7128, -74.0060)
+    @ParameterizedTest
+    @CsvSource(
+        // Northern
+        "40.7128, -74.0060, 2021-01-01T23:59:00-05, Winter",
+        "40.7128, -74.0060, 2021-03-19T23:59:00-04, Winter",
+        "40.7128, -74.0060, 2021-03-20T23:59:00-04, Spring",
+        "40.7128, -74.0060, 2021-06-19T23:59:00-04, Spring",
+        "40.7128, -74.0060, 2021-06-20T23:59:00-04, Summer",
+        "40.7128, -74.0060, 2021-09-21T23:59:00-04, Summer",
+        "40.7128, -74.0060, 2021-09-22T23:59:00-04, Fall",
+        "40.7128, -74.0060, 2021-12-20T23:59:00-05, Fall",
+        "40.7128, -74.0060, 2021-12-21T23:59:00-05, Winter",
+        "40.7128, -74.0060, 2021-12-31T23:59:00-05, Winter",
+        // Southern
+        "-40.7128, -74.0060, 2021-01-01T23:59:00-05, Summer",
+        "-40.7128, -74.0060, 2021-03-19T23:59:00-04, Summer",
+        "-40.7128, -74.0060, 2021-03-20T23:59:00-04, Fall",
+        "-40.7128, -74.0060, 2021-06-19T23:59:00-04, Fall",
+        "-40.7128, -74.0060, 2021-06-20T23:59:00-04, Winter",
+        "-40.7128, -74.0060, 2021-09-21T23:59:00-04, Winter",
+        "-40.7128, -74.0060, 2021-09-22T23:59:00-04, Spring",
+        "-40.7128, -74.0060, 2021-12-20T23:59:00-05, Spring",
+        "-40.7128, -74.0060, 2021-12-21T23:59:00-05, Summer",
+        "-40.7128, -74.0060, 2021-12-31T23:59:00-05, Summer",
+    )
+    fun getAstronomicalSeason(latitude: Double, longitude: Double, time: String, season: Season) {
+        val actual = Astronomy.getSeason(
+            Coordinate(latitude, longitude),
+            ZonedDateTime.parse(time)
+        )
 
-        listOf<Pair<Season, LocalDate>>(
-            Season.Winter to LocalDate.of(2021, 1, 1),
-            Season.Winter to LocalDate.of(2021, 3, 19),
-            Season.Spring to LocalDate.of(2021, 3, 20),
-            Season.Spring to LocalDate.of(2021, 6, 19),
-            Season.Summer to LocalDate.of(2021, 6, 20),
-            Season.Summer to LocalDate.of(2021, 9, 21),
-            Season.Fall to LocalDate.of(2021, 9, 22),
-            Season.Fall to LocalDate.of(2021, 12, 20),
-            Season.Winter to LocalDate.of(2021, 12, 21),
-            Season.Winter to LocalDate.of(2021, 12, 31),
-        ).forEach {
-            val season = Astronomy.getSeason(
-                location,
-                getDate(LocalDateTime.of(it.second, LocalTime.MAX))
-            )
-            assertEquals(it.first, season)
-        }
-    }
-
-    @Test
-    fun getAstronomicalSeasonSouthern() {
-        val location = Coordinate(-40.7128, -74.0060)
-
-        listOf<Pair<Season, LocalDate>>(
-            Season.Summer to LocalDate.of(2021, 1, 1),
-            Season.Summer to LocalDate.of(2021, 3, 19),
-            Season.Fall to LocalDate.of(2021, 3, 20),
-            Season.Fall to LocalDate.of(2021, 6, 19),
-            Season.Winter to LocalDate.of(2021, 6, 20),
-            Season.Winter to LocalDate.of(2021, 9, 21),
-            Season.Spring to LocalDate.of(2021, 9, 22),
-            Season.Spring to LocalDate.of(2021, 12, 20),
-            Season.Summer to LocalDate.of(2021, 12, 21),
-            Season.Summer to LocalDate.of(2021, 12, 31),
-        ).forEach {
-            val season = Astronomy.getSeason(
-                location,
-                getDate(LocalDateTime.of(it.second, LocalTime.MAX))
-            )
-            assertEquals(it.first, season)
-        }
+        assertEquals(season, actual)
     }
 
     @Test
