@@ -16,7 +16,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
 import java.time.*
 import java.util.stream.Stream
 
@@ -24,35 +23,28 @@ class AstronomyTest {
 
     // TODO: Verify sun events other than actual time
 
-    @Test
-    fun isSuperMoonTrue() {
-        val date =
-            ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 26, 12, 0), ZoneId.of("UTC"))
-        val isSuperMoon = Astronomy.isSuperMoon(date)
-        assertTrue(isSuperMoon)
+    @ParameterizedTest
+    @CsvSource(
+        "2021-04-26T12:00:00Z, true",
+        // Not full
+        "2021-04-21T12:00:00Z, false",
+        // Not close enough
+        "2021-09-21T12:00:00Z, false"
+    )
+    fun isSuperMoonTrue(time: String, expected: Boolean) {
+        val date = ZonedDateTime.parse(time)
+        val actual = Astronomy.isSuperMoon(date)
+        assertEquals(expected, actual)
     }
 
-    @Test
-    fun isSuperMoonNotFull() {
-        val date =
-            ZonedDateTime.of(LocalDateTime.of(2021, Month.APRIL, 21, 12, 0), ZoneId.of("UTC"))
-        val isSuperMoon = Astronomy.isSuperMoon(date)
-        assertFalse(isSuperMoon)
-    }
-
-    @Test
-    fun isSuperMoonNotCloseEnough() {
-        val date =
-            ZonedDateTime.of(LocalDateTime.of(2021, Month.SEPTEMBER, 21, 12, 0), ZoneId.of("UTC"))
-        val isSuperMoon = Astronomy.isSuperMoon(date)
-        assertFalse(isSuperMoon)
-    }
-
-    @Test
-    fun canGetMoonDistance() {
-        val date = ZonedDateTime.of(LocalDateTime.of(1992, Month.APRIL, 12, 0, 0), ZoneId.of("UTC"))
+    @ParameterizedTest
+    @CsvSource(
+        "1992-04-12T00:00:00Z, 368409",
+    )
+    fun canGetMoonDistance(time: String, expected: Float) {
+        val date = ZonedDateTime.parse(time)
         val distance = Astronomy.getMoonDistance(date)
-        assertEquals(368409.06f, distance.distance, 0.1f)
+        assertEquals(expected, distance.distance, 1f)
     }
 
     @ParameterizedTest
@@ -582,10 +574,6 @@ class AstronomyTest {
         assertDuration(expected, length, Duration.ofSeconds(30))
     }
 
-
-    private fun getDate(time: LocalDateTime): ZonedDateTime {
-        return time.atZone(ZoneId.of("America/New_York"))
-    }
 
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {
         assertEquals(expected.phase, actual.phase)
