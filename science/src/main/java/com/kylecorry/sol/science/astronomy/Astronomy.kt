@@ -358,12 +358,12 @@ object Astronomy : IAstronomyService {
     ): ZonedDateTime? {
         val time = getNextTimeAtSolarLongitude(shower.solarLongitude, now)
         val today = getMeteorShowerTimes(shower, location, time)
-        val yesterday = getMeteorShowerTimes(shower, location, time.plusDays(1))
-        val tomorrow = getMeteorShowerTimes(shower, location, time.minusDays(1))
+        val yesterday = getMeteorShowerTimes(shower, location, time.minusDays(1))
+        val tomorrow = getMeteorShowerTimes(shower, location, time.plusDays(1))
 
         val closest = getClosestTime(
             time,
-            listOf(today.transit, yesterday.transit, tomorrow.transit)
+            listOf(yesterday.transit, today.transit, tomorrow.transit)
         )
 
         if (closest == null && isMeteorShowerVisible(shower, location, time)) {

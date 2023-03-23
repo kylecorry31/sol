@@ -480,27 +480,36 @@ class AstronomyTest {
         assertEquals(isUp, actual)
     }
 
-    @Test
-    fun getMeteorShower() {
-        val location = Coordinate(40.7128, -74.0060)
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2023-01-03T00:00:00-05, Quadrantids, 2023-01-03T17:00:00-05",
+        "40.7128, -74.0060, 2023-04-22T00:00:00-04, Lyrids, 2023-04-22T05:00:00-04",
+        "40.7128, -74.0060, 2023-05-06T00:00:00-04, EtaAquariids, 2023-05-06T04:00:00-04",
+        "40.7128, -74.0060, 2023-07-31T00:00:00-04, DeltaAquariids, 2023-07-31T03:00:00-04",
+        "40.7128, -74.0060, 2023-08-12T00:00:00-04, Perseids, 2023-08-12T04:00:00-04",
+        "40.7128, -74.0060, 2023-10-21T00:00:00-04, Orionids, 2023-10-21T05:00:00-04",
+        "40.7128, -74.0060, 2023-11-18T00:00:00-05, Leonids, 2023-11-18T06:00:00-05",
+        "40.7128, -74.0060, 2023-12-14T00:00:00-05, Geminids, 2023-12-14T01:00:00-05",
+        "40.7128, -74.0060, 2023-12-22T00:00:00-05, Ursids, 2023-12-22T05:00:00-05",
+        "40.7128, -74.0060, 2023-01-01T00:00:00-05, , ",
+    )
+    fun getMeteorShower(
+        latitude: Double,
+        longitude: Double,
+        time: String,
+        shower: MeteorShower?,
+        peak: String?
+    ) {
+        val actual = Astronomy.getMeteorShower(
+            Coordinate(latitude, longitude),
+            ZonedDateTime.parse(time)
+        )
 
-        listOf<Pair<MeteorShower?, LocalDate>>(
-            MeteorShower.Quadrantids to LocalDate.of(2022, 1, 3),
-            MeteorShower.Lyrids to LocalDate.of(2022, 4, 22),
-            MeteorShower.EtaAquariids to LocalDate.of(2022, 5, 6),
-            MeteorShower.DeltaAquariids to LocalDate.of(2022, 7, 30),
-            MeteorShower.Perseids to LocalDate.of(2022, 8, 12),
-            MeteorShower.Orionids to LocalDate.of(2022, 10, 21),
-            MeteorShower.Leonids to LocalDate.of(2022, 11, 18),
-            MeteorShower.Geminids to LocalDate.of(2022, 12, 14),
-            MeteorShower.Ursids to LocalDate.of(2022, 12, 22),
-            null to LocalDate.of(2022, 1, 1)
-        ).forEach {
-            val shower = Astronomy.getMeteorShower(
-                location,
-                getDate(LocalDateTime.of(it.second, LocalTime.MIN))
-            )
-            assertEquals(it.first, shower?.shower)
+        assertEquals(shower, actual?.shower)
+        if (peak != null) {
+            assertDate(ZonedDateTime.parse(peak), actual?.peak, Duration.ofHours(1))
+        } else {
+            assertNull(actual)
         }
     }
 
