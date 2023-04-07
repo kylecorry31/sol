@@ -355,4 +355,28 @@ object SolMath {
         }.sortedByDescending { it.second }.map { it.first }
     }
 
+    fun Float.real(defaultValue: Float = 0f): Float {
+        return if (this.isNaN() || this.isInfinite()) defaultValue else this
+    }
+
+    fun Float.positive(zeroReplacement: Float = 0f): Float {
+        return if (this < 0) {
+            -this
+        } else if (this == 0f) {
+            zeroReplacement
+        } else {
+            this
+        }
+    }
+
+    fun Float.negative(zeroReplacement: Float = 0f): Float {
+        return if (this > 0) {
+            -this
+        } else if (this == 0f) {
+            zeroReplacement
+        } else {
+            this
+        }
+    }
+
 }

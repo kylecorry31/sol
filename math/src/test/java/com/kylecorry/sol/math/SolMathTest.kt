@@ -1,5 +1,8 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.SolMath.negative
+import com.kylecorry.sol.math.SolMath.positive
+import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
@@ -7,6 +10,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 import kotlin.math.cos
@@ -268,6 +272,48 @@ class SolMathTest {
     @MethodSource("provideArgmax")
     fun <T: Comparable<T>> argmax(value: List<T>, expected: Int){
         val actual = SolMath.argmax(value)
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 1.0, 1.0",
+        "1.0, 0.0, 1.0",
+        "-1.0, 0.0, 1.0",
+        "NaN, 1.0, NaN",
+        "Infinity, 1.0, Infinity",
+        "-Infinity, 1.0, Infinity"
+    )
+    fun positive(value: Float, zeroReplacement: Float, expected: Float){
+        val actual = value.positive(zeroReplacement)
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, -1.0, -1.0",
+        "1.0, 0.0, -1.0",
+        "-1.0, 0.0, -1.0",
+        "NaN, -1.0, NaN",
+        "Infinity, -1.0, -Infinity",
+        "-Infinity, -1.0, -Infinity"
+    )
+    fun negative(value: Float, zeroReplacement: Float, expected: Float){
+        val actual = value.negative(zeroReplacement)
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "NaN, 1.0, 1.0",
+        "Infinity, 1.0, 1.0",
+        "-Infinity, 1.0, 1.0",
+        "0.0, 1.0, 0.0",
+        "1.0, 0.0, 1.0",
+        "-1.0, 0.0, -1.0"
+    )
+    fun real(value: Float, defaultValue: Float, expected: Float){
+        val actual = value.real(defaultValue)
         assertEquals(expected, actual)
     }
 
