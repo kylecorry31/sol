@@ -6,14 +6,17 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.PressureUnits
-import junit.framework.Assert.assertEquals
 import org.junit.Assert
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
-import java.time.*
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.Month
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.stream.Stream
 
 internal class OceanographyServiceTest {
@@ -52,13 +55,13 @@ internal class OceanographyServiceTest {
         )
 
         val zone = ZoneId.of("America/New_York")
-        val date = LocalDate.of(2021, 12, 22).atStartOfDay(zone)
+        val date = LocalDate.of(2023, 12, 22).atStartOfDay(zone)
 
         val expected = listOf(
-            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(2, 35), zone)),
-            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(9, 27), zone)),
-            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(15, 27), zone)),
-            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(22, 0), zone))
+            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(3, 31), zone)),
+            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(10, 23), zone)),
+            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(15, 56), zone)),
+            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(21, 36), zone))
         )
 
         val service = OceanographyService()
