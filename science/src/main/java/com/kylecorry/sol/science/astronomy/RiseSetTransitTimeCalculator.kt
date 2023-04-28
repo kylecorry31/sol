@@ -92,6 +92,23 @@ internal class RiseSetTransitTimeCalculator {
             tomorrow.set
         ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
 
+        // Handle the case where a rise or set is close to the horizon and refraction is messing it up
+        if (withRefraction && (rise == null || transit == null || set == null)) {
+            val calculated =  calculate(
+                locator,
+                date,
+                location,
+                standardAltitude,
+                false,
+                withParallax
+            )
+            return RiseSetTransitTimes(
+                rise ?: calculated.rise,
+                transit ?: calculated.transit,
+                set ?: calculated.set
+            )
+        }
+
         return RiseSetTransitTimes(rise, transit, set)
     }
 
