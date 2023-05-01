@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Utils
 import com.kylecorry.sol.units.Bearing
+import java.util.Vector
 import kotlin.math.atan2
 
 // From https://stackoverflow.com/questions/16317599/android-compass-that-can-compensate-for-tilt-and-pitch
@@ -20,8 +21,7 @@ internal object AzimuthCalculator {
         val normEast = Vector3Utils.normalize(east)
 
         // North vector
-        val dotProduct = Vector3Utils.dot(normGravity, normMagField)
-        val north = Vector3Utils.minus(normMagField, Vector3Utils.times(normGravity, dotProduct))
+        val north = Vector3Utils.cross(normGravity, normEast)
         val normNorth = Vector3Utils.normalize(north)
 
         // Azimuth
@@ -30,7 +30,7 @@ internal object AzimuthCalculator {
         val cos = normEast[0] + normNorth[1]
         val azimuth = if (!(sin == 0f && sin == cos)) atan2(sin, cos) else 0f
 
-        if (azimuth.isNaN()){
+        if (azimuth.isNaN()) {
             return null
         }
 
@@ -39,7 +39,7 @@ internal object AzimuthCalculator {
 
 
     fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
-       return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
+        return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
     }
 
 }
