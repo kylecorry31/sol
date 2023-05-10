@@ -167,6 +167,14 @@ object SolMath {
         return (this * 10f.pow(places)).roundToLong() / 10f.pow(places)
     }
 
+    fun Double.roundNearest(nearest: Double): Double {
+        return (this / nearest).roundToInt() * nearest
+    }
+
+    fun Float.roundNearest(nearest: Float): Float {
+        return (this / nearest).roundToInt() * nearest
+    }
+
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
         if (data.isEmpty()) {
             return data

@@ -3,6 +3,7 @@ package com.kylecorry.sol.math
 import com.kylecorry.sol.math.SolMath.negative
 import com.kylecorry.sol.math.SolMath.positive
 import com.kylecorry.sol.math.SolMath.real
+import com.kylecorry.sol.math.SolMath.roundNearest
 import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
@@ -315,6 +316,42 @@ class SolMathTest {
     fun real(value: Float, defaultValue: Float, expected: Float){
         val actual = value.real(defaultValue)
         assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1.0, 1.0, 1.0",
+        "1.5, 1.0, 2.0",
+        "1.4, 1.0, 1.0",
+        "20.0, 10.0, 20.0",
+        "20.0, 15.0, 15.0",
+        "25.0, 15.0, 30.0",
+        "0.0, 1.0, 0.0",
+        "-1.0, 1.0, -1.0",
+        "-1.5, 1.0, -1.0",
+        "-1.6, 1.0, -2.0",
+    )
+    fun roundNearestDouble(value: Double, nearest: Double, expected: Double){
+        val actual = value.roundNearest(nearest)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1.0, 1.0, 1.0",
+        "1.5, 1.0, 2.0",
+        "1.4, 1.0, 1.0",
+        "20.0, 10.0, 20.0",
+        "20.0, 15.0, 15.0",
+        "25.0, 15.0, 30.0",
+        "0.0, 1.0, 0.0",
+        "-1.0, 1.0, -1.0",
+        "-1.5, 1.0, -1.0",
+        "-1.6, 1.0, -2.0",
+    )
+    fun roundNearestFloat(value: Float, nearest: Float, expected: Float){
+        val actual = value.roundNearest(nearest)
+        assertEquals(expected, actual, 0.00001f)
     }
 
     companion object {
