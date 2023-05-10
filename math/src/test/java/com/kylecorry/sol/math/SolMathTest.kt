@@ -354,6 +354,24 @@ class SolMathTest {
         assertEquals(expected, actual, 0.00001f)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "1, 1, 1",
+        "2, 1, 2",
+        "0, 2, 0",
+        "3, 2, 4",
+        "20, 10, 20",
+        "20, 16, 16",
+        "25, 16, 32",
+        "-1, 1, -1",
+        "-2, 5, 0",
+        "-3, 5, -5",
+    )
+    fun roundNearestInt(value: Int, nearest: Int, expected: Int){
+        val actual = value.roundNearest(nearest)
+        assertEquals(expected, actual)
+    }
+
     companion object {
 
         @JvmStatic

@@ -175,6 +175,10 @@ object SolMath {
         return (this / nearest).roundToInt() * nearest
     }
 
+    fun Int.roundNearest(nearest: Int): Int {
+        return (this.toDouble() / nearest).roundToInt() * nearest
+    }
+
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
         if (data.isEmpty()) {
             return data
