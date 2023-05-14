@@ -3,6 +3,7 @@ package com.kylecorry.sol.math
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -15,6 +16,23 @@ internal class Vector2Test {
 
         assertEquals(expected.x, rotated.x, 0.0001f)
         assertEquals(expected.y, rotated.y, 0.0001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 0",
+        "1, 0, 0",
+        "0, 1, 90",
+        "-1, 0, 180",
+        "0, -1, 270",
+        "1, 1, 45",
+        "-1, 1, 135",
+        "-1, -1, 225",
+        "1, -1, 315"
+    )
+    fun angle(x: Float, y: Float, expected: Float) {
+        val vector = Vector2(x, y)
+        assertEquals(expected, vector.angle(), 0.0001f)
     }
 
     companion object {

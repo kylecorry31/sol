@@ -1,7 +1,10 @@
 package com.kylecorry.sol.math
 
 import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.normalizeAngle
 import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
+import kotlin.math.atan2
 import kotlin.math.sqrt
 
 data class Vector2(val x: Float, val y: Float) {
@@ -22,6 +25,13 @@ data class Vector2(val x: Float, val y: Float) {
         return sqrt(x * x + y * y)
     }
 
+    /**
+     * The angle of the vector in degrees (0 - 360, unit circle)
+     */
+    fun angle(): Float {
+        return normalizeAngle(atan2(y, x).toDegrees())
+    }
+
     fun normalize(): Vector2 {
         val length = magnitude()
         return Vector2(x / length, y / length)
@@ -29,6 +39,10 @@ data class Vector2(val x: Float, val y: Float) {
 
     fun distanceTo(other: Vector2): Float {
         return (other - this).magnitude()
+    }
+
+    fun angleBetween(other: Vector2): Float {
+        return (other - this).angle()
     }
 
     fun rotate(angle: Float, origin: Vector2 = zero): Vector2 {
