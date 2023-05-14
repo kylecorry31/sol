@@ -179,6 +179,16 @@ object SolMath {
         return (this.toDouble() / nearest).roundToInt() * nearest
     }
 
+    fun Double.roundNearestAngle(nearest: Double): Double {
+        val normalized = normalizeAngle(this)
+        return normalizeAngle(normalized.roundNearest(nearest))
+    }
+
+    fun Float.roundNearestAngle(nearest: Float): Float {
+        val normalized = normalizeAngle(this)
+        return normalizeAngle(normalized.roundNearest(nearest))
+    }
+
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
         if (data.isEmpty()) {
             return data

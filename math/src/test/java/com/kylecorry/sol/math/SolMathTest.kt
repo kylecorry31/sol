@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.SolMath.negative
 import com.kylecorry.sol.math.SolMath.positive
 import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.math.SolMath.roundNearest
+import com.kylecorry.sol.math.SolMath.roundNearestAngle
 import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
@@ -370,6 +371,40 @@ class SolMathTest {
     fun roundNearestInt(value: Int, nearest: Int, expected: Int){
         val actual = value.roundNearest(nearest)
         assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 15.0, 0.0",
+        "355.0, 15.0, 0.0",
+        "5.0, 15.0, 0.0",
+        "10.0, 15.0, 15.0",
+        "20.0, 15.0, 15.0",
+        "25.0, 15.0, 30.0",
+        "-15.0, 15.0, 345.0",
+        "-20.0, 15.0, 345.0",
+        "-25.0, 15.0, 330.0",
+    )
+    fun roundNearestAngleFloat(value: Float, nearest: Float, expected: Float){
+        val actual = value.roundNearestAngle(nearest)
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 15.0, 0.0",
+        "355.0, 15.0, 0.0",
+        "5.0, 15.0, 0.0",
+        "10.0, 15.0, 15.0",
+        "20.0, 15.0, 15.0",
+        "25.0, 15.0, 30.0",
+        "-15.0, 15.0, 345.0",
+        "-20.0, 15.0, 345.0",
+        "-25.0, 15.0, 330.0",
+    )
+    fun roundNearestAngleDouble(value: Double, nearest: Double, expected: Double){
+        val actual = value.roundNearestAngle(nearest)
+        assertEquals(expected, actual, 0.00001)
     }
 
     companion object {
