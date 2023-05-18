@@ -105,12 +105,12 @@ object Vector3Utils {
         return sqrt(arr[0] * arr[0] + arr[1] * arr[1] + arr[2] * arr[2])
     }
 
-    fun normalize(arr: FloatArray): FloatArray {
+    fun normalize(arr: FloatArray, inPlace: Boolean = false): FloatArray {
         val mag = magnitude(arr)
-        return floatArrayOf(
-            arr[0] / mag,
-            arr[1] / mag,
-            arr[2] / mag
-        )
+        val newArray = if (inPlace) arr else FloatArray(3)
+        newArray[0] = arr[0] / mag
+        newArray[1] = arr[1] / mag
+        newArray[2] = arr[2] / mag
+        return newArray
     }
 }
