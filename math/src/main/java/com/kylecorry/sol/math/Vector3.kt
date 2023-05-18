@@ -72,6 +72,15 @@ object Vector3Utils {
         )
     }
 
+    fun project(first: FloatArray, second: FloatArray): FloatArray {
+        val mag = magnitude(second)
+        return times(second, dot(first, second) / (mag * mag))
+    }
+
+    fun projectOnPlane(first: FloatArray, planeNormal: FloatArray): FloatArray {
+        return minus(first, project(first, planeNormal))
+    }
+
     fun plus(first: FloatArray, second: FloatArray): FloatArray {
         return floatArrayOf(
             first[0] + second[0],

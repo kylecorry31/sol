@@ -20,15 +20,15 @@ internal object AzimuthCalculator {
         val normEast = Vector3Utils.normalize(east)
 
         // North vector
-        val dotProduct = Vector3Utils.dot(normGravity, normMagField)
-        val north = Vector3Utils.minus(normMagField, Vector3Utils.times(normGravity, dotProduct))
+        val north = Vector3Utils.projectOnPlane(normMagField, normGravity)
         val normNorth = Vector3Utils.normalize(north)
 
         // Azimuth
-        // NB: see https://math.stackexchange.com/questions/381649/whats-the-best-3d-angular-co-ordinate-system-for-working-with-smartfone-apps
-        val sin = normEast[1] - normNorth[0]
-        val cos = normEast[0] + normNorth[1]
-        val azimuth = if (!(sin == 0f && sin == cos)) atan2(sin, cos) else 0f
+        // See https://math.stackexchange.com/questions/381649/whats-the-best-3d-angular-co-ordinate-system-for-working-with-smartfone-apps
+        // This is derived from the rotation matrix
+        val x = normEast[0] + normNorth[1]
+        val y = normEast[1] - normNorth[0]
+        val azimuth = if (!(y == 0f && y == x)) atan2(y, x) else 0f
 
         if (azimuth.isNaN()){
             return null
