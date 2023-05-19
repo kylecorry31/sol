@@ -51,7 +51,25 @@ internal class AzimuthCalculatorTest {
                 // Invalid
                 Arguments.of(Vector3(0f, 0f, 0f), Vector3(0f, -51f, 16f), null),
                 Arguments.of(Vector3(0f, 0f, 10f), Vector3(0f, 0f, 0f), null),
-                Arguments.of(Vector3(10f, 10f, 10f), Vector3(10f, 10f, 10f), null)
+                Arguments.of(Vector3(10f, 10f, 10f), Vector3(10f, 10f, 10f), null),
+                // Held flat (upside down)
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(0f, -16f, 51f), 0f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(16f, 0f, 51f), 270f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(-16f, 0f, 51f), 90f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(0f, 16f, 51f), 180f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(8f, 8f, 51f), 225f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(-8f, 8f, 51f), 135f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(-8f, -8f, 51f), 45f),
+                Arguments.of(Vector3(0f, 0f, -9.81f), Vector3(8f, -8f, 51f), 315f),
+                // Held vertical (upside down)
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(0f, 51f, -16f), 180f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(16f, 51f, 0f), 270f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(-16f, 51f, 0f), 90f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(0f, 51f, 16f), 0f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(8f, 51f, 8f), 315f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(-8f, 51f, 8f), 45f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(-8f, 51f, -8f), 135f),
+                Arguments.of(Vector3(0f, -9.81f, 0f), Vector3(8f, 51f, -8f), 225f),
             )
         }
     }
