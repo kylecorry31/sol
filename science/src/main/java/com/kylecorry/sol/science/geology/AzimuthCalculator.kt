@@ -1,14 +1,10 @@
 package com.kylecorry.sol.science.geology
 
-import android.hardware.SensorManager
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Utils
-import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.units.Bearing
 import kotlin.math.atan2
-
-// From https://stackoverflow.com/questions/16317599/android-compass-that-can-compensate-for-tilt-and-pitch
 
 internal object AzimuthCalculator {
 
@@ -22,7 +18,9 @@ internal object AzimuthCalculator {
         val normNorth = Vector3Utils.normalize(north)
 
         // Azimuth
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/hardware/SensorManager.java;l=91;bpv=1;bpt=0?q=SensorManager&sq=&ss=android%2Fplatform%2Fsuperproject
         // Derived from the rotation matrix with X = Y
+        // This is the projection of the east and north vectors onto the X-Y plane (just their X component)
         val azimuth = atan2(normEast[0], normNorth[0]).toDegrees() + 90
 
         if (azimuth.isNaN()) {
