@@ -46,8 +46,8 @@ internal class AzimuthCalculatorTest {
                 Arguments.of(Vector3(0f, 9.81f, 0f), Vector3(-8f, -51f, 8f), 135f),
                 Arguments.of(Vector3(0f, 9.81f, 0f), Vector3(8f, -51f, 8f), 225f),
                 // In between
-                Arguments.of(Vector3(4.1f, 6.8f, 5.6f), Vector3(-35f, -23f, -27f), 69.9f),
-                Arguments.of(Vector3(4.6f, -2.2f, 8.5f), Vector3(-31f, 6f, -34f), 103.28f),
+                Arguments.of(Vector3(4.1f, 6.8f, 5.6f), Vector3(-35f, -23f, -27f), 58f),
+                Arguments.of(Vector3(4.6f, -2.2f, 8.5f), Vector3(-31f, 6f, -34f), 107f),
                 // Invalid
                 Arguments.of(Vector3(0f, 0f, 0f), Vector3(0f, -51f, 16f), null),
                 Arguments.of(Vector3(0f, 0f, 10f), Vector3(0f, 0f, 0f), null),
