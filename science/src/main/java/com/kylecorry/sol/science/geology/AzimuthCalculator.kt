@@ -8,21 +8,20 @@ import kotlin.math.atan2
 
 internal object AzimuthCalculator {
 
-    fun calculate(acceleration: FloatArray, magneticField: FloatArray): Bearing? {
-        // Down vector (from gravity)
-        val down = Vector3Utils.normalize(Vector3Utils.times(acceleration, -1f), true)
+    fun calculate(gravity: FloatArray, magneticField: FloatArray): Bearing? {
+        // East vector - perpendicular to gravity and magnetic field
+        val east = Vector3Utils.cross(gravity, magneticField)
+        val normEast = Vector3Utils.normalize(east)
 
-        // East vector - perpendicular to down and magnetic field
-        val east = Vector3Utils.normalize(Vector3Utils.cross(down, magneticField), true)
-
-        // North vector - perpendicular to down and east
-        val north = Vector3Utils.normalize(Vector3Utils.cross(east, down), true)
+        // North vector - perpendicular to gravity and east
+        val north = Vector3Utils.cross(gravity, east)
+        val normNorth = Vector3Utils.normalize(north)
 
         // Azimuth
         // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/hardware/SensorManager.java;l=91;bpv=1;bpt=0?q=SensorManager&sq=&ss=android%2Fplatform%2Fsuperproject
         // Derived from the rotation matrix with X = Y
         // This is the projection of the east and north vectors onto the X-Y plane (just their X component)
-        val azimuth = atan2(-north[0], east[0]).toDegrees()
+        val azimuth = atan2(normEast[0], normNorth[0]).toDegrees() + 90
 
         if (azimuth.isNaN()) {
             return null
