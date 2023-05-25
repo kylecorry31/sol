@@ -86,6 +86,10 @@ object Time {
         return Duration.between(this, other).seconds / (60f * 60f)
     }
 
+    fun LocalDate.daysUntil(other: LocalDate): Long {
+        return Duration.between(this.atStartOfDay(), other.atStartOfDay()).toDays()
+    }
+
     fun Instant.plusHours(hours: Long): Instant {
         return plus(Duration.ofHours(hours))
     }
@@ -141,7 +145,7 @@ object Time {
         return Duration.between(first, second).seconds / 3600f
     }
 
-    fun <T> getReadings(
+    inline fun <T> getReadings(
         date: LocalDate,
         zone: ZoneId,
         step: Duration,
@@ -155,7 +159,7 @@ object Time {
         )
     }
 
-    fun <T> getReadings(
+    inline fun <T> getReadings(
         start: ZonedDateTime,
         end: ZonedDateTime,
         step: Duration,
@@ -168,6 +172,21 @@ object Time {
             time = time.plus(step)
         }
         return readings
+    }
+
+    inline fun <T> getYearlyValues(
+        year: Int,
+        valueProvider: (date: LocalDate) -> T
+    ): List<Pair<LocalDate, T>> {
+        val values = mutableListOf<Pair<LocalDate, T>>()
+        var date = LocalDate.of(year, Month.JANUARY, 1)
+
+        while (date.year == year) {
+            values.add(date to valueProvider(date))
+            date = date.plusDays(1)
+        }
+
+        return values
     }
 
     fun List<Reading<*>>.duration(): Duration {
