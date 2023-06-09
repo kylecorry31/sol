@@ -14,4 +14,9 @@ enum class MeteorShower(val solarLongitude: Float, val rate: Int) {
     Ursids(270.5f, 10)
 }
 
-data class MeteorShowerPeak(val shower: MeteorShower, val peak: ZonedDateTime)
+data class MeteorShowerPeak(
+    val shower: MeteorShower,
+    val start: ZonedDateTime,
+    val peak: ZonedDateTime,
+    val end: ZonedDateTime
+)

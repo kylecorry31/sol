@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.wrap
@@ -19,8 +20,10 @@ import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
+import com.kylecorry.sol.time.Time.getClosestPastTime
 import com.kylecorry.sol.time.Time.getClosestTime
 import com.kylecorry.sol.units.*
 import java.time.*
@@ -319,14 +322,20 @@ object Astronomy : IAstronomyService {
         val solarLongitude = getSolarLongitude(date)
 
         for (shower in MeteorShower.values()) {
-            if (deltaAngle(solarLongitude, shower.solarLongitude).absoluteValue > 1) {
+            if (deltaAngle(solarLongitude, shower.solarLongitude).absoluteValue > 2) {
                 continue
             }
 
-            val peak = getNextMeteorShowerPeak(shower, location, startOfDay)
+            val peak = getNextMeteorShowerPeak(shower, location, startOfDay) ?: continue
+            peak.transit ?: continue
 
-            if (peak?.toLocalDate() == date.toLocalDate()) {
-                return MeteorShowerPeak(shower, peak!!)
+            if (peak.transit.toLocalDate() == date.toLocalDate()) {
+                return MeteorShowerPeak(
+                    shower,
+                    peak.rise ?: peak.transit,
+                    peak.transit,
+                    peak.set ?: peak.transit
+                )
             }
         }
 
@@ -355,50 +364,104 @@ object Astronomy : IAstronomyService {
         shower: MeteorShower,
         location: Coordinate,
         now: ZonedDateTime
-    ): ZonedDateTime? {
+    ): RiseSetTransitTimes? {
         val time = getNextTimeAtSolarLongitude(shower.solarLongitude, now)
         val today = getMeteorShowerTimes(shower, location, time)
         val yesterday = getMeteorShowerTimes(shower, location, time.minusDays(1))
         val tomorrow = getMeteorShowerTimes(shower, location, time.plusDays(1))
 
-        val closest = getClosestTime(
+        val transit = getClosestTime(
             time,
             listOf(yesterday.transit, today.transit, tomorrow.transit)
         )
 
-        if (closest == null && isMeteorShowerVisible(shower, location, time)) {
-            // Doesn't set
-            val sun = getSunEvents(time, location, SunTimesMode.Astronomical)
-            return if (!isSunUp(time, location, false)) {
-                time
-            } else if (sun.rise != null && isMeteorShowerVisible(
-                    shower,
-                    location,
-                    sun.rise.minusHours(1)
-                )
-            ) {
-                sun.rise.minusHours(1)
-            } else {
-                null
+        val rise = getClosestPastTime(
+            transit ?: time,
+            listOf(yesterday.rise, today.rise, tomorrow.rise)
+        )
+
+        val set = getClosestFutureTime(
+            transit ?: time,
+            listOf(yesterday.set, today.set, tomorrow.set)
+        )
+
+        val night = getClosestNight(
+            transit ?: time,
+            location,
+            SunTimesMode.Astronomical
+        ) ?: return null
+
+        if (transit == null && isMeteorShowerVisible(shower, location, time)) {
+            // Doesn't set - visible all night
+            var peakTime = night.start
+            var peakAltitude = 0f
+            while (peakTime.isBefore(night.end)) {
+                val altitude = getMeteorShowerAltitude(shower, location, peakTime.toInstant())
+                if (altitude > peakAltitude) {
+                    peakAltitude = altitude
+                }
+                peakTime = peakTime.plusMinutes(5)
             }
-        } else if (closest != null) {
-            // Sets, use the transit point
-            val sun = getSunEvents(closest, location, SunTimesMode.Astronomical)
-            return if (!isSunUp(closest, location, false)) {
-                closest
-            } else if (sun.rise != null && isMeteorShowerVisible(
-                    shower,
-                    location,
-                    sun.rise.minusHours(1)
-                )
-            ) {
-                sun.rise.minusHours(1)
+
+            return RiseSetTransitTimes(night.start, peakTime, night.end)
+        } else if (transit == null) {
+            // Doesn't rise
+            return null
+        }
+
+        // Shower rises and sets
+
+        val times = Range(rise ?: night.start, set ?: night.end)
+
+        // Restrict to night
+        val intersection = Range(
+            maxOf(times.start, night.start),
+            minOf(times.end, night.end)
+        )
+
+        if (intersection.start.isAfter(intersection.end) || intersection.start == intersection.end) {
+            return null
+        }
+
+        val realTransit = intersection.clamp(transit)
+
+        return RiseSetTransitTimes(intersection.start, realTransit, intersection.end)
+    }
+
+    private fun getClosestNight(
+        time: ZonedDateTime?,
+        location: Coordinate,
+        sunTimesMode: SunTimesMode
+    ): Range<ZonedDateTime>? {
+        if (time == null) {
+            return null
+        }
+        val yesterday = getSunEvents(time.minusDays(1), location, sunTimesMode)
+        val today = getSunEvents(time, location, sunTimesMode)
+        val tomorrow = getSunEvents(time.plusDays(1), location, sunTimesMode)
+
+        if (yesterday.set == null || today.rise == null || today.set == null || tomorrow.rise == null) {
+            return if (!isSunUp(time, location) && today.rise == null) {
+                // Sun does not set
+                Range(time.atStartOfDay(), time.atEndOfDay())
             } else {
                 null
             }
         }
 
-        return null
+        val lastNight = Range(yesterday.set, today.rise)
+        val tonight = Range(today.set, tomorrow.rise)
+
+        val timeUntilLastNight = Duration.between(time, lastNight.end).abs()
+        val timeUntilTonight = Duration.between(time, tonight.start).abs()
+
+
+        return if (timeUntilLastNight < timeUntilTonight) {
+            lastNight
+        } else {
+            tonight
+        }
+
     }
 
     private fun isMeteorShowerVisible(
