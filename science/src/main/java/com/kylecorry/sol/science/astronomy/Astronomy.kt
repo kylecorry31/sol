@@ -391,22 +391,25 @@ object Astronomy : IAstronomyService {
             SunTimesMode.Astronomical
         ) ?: return null
 
-        if (transit == null && isMeteorShowerVisible(shower, location, time)) {
-            // Doesn't set - visible all night
-            var peakTime = night.start
-            var peakAltitude = 0f
-            while (peakTime.isBefore(night.end)) {
-                val altitude = getMeteorShowerAltitude(shower, location, peakTime.toInstant())
+        if (transit == null) {
+            // Check to see when it is visible
+            var currentTime = night.start
+            var peakAltitude = -1f
+            var peakTime = currentTime
+            while (currentTime.isBefore(night.end)) {
+                val altitude = getMeteorShowerAltitude(shower, location, currentTime.toInstant())
                 if (altitude > peakAltitude) {
                     peakAltitude = altitude
+                    peakTime = currentTime
                 }
-                peakTime = peakTime.plusMinutes(5)
+                currentTime = currentTime.plusMinutes(5)
+            }
+
+            if (peakAltitude < 0) {
+                return null
             }
 
             return RiseSetTransitTimes(night.start, peakTime, night.end)
-        } else if (transit == null) {
-            // Doesn't rise
-            return null
         }
 
         // Shower rises and sets
