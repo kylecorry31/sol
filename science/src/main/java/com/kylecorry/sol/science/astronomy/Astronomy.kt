@@ -417,14 +417,7 @@ object Astronomy : IAstronomyService {
         val times = Range(rise ?: night.start, set ?: night.end)
 
         // Restrict to night
-        val intersection = Range(
-            maxOf(times.start, night.start),
-            minOf(times.end, night.end)
-        )
-
-        if (intersection.start.isAfter(intersection.end) || intersection.start == intersection.end) {
-            return null
-        }
+        val intersection = times.intersection(night) ?: return null
 
         val realTransit = intersection.clamp(transit)
 

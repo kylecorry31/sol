@@ -11,4 +11,12 @@ data class Range<T : Comparable<T>>(val start: T, val end: T) {
         return value
     }
 
+    fun intersection(other: Range<T>): Range<T>? {
+        if (other.start > end || other.end < start) {
+            return null
+        }
+
+        return Range(maxOf(start, other.start), minOf(end, other.end))
+    }
+
 }
