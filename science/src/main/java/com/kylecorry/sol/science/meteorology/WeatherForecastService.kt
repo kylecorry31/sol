@@ -5,6 +5,7 @@ import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenusMatcher
 import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
 import com.kylecorry.sol.time.Time
+import com.kylecorry.sol.time.Time.middle
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
@@ -350,22 +351,28 @@ internal object WeatherForecastService {
             return null
         }
 
-        val lastCloud = clouds.lastOrNull() ?: return null
+        val cloudIndicatedArrivals = clouds.reversed().map { cloud ->
+            val duration = getCloudPrecipitationTimeRange(cloud.value)
+            duration?.let { Range(cloud.time.plus(it.start), cloud.time.plus(it.end)) }
+        }
 
-        val timeFromCloud = getCloudPrecipitationTime(lastCloud.value) ?: return null
+        val cloudIndicatedArrivalRange = Range.intersection(
+            cloudIndicatedArrivals.filterNotNull(),
+            stopWhenNoIntersection = true
+        )
 
-        return lastCloud.time.plus(timeFromCloud)
+        return cloudIndicatedArrivalRange?.middle()
     }
 
-    private fun getCloudPrecipitationTime(cloud: CloudGenus?): Duration? {
+    private fun getCloudPrecipitationTimeRange(cloud: CloudGenus?): Range<Duration>? {
         return when (cloud) {
-            CloudGenus.Cirrus -> Duration.ofHours(24)
-            CloudGenus.Cirrocumulus -> Duration.ofHours(12)
-            CloudGenus.Cirrostratus -> Duration.ofHours(15)
-            CloudGenus.Altocumulus -> Duration.ofHours(12)
-            CloudGenus.Altostratus -> Duration.ofHours(8)
-            CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus -> Duration.ZERO
-            CloudGenus.Stratus, CloudGenus.Cumulus -> Duration.ofHours(3)
+            CloudGenus.Cirrus -> Range(Duration.ofHours(12), Duration.ofHours(24))
+            CloudGenus.Cirrocumulus -> Range(Duration.ofHours(8), Duration.ofHours(12))
+            CloudGenus.Cirrostratus -> Range(Duration.ofHours(10), Duration.ofHours(15))
+            CloudGenus.Altocumulus -> Range(Duration.ZERO, Duration.ofHours(12))
+            CloudGenus.Altostratus -> Range(Duration.ZERO, Duration.ofHours(8))
+            CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus -> Range(Duration.ZERO, Duration.ZERO)
+            CloudGenus.Stratus, CloudGenus.Cumulus -> Range(Duration.ZERO, Duration.ofHours(3))
             CloudGenus.Stratocumulus, null -> null
         }
     }

@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.plusHours
 import org.junit.Assert
 import org.junit.jupiter.api.Assertions.*
@@ -368,7 +369,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -404,7 +405,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     temperatures(10f, 20f),
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -465,7 +466,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(12),
+                        weatherTime.minusSeconds(1).plus(Time.hours(12.0).minusMillis(500)),
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -513,7 +514,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Warm,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
@@ -530,7 +531,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Warm,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
@@ -549,7 +550,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Warm,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
@@ -569,7 +570,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
@@ -588,7 +589,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Cold,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
@@ -607,7 +608,7 @@ class MeteorologyTest {
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
                     weatherAt(
-                        weatherTime.minusSeconds(1).plusHours(3),
+                        weatherTime.minusSeconds(1).plus(Time.hours(1.5)),
                         WeatherFront.Cold,
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),

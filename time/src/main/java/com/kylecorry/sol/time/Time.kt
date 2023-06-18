@@ -220,4 +220,8 @@ object Time {
         return dates
     }
 
+    fun <T> Range<T>.middle(): T where T : Temporal, T : Comparable<T> {
+        return start.plus(Duration.between(start, end).dividedBy(2)) as T
+    }
+
 }
