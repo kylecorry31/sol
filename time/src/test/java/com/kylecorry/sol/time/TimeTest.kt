@@ -3,9 +3,12 @@ package com.kylecorry.sol.time
 import com.kylecorry.sol.time.Time.getClosestFutureTime
 import com.kylecorry.sol.time.Time.getClosestPastTime
 import com.kylecorry.sol.time.Time.getClosestTime
+import com.kylecorry.sol.time.Time.roundNearestMinute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.time.*
 
 class TimeTest {
@@ -108,6 +111,22 @@ class TimeTest {
         val actual = getClosestPastTime(now, times)
 
         assertNull(actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "2020-01-01T01:23:45-05:00, 1, 2020-01-01T01:24:00-05:00",
+        "2020-01-01T01:23:24-05:00, 1, 2020-01-01T01:23:00-05:00",
+        "2020-01-01T01:23:45-05:00, 5, 2020-01-01T01:25:00-05:00",
+        "2020-01-01T01:23:45-05:00, 15, 2020-01-01T01:30:00-05:00",
+        "2020-01-01T01:19:45-05:00, 15, 2020-01-01T01:15:00-05:00",
+        "2020-01-01T01:59:45-05:00, 15, 2020-01-01T02:00:00-05:00",
+        "2020-01-01T23:59:45-05:00, 15, 2020-01-02T00:00:00-05:00",
+        "2020-01-01T01:30:00-05:00, 15, 2020-01-01T01:30:00-05:00",
+    )
+    fun roundNearestMinute(time: ZonedDateTime, minute: Int, expected: ZonedDateTime) {
+        val actual = time.roundNearestMinute(minute)
+        assertEquals(expected, actual)
     }
 
 

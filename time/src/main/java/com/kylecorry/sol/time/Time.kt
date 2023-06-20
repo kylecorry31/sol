@@ -1,9 +1,12 @@
 package com.kylecorry.sol.time
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.SolMath.roundNearest
 import com.kylecorry.sol.units.Reading
 import java.time.*
+import java.time.temporal.ChronoUnit
 import java.time.temporal.Temporal
+import kotlin.math.roundToInt
 
 object Time {
 
@@ -222,6 +225,23 @@ object Time {
 
     fun <T> Range<T>.middle(): T where T : Temporal, T : Comparable<T> {
         return start.plus(Duration.between(start, end).dividedBy(2)) as T
+    }
+
+    fun ZonedDateTime.roundNearestMinute(minutes: Int = 1): ZonedDateTime {
+        val seconds = this.second
+        if (minutes == 1) {
+            return if (seconds >= 30) {
+                this.plusMinutes(1).truncatedTo(ChronoUnit.MINUTES)
+            } else {
+                this.truncatedTo(ChronoUnit.MINUTES)
+            }
+        }
+
+        val roundedMinutes = this.minute.roundNearest(minutes)
+
+        val delta = roundedMinutes - this.minute
+
+        return this.plusMinutes(delta.toLong()).truncatedTo(ChronoUnit.MINUTES)
     }
 
 }
