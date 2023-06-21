@@ -66,21 +66,21 @@ internal object WeatherForecastService {
     private fun doCloudsIndicateFront(clouds: List<Reading<CloudGenus?>>): Boolean {
         val patterns = CloudPrecipitationCalculator.frontPatterns
         return patterns.any {
-            cloudPrecipitationCalculator.getMatch(clouds, it) != null
+            cloudPrecipitationCalculator.getMatch(clouds, it, true) != null
         }
     }
 
     private fun doCloudsIndicateColdFront(clouds: List<Reading<CloudGenus?>>): Boolean {
         val patterns = CloudPrecipitationCalculator.coldFrontPatterns
         return patterns.any {
-            cloudPrecipitationCalculator.getMatch(clouds, it) != null
+            cloudPrecipitationCalculator.getMatch(clouds, it, true) != null
         }
     }
 
     private fun doCloudsIndicateWarmFront(clouds: List<Reading<CloudGenus?>>): Boolean {
         val patterns = CloudPrecipitationCalculator.warmFrontPatterns
         return patterns.any {
-            cloudPrecipitationCalculator.getMatch(clouds, it) != null
+            cloudPrecipitationCalculator.getMatch(clouds, it, true) != null
         }
     }
 

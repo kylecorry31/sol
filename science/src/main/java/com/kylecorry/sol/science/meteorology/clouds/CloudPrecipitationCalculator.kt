@@ -25,7 +25,8 @@ internal class CloudPrecipitationCalculator {
 
     fun getMatch(
         clouds: List<Reading<CloudGenus?>>,
-        pattern: List<List<CloudGenus?>>
+        pattern: List<List<CloudGenus?>>,
+        requireExact: Boolean = false
     ): List<Reading<CloudGenus?>>? {
         val reversedClouds = clouds.sortedByDescending { it.time }
         val reversedPattern = pattern.reversed()
@@ -50,6 +51,11 @@ internal class CloudPrecipitationCalculator {
             } else if (foundCurrentPattern && currentPattern.contains(cloud.value)) {
                 // This is a continued hit against the current pattern
                 matches.add(cloud)
+            } else {
+                // This cloud does not match the current pattern
+                if (requireExact) {
+                    return null
+                }
             }
         }
 
