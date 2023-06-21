@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenusMatcher
 import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
+import com.kylecorry.sol.science.meteorology.clouds.CloudPrecipitationCalculator
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.middle
 import com.kylecorry.sol.units.Pressure
@@ -17,6 +18,7 @@ import kotlin.math.absoluteValue
 internal object WeatherForecastService {
 
     private val thunderstormMinTemperature = Temperature(55f, TemperatureUnits.F).celsius()
+    private val cloudPrecipitationCalculator = CloudPrecipitationCalculator()
 
     private fun getTendency(
         pressures: List<Reading<Pressure>>,
@@ -61,66 +63,25 @@ internal object WeatherForecastService {
         }
     }
 
-    private fun doRecentCloudsMatchPattern(
-        clouds: List<Reading<CloudGenus?>>,
-        pattern: List<CloudMatcher>
-    ): Boolean {
-        var idx = pattern.lastIndex
-        var hasHit = false
-        var cloudIdx = clouds.lastIndex
-        while (cloudIdx >= 0 && idx >= 0) {
-            val cloud = clouds[cloudIdx].value
-            if (pattern[idx].matches(cloud)) {
-                hasHit = true
-                cloudIdx--
-            } else if (!hasHit) {
-                return false
-            } else {
-                hasHit = false
-                idx--
-            }
-        }
-        return idx == -1 || (idx == 0 && hasHit)
-    }
-
     private fun doCloudsIndicateFront(clouds: List<Reading<CloudGenus?>>): Boolean {
-        val cirro = listOf(CloudGenus.Cirrus, CloudGenus.Cirrocumulus, CloudGenus.Cirrostratus)
-        val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
-        val warm = listOf(CloudGenus.Stratus, CloudGenus.Nimbostratus)
-        val cold = listOf(CloudGenus.Cumulus, CloudGenus.Cumulonimbus)
-        val storm = listOf(CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus)
-        // TODO: Maybe detect very start of storm (cirro) and middle (alto) without further evidence
-        val patterns = listOf(
-            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto)),
-            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(warm)),
-            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(cold)),
-            listOf(CloudGenusMatcher(storm)),
-        )
-        return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
+        val patterns = CloudPrecipitationCalculator.frontPatterns
+        return patterns.any {
+            cloudPrecipitationCalculator.getMatch(clouds, it) != null
+        }
     }
 
     private fun doCloudsIndicateColdFront(clouds: List<Reading<CloudGenus?>>): Boolean {
-        val cirro = listOf(CloudGenus.Cirrus, CloudGenus.Cirrocumulus, CloudGenus.Cirrostratus)
-        val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
-        val cold = listOf(CloudGenus.Cumulus, CloudGenus.Cumulonimbus)
-        val storm = listOf(CloudGenus.Cumulonimbus)
-        val patterns = listOf(
-            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(cold)),
-            listOf(CloudGenusMatcher(storm)),
-        )
-        return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
+        val patterns = CloudPrecipitationCalculator.coldFrontPatterns
+        return patterns.any {
+            cloudPrecipitationCalculator.getMatch(clouds, it) != null
+        }
     }
 
     private fun doCloudsIndicateWarmFront(clouds: List<Reading<CloudGenus?>>): Boolean {
-        val cirro = listOf(CloudGenus.Cirrus, CloudGenus.Cirrocumulus, CloudGenus.Cirrostratus)
-        val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
-        val warm = listOf(CloudGenus.Stratus, CloudGenus.Nimbostratus)
-        val storm = listOf(CloudGenus.Nimbostratus)
-        val patterns = listOf(
-            listOf(CloudGenusMatcher(cirro), CloudGenusMatcher(alto), CloudGenusMatcher(warm)),
-            listOf(CloudGenusMatcher(storm)),
-        )
-        return patterns.any { doRecentCloudsMatchPattern(clouds, it) }
+        val patterns = CloudPrecipitationCalculator.warmFrontPatterns
+        return patterns.any {
+            cloudPrecipitationCalculator.getMatch(clouds, it) != null
+        }
     }
 
     private fun getCurrentCloudConditions(
@@ -351,30 +312,9 @@ internal object WeatherForecastService {
             return null
         }
 
-        val cloudIndicatedArrivals = clouds.reversed().map { cloud ->
-            val duration = getCloudPrecipitationTimeRange(cloud.value)
-            duration?.let { Range(cloud.time.plus(it.start), cloud.time.plus(it.end)) }
-        }
-
-        val cloudIndicatedArrivalRange = Range.intersection(
-            cloudIndicatedArrivals.filterNotNull(),
-            stopWhenNoIntersection = true
-        )
+        val cloudIndicatedArrivalRange = CloudPrecipitationCalculator().getPrecipitationTime(clouds)
 
         return cloudIndicatedArrivalRange?.middle()
-    }
-
-    private fun getCloudPrecipitationTimeRange(cloud: CloudGenus?): Range<Duration>? {
-        return when (cloud) {
-            CloudGenus.Cirrus -> Range(Duration.ofHours(12), Duration.ofHours(24))
-            CloudGenus.Cirrocumulus -> Range(Duration.ofHours(8), Duration.ofHours(12))
-            CloudGenus.Cirrostratus -> Range(Duration.ofHours(10), Duration.ofHours(15))
-            CloudGenus.Altocumulus -> Range(Duration.ZERO, Duration.ofHours(12))
-            CloudGenus.Altostratus -> Range(Duration.ZERO, Duration.ofHours(8))
-            CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus -> Range(Duration.ZERO, Duration.ZERO)
-            CloudGenus.Stratus, CloudGenus.Cumulus -> Range(Duration.ZERO, Duration.ofHours(3))
-            CloudGenus.Stratocumulus, null -> null
-        }
     }
 
     private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {
