@@ -1,10 +1,24 @@
 plugins {
     kotlin("jvm") version "1.8.20"
     id("java-library")
+    id("maven-publish")
 }
 
-group = "com.kylecorry.sol"
+group = "com.kylecorry"
 version = "7.0.0"
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = group.toString()
+                artifactId = "sol"
+                version = version
+                from(components["java"])
+            }
+        }
+    }
+}
 
 repositories {
     mavenCentral()
