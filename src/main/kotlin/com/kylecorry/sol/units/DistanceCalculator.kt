@@ -58,10 +58,10 @@ object DistanceCalculator {
         val sinU1sinU2 = sinU1 * sinU2
         var sigma = 0.0
         var deltaSigma = 0.0
-        var cosSqAlpha = 0.0
-        var cos2SM = 0.0
-        var cosSigma = 0.0
-        var sinSigma = 0.0
+        var cosSqAlpha: Double
+        var cos2SM: Double
+        var cosSigma: Double
+        var sinSigma: Double
         var cosLambda = 0.0
         var sinLambda = 0.0
         var lambda = L // initial guess

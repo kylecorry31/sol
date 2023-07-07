@@ -10,7 +10,7 @@ class SimulatedAnnealingOptimizer(
     private val stepSize: Double,
     private val maxIterations: Int = 1000,
     private val minimumTemperature: Double = 0.0,
-    private val coolingFn: (t0: Double, t: Double, k: Int) -> Double = { t0: Double, t: Double, k: Int ->
+    private val coolingFn: (t0: Double, t: Double, k: Int) -> Double = { t0: Double, _: Double, k: Int ->
         t0 / (k + 1).toDouble()
     }
 ) : IOptimizer {

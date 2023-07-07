@@ -173,34 +173,11 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
                 cosDegrees(equatorial.declination) - y * sinPi * cosDegrees(hourAngle)
             ).toDegrees()
 
-            val hPrime = hourAngle - deltaAscension
-
-            var altitude = wrap(asin(
-                sinDegrees(latitude) * sinDegrees(trueDeclination) +
-                        cosDegrees(latitude) * cosDegrees(trueDeclination) * cosDegrees(hPrime)
-            ).toDegrees(), -90.0, 90.0)
-
-            val astronomersAzimuth = atan2(
-                sinDegrees(hPrime),
-                cosDegrees(hPrime) * sinDegrees(latitude) - tanDegrees(trueDeclination) * cosDegrees(
-                    latitude
-                )
-            ).toDegrees()
-
-            val sinH = sinDegrees(hPrime)
-
-            if (sinH > 0) {
-                altitude = 360 - altitude
-            }
-
             return fromEquatorial(
                 EquatorialCoordinate(trueDeclination, equatorial.rightAscension + deltaAscension),
                 siderealTime,
                 latitude
             )
-
-//            return HorizonCoordinate(astronomersAzimuth + 180, altitude)
-
         }
     }
 

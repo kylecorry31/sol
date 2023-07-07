@@ -224,7 +224,6 @@ internal class RiseSetTransitTimeCalculator {
             val c2 =
                 interpolateCoordinate(n2, coordinates.first, coordinates.second, coordinates.third)
 
-            val d0 = distances?.let { interpolateDistance(n0, it.first, it.second, it.third) }
             val d1 = distances?.let { interpolateDistance(n1, it.first, it.second, it.third) }
             val d2 = distances?.let { interpolateDistance(n2, it.first, it.second, it.third) }
 

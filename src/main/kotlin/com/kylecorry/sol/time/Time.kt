@@ -6,7 +6,6 @@ import com.kylecorry.sol.units.Reading
 import java.time.*
 import java.time.temporal.ChronoUnit
 import java.time.temporal.Temporal
-import kotlin.math.roundToInt
 
 object Time {
 
@@ -224,6 +223,7 @@ object Time {
     }
 
     fun <T> Range<T>.middle(): T where T : Temporal, T : Comparable<T> {
+        @Suppress("UNCHECKED_CAST")
         return start.plus(Duration.between(start, end).dividedBy(2)) as T
     }
 
