@@ -1,5 +1,0 @@
-rootProject.name = "sol"
-include ':science'
-include ':math'
-include ':units'
-include ':time'
