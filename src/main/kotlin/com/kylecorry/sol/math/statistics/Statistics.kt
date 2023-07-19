@@ -1,6 +1,9 @@
 package com.kylecorry.sol.math.statistics
 
+import com.kylecorry.sol.math.RoundingMethod
 import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.lerp
+import com.kylecorry.sol.math.SolMath.round
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.*
@@ -8,6 +11,7 @@ import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.exp
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object Statistics {
@@ -59,11 +63,32 @@ object Statistics {
     }
 
     fun median(values: List<Float>): Float {
+        return quantile(values, 0.5f, interpolate = false)
+    }
+
+    fun quantile(values: List<Float>, quantile: Float, interpolate: Boolean = true): Float {
         if (values.isEmpty()) {
             return 0f
         }
 
-        return values.sorted()[values.size / 2]
+        val sorted = values.sorted()
+
+        val idx = sorted.lastIndex * quantile
+
+        if (!interpolate){
+            // Round toward zero to match the behavior of numpy
+            return sorted[idx.round(RoundingMethod.TowardZero)]
+        }
+
+        // Index is an integer, short circuit
+        if (idx == idx.toInt().toFloat()) {
+            return sorted[idx.toInt()]
+        }
+
+        val lower = sorted[idx.toInt()]
+        val upper = sorted[(idx.toInt() + 1).coerceIn(0, sorted.lastIndex)]
+        val remainder = idx - idx.toInt()
+        return lerp(remainder, lower, upper)
     }
 
     fun skewness(

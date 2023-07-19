@@ -3,6 +3,7 @@ package com.kylecorry.sol.math
 import com.kylecorry.sol.math.SolMath.negative
 import com.kylecorry.sol.math.SolMath.positive
 import com.kylecorry.sol.math.SolMath.real
+import com.kylecorry.sol.math.SolMath.round
 import com.kylecorry.sol.math.SolMath.roundNearest
 import com.kylecorry.sol.math.SolMath.roundNearestAngle
 import com.kylecorry.sol.math.SolMath.roundPlaces
@@ -14,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
+import java.math.RoundingMode
 import java.util.stream.Stream
 import kotlin.math.cos
 import kotlin.math.sin
@@ -405,6 +407,30 @@ class SolMathTest {
     fun roundNearestAngleDouble(value: Double, nearest: Double, expected: Double){
         val actual = value.roundNearestAngle(nearest)
         assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "AwayFromZero, 1.0, 1",
+        "AwayFromZero, 1.1, 1",
+        "AwayFromZero, 1.5, 2",
+        "AwayFromZero, 1.9, 2",
+        "AwayFromZero, -1.0, -1",
+        "AwayFromZero, -1.1, -1",
+        "AwayFromZero, -1.5, -2",
+        "AwayFromZero, -1.9, -2",
+        "TowardZero, 1.0, 1",
+        "TowardZero, 1.1, 1",
+        "TowardZero, 1.5, 1",
+        "TowardZero, 1.9, 2",
+        "TowardZero, -1.0, -1",
+        "TowardZero, -1.1, -1",
+        "TowardZero, -1.5, -1",
+        "TowardZero, -1.9, -2",
+    )
+    fun round(method: RoundingMethod, value: Float, expected: Int){
+        val actual = value.round(method)
+        assertEquals(expected, actual)
     }
 
     companion object {

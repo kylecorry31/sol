@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -34,7 +35,58 @@ internal class StatisticsTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("provideQuantile")
+    fun quantile(values: List<Float>, quantile: Float, interpolate: Boolean, expected: Float) {
+        val actual = Statistics.quantile(values, quantile, interpolate)
+        assertEquals(expected, actual, 0.00001f)
+    }
+
     companion object {
+
+        @JvmStatic
+        fun provideQuantile(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(listOf<Float>(), 0.5f, true, 0f),
+
+                // With odd values, interpolate
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.5f, true, 3f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.25f, true, 2f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.75f, true, 4f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.0f, true, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 1f, true, 5f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.1f, true, 1.4f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.9f, true, 4.6f),
+
+                // With odd values, don't interpolate
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.5f, false, 3f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.25f, false, 2f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.75f, false, 4f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.0f, false, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 1f, false, 5f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.1f, false, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 0.9f, false, 5f),
+
+                // With even values, interpolate
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.5f, true, 2.5f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.25f, true, 1.75f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.75f, true, 3.25f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.0f, true, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 1f, true, 4f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.1f, true, 1.3f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.9f, true, 3.7f),
+
+                // With even values, don't interpolate
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.5f, false, 2f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.25f, false, 2f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.75f, false, 3f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.0f, false, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 1f, false, 4f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.1f, false, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), 0.9f, false, 4f),
+
+            )
+        }
 
         @JvmStatic
         fun provideSoftmax(): Stream<Arguments> {

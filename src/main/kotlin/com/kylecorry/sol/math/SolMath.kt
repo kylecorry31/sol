@@ -401,4 +401,23 @@ object SolMath {
         }
     }
 
+    fun Float.round(method: RoundingMethod): Int {
+        return when (method) {
+            RoundingMethod.AwayFromZero -> {
+                if (abs(this) % 1 >= 0.5f) {
+                    (sign(this) * abs(this).roundToInt()).toInt()
+                } else {
+                    toInt()
+                }
+            }
+            RoundingMethod.TowardZero -> {
+                if (abs(this) % 1 <= 0.5f) {
+                    toInt()
+                } else {
+                    roundToInt()
+                }
+            }
+        }
+    }
+
 }
