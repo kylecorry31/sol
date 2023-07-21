@@ -441,6 +441,27 @@ class MeteorologyTest {
                         WeatherCondition.Clear
                     )
                 ),
+                // clouds only - cold front (Cb only)
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    clouds(CloudGenus.Cumulonimbus),
+                    temperatures(10f, 20f),
+                    weatherAt(
+                        weatherTime.minusSeconds(1),
+                        WeatherFront.Cold,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Thunderstorm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Rain
+                    ),
+                    weatherLater(
+                        PressureSystem.High,
+                        WeatherCondition.Clear
+                    )
+                ),
                 // clouds only - cold front (Cb, cold temps)
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),

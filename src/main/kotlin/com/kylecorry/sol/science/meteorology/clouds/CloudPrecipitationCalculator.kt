@@ -85,14 +85,14 @@ internal class CloudPrecipitationCalculator {
         private val alto = listOf(CloudGenus.Altocumulus, CloudGenus.Altostratus)
         private val warm = listOf(CloudGenus.Stratus, CloudGenus.Nimbostratus)
         private val cold = listOf(CloudGenus.Cumulus, CloudGenus.Cumulonimbus)
-        private val storm = listOf(CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus)
         private val coldStorm = listOf(CloudGenus.Cumulonimbus)
         private val warmStorm = listOf(CloudGenus.Nimbostratus)
 
         val frontPatterns = listOf(
             listOf(cirro, alto, warm),
             listOf(cirro, alto, cold),
-            listOf(storm),
+            listOf(coldStorm),
+            listOf(warmStorm),
             listOf(cirro, alto)
         )
 
