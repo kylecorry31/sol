@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy.sun
 
+import com.kylecorry.sol.Perf
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.units.Coordinate
@@ -24,8 +25,8 @@ internal class SolarRadiationCalculator {
         withRefraction: Boolean = false,
         withParallax: Boolean = false
     ): Double {
-        val altitude =
-            AstroUtils.getAltitude(sun, ut, location, withRefraction, withParallax).toDouble()
+        val coords = AstroUtils.getLocation(sun, ut, location, withRefraction, withParallax)
+        val altitude = coords.altitude
         if (altitude < 0) {
             return 0.0
         }
@@ -37,13 +38,11 @@ internal class SolarRadiationCalculator {
             return incident
         }
 
-        val azimuth = AstroUtils.getAzimuth(sun, ut, location, withParallax).value.toDouble()
+        val azimuth = coords.azimuth
 
-        return incident * (
-                cosDegrees(altitude) * sinDegrees(tilt) * cosDegrees(bearing.value - azimuth) + sinDegrees(
-                    altitude
-                ) * cosDegrees(tilt)
-                )
+        return incident * (cosDegrees(altitude) * sinDegrees(tilt) * cosDegrees(bearing.value - azimuth) + sinDegrees(
+            altitude
+        ) * cosDegrees(tilt))
 
     }
 

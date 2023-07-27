@@ -13,6 +13,10 @@ internal object EclipticObliquity {
 
     fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
+        return getMeanObliquityOfEcliptic(T)
+    }
+
+    fun getMeanObliquityOfEcliptic(T: Double): Double {
         val u = T / 100.0
         return polynomial(
             u,

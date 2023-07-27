@@ -244,4 +244,8 @@ object Time {
         return this.plusMinutes(delta.toLong()).truncatedTo(ChronoUnit.MINUTES)
     }
 
+    fun LocalDateTime.plusMillis(millis: Long): LocalDateTime {
+        return this.plusNanos(millis * 1000000L)
+    }
+
 }

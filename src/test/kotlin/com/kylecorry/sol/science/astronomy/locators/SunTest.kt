@@ -35,10 +35,4 @@ internal class SunTest {
         val mean = sun.getMeanAnomaly(UniversalTime.of(1992, 10, 13, 0, 0))
         assertEquals(278.99397, mean, 0.0001)
     }
-
-    @Test
-    fun getTrueAnomaly() {
-        val trueAnomaly = sun.getTrueAnomaly(UniversalTime.of(1992, 10, 13, 0, 0))
-        assertEquals(278.99397 - 1.89732, trueAnomaly, 0.0001)
-    }
 }

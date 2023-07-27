@@ -5,13 +5,13 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.wrap
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
+import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
-import java.time.Duration
+import com.kylecorry.sol.time.Time.plusMillis
+import com.kylecorry.sol.units.Distance
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.pow
@@ -23,9 +23,10 @@ internal class Sun : ICelestialLocator {
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val delta = TerrestrialTime.getDeltaT(ut.year)
-        val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
-        val apparentLongitude = getApparentLongitude(tt)
-        val correctedObliquity = getObliquityCorrection(tt)
+        val tt = ut.plusMillis((delta * 1000).toLong())
+        val T = tt.toJulianCenturies()
+        val apparentLongitude = getApparentLongitude(T)
+        val correctedObliquity = getObliquityCorrection(T)
         val rightAscension = SolMath.normalizeAngle(
             atan2(
                 cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
@@ -40,9 +41,10 @@ internal class Sun : ICelestialLocator {
     }
 
     override fun getDistance(ut: UniversalTime): Distance {
-        val trueAnomaly = getTrueAnomaly(ut)
-        val f =
-            (1 + getEccentricity(ut) * cosDegrees(trueAnomaly)) / (1 - getEccentricity(ut).pow(2))
+        val T = ut.toJulianCenturies()
+        val trueAnomaly = getTrueAnomaly(T)
+        val ecc = getEccentricity(T)
+        val f = (1 + ecc * cosDegrees(trueAnomaly)) / (1 - ecc.pow(2))
         return Distance.kilometers((semiMajorAxisLen0 / f).toFloat())
     }
 
@@ -53,49 +55,48 @@ internal class Sun : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
+        return getMeanAnomaly(T)
+    }
+
+    private fun getMeanAnomaly(T: Double): Double {
         return SolMath.normalizeAngle(SolMath.polynomial(T, 357.5291092, 35999.0502909, -0.0001536, 1 / 24490000.0))
     }
 
-    fun getTrueAnomaly(ut: UniversalTime): Double {
-        val mean = getMeanAnomaly(ut)
-        val center = equationOfCenter(ut)
+    private fun getTrueAnomaly(T: Double): Double {
+        val mean = getMeanAnomaly(T)
+        val center = equationOfCenter(T)
         return mean + center
     }
 
-    private fun getApparentLongitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val trueLng = getTrueLongitude(ut)
+    private fun getApparentLongitude(T: Double): Double {
+        val trueLng = getTrueLongitude(T)
         val omega = SolMath.polynomial(T, 125.04, -1934.136)
         return trueLng - 0.00569 - 0.00478 * sinDegrees(omega)
     }
 
-    private fun getTrueLongitude(ut: UniversalTime): Double {
-        val L = getGeometricLongitude(ut)
-        val C = equationOfCenter(ut)
+    private fun getTrueLongitude(T: Double): Double {
+        val L = getGeometricLongitude(T)
+        val C = equationOfCenter(T)
         return L + C
     }
 
-    private fun getGeometricLongitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
+    private fun getGeometricLongitude(T: Double): Double {
         return SolMath.normalizeAngle(SolMath.polynomial(T, 280.46646, 36000.76983, 0.0003032))
     }
 
-    private fun getEccentricity(ut: UniversalTime): Double {
-        val t = ut.toJulianCenturies()
-        return SolMath.polynomial(t, 0.01675104, -0.0000418, -0.000000126)
+    private fun getEccentricity(T: Double): Double {
+        return SolMath.polynomial(T, 0.01675104, -0.0000418, -0.000000126)
     }
 
-    private fun equationOfCenter(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val M = getMeanAnomaly(ut)
+    private fun equationOfCenter(T: Double): Double {
+        val M = getMeanAnomaly(T)
         return SolMath.polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
                 SolMath.polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
                 0.000289 * sinDegrees(3 * M)
     }
 
-    private fun getObliquityCorrection(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        val e = EclipticObliquity.getMeanObliquityOfEcliptic(ut)
+    private fun getObliquityCorrection(T: Double): Double {
+        val e = EclipticObliquity.getMeanObliquityOfEcliptic(T)
         val omega = SolMath.polynomial(T, 125.04, -1934.136)
         return e + 0.00256 * cosDegrees(omega)
     }
