@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy
 
-import com.kylecorry.sol.Perf
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate

@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy.sun
 
-import com.kylecorry.sol.Perf
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.units.Coordinate
