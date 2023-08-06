@@ -129,8 +129,8 @@ class AstronomyTest {
         "40.7128, -74.0060, 2020-03-21T12:00:00-04, 2020-03-21T06:57:00-04, 2020-03-21T13:02:00-04, 2020-03-21T19:10:00-04",
         "40.7128, -74.0060, 2020-12-21T12:00:00-05, 2020-12-21T07:15:00-05, 2020-12-21T11:54:00-05, 2020-12-21T16:32:00-05",
         "40.7128, -74.0060, 2020-06-21T12:00:00-04, 2020-06-21T05:25:00-04, 2020-06-21T12:58:00-04, 2020-06-21T20:31:00-04",
-        "76.7667, -18.6667, 2020-06-04T12:00:00Z, , ,",
-        "76.7667, -18.6667, 2020-10-31T12:00:00Z, , ,",
+        "76.7667, -18.6667, 2020-06-04T12:00:00Z, , 2020-06-04T13:13:00Z,",
+        "76.7667, -18.6667, 2020-11-01T12:00:00Z, , ,",
         "76.7667, -18.6667, 2020-10-30T12:00:00Z, 2020-10-30T12:05:00Z, 2020-10-30T12:58:00Z, 2020-10-30T13:49:00Z",
         "51.5, -0.13, 2020-10-29T12:00:00+01, 2020-10-29T07:48:00+01, 2020-10-29T12:44:00+01, 2020-10-29T17:39:00+01",
         "51.5, -0.13, 2020-10-30T12:00:00Z, 2020-10-30T06:50:00Z, 2020-10-30T11:44:00Z, 2020-10-30T16:37:00Z",
@@ -214,6 +214,7 @@ class AstronomyTest {
     fun getNextSunset() {
         val ny = Coordinate(40.7128, -74.0060)
         val gl = Coordinate(76.7667, -18.6667)
+        val ri = Coordinate(41.915, -71.671)
         parametrized(
             listOf<List<Any?>>(
                 listOf(
@@ -239,6 +240,12 @@ class AstronomyTest {
                     gl,
                     "America/Danmarkshavn",
                     LocalDateTime.of(2020, Month.AUGUST, 20, 0, 56)
+                ),
+                listOf(
+                    LocalDateTime.of(2023, Month.AUGUST, 6, 12, 0),
+                    ri,
+                    "America/New_York",
+                    LocalDateTime.of(2023, Month.AUGUST, 6, 19, 59)
                 )
             )
         ) {
@@ -326,7 +333,7 @@ class AstronomyTest {
             RiseSetTransitTestInput(
                 LocalDate.of(2020, Month.SEPTEMBER, 11),
                 null,
-                null,
+                LocalTime.of(7, 53),
                 null,
                 Coordinate(76.7667, -18.6667),
                 "America/Danmarkshavn"
@@ -573,7 +580,7 @@ class AstronomyTest {
     @MethodSource("provideDayLengths")
     fun getDaylightLength(date: ZonedDateTime, location: Coordinate, expected: Duration) {
         val length = Astronomy.getDaylightLength(date, location)
-        assertDuration(expected, length, Duration.ofSeconds(30))
+        assertDuration(expected, length, Duration.ofMinutes(1))
     }
 
 

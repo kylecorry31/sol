@@ -16,17 +16,24 @@ import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShowerPeak
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
+import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculator
+import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
-import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
 import com.kylecorry.sol.time.Time.getClosestPastTime
 import com.kylecorry.sol.time.Time.getClosestTime
-import com.kylecorry.sol.units.*
-import java.time.*
+import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 object Astronomy : IAstronomyService {
@@ -34,6 +41,7 @@ object Astronomy : IAstronomyService {
     private val sun = Sun()
     private val moon = Moon()
     private val radiation = SolarRadiationCalculator()
+    private val riseSetTransitCalculator = RobustRiseSetTransitTimeCalculator()
 
     override fun getSunEvents(
         date: ZonedDateTime,
@@ -50,7 +58,7 @@ object Astronomy : IAstronomyService {
             SunTimesMode.Astronomical -> -18.0
         }
 
-        return RiseSetTransitTimeCalculator().calculate(
+        return riseSetTransitCalculator.calculate(
             sun,
             date,
             location,
@@ -214,7 +222,7 @@ object Astronomy : IAstronomyService {
         withRefraction: Boolean,
         withParallax: Boolean
     ): RiseSetTransitTimes {
-        return RiseSetTransitTimeCalculator().calculate(
+        return riseSetTransitCalculator.calculate(
             moon,
             date,
             location,
@@ -485,7 +493,8 @@ object Astronomy : IAstronomyService {
         location: Coordinate,
         date: ZonedDateTime
     ): RiseSetTransitTimes {
-        return RiseSetTransitTimeCalculator().calculate(
+        // Purposefully use newton's method here to get the rise and set times, since missing rise/set/transit times are expected
+        return NewtonsRiseSetTransitTimeCalculator().calculate(
             MeteorShowerLocator(shower),
             date,
             location,

@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.astronomy
+package com.kylecorry.sol.science.astronomy.rst
 
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
@@ -10,21 +10,23 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.science.astronomy.AstroUtils
+import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
 import com.kylecorry.sol.time.Time.plusHours
 import com.kylecorry.sol.units.Distance
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
 
-internal class RiseSetTransitTimeCalculator {
+internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
 
-    fun calculate(
+    override fun calculate(
         locator: ICelestialLocator,
         date: ZonedDateTime,
         location: Coordinate,
-        standardAltitude: Double = 0.0,
-        withRefraction: Boolean = false,
-        withParallax: Boolean = false
+        standardAltitude: Double,
+        withRefraction: Boolean,
+        withParallax: Boolean
     ): RiseSetTransitTimes {
 
         val ld = date.toLocalDate()
