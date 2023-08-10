@@ -7,8 +7,10 @@ import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.middle
+import com.kylecorry.sol.time.Time.plusMillis
+import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.units.Coordinate
-import java.time.ZonedDateTime
+import java.time.*
 
 internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
     override fun calculate(
@@ -37,25 +39,27 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         var riseTimeRange: Range<ZonedDateTime>? = null
         var transitTimeRange: Range<ZonedDateTime>? = null
 
+        val intervalHours = 1L
+
         // Find the hour of each event
         while (time.toLocalDate() == currentDate) {
             val altitude = getAltitude(parameters, time)
 
             // Check if it just set past the standard altitude
             if (lastAltitude >= standardAltitude && altitude < standardAltitude) {
-                setTimeRange = Range(time.minusHours(1), time)
+                setTimeRange = Range(time.minusHours(intervalHours), time)
             }
 
             // Check if it just rose past the standard altitude
             if (lastAltitude <= standardAltitude && altitude > standardAltitude) {
-                riseTimeRange = Range(time.minusHours(1), time)
+                riseTimeRange = Range(time.minusHours(intervalHours), time)
             }
 
             // Check if it just crossed transit
             if (transitTimeRange == null){
                 val isCurrentlyRising = altitude > getAltitude(parameters, time.minusMinutes(1))
                 if (isRising && !isCurrentlyRising && altitude >= standardAltitude) {
-                    transitTimeRange = Range(time.minusHours(1), time)
+                    transitTimeRange = Range(time.minusHours(intervalHours), time)
                 }
                 isRising = isCurrentlyRising
             }
@@ -66,7 +70,7 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
             }
 
             lastAltitude = altitude
-            time = time.plusHours(1)
+            time = time.plusHours(intervalHours)
         }
 
         // Narrow down the times
@@ -116,23 +120,40 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
     }
 
     private fun getTransitTime(parameters: SearchParameters, range: Range<ZonedDateTime>): ZonedDateTime {
-        var start = range.start
-        var end = range.end
-        var mid = start
+        var startMillis = range.start.toInstant().toEpochMilli()
+        var endMillis = range.end.toInstant().toEpochMilli()
         var iterations = 0
-        while (start < end && iterations < 100) {
-            mid = Range(start, end).middle()
-            val altitude = getAltitude(parameters, mid)
-            val nextAltitude = getAltitude(parameters, mid.plusMinutes(1))
-            if (altitude < nextAltitude) {
-                start = mid.plusMinutes(1)
+        val minDuration = Duration.ofMinutes(1).toMillis()
+        while ((endMillis - startMillis) > minDuration && iterations < 20) {
+            val remaining = endMillis - startMillis
+            val midLeft = startMillis + remaining / 3
+            val midRight = startMillis + remaining * 2 / 3
+            val altitudeLeft = getAltitude(parameters, midLeft)
+            val altitudeRight = getAltitude(parameters, midRight)
+            if (altitudeLeft < altitudeRight) {
+                startMillis = midLeft
             } else {
-                end = mid
+                endMillis = midRight
             }
             iterations++
         }
 
-        return mid
+        return if (getAltitude(parameters, startMillis) > getAltitude(parameters, endMillis)) {
+            Instant.ofEpochMilli(startMillis).atZone(range.start.zone)
+        } else {
+            Instant.ofEpochMilli(endMillis).atZone(range.start.zone)
+        }
+    }
+
+    private fun getAltitude(searchParameters: SearchParameters, time: Long): Float {
+        val ut = LocalDateTime.ofEpochSecond(time / 1000, 0, ZoneOffset.UTC)
+        return AstroUtils.getAltitude(
+            searchParameters.locator,
+            ut,
+            searchParameters.location,
+            searchParameters.withRefraction,
+            searchParameters.withParallax
+        )
     }
 
     private fun getAltitude(searchParameters: SearchParameters, time: ZonedDateTime): Float {

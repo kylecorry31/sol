@@ -248,4 +248,12 @@ object Time {
         return this.plusNanos(millis * 1000000L)
     }
 
+    fun Instant.plusMillis(millis: Long): Instant {
+        return this.plusNanos(millis * 1000000L)
+    }
+
+    fun ZonedDateTime.plusMillis(millis: Long): ZonedDateTime {
+        return this.plusNanos(millis * 1000000L)
+    }
+
 }
