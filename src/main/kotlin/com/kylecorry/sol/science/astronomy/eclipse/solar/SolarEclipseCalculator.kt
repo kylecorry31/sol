@@ -31,6 +31,7 @@ internal class SolarEclipseCalculator(
     private val moon = Moon()
 
     private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
+    private val _minEclipseDuration = Duration.ofMinutes(1)
 
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
         val nextEclipseTime = getNextEclipseTime(after, location) ?: return null
@@ -102,6 +103,10 @@ internal class SolarEclipseCalculator(
 
             end = currentEndTime.toInstant()
             currentEndTime = currentEndTime.plus(precision)
+        }
+
+        if (Duration.between(start, end) < _minEclipseDuration) {
+            return null
         }
 
         return Eclipse(start, end, maxMagnitude, maxObscuration, timeOfMaximum)

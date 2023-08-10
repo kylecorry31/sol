@@ -117,20 +117,22 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
 
     private fun getTransitTime(parameters: SearchParameters, range: Range<ZonedDateTime>): ZonedDateTime {
         var start = range.start
-
-        var maxAltitude = -100f
-        var maxAltitudeTime = start
-
-        while (start < range.end) {
-            val altitude = getAltitude(parameters, start)
-            if (altitude < maxAltitude) {
-                break
+        var end = range.end
+        var mid = start
+        var iterations = 0
+        while (start < end && iterations < 100) {
+            mid = Range(start, end).middle()
+            val altitude = getAltitude(parameters, mid)
+            val nextAltitude = getAltitude(parameters, mid.plusMinutes(1))
+            if (altitude < nextAltitude) {
+                start = mid.plusMinutes(1)
+            } else {
+                end = mid
             }
-            maxAltitude = altitude
-            maxAltitudeTime = start
-            start = start.plusMinutes(1)
+            iterations++
         }
-        return maxAltitudeTime
+
+        return mid
     }
 
     private fun getAltitude(searchParameters: SearchParameters, time: ZonedDateTime): Float {
