@@ -47,8 +47,8 @@ internal class SolarEclipseCalculator(
         // Now that we have the approximate time, we can search for the exact time by incrementing the time by the precision
         // in both directions until we find the exact time of the start and end of the eclipse
 
-        // Search parameters - 24 hours before and after the approximate time
-        val maxSearch = Duration.ofHours(24)
+        // Search parameters - 12 hours before and after the approximate time
+        val maxSearch = Duration.ofHours(12)
         val minTime = nextEclipseTime.minus(maxSearch)
         val maxTime = nextEclipseTime.plus(maxSearch)
 
