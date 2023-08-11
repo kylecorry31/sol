@@ -172,8 +172,6 @@ internal class SolarEclipseCalculator(
         return null
     }
 
-    private var lastNewMoonTime: UniversalTime? = null
-
     /**
      * Calculate how far to skip ahead in time to potentially find the next eclipse. If conditions are not right for an
      * eclipse, then this will return the amount of time to skip ahead to check again.
@@ -205,8 +203,6 @@ internal class SolarEclipseCalculator(
             MoonTruePhase.WaxingCrescent -> 22
             else -> 0
         }
-
-        println(daysUntilNewMoon)
 
         // It is not possible for an eclipse to occur if the moon is not close to a new moon, so skip ahead
         if (daysUntilNewMoon > 2) {
