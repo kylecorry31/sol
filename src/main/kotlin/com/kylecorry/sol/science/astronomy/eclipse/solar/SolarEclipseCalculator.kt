@@ -36,8 +36,12 @@ internal class SolarEclipseCalculator(
     private val sun = Sun()
     private val moon = Moon()
 
+    private val shouldLog = false
+
     private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
     private val _minEclipseDuration = Duration.ofMinutes(1)
+
+    private val _log = mutableListOf<Pair<UniversalTime, String>>()
 
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
 
@@ -141,6 +145,10 @@ internal class SolarEclipseCalculator(
         // If the eclipse is less than 15 minutes, then it may be missed
         val defaultSkip = Duration.ofMinutes(15)
 
+        if (shouldLog) {
+            _log.clear()
+        }
+
         // Search until the maximum duration is reached or until an eclipse is found
         while (timeFromStart < _maxDuration) {
 
@@ -160,12 +168,25 @@ internal class SolarEclipseCalculator(
             // The conditions are right for an eclipse. If there is an eclipse, the magnitude will be greater than 0.
             val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates).first
             if (magnitude > 0) {
+                if (shouldLog) {
+                    _log.add(currentTime to "Found eclipse")
+                    println(_log.size)
+                    println(_log.joinToString("\n") { "${it.first},${it.second}" })
+                }
                 return currentTime.toInstant()
             }
 
             // An eclipse was not found, but no conditions where met that indicate an eclipse is not possible,
             // so skip ahead by a little to check again.
+            if (shouldLog) {
+                _log.add(currentTime to "Favorable conditions")
+            }
             timeFromStart = timeFromStart.plus(defaultSkip)
+        }
+
+        if (shouldLog) {
+            println(_log.size)
+            println(_log.joinToString("\n") { "${it.first},${it.second}" })
         }
 
         // No eclipse was found
@@ -206,25 +227,40 @@ internal class SolarEclipseCalculator(
 
         // It is not possible for an eclipse to occur if the moon is not close to a new moon, so skip ahead
         if (daysUntilNewMoon > 2) {
+            if (shouldLog) {
+                _log.add(time to "Moon phase")
+            }
             return Duration.ofDays(daysUntilNewMoon.toLong())
         }
 
         // If the sun is down, skip to the next sunrise
         if (sunCoordinates.altitude < 0) {
+            if (shouldLog) {
+                _log.add(time to "Sun is down")
+            }
             return timeUntilSunrise(time, location)?.plusMinutes(15)
         }
 
         // If the moon is down, skip to the next moonrise
         if (moonCoordinates.altitude < 0) {
+            if (shouldLog) {
+                _log.add(time to "Moon is down")
+            }
             return timeUntilMoonrise(time, location)?.plusMinutes(15)
         }
 
         // If the moon is not close to the sun, skip a bit (based on the distance between the sun and moon)
+        // TODO: The majority of the time is being spent here, determine better skip times
         val distance = sunCoordinates.angularDistanceTo(moonCoordinates)
-        if (distance > 10) {
-            return Duration.ofHours(2)
-        } else if (distance > 2) {
-            return Duration.ofMinutes(30)
+        // 1.5 is a conservative threshold - 1 degree can likely be used
+        if (distance > 1.5){
+            // Sun and moon move at about 0.5 degrees per hour
+            // So if they are 2 degrees apart, they will be around 4 hours apart
+            // But to be on the conservative side, divide that in half for the skip
+            if (shouldLog) {
+                _log.add(time to "Too far apart")
+            }
+            return Duration.ofHours(distance.toLong().coerceIn(1, 12))
         }
 
         // Conditions are right for an eclipse, so don't skip ahead
