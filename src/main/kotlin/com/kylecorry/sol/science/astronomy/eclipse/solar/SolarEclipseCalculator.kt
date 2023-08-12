@@ -98,6 +98,8 @@ internal class SolarEclipseCalculator(
      * @param location The location to search for eclipses.
      */
     private fun getNextEclipseTime(after: Instant, location: Coordinate): Instant? {
+        val maxSearch = after.plus(_maxDuration)
+
         // Start at the given time
         var timeFromStart = Duration.ZERO
 
@@ -117,9 +119,13 @@ internal class SolarEclipseCalculator(
 
             // Search around the maximum time of the eclipse to see if it is visible
             val searchAmount = Duration.ofHours(3)
-            val minimum = nextEclipse.maximum.minus(searchAmount).coerceAtLeast(after)
-            val maximum = nextEclipse.maximum.plus(searchAmount).coerceAtLeast(after)
-            val start = nextEclipse.maximum.coerceAtLeast(after)
+            val minimum = nextEclipse.maximum.minus(searchAmount).coerceIn(after, maxSearch)
+            val maximum = nextEclipse.maximum.plus(searchAmount).coerceIn(after, maxSearch)
+            val start = nextEclipse.maximum.coerceIn(after, maxSearch)
+
+            if (minimum >= maxSearch){
+                return null
+            }
 
             val visibleTime = AstroSearch.findEvent(Range(minimum, maximum), precision, start) {
                 val ut = it.toUniversalTime()
