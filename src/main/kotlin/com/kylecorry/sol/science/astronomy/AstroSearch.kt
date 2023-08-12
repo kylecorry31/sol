@@ -10,7 +10,7 @@ internal object AstroSearch {
     /**
      * The maximum number of iterations to perform when searching for an event
      */
-    private val maxIterations = 20
+    private val maxIterations = 100
 
     /**
      * Finds the start time of an event. The range should start before the event and end during the event.
@@ -24,19 +24,21 @@ internal object AstroSearch {
         var left = range.start
         var right = range.end
         var iterations = 0
+        var wasFound = false
 
         while (Duration.between(left, right) > precision && iterations < maxIterations) {
             val mid = left.plusMillis((right.toEpochMilli() - left.toEpochMilli()) / 2)
             if (predicate(mid)) {
+                wasFound = true
                 right = mid
             } else {
-                left = mid.plusMillis(1)
+                left = mid
             }
             iterations++
         }
 
-        return if (left != range.start) {
-            left
+        return if (wasFound) {
+            right
         } else {
             null
         }
@@ -54,19 +56,21 @@ internal object AstroSearch {
         var left = range.start
         var right = range.end
         var iterations = 0
+        var wasFound = false
 
         while (Duration.between(left, right) > precision && iterations < maxIterations) {
             val mid = left.plusMillis((right.toEpochMilli() - left.toEpochMilli()) / 2)
             if (predicate(mid)) {
+                wasFound = true
                 left = mid
             } else {
-                right = mid.minusMillis(1)
+                right = mid
             }
             iterations++
         }
 
-        return if (right != range.end) {
-            right
+        return if (wasFound) {
+            left
         } else {
             null
         }
@@ -81,27 +85,27 @@ internal object AstroSearch {
      * @return the peak time
      */
     fun findPeak(range: Range<Instant>, precision: Duration, producer: (Instant) -> Float): Instant {
-        var start = range.start
-        var end = range.end
+        var left = range.start
+        var right = range.end
         var iterations = 0
-        while (Duration.between(start, end) > precision && iterations < maxIterations) {
-            val remaining = Duration.between(start, end).toMillis()
-            val midLeft = start.plusMillis(remaining / 3)
-            val midRight = start.plusMillis(remaining * 2 / 3)
+        while (Duration.between(left, right) > precision && iterations < maxIterations) {
+            val remaining = Duration.between(left, right).toMillis()
+            val midLeft = left.plusMillis(remaining / 3)
+            val midRight = left.plusMillis(remaining * 2 / 3)
             val valueLeft = producer(midLeft)
             val valueRight = producer(midRight)
             if (valueLeft < valueRight) {
-                start = midLeft
+                left = midLeft
             } else {
-                end = midRight
+                right = midRight
             }
             iterations++
         }
 
-        return if (producer(start) > producer(end)) {
-            start
+        return if (producer(left) > producer(right)) {
+            left
         } else {
-            end
+            right
         }
     }
 
