@@ -2,6 +2,8 @@ package com.kylecorry.sol.science.astronomy.locators
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.polynomial
+import com.kylecorry.sol.math.SolMath.roundNearest
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
@@ -12,10 +14,9 @@ import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
+import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
-import com.kylecorry.sol.science.astronomy.units.UniversalTime
-import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 import java.time.Duration
 import kotlin.math.absoluteValue
 import kotlin.math.floor
@@ -157,6 +158,13 @@ internal class Moon : ICelestialLocator {
         }
 
         return MoonPhase(MoonTruePhase.New, illumination)
+    }
+
+    fun getNextMeanPhase(date: UniversalTime, moonTruePhase: MoonTruePhase): UniversalTime {
+        val k = getNextPhaseK(date, moonTruePhase)
+        val t = k / 1236.85
+        val jde = 2451550.09766 + 29.530588861 * k + polynomial(t, 0.0, 0.0, 0.00015437, -0.000000150, 0.00000000073)
+        return fromJulianDay(jde)
     }
 
     fun getNextPhaseK(date: UniversalTime, moonTruePhase: MoonTruePhase): Double {

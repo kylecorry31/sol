@@ -168,11 +168,11 @@ object SolMath {
     }
 
     fun Double.roundNearest(nearest: Double): Double {
-        return (this / nearest).roundToInt() * nearest
+        return (this / nearest).roundToLong() * nearest
     }
 
     fun Float.roundNearest(nearest: Float): Float {
-        return (this / nearest).roundToInt() * nearest
+        return (this / nearest).roundToLong() * nearest
     }
 
     fun Int.roundNearest(nearest: Int): Int {

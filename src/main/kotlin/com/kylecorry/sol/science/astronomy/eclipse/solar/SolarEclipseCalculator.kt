@@ -9,10 +9,8 @@ import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Sun
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
+import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate
-import com.kylecorry.sol.science.astronomy.units.UniversalTime
-import com.kylecorry.sol.science.astronomy.units.toInstant
-import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.units.Coordinate
 import java.time.Duration
 import java.time.Instant
@@ -212,17 +210,15 @@ internal class SolarEclipseCalculator(
         moonCoordinates: HorizonCoordinate
     ): Duration? {
         // Skip ahead by a number of days proportional to the phase of the moon from new moon
-        // TODO: A future enhancement would be to calculate the time of the next new moon and skip to slightly before it
-
         val phase = moon.getPhase(time)
         val daysUntilNewMoon = when (phase.phase) {
-            MoonTruePhase.ThirdQuarter -> 2
-            MoonTruePhase.WaningGibbous -> 4
-            MoonTruePhase.Full -> 8
-            MoonTruePhase.WaxingGibbous -> 12
-            MoonTruePhase.FirstQuarter -> 14
-            MoonTruePhase.WaxingCrescent -> 22
-            else -> 0
+            MoonTruePhase.New, MoonTruePhase.WaningCrescent -> {
+                0
+            }
+            else -> {
+                val next = moon.getNextMeanPhase(time, MoonTruePhase.New)
+                Duration.between(time, next).toDays().toInt() - 1
+            }
         }
 
         // It is not possible for an eclipse to occur if the moon is not close to a new moon, so skip ahead
