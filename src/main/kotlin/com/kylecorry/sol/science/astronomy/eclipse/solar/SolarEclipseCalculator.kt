@@ -1,6 +1,8 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.science.astronomy.AstronomyBinarySearch
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseCalculator
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
@@ -32,8 +34,9 @@ internal class SolarEclipseCalculator(
     private val sun = Sun()
     private val moon = Moon()
     private val provider = SolarEclipseParameterProvider()
+    private val search = AstronomyBinarySearch()
 
-    private val shouldLog = true
+    private val shouldLog = false
 
     private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
     private val _minEclipseDuration = Duration.ofMinutes(1)
@@ -52,86 +55,77 @@ internal class SolarEclipseCalculator(
         val minTime = nextEclipseTime.minus(maxSearch)
         val maxTime = nextEclipseTime.plus(maxSearch)
 
-        // Initialize the peak magnitude and obscuration
-        var maxMagnitude = 0f
-        var maxObscuration = 0f
-        var timeOfMaximum = nextEclipseTime
-
         // Search for the start time of the eclipse
-        // This will either be when the sun and moon start to overlap or when the sun or moon is below the horizon
-        var currentStartTime = nextEclipseTime.toUniversalTime()
-        var start = nextEclipseTime
-        while (start > minTime) {
-
-            if (shouldLog){
-                _log.add(currentStartTime to "Searching for start time")
+        val start = search.findStartTime(Range(minTime, nextEclipseTime), precision) { time ->
+            val ut = time.toUniversalTime()
+            if (shouldLog) {
+                _log.add(ut to "Searching for start time")
             }
 
-            // Check if the sun or moon is below the horizon, if so then the eclipse is not visible anymore
-            val sunCoordinates = getCoordinates(sun, currentStartTime, location)
-            val moonCoordinates = getCoordinates(moon, currentStartTime, location)
-            if (sunCoordinates.altitude < 0 || moonCoordinates.altitude < 0) {
-                break
+            val sunCoordinates = getCoordinates(sun, ut, location)
+            if (sunCoordinates.altitude < 0) {
+                return@findStartTime false
             }
 
-            // Check the magnitude of the eclipse, if less than or equal to 0 then the eclipse is not visible anymore
-            val magnitude = getMagnitude(currentStartTime, location, sunCoordinates, moonCoordinates)
-            if (magnitude.first <= 0f) {
-                break
+            val moonCoordinates = getCoordinates(moon, ut, location)
+            if (moonCoordinates.altitude < 0) {
+                return@findStartTime false
+            }
+            val magnitude = getMagnitude(ut, location, sunCoordinates, moonCoordinates)
+            magnitude.first > 0
+        } ?: return@withLogging null
+
+        val end = search.findEndTime(Range(nextEclipseTime, maxTime), precision) { time ->
+            val ut = time.toUniversalTime()
+            if (shouldLog) {
+                _log.add(ut to "Searching for end time")
             }
 
-            // Record the maximum magnitude
-            if (magnitude.first > maxMagnitude) {
-                maxMagnitude = magnitude.first
-                maxObscuration = magnitude.second
-                timeOfMaximum = currentStartTime.toInstant()
+            val sunCoordinates = getCoordinates(sun, ut, location)
+            if (sunCoordinates.altitude < 0) {
+                return@findEndTime false
             }
 
-            // The eclipse was still active at this time, so move back in time
-            start = currentStartTime.toInstant()
-            currentStartTime = currentStartTime.minus(precision)
+            val moonCoordinates = getCoordinates(moon, ut, location)
+            if (moonCoordinates.altitude < 0) {
+                return@findEndTime false
+            }
+            val magnitude = getMagnitude(ut, location, sunCoordinates, moonCoordinates)
+            magnitude.first > 0
+        } ?: return@withLogging null
+
+        val peak = search.findPeak(Range(start, end), precision) { time ->
+            val ut = time.toUniversalTime()
+            if (shouldLog) {
+                _log.add(ut to "Searching for peak time")
+            }
+
+            val sunCoordinates = getCoordinates(sun, ut, location)
+            if (sunCoordinates.altitude < 0) {
+                return@findPeak 0f
+            }
+
+            val moonCoordinates = getCoordinates(moon, ut, location)
+            if (moonCoordinates.altitude < 0) {
+                return@findPeak 0f
+            }
+            val magnitude = getMagnitude(ut, location, sunCoordinates, moonCoordinates)
+            magnitude.first
         }
 
-        // Search for the end time of the eclipse
-        // This will either be when the sun and moon cease to overlap or when the sun or moon is below the horizon
-        var currentEndTime = nextEclipseTime.toUniversalTime()
-        var end = nextEclipseTime
-        while (end < maxTime) {
-            if (shouldLog){
-                _log.add(currentStartTime to "Searching for end time")
-            }
-
-            // Check if the sun or moon is below the horizon, if so then the eclipse is not visible anymore
-            val sunCoordinates = getCoordinates(sun, currentEndTime, location)
-            val moonCoordinates = getCoordinates(moon, currentEndTime, location)
-            if (sunCoordinates.altitude < 0 || moonCoordinates.altitude < 0) {
-                break
-            }
-
-            // Check the magnitude of the eclipse, if it is 0 then the eclipse is not visible anymore
-            val magnitude = getMagnitude(currentEndTime, location, sunCoordinates, moonCoordinates)
-            if (magnitude.first == 0f) {
-                break
-            }
-
-            // Record the maximum magnitude
-            if (magnitude.first > maxMagnitude) {
-                maxMagnitude = magnitude.first
-                maxObscuration = magnitude.second
-                timeOfMaximum = currentEndTime.toInstant()
-            }
-
-            // The eclipse was still active at this time, so move forward in time
-            end = currentEndTime.toInstant()
-            currentEndTime = currentEndTime.plus(precision)
-        }
+        val peakUt = peak.toUniversalTime()
+        val sunCoordinates = getCoordinates(sun, peakUt, location)
+        val moonCoordinates = getCoordinates(moon, peakUt, location)
+        val magnitude = getMagnitude(peakUt, location, sunCoordinates, moonCoordinates)
+        val maxMagnitude = magnitude.first
+        val maxObscuration = magnitude.second
 
         // If the eclipse is too short, ignore it
         if (Duration.between(start, end) < _minEclipseDuration) {
             return@withLogging null
         }
 
-        Eclipse(start, end, maxMagnitude, maxObscuration, timeOfMaximum)
+        Eclipse(start, end, maxMagnitude, maxObscuration, peak)
     }
 
     /**
