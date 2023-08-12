@@ -149,7 +149,7 @@ internal class SolarEclipseCalculator(
 
         val provider = SolarEclipseParameterProvider()
         timeFromStart = timeFromStart.minusDays(10)
-        while (timeFromStart < _maxDuration){
+        while (timeFromStart < _maxDuration) {
             val currentTime = startUT.plus(timeFromStart)
             val instant = currentTime.toInstant()
 
@@ -157,31 +157,62 @@ internal class SolarEclipseCalculator(
             val nextEclipse = provider.getNextSolarEclipseParameters(instant)
 
             // Search around the maximum time of the eclipse to see if it is visible
-            var checkTime = nextEclipse.maximum.toUniversalTime().minusHours(4).coerceAtLeast(startUT)
-            val endTime = nextEclipse.maximum.toUniversalTime().plusHours(4).coerceAtLeast(startUT)
-            while (checkTime < endTime) {
-                val sunCoordinates = getCoordinates(sun, checkTime, location)
-                val moonCoordinates = getCoordinates(moon, checkTime, location)
-                val magnitude = getMagnitude(checkTime, location, sunCoordinates, moonCoordinates)
+            val searchAmount = Duration.ofHours(4)
+            val minimum = nextEclipse.maximum.minus(searchAmount).coerceAtLeast(after)
+            val maximum = nextEclipse.maximum.plus(searchAmount).coerceAtLeast(after)
+            val start = nextEclipse.maximum.coerceAtLeast(after)
+
+            val t = spreadSearch(minimum, maximum, start, defaultSkip) {
+                val ut = it.toUniversalTime()
+                val sunCoordinates = getCoordinates(sun, ut, location)
+                val moonCoordinates = getCoordinates(moon, ut, location)
+                val magnitude = getMagnitude(ut, location, sunCoordinates, moonCoordinates)
                 if (shouldLog) {
-                    _log.add(currentTime to "Favorable conditions")
+                    _log.add(currentTime to "Eclipse check")
                 }
-                if (magnitude.first > 0 && sunCoordinates.altitude > 0 && moonCoordinates.altitude > 0) {
-                    if (shouldLog) {
-                        _log.add(currentTime to "Found eclipse")
-                        println(_log.size)
-                        println(_log.joinToString("\n") { "${it.first},${it.second}" })
-                    }
-                    return checkTime.toInstant()
-                }
-                checkTime = checkTime.plus(defaultSkip)
+                magnitude.first > 0 && sunCoordinates.altitude > 0 && moonCoordinates.altitude > 0
             }
+
+            if (t != null) {
+                if (shouldLog) {
+                    _log.add(currentTime to "Found eclipse")
+                    println(_log.size)
+                    println(_log.joinToString("\n") { "${it.first},${it.second}" })
+                }
+                return t
+            }
+
             timeFromStart = timeFromStart.plus(Duration.between(instant, nextEclipse.maximum).plusDays(10))
         }
 
         if (shouldLog) {
             println(_log.size)
             println(_log.joinToString("\n") { "${it.first},${it.second}" })
+        }
+
+        return null
+    }
+
+    private fun spreadSearch(
+        minimum: Instant,
+        maximum: Instant,
+        start: Instant,
+        interval: Duration,
+        test: (time: Instant) -> Boolean
+    ): Instant? {
+        var left = start
+        var right = start
+
+        // Search each side of the start time until the interval is reached
+        while (left >= minimum || right <= maximum) {
+            if (left >= minimum && test(left)) {
+                return left
+            }
+            if (right <= maximum && test(right)) {
+                return right
+            }
+            left = left.minus(interval)
+            right = right.plus(interval)
         }
 
         return null
