@@ -33,6 +33,7 @@ internal class SolarEclipseCalculator(
 
     private val sun = Sun()
     private val moon = Moon()
+    private val provider = SolarEclipseParameterProvider()
 
     private val shouldLog = false
 
@@ -147,7 +148,6 @@ internal class SolarEclipseCalculator(
             _log.clear()
         }
 
-        val provider = SolarEclipseParameterProvider()
         timeFromStart = timeFromStart.minusDays(10)
         while (timeFromStart < _maxDuration) {
             val currentTime = startUT.plus(timeFromStart)
@@ -156,6 +156,8 @@ internal class SolarEclipseCalculator(
             // Get the next time of a solar eclipse
             val nextEclipse = provider.getNextSolarEclipseParameters(instant)
 
+            // TODO: Check to see if the eclipse will even be visible on earth
+
             // Search around the maximum time of the eclipse to see if it is visible
             val searchAmount = Duration.ofHours(4)
             val minimum = nextEclipse.maximum.minus(searchAmount).coerceAtLeast(after)
@@ -163,14 +165,26 @@ internal class SolarEclipseCalculator(
             val start = nextEclipse.maximum.coerceAtLeast(after)
 
             val t = spreadSearch(minimum, maximum, start, defaultSkip) {
-                val ut = it.toUniversalTime()
-                val sunCoordinates = getCoordinates(sun, ut, location)
-                val moonCoordinates = getCoordinates(moon, ut, location)
-                val magnitude = getMagnitude(ut, location, sunCoordinates, moonCoordinates)
                 if (shouldLog) {
                     _log.add(currentTime to "Eclipse check")
                 }
-                magnitude.first > 0 && sunCoordinates.altitude > 0 && moonCoordinates.altitude > 0
+                val ut = it.toUniversalTime()
+
+                // Verify that the sun is up
+                val sunCoordinates = getCoordinates(sun, ut, location)
+                if (sunCoordinates.altitude < 0) {
+                    return@spreadSearch false
+                }
+
+                // Verify that the moon is up
+                val moonCoordinates = getCoordinates(moon, ut, location)
+                if (moonCoordinates.altitude < 0) {
+                    return@spreadSearch false
+                }
+
+                // Verify that an eclipse is happening
+                val magnitude = getMagnitude(ut, location, sunCoordinates, moonCoordinates)
+                magnitude.first > 0
             }
 
             if (t != null) {
@@ -182,6 +196,7 @@ internal class SolarEclipseCalculator(
                 return t
             }
 
+            // Skip 10 days and try again
             timeFromStart = timeFromStart.plus(Duration.between(instant, nextEclipse.maximum).plusDays(10))
         }
 
