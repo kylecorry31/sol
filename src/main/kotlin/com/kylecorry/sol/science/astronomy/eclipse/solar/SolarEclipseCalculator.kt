@@ -1,20 +1,18 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
 import com.kylecorry.sol.math.SolMath.square
-import com.kylecorry.sol.science.astronomy.Astronomy
-import com.kylecorry.sol.science.astronomy.SunTimesMode
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseCalculator
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Sun
-import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
-import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate
+import com.kylecorry.sol.science.astronomy.units.UniversalTime
+import com.kylecorry.sol.science.astronomy.units.toInstant
+import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.units.Coordinate
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneId
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
@@ -35,17 +33,16 @@ internal class SolarEclipseCalculator(
     private val moon = Moon()
     private val provider = SolarEclipseParameterProvider()
 
-    private val shouldLog = false
+    private val shouldLog = true
 
     private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
     private val _minEclipseDuration = Duration.ofMinutes(1)
 
     private val _log = mutableListOf<Pair<UniversalTime, String>>()
 
-    override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
-
+    override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? = withLogging {
         // Calculate the approximate time of the next eclipse
-        val nextEclipseTime = getNextEclipseTime(after, location) ?: return null
+        val nextEclipseTime = getNextEclipseTime(after, location) ?: return@withLogging null
 
         // Now that we have the approximate time, we can search for the exact time by incrementing the time by the precision
         // in both directions until we find the exact time of the start and end of the eclipse
@@ -65,6 +62,11 @@ internal class SolarEclipseCalculator(
         var currentStartTime = nextEclipseTime.toUniversalTime()
         var start = nextEclipseTime
         while (start > minTime) {
+
+            if (shouldLog){
+                _log.add(currentStartTime to "Searching for start time")
+            }
+
             // Check if the sun or moon is below the horizon, if so then the eclipse is not visible anymore
             val sunCoordinates = getCoordinates(sun, currentStartTime, location)
             val moonCoordinates = getCoordinates(moon, currentStartTime, location)
@@ -95,6 +97,10 @@ internal class SolarEclipseCalculator(
         var currentEndTime = nextEclipseTime.toUniversalTime()
         var end = nextEclipseTime
         while (end < maxTime) {
+            if (shouldLog){
+                _log.add(currentStartTime to "Searching for end time")
+            }
+
             // Check if the sun or moon is below the horizon, if so then the eclipse is not visible anymore
             val sunCoordinates = getCoordinates(sun, currentEndTime, location)
             val moonCoordinates = getCoordinates(moon, currentEndTime, location)
@@ -122,10 +128,10 @@ internal class SolarEclipseCalculator(
 
         // If the eclipse is too short, ignore it
         if (Duration.between(start, end) < _minEclipseDuration) {
-            return null
+            return@withLogging null
         }
 
-        return Eclipse(start, end, maxMagnitude, maxObscuration, timeOfMaximum)
+        Eclipse(start, end, maxMagnitude, maxObscuration, timeOfMaximum)
     }
 
     /**
@@ -143,10 +149,6 @@ internal class SolarEclipseCalculator(
         // The default skip is 15 minutes
         // If the eclipse is less than 15 minutes, then it may be missed
         val defaultSkip = Duration.ofMinutes(15)
-
-        if (shouldLog) {
-            _log.clear()
-        }
 
         timeFromStart = timeFromStart.minusDays(10)
         while (timeFromStart < _maxDuration) {
@@ -166,7 +168,7 @@ internal class SolarEclipseCalculator(
 
             val t = spreadSearch(minimum, maximum, start, defaultSkip) {
                 if (shouldLog) {
-                    _log.add(currentTime to "Eclipse check")
+                    _log.add(it.toUniversalTime() to "Eclipse check")
                 }
                 val ut = it.toUniversalTime()
 
@@ -188,21 +190,11 @@ internal class SolarEclipseCalculator(
             }
 
             if (t != null) {
-                if (shouldLog) {
-                    _log.add(currentTime to "Found eclipse")
-                    println(_log.size)
-                    println(_log.joinToString("\n") { "${it.first},${it.second}" })
-                }
                 return t
             }
 
             // Skip 10 days and try again
             timeFromStart = timeFromStart.plus(Duration.between(instant, nextEclipse.maximum).plusDays(10))
-        }
-
-        if (shouldLog) {
-            println(_log.size)
-            println(_log.joinToString("\n") { "${it.first},${it.second}" })
         }
 
         return null
@@ -223,7 +215,7 @@ internal class SolarEclipseCalculator(
             if (left >= minimum && test(left)) {
                 return left
             }
-            if (right <= maximum && test(right)) {
+            if (right <= maximum && right != left && test(right)) {
                 return right
             }
             left = left.minus(interval)
@@ -379,6 +371,18 @@ internal class SolarEclipseCalculator(
         sunRadius: Double
     ): Boolean {
         return angularDistance <= abs(moonRadius - sunRadius)
+    }
+
+    private fun <T> withLogging(block: () -> T): T {
+        if (shouldLog) {
+            _log.clear()
+        }
+        val ret = block()
+        if (shouldLog) {
+            println(_log.size)
+            println(_log.joinToString("\n") { "${it.first},${it.second}" })
+        }
+        return ret
     }
 
 }
