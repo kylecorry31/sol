@@ -147,39 +147,36 @@ internal class SolarEclipseCalculator(
             _log.clear()
         }
 
-        // Search until the maximum duration is reached or until an eclipse is found
-        while (timeFromStart < _maxDuration) {
-
-            // Get the location of the sun and moon at the current time
+        val provider = SolarEclipseParameterProvider()
+        timeFromStart = timeFromStart.minusDays(10)
+        while (timeFromStart < _maxDuration){
             val currentTime = startUT.plus(timeFromStart)
+            val instant = currentTime.toInstant()
 
-            val sunCoordinates = getCoordinates(sun, currentTime, location)
-            val moonCoordinates = getCoordinates(moon, currentTime, location)
+            // Get the next time of a solar eclipse
+            val nextEclipse = provider.getNextSolarEclipseParameters(instant)
 
-            // Skip ahead if conditions are not right for an eclipse
-            val nextSkip = getNextSkip(currentTime, location, sunCoordinates, moonCoordinates)
-            if (nextSkip != null) {
-                timeFromStart = timeFromStart.plus(nextSkip)
-                continue
-            }
-
-            // The conditions are right for an eclipse. If there is an eclipse, the magnitude will be greater than 0.
-            val magnitude = getMagnitude(currentTime, location, sunCoordinates, moonCoordinates).first
-            if (magnitude > 0) {
+            // Search around the maximum time of the eclipse to see if it is visible
+            var checkTime = nextEclipse.maximum.toUniversalTime().minusHours(4).coerceAtLeast(startUT)
+            val endTime = nextEclipse.maximum.toUniversalTime().plusHours(4).coerceAtLeast(startUT)
+            while (checkTime < endTime) {
+                val sunCoordinates = getCoordinates(sun, checkTime, location)
+                val moonCoordinates = getCoordinates(moon, checkTime, location)
+                val magnitude = getMagnitude(checkTime, location, sunCoordinates, moonCoordinates)
                 if (shouldLog) {
-                    _log.add(currentTime to "Found eclipse")
-                    println(_log.size)
-                    println(_log.joinToString("\n") { "${it.first},${it.second}" })
+                    _log.add(currentTime to "Favorable conditions")
                 }
-                return currentTime.toInstant()
+                if (magnitude.first > 0 && sunCoordinates.altitude > 0 && moonCoordinates.altitude > 0) {
+                    if (shouldLog) {
+                        _log.add(currentTime to "Found eclipse")
+                        println(_log.size)
+                        println(_log.joinToString("\n") { "${it.first},${it.second}" })
+                    }
+                    return checkTime.toInstant()
+                }
+                checkTime = checkTime.plus(defaultSkip)
             }
-
-            // An eclipse was not found, but no conditions where met that indicate an eclipse is not possible,
-            // so skip ahead by a little to check again.
-            if (shouldLog) {
-                _log.add(currentTime to "Favorable conditions")
-            }
-            timeFromStart = timeFromStart.plus(defaultSkip)
+            timeFromStart = timeFromStart.plus(Duration.between(instant, nextEclipse.maximum).plusDays(10))
         }
 
         if (shouldLog) {
@@ -187,117 +184,7 @@ internal class SolarEclipseCalculator(
             println(_log.joinToString("\n") { "${it.first},${it.second}" })
         }
 
-        // No eclipse was found
         return null
-    }
-
-    /**
-     * Calculate how far to skip ahead in time to potentially find the next eclipse. If conditions are not right for an
-     * eclipse, then this will return the amount of time to skip ahead to check again.
-     *
-     * If conditions are right for an eclipse, then this will return null.
-     *
-     * @param time The current time.
-     * @param location The location to search for eclipses.
-     * @param sunCoordinates The coordinates of the sun at the current time.
-     * @param moonCoordinates The coordinates of the moon at the current time.
-     * @return The amount of time to skip ahead to check again, or null if conditions are right for an eclipse.
-     */
-    private fun getNextSkip(
-        time: UniversalTime,
-        location: Coordinate,
-        sunCoordinates: HorizonCoordinate,
-        moonCoordinates: HorizonCoordinate
-    ): Duration? {
-        // Skip ahead by a number of days proportional to the phase of the moon from new moon
-        val phase = moon.getPhase(time)
-        val daysUntilNewMoon = when (phase.phase) {
-            MoonTruePhase.New, MoonTruePhase.WaningCrescent -> {
-                0
-            }
-            else -> {
-                val next = moon.getNextMeanPhase(time, MoonTruePhase.New)
-                Duration.between(time, next).toDays().toInt() - 1
-            }
-        }
-
-        // It is not possible for an eclipse to occur if the moon is not close to a new moon, so skip ahead
-        if (daysUntilNewMoon > 2) {
-            if (shouldLog) {
-                _log.add(time to "Moon phase")
-            }
-            return Duration.ofDays(daysUntilNewMoon.toLong())
-        }
-
-        // If the sun is down, skip to the next sunrise
-        if (sunCoordinates.altitude < 0) {
-            if (shouldLog) {
-                _log.add(time to "Sun is down")
-            }
-            return timeUntilSunrise(time, location)?.plusMinutes(15)
-        }
-
-        // If the moon is down, skip to the next moonrise
-        if (moonCoordinates.altitude < 0) {
-            if (shouldLog) {
-                _log.add(time to "Moon is down")
-            }
-            return timeUntilMoonrise(time, location)?.plusMinutes(15)
-        }
-
-        // If the moon is not close to the sun, skip a bit (based on the distance between the sun and moon)
-        // TODO: The majority of the time is being spent here, determine better skip times
-        val distance = sunCoordinates.angularDistanceTo(moonCoordinates)
-        // 1.5 is a conservative threshold - 1 degree can likely be used
-        if (distance > 1.5){
-            // Sun and moon move at about 0.5 degrees per hour
-            // So if they are 2 degrees apart, they will be around 4 hours apart
-            // But to be on the conservative side, divide that in half for the skip
-            if (shouldLog) {
-                _log.add(time to "Too far apart")
-            }
-            return Duration.ofHours(distance.toLong().coerceIn(1, 12))
-        }
-
-        // Conditions are right for an eclipse, so don't skip ahead
-        return null
-    }
-
-    /**
-     * Get the amount of time until the next sunrise. This includes refraction and parallax.
-     *
-     * @param time The time to start searching after.
-     * @param location The location to search for sunrises.
-     * @return The amount of time until the next sunrise, or null if there is no sunrise.
-     */
-    private fun timeUntilSunrise(time: UniversalTime, location: Coordinate): Duration? {
-        val nextSunrise = Astronomy.getNextSunrise(
-            time.atZone(ZoneId.of("UTC")),
-            location,
-            SunTimesMode.Actual,
-            withRefraction = true,
-            withParallax = true
-        ) ?: return null
-
-        return Duration.between(time.toInstant(), nextSunrise.toInstant())
-    }
-
-    /**
-     * Get the amount of time until the next moonrise. This includes refraction and parallax.
-     *
-     * @param time The time to start searching after.
-     * @param location The location to search for moonrises.
-     * @return The amount of time until the next moonrise, or null if there is no moonrise.
-     */
-    private fun timeUntilMoonrise(time: UniversalTime, location: Coordinate): Duration? {
-        val nextMoonrise = Astronomy.getNextMoonrise(
-            time.atZone(ZoneId.of("UTC")),
-            location,
-            withRefraction = true,
-            withParallax = true
-        ) ?: return null
-
-        return Duration.between(time.toInstant(), nextMoonrise.toInstant())
     }
 
     /**
