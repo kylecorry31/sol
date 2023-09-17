@@ -4,13 +4,14 @@ import assertk.assertThat
 import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.*
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -38,16 +39,53 @@ internal class GeologyTest {
     }
 
     @Test
-    fun triangulate() {
+    fun triangulateSelf() {
         val pointA = Coordinate(40.0, 10.0)
         val bearingA = Bearing(220f)
         val pointB = Coordinate(40.5, 9.5)
         val bearingB = Bearing(295f)
 
         val expected = Coordinate(40.229722, 10.252778)
-        val actual = Geology.triangulate(pointA, bearingA, pointB, bearingB)
+        val actual = Geology.triangulateSelf(pointA, bearingA, pointB, bearingB)
 
         assertThat(actual).isNotNull().isCloseTo(expected, 20f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "41.94301,-71.78259,201.8,41.94177,-71.78014,228.9,41.93875,-71.78488",
+        // Triangulate a different point with the same reference points
+        "41.94301,-71.78259,72.2,41.94177,-71.78014,43.1,41.94433,-71.77705",
+        // Swap calculated with one of the reference points
+        "41.94301,-71.78259,123.7,41.94433,-71.77705,222.4,41.94177,-71.78014",
+        // Order of reference points doesn't matter
+        "41.94177,-71.78014,228.9,41.94301,-71.78259,201.8,41.93875,-71.78488",
+        // Impossible to triangulate
+        "41.94301,-71.78259,23.7,41.94433,-71.77705,222.4,,",
+    )
+    fun triangulateDestination(
+        latA: Double,
+        lonA: Double,
+        degA: Float,
+        latB: Double,
+        lonB: Double,
+        degB: Float,
+        latExpected: Double?,
+        lonExpected: Double?,
+    ) {
+        val pointA = Coordinate(latA, lonA)
+        val bearingA = Bearing(degA)
+        val pointB = Coordinate(latB, lonB)
+        val bearingB = Bearing(degB)
+        val expected = if (latExpected == null || lonExpected == null) null else Coordinate(latExpected, lonExpected)
+
+        val actual = Geology.triangulateDestination(pointA, bearingA, pointB, bearingB)
+
+        if (expected == null) {
+            assertThat(actual).isNull()
+        } else {
+            assertThat(actual).isNotNull().isCloseTo(expected, 20f)
+        }
     }
 
     @Test

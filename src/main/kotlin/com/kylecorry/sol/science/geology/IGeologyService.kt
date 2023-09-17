@@ -9,11 +9,23 @@ import com.kylecorry.sol.units.Pressure
 interface IGeologyService {
 
     // Geomagnetic field
-    fun getGeomagneticDeclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
+    fun getGeomagneticDeclination(
+        coordinate: Coordinate,
+        altitude: Float? = null,
+        time: Long = System.currentTimeMillis()
+    ): Float
 
-    fun getGeomagneticInclination(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Float
+    fun getGeomagneticInclination(
+        coordinate: Coordinate,
+        altitude: Float? = null,
+        time: Long = System.currentTimeMillis()
+    ): Float
 
-    fun getGeomagneticField(coordinate: Coordinate, altitude: Float? = null, time: Long = System.currentTimeMillis()): Vector3
+    fun getGeomagneticField(
+        coordinate: Coordinate,
+        altitude: Float? = null,
+        time: Long = System.currentTimeMillis()
+    ): Vector3
 
     fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing
 
@@ -29,6 +41,7 @@ interface IGeologyService {
      * @return The avalanche risk
      */
     fun getAvalancheRisk(inclination: Float): AvalancheRisk
+
     /**
      * Determines the grade (percent)
      * @param inclination The inclination angle (degrees)
@@ -91,7 +104,37 @@ interface IGeologyService {
 
     fun getBounds(points: List<Coordinate>): CoordinateBounds
 
-    fun triangulate(pointA: Coordinate, bearingA: Bearing, pointB: Coordinate, bearingB: Bearing): Coordinate?
+    /**
+     * Triangulate a coordinate using two known coordinates and the bearings from the unknown coordinate to the known coordinates.
+     * Use this if you want to find your location by taking readings to two known locations.
+     * @param referenceA The first known coordinate
+     * @param selfToReferenceBearingA The bearing from the unknown coordinate to the first known coordinate (True North)
+     * @param referenceB The second known coordinate
+     * @param selfToReferenceBearingB The bearing from the unknown coordinate to the second known coordinate (True North)
+     * @return The triangulated coordinate, if possible
+     */
+    fun triangulateSelf(
+        referenceA: Coordinate,
+        selfToReferenceBearingA: Bearing,
+        referenceB: Coordinate,
+        selfToReferenceBearingB: Bearing
+    ): Coordinate?
+
+    /**
+     * Triangulate a coordinate using two known coordinates and the bearings from the known coordinates to the unknown coordinate.
+     * Use this if you want to find the location of a destination by taking readings at two known locations.
+     * @param referenceA The first known coordinate
+     * @param referenceAToDestinationBearing The bearing from the first known coordinate to the unknown coordinate (True North)
+     * @param referenceB The second known coordinate
+     * @param referenceBToDestinationBearing The bearing from the second known coordinate to the unknown coordinate (True North)
+     * @return The triangulated coordinate, if possible
+     */
+    fun triangulateDestination(
+        referenceA: Coordinate,
+        referenceAToDestinationBearing: Bearing,
+        referenceB: Coordinate,
+        referenceBToDestinationBearing: Bearing
+    ): Coordinate?
 
     fun deadReckon(lastLocation: Coordinate, distanceTravelled: Float, bearingToLast: Bearing): Coordinate
 
