@@ -480,6 +480,7 @@ class SolMathTest {
                 Arguments.of(-1800.0f, 0.0f, 360.0f, 360.0f),
                 Arguments.of(1799.0f, 0.0f, 360.0f, 359.0f),
                 Arguments.of(-1799.0f, 0.0f, 360.0f, 1.0f),
+                Arguments.of(-250f, -180f, 180f, 110f),
             )
         }
 

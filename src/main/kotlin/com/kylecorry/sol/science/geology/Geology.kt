@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.clamp
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.square
@@ -253,7 +254,11 @@ object Geology : IGeologyService {
             cos(angularDist13) - sinDegrees(referenceA.latitude) * sin(p3Lat)
         )
         val p3Lng = referenceA.longitude.toRadians() + deltaP3Long
-        return Coordinate(p3Lat.toDegrees(), p3Lng.toDegrees())
+
+        val normalizedLat = clamp(p3Lat.toDegrees(), -90.0, 90.0)
+        val normalizedLng = wrap(p3Lng.toDegrees(), -180.0, 180.0)
+
+        return Coordinate(normalizedLat, normalizedLng)
     }
 
     override fun triangulateDestination(
