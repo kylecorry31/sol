@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math
 
 import com.kylecorry.sol.math.algebra.transpose
+import com.kylecorry.sol.shared.Guards
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -18,6 +19,8 @@ fun <T> List<T>.split(percent: Float): Pair<List<T>, List<T>> {
 }
 
 fun <T> List<T>.batch(n: Int): List<List<T>> {
+    Guards.isPositive(n, "n")
+
     val lists = mutableListOf<List<T>>()
     var start = 0
     while (start < size) {

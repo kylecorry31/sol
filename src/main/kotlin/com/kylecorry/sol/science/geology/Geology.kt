@@ -134,7 +134,7 @@ object Geology : IGeologyService {
             return Float.NEGATIVE_INFINITY
         }
 
-        if (x == 0f && y == 0f) {
+        if (x == 0f) {
             return 0f
         }
 
