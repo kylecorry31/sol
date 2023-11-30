@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.1")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.26.1")
