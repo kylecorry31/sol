@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.calculus
 
 import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.algebra.QuadraticEquation
+import com.kylecorry.sol.shared.Guards
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -43,6 +44,8 @@ object Calculus {
         step: Double = 0.0001,
         fn: (x: Double) -> Double
     ): Double {
+
+        Guards.isPositive(step, "step")
 
         val start = min(startX, endX)
         val end = max(startX, endX)

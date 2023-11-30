@@ -38,7 +38,7 @@ internal object AstronomicalArgumentCalculator {
             TideConstituent.M4 -> 90.026f // M2 * 2
             TideConstituent.O1 -> 44.031f
             TideConstituent.P1 -> 348.805f
-            TideConstituent.L2 -> 213.77879f // Calculated
+            TideConstituent.L2 -> 213.7788f // Calculated
             TideConstituent.K2 -> 186.65f
             TideConstituent.MS4 -> 45.126f // M2 + S2
             TideConstituent.Z0 -> 0f

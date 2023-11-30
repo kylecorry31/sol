@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.clamp
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.square
@@ -133,7 +134,7 @@ object Geology : IGeologyService {
             return Float.NEGATIVE_INFINITY
         }
 
-        if (x == 0f && y == 0f) {
+        if (x == 0f) {
             return 0f
         }
 
@@ -196,41 +197,41 @@ object Geology : IGeologyService {
         return CoordinateBounds.from(points)
     }
 
-    override fun triangulate(
-        pointA: Coordinate,
-        bearingA: Bearing,
-        pointB: Coordinate,
-        bearingB: Bearing
+    override fun triangulateSelf(
+        referenceA: Coordinate,
+        selfToReferenceBearingA: Bearing,
+        referenceB: Coordinate,
+        selfToReferenceBearingB: Bearing
     ): Coordinate? {
-        val deltaLat = pointA.latitude - pointB.latitude
-        val deltaLng = pointA.longitude - pointB.longitude
+        val deltaLat = referenceA.latitude - referenceB.latitude
+        val deltaLng = referenceA.longitude - referenceB.longitude
         val angularDist = 2 * asin(
             sqrt(
-                sinDegrees(deltaLat / 2) * sinDegrees(deltaLat / 2) + cosDegrees(pointA.latitude) * cosDegrees(
-                    pointB.latitude
+                sinDegrees(deltaLat / 2) * sinDegrees(deltaLat / 2) + cosDegrees(referenceA.latitude) * cosDegrees(
+                    referenceB.latitude
                 ) * sinDegrees(deltaLng / 2) * sinDegrees(deltaLng / 2)
             )
         )
 
         val initialBearing = acos(
-            (sinDegrees(pointB.latitude) - sinDegrees(pointA.latitude) * cos(angularDist)) / (sin(
+            (sinDegrees(referenceB.latitude) - sinDegrees(referenceA.latitude) * cos(angularDist)) / (sin(
                 angularDist
-            ) * cosDegrees(pointA.latitude))
+            ) * cosDegrees(referenceA.latitude))
         )
         val finalBearing = acos(
-            (sinDegrees(pointA.latitude) - sinDegrees(pointB.latitude) * cos(angularDist)) / (sin(
+            (sinDegrees(referenceA.latitude) - sinDegrees(referenceB.latitude) * cos(angularDist)) / (sin(
                 angularDist
-            ) * cosDegrees(pointB.latitude))
+            ) * cosDegrees(referenceB.latitude))
         )
 
         val a1: Double
         val a2: Double
-        if (sinDegrees(pointB.longitude - pointA.longitude) > 0) {
-            a1 = bearingA.inverse().value.toDouble().toRadians() - initialBearing
-            a2 = 2 * Math.PI - finalBearing - bearingB.inverse().value.toDouble().toRadians()
+        if (sinDegrees(referenceB.longitude - referenceA.longitude) > 0) {
+            a1 = selfToReferenceBearingA.inverse().value.toDouble().toRadians() - initialBearing
+            a2 = 2 * Math.PI - finalBearing - selfToReferenceBearingB.inverse().value.toDouble().toRadians()
         } else {
-            a1 = bearingA.inverse().value.toDouble().toRadians() - (2 * Math.PI - initialBearing)
-            a2 = finalBearing - bearingB.inverse().value.toDouble().toRadians()
+            a1 = selfToReferenceBearingA.inverse().value.toDouble().toRadians() - (2 * Math.PI - initialBearing)
+            a2 = finalBearing - selfToReferenceBearingB.inverse().value.toDouble().toRadians()
         }
 
         if (sin(a1) == 0.0 && sin(a2) == 0.0) {
@@ -244,16 +245,34 @@ object Geology : IGeologyService {
         val a3 = acos(-cos(a1) * cos(a2) + sin(a1) * sin(a2) * cos(angularDist))
         val angularDist13 = atan2(sin(angularDist) * sin(a1) * sin(a2), cos(a2) + cos(a1) * cos(a3))
         val p3Lat = asin(
-            sinDegrees(pointA.latitude) * cos(angularDist13) + cosDegrees(pointA.latitude) * sin(
+            sinDegrees(referenceA.latitude) * cos(angularDist13) + cosDegrees(referenceA.latitude) * sin(
                 angularDist13
-            ) * cosDegrees(bearingA.inverse().value.toDouble())
+            ) * cosDegrees(selfToReferenceBearingA.inverse().value.toDouble())
         )
         val deltaP3Long = atan2(
-            sinDegrees(bearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(pointA.latitude),
-            cos(angularDist13) - sinDegrees(pointA.latitude) * sin(p3Lat)
+            sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(referenceA.latitude),
+            cos(angularDist13) - sinDegrees(referenceA.latitude) * sin(p3Lat)
         )
-        val p3Lng = pointA.longitude.toRadians() + deltaP3Long
-        return Coordinate(p3Lat.toDegrees(), p3Lng.toDegrees())
+        val p3Lng = referenceA.longitude.toRadians() + deltaP3Long
+
+        val normalizedLat = clamp(p3Lat.toDegrees(), -90.0, 90.0)
+        val normalizedLng = wrap(p3Lng.toDegrees(), -180.0, 180.0)
+
+        return Coordinate(normalizedLat, normalizedLng)
+    }
+
+    override fun triangulateDestination(
+        referenceA: Coordinate,
+        referenceAToDestinationBearing: Bearing,
+        referenceB: Coordinate,
+        referenceBToDestinationBearing: Bearing
+    ): Coordinate? {
+        return triangulateSelf(
+            referenceA,
+            referenceAToDestinationBearing.inverse(),
+            referenceB,
+            referenceBToDestinationBearing.inverse()
+        )
     }
 
     override fun deadReckon(

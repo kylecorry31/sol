@@ -127,8 +127,12 @@ internal object AstroSearch {
     ): Instant? {
         var left = start
         var right = start
+        var iterations = 0
 
-        while (left >= range.start || right <= range.end) {
+        // An upper bound just to be safe
+        val maxIterations = 2 * (Duration.between(range.start, range.end).toMillis() / precision.toMillis()).toInt()
+
+        while ((left >= range.start || right <= range.end) && iterations < maxIterations) {
             if (left >= range.start && predicate(left)) {
                 return left
             }
@@ -137,6 +141,7 @@ internal object AstroSearch {
             }
             left -= precision
             right += precision
+            iterations++
         }
 
         return null

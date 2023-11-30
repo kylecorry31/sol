@@ -2,9 +2,14 @@ package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.shared.Guards
 
 class NoisyExtremaFinder(private val step: Double = 1.0, private val debounceCount: Int = 1) :
     IExtremaFinder, IListExtremaFinder {
+
+    init {
+        Guards.isPositive(step, "step")
+    }
 
     override fun find(range: Range<Double>, fn: (x: Double) -> Double): List<Extremum> {
         val last = fn(range.start)

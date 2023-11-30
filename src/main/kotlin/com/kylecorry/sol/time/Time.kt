@@ -167,6 +167,11 @@ object Time {
         step: Duration,
         valueFn: (time: ZonedDateTime) -> T
     ): List<Reading<T>> {
+
+        if (step.isZero || step.isNegative){
+            return emptyList()
+        }
+
         val readings = mutableListOf<Reading<T>>()
         var time = start
         while (time <= end) {
@@ -211,13 +216,16 @@ object Time {
     ): List<Pair<ZonedDateTime, Duration>> {
         val dates = mutableListOf<Pair<ZonedDateTime, Duration>>()
         var date = ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, zone)
-        while (date.year == year) {
+        val maxIterations = 100
+        var iterations = 0
+        while (date.year == year && iterations < maxIterations) {
             val next = zone.rules.nextTransition(date.toInstant()) ?: break
             date = ZonedDateTime.ofInstant(next.instant, zone)
             val savings = getDaylightSavings(date)
             if (date.year == year && dates.lastOrNull()?.second != savings) {
                 dates.add(date to getDaylightSavings(date))
             }
+            iterations++
         }
         return dates
     }
