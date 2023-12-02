@@ -247,12 +247,24 @@ object SolMath {
         return filtered
     }
 
-    fun lerp(percent: Float, start: Float, end: Float): Float {
-        return start + (end - start) * percent
+    fun lerp(percent: Float, start: Float, end: Float, shouldClamp: Boolean = false): Float {
+        val value = start + (end - start) * percent
+
+        return if (shouldClamp) {
+            clamp(value, start, end)
+        } else {
+            value
+        }
     }
 
-    fun lerp(percent: Double, start: Double, end: Double): Double {
-        return start + (end - start) * percent
+    fun lerp(percent: Double, start: Double, end: Double, shouldClamp: Boolean = false): Double {
+        val value = start + (end - start) * percent
+
+        return if (shouldClamp) {
+            clamp(value, start, end)
+        } else {
+            value
+        }
     }
 
     fun map(
@@ -260,10 +272,11 @@ object SolMath {
         originalMin: Double,
         originalMax: Double,
         newMin: Double,
-        newMax: Double
+        newMax: Double,
+        shouldClamp: Boolean = false
     ): Double {
         val normal = norm(value, originalMin, originalMax)
-        return lerp(normal, newMin, newMax)
+        return lerp(normal, newMin, newMax, shouldClamp)
     }
 
     fun map(
@@ -271,26 +284,39 @@ object SolMath {
         originalMin: Float,
         originalMax: Float,
         newMin: Float,
-        newMax: Float
+        newMax: Float,
+        shouldClamp: Boolean = false
     ): Float {
         val normal = norm(value, originalMin, originalMax)
-        return lerp(normal, newMin, newMax)
+        return lerp(normal, newMin, newMax, shouldClamp)
     }
 
-    fun norm(value: Double, minimum: Double, maximum: Double): Double {
+    fun norm(value: Double, minimum: Double, maximum: Double, shouldClamp: Boolean = false): Double {
         val range = maximum - minimum
         if (range == 0.0) {
             return 0.0
         }
-        return (value - minimum) / range
+        val normal = (value - minimum) / range
+
+        return if (shouldClamp) {
+            clamp(normal, 0.0, 1.0)
+        } else {
+            normal
+        }
     }
 
-    fun norm(value: Float, minimum: Float, maximum: Float): Float {
+    fun norm(value: Float, minimum: Float, maximum: Float, shouldClamp: Boolean = false): Float {
         val range = maximum - minimum
         if (range == 0f) {
             return 0f
         }
-        return (value - minimum) / range
+        val normal = (value - minimum) / range
+
+        return if (shouldClamp) {
+            clamp(normal, 0f, 1f)
+        } else {
+            normal
+        }
     }
 
     fun scaleToFit(
@@ -410,6 +436,7 @@ object SolMath {
                     toInt()
                 }
             }
+
             RoundingMethod.TowardZero -> {
                 if (abs(this) % 1 <= 0.5f) {
                     toInt()

@@ -185,29 +185,29 @@ class SolMathTest {
 
     @ParameterizedTest
     @MethodSource("provideNorm")
-    fun normDouble(value: Double, min: Double, max: Double, expected: Double) {
-        val actual = SolMath.norm(value, min, max)
+    fun normDouble(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = SolMath.norm(value, min, max, shouldClamp)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideNorm")
-    fun normFloat(value: Double, min: Double, max: Double, expected: Double) {
-        val actual = SolMath.norm(value.toFloat(), min.toFloat(), max.toFloat())
+    fun normFloat(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = SolMath.norm(value.toFloat(), min.toFloat(), max.toFloat(), shouldClamp)
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLerp")
-    fun lerpDouble(value: Double, min: Double, max: Double, expected: Double) {
-        val actual = SolMath.lerp(value, min, max)
+    fun lerpDouble(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = SolMath.lerp(value, min, max, shouldClamp)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideLerp")
-    fun lerpFloat(value: Double, min: Double, max: Double, expected: Double) {
-        val actual = SolMath.lerp(value.toFloat(), min.toFloat(), max.toFloat())
+    fun lerpFloat(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = SolMath.lerp(value.toFloat(), min.toFloat(), max.toFloat(), shouldClamp)
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
@@ -219,9 +219,10 @@ class SolMathTest {
         max: Double,
         newMin: Double,
         newMax: Double,
+        shouldClamp: Boolean,
         expected: Double
     ) {
-        val actual = SolMath.map(value, min, max, newMin, newMax)
+        val actual = SolMath.map(value, min, max, newMin, newMax, shouldClamp)
         assertEquals(expected, actual, 0.00001)
     }
 
@@ -233,6 +234,7 @@ class SolMathTest {
         max: Double,
         newMin: Double,
         newMax: Double,
+        shouldClamp: Boolean,
         expected: Double
     ) {
         val actual = SolMath.map(
@@ -240,7 +242,8 @@ class SolMathTest {
             min.toFloat(),
             max.toFloat(),
             newMin.toFloat(),
-            newMax.toFloat()
+            newMax.toFloat(),
+            shouldClamp
         )
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
@@ -274,7 +277,7 @@ class SolMathTest {
 
     @ParameterizedTest
     @MethodSource("provideArgmax")
-    fun <T: Comparable<T>> argmax(value: List<T>, expected: Int){
+    fun <T : Comparable<T>> argmax(value: List<T>, expected: Int) {
         val actual = SolMath.argmax(value)
         assertEquals(expected, actual)
     }
@@ -288,7 +291,7 @@ class SolMathTest {
         "Infinity, 1.0, Infinity",
         "-Infinity, 1.0, Infinity"
     )
-    fun positive(value: Float, zeroReplacement: Float, expected: Float){
+    fun positive(value: Float, zeroReplacement: Float, expected: Float) {
         val actual = value.positive(zeroReplacement)
         assertEquals(expected, actual)
     }
@@ -302,7 +305,7 @@ class SolMathTest {
         "Infinity, -1.0, -Infinity",
         "-Infinity, -1.0, -Infinity"
     )
-    fun negative(value: Float, zeroReplacement: Float, expected: Float){
+    fun negative(value: Float, zeroReplacement: Float, expected: Float) {
         val actual = value.negative(zeroReplacement)
         assertEquals(expected, actual)
     }
@@ -316,7 +319,7 @@ class SolMathTest {
         "1.0, 0.0, 1.0",
         "-1.0, 0.0, -1.0"
     )
-    fun real(value: Float, defaultValue: Float, expected: Float){
+    fun real(value: Float, defaultValue: Float, expected: Float) {
         val actual = value.real(defaultValue)
         assertEquals(expected, actual)
     }
@@ -334,7 +337,7 @@ class SolMathTest {
         "-1.5, 1.0, -1.0",
         "-1.6, 1.0, -2.0",
     )
-    fun roundNearestDouble(value: Double, nearest: Double, expected: Double){
+    fun roundNearestDouble(value: Double, nearest: Double, expected: Double) {
         val actual = value.roundNearest(nearest)
         assertEquals(expected, actual, 0.00001)
     }
@@ -352,7 +355,7 @@ class SolMathTest {
         "-1.5, 1.0, -1.0",
         "-1.6, 1.0, -2.0",
     )
-    fun roundNearestFloat(value: Float, nearest: Float, expected: Float){
+    fun roundNearestFloat(value: Float, nearest: Float, expected: Float) {
         val actual = value.roundNearest(nearest)
         assertEquals(expected, actual, 0.00001f)
     }
@@ -370,7 +373,7 @@ class SolMathTest {
         "-2, 5, 0",
         "-3, 5, -5",
     )
-    fun roundNearestInt(value: Int, nearest: Int, expected: Int){
+    fun roundNearestInt(value: Int, nearest: Int, expected: Int) {
         val actual = value.roundNearest(nearest)
         assertEquals(expected, actual)
     }
@@ -387,7 +390,7 @@ class SolMathTest {
         "-20.0, 15.0, 345.0",
         "-25.0, 15.0, 330.0",
     )
-    fun roundNearestAngleFloat(value: Float, nearest: Float, expected: Float){
+    fun roundNearestAngleFloat(value: Float, nearest: Float, expected: Float) {
         val actual = value.roundNearestAngle(nearest)
         assertEquals(expected, actual, 0.00001f)
     }
@@ -404,7 +407,7 @@ class SolMathTest {
         "-20.0, 15.0, 345.0",
         "-25.0, 15.0, 330.0",
     )
-    fun roundNearestAngleDouble(value: Double, nearest: Double, expected: Double){
+    fun roundNearestAngleDouble(value: Double, nearest: Double, expected: Double) {
         val actual = value.roundNearestAngle(nearest)
         assertEquals(expected, actual, 0.00001)
     }
@@ -428,7 +431,7 @@ class SolMathTest {
         "TowardZero, -1.5, -1",
         "TowardZero, -1.9, -2",
     )
-    fun round(method: RoundingMethod, value: Float, expected: Int){
+    fun round(method: RoundingMethod, value: Float, expected: Int) {
         val actual = value.round(method)
         assertEquals(expected, actual)
     }
@@ -637,45 +640,54 @@ class SolMathTest {
         @JvmStatic
         fun provideNorm(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(0.1, 0.0, 1.0, 0.1),
-                Arguments.of(0.0, 0.0, 1.0, 0.0),
-                Arguments.of(1.0, 0.0, 1.0, 1.0),
-                Arguments.of(1.2, 0.0, 1.0, 1.2),
-                Arguments.of(-0.1, 0.0, 1.0, -0.1),
-                Arguments.of(4.0, 2.0, 6.0, 0.5),
-                Arguments.of(1.0, 2.0, 6.0, -0.25),
-                Arguments.of(6.0, 2.0, 6.0, 1.0),
-                Arguments.of(2.0, 2.0, 6.0, 0.0),
+                Arguments.of(0.1, 0.0, 1.0, false, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, false, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, false, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, false, 1.2),
+                Arguments.of(-0.1, 0.0, 1.0, false, -0.1),
+                Arguments.of(4.0, 2.0, 6.0, false, 0.5),
+                Arguments.of(1.0, 2.0, 6.0, false, -0.25),
+                Arguments.of(6.0, 2.0, 6.0, false, 1.0),
+                Arguments.of(2.0, 2.0, 6.0, false, 0.0),
+                Arguments.of(-1.0, 0.0, 1.0, true, 0.0),
+                Arguments.of(0.5, 0.0, 1.0, true, 0.5),
+                Arguments.of(2.0, 0.0, 1.0, true, 1.0),
             )
         }
 
         @JvmStatic
         fun provideLerp(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(0.1, 0.0, 1.0, 0.1),
-                Arguments.of(0.0, 0.0, 1.0, 0.0),
-                Arguments.of(1.0, 0.0, 1.0, 1.0),
-                Arguments.of(1.2, 0.0, 1.0, 1.2),
-                Arguments.of(-0.1, 0.0, 1.0, -0.1),
-                Arguments.of(0.5, 2.0, 6.0, 4.0),
-                Arguments.of(-0.25, 2.0, 6.0, 1.0),
-                Arguments.of(1.0, 2.0, 6.0, 6.0),
-                Arguments.of(0.0, 2.0, 6.0, 2.0),
+                Arguments.of(0.1, 0.0, 1.0, false, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, false, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, false, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, false, 1.2),
+                Arguments.of(-0.1, 0.0, 1.0, false, -0.1),
+                Arguments.of(0.5, 2.0, 6.0, false, 4.0),
+                Arguments.of(-0.25, 2.0, 6.0, false, 1.0),
+                Arguments.of(1.0, 2.0, 6.0, false, 6.0),
+                Arguments.of(0.0, 2.0, 6.0, false, 2.0),
+                Arguments.of(-1.0, 0.0, 1.0, true, 0.0),
+                Arguments.of(0.5, 0.0, 1.0, true, 0.5),
+                Arguments.of(2.0, 0.0, 1.0, true, 1.0),
             )
         }
 
         @JvmStatic
         fun provideMap(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(0.1, 0.0, 1.0, 2.0, 4.0, 2.2),
-                Arguments.of(0.0, 0.0, 1.0, 2.0, 4.0, 2.0),
-                Arguments.of(1.0, 0.0, 1.0, 2.0, 4.0, 4.0),
-                Arguments.of(1.2, 0.0, 1.0, 2.0, 4.0, 4.4),
-                Arguments.of(-0.1, 0.0, 1.0, 2.0, 4.0, 1.8),
-                Arguments.of(4.0, 2.0, 6.0, 0.0, 4.0, 2.0),
-                Arguments.of(1.0, 2.0, 6.0, 0.0, 4.0, -1.0),
-                Arguments.of(6.0, 2.0, 6.0, 0.0, 4.0, 4.0),
-                Arguments.of(2.0, 2.0, 6.0, 0.0, 4.0, 0.0),
+                Arguments.of(0.1, 0.0, 1.0, 2.0, 4.0, false, 2.2),
+                Arguments.of(0.0, 0.0, 1.0, 2.0, 4.0, false, 2.0),
+                Arguments.of(1.0, 0.0, 1.0, 2.0, 4.0, false, 4.0),
+                Arguments.of(1.2, 0.0, 1.0, 2.0, 4.0, false, 4.4),
+                Arguments.of(-0.1, 0.0, 1.0, 2.0, 4.0, false, 1.8),
+                Arguments.of(4.0, 2.0, 6.0, 0.0, 4.0, false, 2.0),
+                Arguments.of(1.0, 2.0, 6.0, 0.0, 4.0, false, -1.0),
+                Arguments.of(6.0, 2.0, 6.0, 0.0, 4.0, false, 4.0),
+                Arguments.of(2.0, 2.0, 6.0, 0.0, 4.0, false, 0.0),
+                Arguments.of(-1.0, 0.0, 1.0, 2.0, 4.0, true, 2.0),
+                Arguments.of(0.5, 0.0, 1.0, 2.0, 4.0, true, 3.0),
+                Arguments.of(2.0, 0.0, 1.0, 2.0, 4.0, true, 4.0),
             )
         }
 
