@@ -13,3 +13,6 @@ dependencies {
     implementation 'com.github.kylecorry31:sol:<version>'
 }
 ```
+
+## References
+Astronomy algorithms are a combination of custom made algorithms and implementations derived from Jean Meeus (Astronomical Algorithms 2nd Edition), J. L. Lawrence (Celestial Calculations: A Gentle Introduction to Computational Astronomy), and NASA.
