@@ -92,6 +92,9 @@ interface IGeologyService {
      */
     fun getInclination(angle: Float): Float
 
+    fun getInclinationFromSlopeGrade(grade: Float): Float
+    fun getInclination(distance: Distance, elevationChange: Distance): Float
+
     // Coordinates / navigation
 
     fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean

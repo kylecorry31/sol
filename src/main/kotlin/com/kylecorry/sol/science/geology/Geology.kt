@@ -85,6 +85,14 @@ object Geology : IGeologyService {
         return SolMath.tanDegrees(inclination) * 100
     }
 
+    override fun getInclinationFromSlopeGrade(grade: Float): Float {
+        return atan(grade / 100f).toDegrees()
+    }
+
+    override fun getInclination(distance: Distance, elevationChange: Distance): Float {
+        return getInclinationFromSlopeGrade(getSlopeGrade(distance, elevationChange))
+    }
+
     override fun getHeightFromInclination(
         distance: Distance,
         bottomInclination: Float,
