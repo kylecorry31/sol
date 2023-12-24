@@ -71,6 +71,18 @@ data class Quaternion(val x: Float, val y: Float, val z: Float, val w: Float) {
         return Euler.from(out)
     }
 
+    fun slerp(other: Quaternion, t: Float): Quaternion {
+        val out = FloatArray(4)
+        QuaternionMath.slerp(arr, other.arr, t, out)
+        return from(out)
+    }
+
+    fun lerp(other: Quaternion, t: Float): Quaternion {
+        val out = FloatArray(4)
+        QuaternionMath.lerp(arr, other.arr, t, out)
+        return from(out)
+    }
+
     companion object {
         val zero = Quaternion(0f, 0f, 0f, 1f)
 
@@ -213,5 +225,48 @@ object QuaternionMath {
         val mag = magnitude(quat)
         conjugate(quat, out)
         divide(out, mag * mag, out)
+    }
+
+    fun slerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray){
+        val cosHalfTheta = quat1[X] * quat2[X] + quat1[Y] * quat2[Y] + quat1[Z] * quat2[Z] + quat1[W] * quat2[W]
+        if (cosHalfTheta.absoluteValue >= 1){
+            out[X] = quat1[X]
+            out[Y] = quat1[Y]
+            out[Z] = quat1[Z]
+            out[W] = quat1[W]
+            return
+        }
+
+        val halfTheta = acos(cosHalfTheta)
+        val sinHalfTheta = sqrt(1 - cosHalfTheta * cosHalfTheta)
+
+        if (sinHalfTheta.absoluteValue < 0.001){
+            out[X] = quat1[X] * 0.5f + quat2[X] * 0.5f
+            out[Y] = quat1[Y] * 0.5f + quat2[Y] * 0.5f
+            out[Z] = quat1[Z] * 0.5f + quat2[Z] * 0.5f
+            out[W] = quat1[W] * 0.5f + quat2[W] * 0.5f
+            return
+        }
+
+        val ratioA = sin((1 - t) * halfTheta) / sinHalfTheta
+        val ratioB = sin(t * halfTheta) / sinHalfTheta
+
+        out[X] = quat1[X] * ratioA + quat2[X] * ratioB
+        out[Y] = quat1[Y] * ratioA + quat2[Y] * ratioB
+        out[Z] = quat1[Z] * ratioA + quat2[Z] * ratioB
+        out[W] = quat1[W] * ratioA + quat2[W] * ratioB
+    }
+
+    fun lerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray){
+        val x = quat1[X] + t * (quat2[X] - quat1[X])
+        val y = quat1[Y] + t * (quat2[Y] - quat1[Y])
+        val z = quat1[Z] + t * (quat2[Z] - quat1[Z])
+        val w = quat1[W] + t * (quat2[W] - quat1[W])
+        out[X] = x
+        out[Y] = y
+        out[Z] = z
+        out[W] = w
+
+        normalize(out, out)
     }
 }
