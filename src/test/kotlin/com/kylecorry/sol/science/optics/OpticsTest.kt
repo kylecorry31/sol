@@ -35,7 +35,7 @@ class OpticsTest {
         expectedY: Float
     ) {
         val point = Vector3(x, y, z)
-        val projection = Optics.perspectiveProjection(point, fx, fy, cx, cy)
+        val projection = Optics.perspectiveProjection(point, Vector2(fx, fy), Vector2(cx, cy))
         assertEquals(expectedX, projection.x, 0.001f)
         assertEquals(expectedY, projection.y, 0.001f)
     }
@@ -66,7 +66,7 @@ class OpticsTest {
     ) {
         val expected = Vector3(expectedX, expectedY, expectedZ)
         val point = Vector2(screenX, screenY)
-        val projection = Optics.inversePerspectiveProjection(point, fx, fy, cx, cy, distance)
+        val projection = Optics.inversePerspectiveProjection(point, Vector2(fx, fy), Vector2(cx, cy), distance)
         assertEquals(expected.x, projection.x, 0.001f)
         assertEquals(expected.y, projection.y, 0.001f)
         assertEquals(expected.z, projection.z, 0.001f)

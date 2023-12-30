@@ -400,7 +400,7 @@ object Geology : IGeologyService {
         }
 
         var distance = 0f
-        for (i in 0 until points.lastIndex) {
+        for (i in 0..<points.lastIndex) {
             distance += points[i].distanceTo(points[i + 1], highAccuracy)
         }
 
@@ -414,7 +414,7 @@ object Geology : IGeologyService {
             return Distance.meters(0f)
         }
 
-        for (i in 1 until elevations.size) {
+        for (i in 1..<elevations.size) {
             val current = elevations[i].meters().distance
             val last = elevations[i - 1].meters().distance
             val change = current - last
@@ -432,7 +432,7 @@ object Geology : IGeologyService {
             return Distance.meters(0f)
         }
 
-        for (i in 1 until elevations.size) {
+        for (i in 1..<elevations.size) {
             val current = elevations[i].meters().distance
             val last = elevations[i - 1].meters().distance
             val change = current - last

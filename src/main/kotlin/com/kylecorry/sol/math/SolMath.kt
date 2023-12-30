@@ -44,7 +44,20 @@ object SolMath {
 
     fun power(x: Double, power: Int): Double {
         var total = 1.0
-        for (i in 0 until abs(power)) {
+        for (i in 0..<abs(power)) {
+            total *= x
+        }
+
+        if (power < 0) {
+            return 1 / total
+        }
+
+        return total
+    }
+
+    fun power(x: Float, power: Int): Float {
+        var total = 1f
+        for (i in 0..<abs(power)) {
             total *= x
         }
 
