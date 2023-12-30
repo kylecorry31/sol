@@ -107,7 +107,7 @@ object Optics {
     }
 
     /**
-     * Calculates the field of view in degrees
+     * Calculates the field of view in degrees. Assumes the lens is rectilinear.
      * @param focalLength The focal length in any unit
      * @param sensorSize The sensor size in the same unit
      */
@@ -115,11 +115,12 @@ object Optics {
         focalLength: Float,
         sensorSize: Float
     ): Float {
+        // https://www.bobatkins.com/photography/technical/field_of_view.html
         return 2 * atan(sensorSize / (2 * focalLength)).toDegrees()
     }
 
     /**
-     * Calculates the focal length given the field of view
+     * Calculates the focal length given the field of view. Assumes the lens is rectilinear.
      * @param fieldOfView The field of view in degrees
      * @param viewSize The view size
      * @return The focal length in the same unit as viewSize
