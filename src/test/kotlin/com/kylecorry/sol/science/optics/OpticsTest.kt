@@ -1,0 +1,52 @@
+package com.kylecorry.sol.science.optics
+
+import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.Vector3
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+
+class OpticsTest {
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 0, 0, 0, 0, 0, NaN, NaN",
+        "0, 0, 0, 1000, 1000, 500, 500, NaN, NaN",
+        "0, 0, 1, 1000, 1000, 500, 500, 500, 500",
+        "1, 2, 3, 1000, 1000, 500, 500, 833.333, 1166.666",
+        "1, 2, 1, 1000, 1000, 500, 500, 1500, 2500",
+        "1, 2, 2, 1000, 2000, 500, 600, 1000, 2600",
+        "-1, -2, 3, 1000, 1000, 500, 500, 166.666, -166.666",
+        "-1, -2, 1, 1000, 1000, 500, 500, -500, -1500",
+        "-1, -2, 2, 1000, 2000, 500, 600, 0, -1400",
+        "-1, -2, -1, 1000, 1000, 500, 500, 1500, 2500",
+    )
+    fun perspectiveProjection(x: Float, y: Float, z: Float, fx: Float, fy: Float, cx: Float, cy: Float, expectedX: Float, expectedY: Float){
+        val point = Vector3(x, y, z)
+        val projection = Optics.perspectiveProjection(point, fx, fy, cx, cy)
+        assertEquals(expectedX, projection.x, 0.001f)
+        assertEquals(expectedY, projection.y, 0.001f)
+    }
+    
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 0, 0, 0, 0, 0, NaN, NaN, NaN",
+        "0, 0, 0, 0, 0, 0, 0, NaN, NaN, NaN",
+        "500, 500, 1, 1000, 1000, 500, 500, 0, 0, 1",
+        "833.333, 1166.666, 3.74165, 1000, 1000, 500, 500, 1, 2, 3",
+        "1500, 2500, 2.44948, 1000, 1000, 500, 500, 1, 2, 1",
+        "1000, 2600, 3, 1000, 2000, 500, 600, 1, 2, 2",
+        "166.666, -166.666, 3.74165, 1000, 1000, 500, 500, -1, -2, 3",
+        "-500, -1500, 2.44948, 1000, 1000, 500, 500, -1, -2, 1",
+        "0, -1400, 3, 1000, 2000, 500, 600, -1, -2, 2",
+    )
+    fun inversePerspectiveProjection(screenX: Float, screenY: Float, distance: Float, fx: Float, fy: Float, cx: Float, cy: Float, expectedX: Float, expectedY: Float, expectedZ: Float){
+        val expected = Vector3(expectedX, expectedY, expectedZ)
+        val point = Vector2(screenX, screenY)
+        val projection = Optics.inversePerspectiveProjection(point, fx, fy, cx, cy, distance)
+        assertEquals(expected.x, projection.x, 0.001f)
+        assertEquals(expected.y, projection.y, 0.001f)
+        assertEquals(expected.z, projection.z, 0.001f)
+    }
+
+}
