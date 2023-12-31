@@ -173,4 +173,18 @@ object Optics {
         return Vector2(point.x + xCorrection, point.y + yCorrection)
     }
 
+    fun luxToCandela(lux: Float, distance: Distance): Float {
+        val meters = distance.meters().distance
+        return lux * meters * meters
+    }
+
+    fun luxAtDistance(candela: Float, distance: Distance): Float {
+        val meters = distance.meters().distance
+        return candela / (meters * meters)
+    }
+
+    fun lightBeamDistance(candela: Float): Distance {
+        return Distance.meters(sqrt(candela * 4))
+    }
+
 }

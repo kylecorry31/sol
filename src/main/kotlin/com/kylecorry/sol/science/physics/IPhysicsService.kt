@@ -30,12 +30,4 @@ interface IPhysicsService {
      * @return The poles pointing to and away from the metal (unable to determine which)
      */
     fun getMetalDirection(magneticField: Vector3, gravity: Vector3): Pair<Bearing, Bearing>
-
-    // Light
-    fun luxToCandela(lux: Float, distance: Distance): Float
-
-    fun luxAtDistance(candela: Float, distance: Distance): Float
-
-    fun lightBeamDistance(candela: Float): Distance
-
 }

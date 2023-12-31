@@ -41,19 +41,4 @@ class PhysicsService : IPhysicsService {
         val azimuth = Geology.getAzimuth(gravity, magneticField)
         return azimuth to azimuth.inverse()
     }
-
-    override fun luxToCandela(lux: Float, distance: Distance): Float {
-        val meters = distance.meters().distance
-        return lux * meters * meters
-    }
-
-    override fun luxAtDistance(candela: Float, distance: Distance): Float {
-        val meters = distance.meters().distance
-        return candela / (meters * meters)
-    }
-
-    override fun lightBeamDistance(candela: Float): Distance {
-        return Distance.meters(sqrt(candela * 4))
-    }
-
 }

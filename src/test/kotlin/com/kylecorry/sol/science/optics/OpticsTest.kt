@@ -2,11 +2,13 @@ package com.kylecorry.sol.science.optics
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.science.physics.PhysicsService
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 
 class OpticsTest {
 
@@ -131,6 +133,28 @@ class OpticsTest {
     )
     fun getFocalLength(fieldOfView: Float, viewSize: Float, expected: Float) {
         assertEquals(expected, Optics.getFocalLength(fieldOfView, viewSize), 0.001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "8148, 181",
+        "5600, 150"
+    )
+    fun beamDistance(candela: Float, distanceMeters: Float) {
+        val beamDistance = Optics.lightBeamDistance(candela)
+        assertEquals(distanceMeters, beamDistance.distance, 0.5f)
+        assertEquals(DistanceUnits.Meters, beamDistance.units)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "8148, 181, 0.25",
+        "5600, 150, 0.25"
+    )
+    fun luxAtDistance(candela: Float, meters: Float, lux: Float) {
+        val distance = Distance.meters(meters)
+        val actualLux = Optics.luxAtDistance(candela, distance)
+        assertEquals(lux, actualLux, 0.1f)
     }
 
 }
