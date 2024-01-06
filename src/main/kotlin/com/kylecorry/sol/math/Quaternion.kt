@@ -241,26 +241,33 @@ object QuaternionMath {
             return
         }
 
-        val multiplier = if (useShortestPath && cosHalfTheta < 0) -1f else 1f
+        if (useShortestPath && cosHalfTheta < 0){
+            val temp = FloatArray(4)
+            multiply(quat2, -1f, temp)
+            // Passing in false for useShortestPath to avoid infinite recursion
+            slerp(quat1, temp, t, out, false)
+            return
+        }
+
 
         val halfTheta = acos(cosHalfTheta)
         val sinHalfTheta = sqrt(1 - cosHalfTheta * cosHalfTheta)
 
         if (sinHalfTheta.absoluteValue < 0.001){
-            out[X] = quat1[X] * 0.5f + multiplier * quat2[X] * 0.5f
-            out[Y] = quat1[Y] * 0.5f + multiplier * quat2[Y] * 0.5f
-            out[Z] = quat1[Z] * 0.5f + multiplier * quat2[Z] * 0.5f
-            out[W] = quat1[W] * 0.5f + multiplier * quat2[W] * 0.5f
+            out[X] = quat1[X] * 0.5f + quat2[X] * 0.5f
+            out[Y] = quat1[Y] * 0.5f + quat2[Y] * 0.5f
+            out[Z] = quat1[Z] * 0.5f + quat2[Z] * 0.5f
+            out[W] = quat1[W] * 0.5f + quat2[W] * 0.5f
             return
         }
 
         val ratioA = sin((1 - t) * halfTheta) / sinHalfTheta
         val ratioB = sin(t * halfTheta) / sinHalfTheta
 
-        out[X] = quat1[X] * ratioA + multiplier * quat2[X] * ratioB
-        out[Y] = quat1[Y] * ratioA + multiplier * quat2[Y] * ratioB
-        out[Z] = quat1[Z] * ratioA + multiplier * quat2[Z] * ratioB
-        out[W] = quat1[W] * ratioA + multiplier * quat2[W] * ratioB
+        out[X] = quat1[X] * ratioA + quat2[X] * ratioB
+        out[Y] = quat1[Y] * ratioA + quat2[Y] * ratioB
+        out[Z] = quat1[Z] * ratioA + quat2[Z] * ratioB
+        out[W] = quat1[W] * ratioA + quat2[W] * ratioB
     }
 
     fun lerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true){
