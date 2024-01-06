@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -87,6 +88,18 @@ class QuaternionTest {
     @MethodSource("provideLerp")
     fun lerp(a: Quaternion, b: Quaternion, t: Float, expected: Quaternion) {
         approxEquals(expected, a.lerp(b, t), 0.001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1, 2, 3, 4, 5, 6, 7, 8, 70",
+        "-1, -2, -3, -4, -5, -6, -7, -8, 70",
+        "1, 2, 3, 4, -5, -6, -7, -8, -70",
+    )
+    fun dot(ax: Float, ay: Float, az: Float, aw: Float, bx: Float, by: Float, bz: Float, bw: Float, expected: Float) {
+        val a = Quaternion(ax, ay, az, aw)
+        val b = Quaternion(bx, by, bz, bw)
+        assertEquals(expected, a.dot(b), 0.001f)
     }
 
     companion object {
