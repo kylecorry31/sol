@@ -16,3 +16,6 @@ dependencies {
 
 ## References
 Astronomy algorithms are a combination of custom made algorithms and implementations derived from Jean Meeus (Astronomical Algorithms 2nd Edition), J. L. Lawrence (Celestial Calculations: A Gentle Introduction to Computational Astronomy), and NASA.
+
+- [osgb](https://github.com/kylecorry31/osgb/blob/master/LICENSE)
+- [Geo-Coordinate-Conversion-Java](https://github.com/kylecorry31/Geo-Coordinate-Conversion-Java/blob/master/GDAL_License.TXT)
