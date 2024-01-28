@@ -129,6 +129,22 @@ class TimeTest {
         assertEquals(expected, actual)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "2020-01-01T01:23:45, 1, 2020-01-01T01:24:00",
+        "2020-01-01T01:23:24, 1, 2020-01-01T01:23:00",
+        "2020-01-01T01:23:45, 5, 2020-01-01T01:25:00",
+        "2020-01-01T01:23:45, 15, 2020-01-01T01:30:00",
+        "2020-01-01T01:19:45, 15, 2020-01-01T01:15:00",
+        "2020-01-01T01:59:45, 15, 2020-01-01T02:00:00",
+        "2020-01-01T23:59:45, 15, 2020-01-02T00:00:00",
+        "2020-01-01T01:30:00, 15, 2020-01-01T01:30:00",
+    )
+    fun roundNearestMinute(time: LocalDateTime, minute: Int, expected: LocalDateTime) {
+        val actual = time.roundNearestMinute(minute)
+        assertEquals(expected, actual)
+    }
+
 
     private fun dt(year: Int, month: Month, day: Int, hour: Int, minute: Int = 0): LocalDateTime {
         return LocalDateTime.of(year, month, day, hour, minute)

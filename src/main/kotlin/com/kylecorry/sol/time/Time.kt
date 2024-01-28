@@ -40,22 +40,6 @@ object Time {
         return atTime(LocalTime.MAX)
     }
 
-    fun LocalDateTime.roundNearestMinute(minutes: Long): LocalDateTime {
-        val minute = this.minute
-        val newMinute = (minute / minutes) * minutes
-
-        val diff = newMinute - minute
-        return this.plusMinutes(diff)
-    }
-
-    fun ZonedDateTime.roundNearestMinute(minutes: Long): ZonedDateTime {
-        val minute = this.minute
-        val newMinute = (minute / minutes) * minutes
-
-        val diff = newMinute - minute
-        return this.plusMinutes(diff)
-    }
-
     fun LocalDateTime.plusHours(hours: Double): LocalDateTime {
         return this.plus(hours(hours))
     }
@@ -236,6 +220,23 @@ object Time {
     }
 
     fun ZonedDateTime.roundNearestMinute(minutes: Int = 1): ZonedDateTime {
+        val seconds = this.second
+        if (minutes == 1) {
+            return if (seconds >= 30) {
+                this.plusMinutes(1).truncatedTo(ChronoUnit.MINUTES)
+            } else {
+                this.truncatedTo(ChronoUnit.MINUTES)
+            }
+        }
+
+        val roundedMinutes = this.minute.roundNearest(minutes)
+
+        val delta = roundedMinutes - this.minute
+
+        return this.plusMinutes(delta.toLong()).truncatedTo(ChronoUnit.MINUTES)
+    }
+
+    fun LocalDateTime.roundNearestMinute(minutes: Int = 1): LocalDateTime {
         val seconds = this.second
         if (minutes == 1) {
             return if (seconds >= 30) {
