@@ -33,7 +33,7 @@ repositories {
 dependencies {
     implementation("com.github.kylecorry31:Geo-Coordinate-Conversion-Java:master")
     implementation("com.github.kylecorry31:osgb:v1.0.4")
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.1")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.0")
