@@ -583,6 +583,66 @@ class AstronomyTest {
         assertDuration(expected, length, Duration.ofMinutes(1))
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-12T12:00:00-04, 2020-09-12T06:34:00-04, 2020-09-12T19:09:00-04",
+        // Sun is set, and it is too early, use previous day
+        "40.7128, -74.0060, 2020-09-12T00:00:00-04, 2020-09-11T06:33:00-04, 2020-09-11T19:11:00-04",
+        // Sun is set, and it is not too early, use current day
+        "40.7128, -74.0060, 2020-09-12T02:00:00-04, 2020-09-12T06:34:00-04, 2020-09-12T19:09:00-04",
+        // Sun is set, and it is not too late, use current day
+        "40.7128, -74.0060, 2020-09-12T20:00:00-04, 2020-09-12T06:34:00-04, 2020-09-12T19:09:00-04",
+        // Sun is up and does not set
+        "76.7667, -18.6667, 2020-06-04T12:00:00Z, 2020-06-04T00:00:00Z, 2020-06-04T23:59:59Z",
+        // Sun never rises
+        "76.7667, -18.6667, 2020-11-01T12:00:00Z, ,",
+    )
+    fun getSunAboveHorizonTimes(
+        latitude: Double,
+        longitude: Double,
+        timeString: String,
+        expectedStartString: String?,
+        expectedEndString: String?
+    ) {
+        val location = Coordinate(latitude, longitude)
+        val time = ZonedDateTime.parse(timeString)
+        val expectedStart = expectedStartString?.let { ZonedDateTime.parse(it) }
+        val expectedEnd = expectedEndString?.let { ZonedDateTime.parse(it) }
+        val times = Astronomy.getSunAboveHorizonTimes(location, time)
+        assertDate(expectedStart, times?.start, Duration.ofMinutes(1))
+        assertDate(expectedEnd, times?.end, Duration.ofMinutes(1))
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "40.7128, -74.0060, 2020-09-12T12:00:00-04, 2020-09-12T00:46:00-04, 2020-09-12T16:21:00-04",
+        // Moon is set, and it is too early, use previous day
+        "40.7128, -74.0060, 2020-09-11T17:00:00-04, 2020-09-10T23:55:00-04, 2020-09-11T15:27:00-04",
+        // Moon is set, and it is not too early, use current day
+        "40.7128, -74.0060, 2020-09-12T00:00:00-04, 2020-09-12T00:46:00-04, 2020-09-12T16:21:00-04",
+        // Moon is set, and it is not too late, use current day
+        "40.7128, -74.0060, 2020-09-12T17:00:00-04, 2020-09-12T00:46:00-04, 2020-09-12T16:21:00-04",
+        // Moon is up and does not set
+        "76.7667, -18.6667, 2020-09-11T00:00:00Z, 2020-09-11T00:00:00Z, 2020-09-11T23:59:59Z",
+        // Moon never rises
+        "76.7667, -18.6667, 2020-09-24T12:00:00Z, ,",
+    )
+    fun getMoonAboveHorizonTimes(
+        latitude: Double,
+        longitude: Double,
+        timeString: String,
+        expectedStartString: String?,
+        expectedEndString: String?
+    ) {
+        val location = Coordinate(latitude, longitude)
+        val time = ZonedDateTime.parse(timeString)
+        val expectedStart = expectedStartString?.let { ZonedDateTime.parse(it) }
+        val expectedEnd = expectedEndString?.let { ZonedDateTime.parse(it) }
+        val times = Astronomy.getMoonAboveHorizonTimes(location, time)
+        assertDate(expectedStart, times?.start, Duration.ofMinutes(1))
+        assertDate(expectedEnd, times?.end, Duration.ofMinutes(1))
+    }
+
 
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {
         assertEquals(expected.phase, actual.phase)
