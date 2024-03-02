@@ -3,7 +3,6 @@ package com.kylecorry.sol.science.physics
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -25,7 +24,7 @@ class PhysicsServiceTest {
     @MethodSource("provideIsMetal")
     fun isMetal(field: Vector3, threshold: Float, expected: Boolean) {
         val service = PhysicsService()
-        Assert.assertEquals(expected, service.isMetal(field, threshold))
+        assertEquals(expected, service.isMetal(field, threshold))
     }
 
     companion object {

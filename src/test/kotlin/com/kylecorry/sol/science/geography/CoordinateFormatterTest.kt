@@ -10,8 +10,8 @@ import com.kylecorry.sol.science.geography.CoordinateFormatter.toUSNG
 import com.kylecorry.sol.science.geography.CoordinateFormatter.toUTM
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -21,40 +21,40 @@ class CoordinateFormatterTest {
 
     @Test
     fun toUTM() {
-        Assert.assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM())
-        Assert.assertEquals("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939).toUTM())
-        Assert.assertEquals("13R 0393008E 3051634N", Coordinate(27.5844, -106.0840).toUTM())
-        Assert.assertEquals("21L 0359923E 9098523N", Coordinate(-8.1534, -58.2715).toUTM())
-        Assert.assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
-        Assert.assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
-        Assert.assertEquals("34D 0528288E 2071725N", Coordinate(-71.4545, 21.7969).toUTM())
-        Assert.assertEquals("40X 0545559E 9051365N", Coordinate(81.5113, 59.7656).toUTM())
-        Assert.assertEquals("17M 0784692E 9999203N", Coordinate(-0.0072, -78.4424).toUTM())
-        Assert.assertEquals("09E 0353004E 3573063N", Coordinate(-57.9598, -131.4844).toUTM())
+        assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM())
+        assertEquals("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939).toUTM())
+        assertEquals("13R 0393008E 3051634N", Coordinate(27.5844, -106.0840).toUTM())
+        assertEquals("21L 0359923E 9098523N", Coordinate(-8.1534, -58.2715).toUTM())
+        assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
+        assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
+        assertEquals("34D 0528288E 2071725N", Coordinate(-71.4545, 21.7969).toUTM())
+        assertEquals("40X 0545559E 9051365N", Coordinate(81.5113, 59.7656).toUTM())
+        assertEquals("17M 0784692E 9999203N", Coordinate(-0.0072, -78.4424).toUTM())
+        assertEquals("09E 0353004E 3573063N", Coordinate(-57.9598, -131.4844).toUTM())
 
         // Different precisions
-        Assert.assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM(7))
-        Assert.assertEquals("19T 0282880E 4674750N", Coordinate(42.1948, -71.6295).toUTM(6))
-        Assert.assertEquals("19T 0282800E 4674700N", Coordinate(42.1948, -71.6295).toUTM(5))
-        Assert.assertEquals("19T 0282000E 4674000N", Coordinate(42.1948, -71.6295).toUTM(4))
-        Assert.assertEquals("19T 0280000E 4670000N", Coordinate(42.1948, -71.6295).toUTM(3))
-        Assert.assertEquals("19T 0200000E 4600000N", Coordinate(42.1948, -71.6295).toUTM(2))
-        Assert.assertEquals("19T 0000000E 4000000N", Coordinate(42.1948, -71.6295).toUTM(1))
+        assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM(7))
+        assertEquals("19T 0282880E 4674750N", Coordinate(42.1948, -71.6295).toUTM(6))
+        assertEquals("19T 0282800E 4674700N", Coordinate(42.1948, -71.6295).toUTM(5))
+        assertEquals("19T 0282000E 4674000N", Coordinate(42.1948, -71.6295).toUTM(4))
+        assertEquals("19T 0280000E 4670000N", Coordinate(42.1948, -71.6295).toUTM(3))
+        assertEquals("19T 0200000E 4600000N", Coordinate(42.1948, -71.6295).toUTM(2))
+        assertEquals("19T 0000000E 4000000N", Coordinate(42.1948, -71.6295).toUTM(1))
 
         // Polar zones
-        Assert.assertEquals("A 1998062E 1888990N", Coordinate(-89.0, -179.0).toUTM())
-        Assert.assertEquals("A 1998062E 2111009N", Coordinate(-89.0, -1.0).toUTM())
-        Assert.assertEquals("B 2019279E 2109339N", Coordinate(-89.0, 10.0).toUTM())
-        Assert.assertEquals("B 2000000E 2111026N", Coordinate(-89.0, 0.0).toUTM())
-        Assert.assertEquals("B 2000000E 2000000N", Coordinate(-90.0, 0.0).toUTM())
-        Assert.assertEquals("B 2000000E 2000000N", Coordinate(-90.0, -80.0).toUTM())
+        assertEquals("A 1998062E 1888990N", Coordinate(-89.0, -179.0).toUTM())
+        assertEquals("A 1998062E 2111009N", Coordinate(-89.0, -1.0).toUTM())
+        assertEquals("B 2019279E 2109339N", Coordinate(-89.0, 10.0).toUTM())
+        assertEquals("B 2000000E 2111026N", Coordinate(-89.0, 0.0).toUTM())
+        assertEquals("B 2000000E 2000000N", Coordinate(-90.0, 0.0).toUTM())
+        assertEquals("B 2000000E 2000000N", Coordinate(-90.0, -80.0).toUTM())
 
-        Assert.assertEquals("Y 1998062E 2111009N", Coordinate(89.0, -179.0).toUTM())
-        Assert.assertEquals("Y 1998062E 1888990N", Coordinate(89.0, -1.0).toUTM())
-        Assert.assertEquals("Z 2019279E 1890660N", Coordinate(89.0, 10.0).toUTM())
-        Assert.assertEquals("Z 2000000E 1888973N", Coordinate(89.0, 0.0).toUTM())
-        Assert.assertEquals("Z 2000000E 2000000N", Coordinate(90.0, 0.0).toUTM())
-        Assert.assertEquals("Z 2000000E 2000000N", Coordinate(90.0, -80.0).toUTM())
+        assertEquals("Y 1998062E 2111009N", Coordinate(89.0, -179.0).toUTM())
+        assertEquals("Y 1998062E 1888990N", Coordinate(89.0, -1.0).toUTM())
+        assertEquals("Z 2019279E 1890660N", Coordinate(89.0, 10.0).toUTM())
+        assertEquals("Z 2000000E 1888973N", Coordinate(89.0, 0.0).toUTM())
+        assertEquals("Z 2000000E 2000000N", Coordinate(90.0, 0.0).toUTM())
+        assertEquals("Z 2000000E 2000000N", Coordinate(90.0, -80.0).toUTM())
     }
 
     @Test
@@ -65,44 +65,44 @@ class CoordinateFormatterTest {
 
         val expected = Coordinate(39.984444, 10.115556)
         val actual = start.plus(distance, bearing)
-        Assert.assertEquals(expected.latitude, actual.latitude, 0.01)
-        Assert.assertEquals(expected.longitude, actual.longitude, 0.01)
+        assertEquals(expected.latitude, actual.latitude, 0.01)
+        assertEquals(expected.longitude, actual.longitude, 0.01)
     }
 
     @ParameterizedTest
     @MethodSource("provideDDM")
     fun toDDM(expected: String, coordinate: Coordinate, precision: Int) {
-        Assert.assertEquals(expected, coordinate.toDegreeDecimalMinutes(precision))
+        assertEquals(expected, coordinate.toDegreeDecimalMinutes(precision))
     }
 
     @ParameterizedTest
     @MethodSource("provideDMS")
     fun toDMS(expected: String, coordinate: Coordinate, precision: Int) {
-        Assert.assertEquals(expected, coordinate.toDegreeMinutesSeconds(precision))
+        assertEquals(expected, coordinate.toDegreeMinutesSeconds(precision))
     }
 
     @ParameterizedTest
     @MethodSource("provideDD")
     fun toDD(expected: String, coordinate: Coordinate, precision: Int) {
-        Assert.assertEquals(expected, coordinate.toDecimalDegrees(precision))
+        assertEquals(expected, coordinate.toDecimalDegrees(precision))
     }
 
     @ParameterizedTest
     @MethodSource("provideMGRS")
     fun toMGRS(expected: String, coordinate: Coordinate, precision: Int) {
-        Assert.assertEquals(expected, coordinate.toMGRS(precision))
+        assertEquals(expected, coordinate.toMGRS(precision))
     }
 
     @ParameterizedTest
     @MethodSource("provideUSNG")
     fun toUSNG(expected: String, coordinate: Coordinate, precision: Int) {
-        Assert.assertEquals(expected, coordinate.toUSNG(precision))
+        assertEquals(expected, coordinate.toUSNG(precision))
     }
 
     @ParameterizedTest
     @MethodSource("provideOSGB")
     fun toOSGB(expected: String, coordinate: Coordinate, precision: Int) {
-        Assert.assertEquals(expected, coordinate.toOSGB(precision))
+        assertEquals(expected, coordinate.toOSGB(precision))
     }
 
     @ParameterizedTest
@@ -117,12 +117,12 @@ class CoordinateFormatterTest {
         precision: Double
     ) {
         if (expected == null) {
-            Assert.assertNull(actual)
+            assertNull(actual)
             return
         }
-        Assert.assertNotNull(actual)
-        Assert.assertEquals(expected.latitude, actual!!.latitude, precision)
-        Assert.assertEquals(expected.longitude, actual.longitude, precision)
+        assertNotNull(actual)
+        assertEquals(expected.latitude, actual!!.latitude, precision)
+        assertEquals(expected.longitude, actual.longitude, precision)
     }
 
     companion object {

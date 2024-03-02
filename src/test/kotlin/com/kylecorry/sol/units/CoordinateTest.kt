@@ -2,7 +2,7 @@ package com.kylecorry.sol.units
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class CoordinateTest {
@@ -20,9 +20,9 @@ class CoordinateTest {
 
     @Test
     fun isNorthernHemisphere() {
-        Assert.assertTrue(Coordinate(1.0, 0.0).isNorthernHemisphere)
-        Assert.assertFalse(Coordinate(-1.0, 0.0).isNorthernHemisphere)
-        Assert.assertFalse(Coordinate(0.0, 0.0).isNorthernHemisphere)
+        assertTrue(Coordinate(1.0, 0.0).isNorthernHemisphere)
+        assertFalse(Coordinate(-1.0, 0.0).isNorthernHemisphere)
+        assertFalse(Coordinate(0.0, 0.0).isNorthernHemisphere)
     }
 
     @Test
@@ -33,8 +33,8 @@ class CoordinateTest {
 
         val expected = Coordinate(39.984444, 10.115556)
         val actual = start.plus(distance, bearing)
-        Assert.assertEquals(expected.latitude, actual.latitude, 0.01)
-        Assert.assertEquals(expected.longitude, actual.longitude, 0.01)
+        assertEquals(expected.latitude, actual.latitude, 0.01)
+        assertEquals(expected.longitude, actual.longitude, 0.01)
     }
 
 }

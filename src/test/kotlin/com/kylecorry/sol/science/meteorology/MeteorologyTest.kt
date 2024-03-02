@@ -5,8 +5,6 @@ import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.time.Time
-import com.kylecorry.sol.time.Time.plusHours
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -99,7 +97,7 @@ class MeteorologyTest {
             Coordinate(if (isNorth) 1.0 else -1.0, 0.0),
             ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault())
         )
-        Assert.assertEquals(expected, season)
+        assertEquals(expected, season)
     }
 
     @Test

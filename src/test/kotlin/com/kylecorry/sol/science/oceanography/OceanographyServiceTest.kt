@@ -6,7 +6,7 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.PressureUnits
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.provider.Arguments
 import java.io.File
@@ -33,7 +33,7 @@ internal class OceanographyServiceTest {
         for (case in cases) {
             val tide =
                 service.getTidalRange(ZonedDateTime.of(case.first, ZoneId.of("America/New_York")))
-            Assert.assertEquals(case.second, tide)
+            assertEquals(case.second, tide)
         }
 
     }
@@ -72,10 +72,10 @@ internal class OceanographyServiceTest {
             date.atEndOfDay()
         )
 
-        Assert.assertEquals(expected.size, tides.size)
+        assertEquals(expected.size, tides.size)
 
         for (i in tides.indices) {
-            Assert.assertEquals(expected[i].isHigh, tides[i].isHigh)
+            assertEquals(expected[i].isHigh, tides[i].isHigh)
             timeEquals(tides[i].time, expected[i].time, Duration.ofMinutes(30))
         }
     }
@@ -128,11 +128,11 @@ internal class OceanographyServiceTest {
 
     private fun timeEquals(actual: ZonedDateTime?, expected: ZonedDateTime?, precision: Duration) {
         val duration = Duration.between(actual, expected).abs()
-        Assert.assertEquals(
-            "Expected $actual to equal $expected",
+        assertEquals(
             0.0,
             duration.toMillis().toDouble(),
-            precision.toMillis().toDouble()
+            precision.toMillis().toDouble(),
+            "Expected $actual to equal $expected"
         )
     }
 
@@ -145,7 +145,7 @@ internal class OceanographyServiceTest {
 
         val expected = Distance(12f, DistanceUnits.Meters)
 
-        Assert.assertEquals(expected.distance, depth.distance, 0.1f)
+        assertEquals(expected.distance, depth.distance, 0.1f)
     }
 
     @Test
@@ -157,7 +157,7 @@ internal class OceanographyServiceTest {
 
         val expected = Distance(0f, DistanceUnits.Meters)
 
-        Assert.assertEquals(expected, depth)
+        assertEquals(expected, depth)
     }
 
 

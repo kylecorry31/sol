@@ -2,7 +2,6 @@ package com.kylecorry.sol.tests
 
 import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
-import org.junit.Assert
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -10,6 +9,7 @@ import assertk.assertions.isLessThan
 import assertk.assertions.prop
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import org.junit.jupiter.api.Assertions.*
 
 fun assertk.Assert<Coordinate>.isCloseTo(other: Coordinate, meters: Float) {
     prop("distance") {
@@ -34,11 +34,11 @@ fun assertDate(
     maxDifference: Duration
 ) {
     if (expected == null) {
-        Assert.assertNull(actual)
+        assertNull(actual)
     } else {
-        Assert.assertNotNull("Expected $expected, but was null", actual)
+        assertNotNull(actual, "Expected $expected, but was null")
         val diff = Duration.between(expected, actual)
-        Assert.assertTrue("Expected $expected, found $actual", diff.abs() <= maxDifference)
+        assertTrue(diff.abs() <= maxDifference, "Expected $expected, found $actual")
     }
 }
 
@@ -48,11 +48,11 @@ fun assertDate(
     maxDifference: Duration
 ) {
     if (expected == null) {
-        Assert.assertNull(actual)
+        assertNull(actual)
     } else {
-        Assert.assertNotNull("Expected $expected, but was null", actual)
+        assertNotNull(actual, "Expected $expected, but was null")
         val diff = Duration.between(expected, actual)
-        Assert.assertTrue("Expected $expected, found $actual", diff.abs() <= maxDifference)
+        assertTrue(diff.abs() <= maxDifference, "Expected $expected, found $actual")
     }
 }
 
@@ -62,10 +62,10 @@ fun assertDuration(
     maxDifference: Duration
 ){
     if (expected == null) {
-        Assert.assertNull(actual)
+        assertNull(actual)
     } else {
-        Assert.assertNotNull("Expected $expected, but was null", actual)
+        assertNotNull(actual, "Expected $expected, but was null")
         val diff = expected.minus(actual)
-        Assert.assertTrue("Expected $expected, found $actual", diff.abs() <= maxDifference)
+        assertTrue(diff.abs() <= maxDifference, "Expected $expected, found $actual")
     }
 }
