@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.geometry.Circle
 import com.kylecorry.sol.math.geometry.Geometry
@@ -52,7 +53,7 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         // It is a total eclipse
         val semiDuration = getSemiDuration(parameters)
 
-        val time = com.kylecorry.sol.time.InstantRange(
+        val time = Range(
             parameters.maximum - semiDuration,
             parameters.maximum + semiDuration,
         )
