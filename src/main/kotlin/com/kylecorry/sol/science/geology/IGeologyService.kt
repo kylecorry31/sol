@@ -144,8 +144,8 @@ interface IGeologyService {
     fun navigate(
         from: Coordinate,
         to: Coordinate,
-        declination: Float,
-        useTrueNorth: Boolean,
+        declination: Float = 0f,
+        useTrueNorth: Boolean = true,
         highAccuracy: Boolean = true
     ): NavigationVector
 
