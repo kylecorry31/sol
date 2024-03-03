@@ -1,9 +1,10 @@
-package com.kylecorry.sol.science.geology.projections
+package com.kylecorry.sol.science.geography.projections
 
 import assertk.assertThat
 import assertk.assertions.isCloseTo
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.science.geography.projections.MercatorProjection
 import com.kylecorry.sol.units.Coordinate
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource

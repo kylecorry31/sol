@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.geology.projections
+package com.kylecorry.sol.science.geography.projections
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.units.Coordinate

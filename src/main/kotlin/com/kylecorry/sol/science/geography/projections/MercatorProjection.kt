@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.geology.projections
+package com.kylecorry.sol.science.geography.projections
 
 import com.kylecorry.sol.math.SolMath.clamp
 import com.kylecorry.sol.math.SolMath.cosDegrees
