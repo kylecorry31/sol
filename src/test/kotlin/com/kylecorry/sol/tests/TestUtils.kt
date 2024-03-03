@@ -1,5 +1,6 @@
 package com.kylecorry.sol.tests
 
+import assertk.assertThat
 import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import java.time.Duration
@@ -7,6 +8,7 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import assertk.assertions.isLessThan
 import assertk.assertions.prop
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import org.junit.jupiter.api.Assertions.*
@@ -68,4 +70,13 @@ fun assertDuration(
         val diff = expected.minus(actual)
         assertTrue(diff.abs() <= maxDifference, "Expected $expected, found $actual")
     }
+}
+
+fun assertVector(
+    expected: Vector2,
+    actual: Vector2,
+    tolerance: Float
+){
+    assertThat(actual.x).isCloseTo(expected.x, tolerance)
+    assertThat(actual.y).isCloseTo(expected.y, tolerance)
 }
