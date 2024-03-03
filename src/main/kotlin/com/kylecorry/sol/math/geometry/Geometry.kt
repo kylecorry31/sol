@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
 
@@ -160,6 +161,87 @@ object Geometry {
 
         // Sectors - triangle
         return a1 + a2 - a3
+    }
+
+    // Snapping
+
+    /**
+     * Snap a 2D point onto the nearest part of a line
+     * @param point the point
+     * @param line the line
+     * @return the point snapped onto the line
+     */
+    fun snapToLine(point: Vector2, line: Line): Vector2 {
+        return snapToLine(point.x, point.y, line.start.x, line.start.y, line.end.x, line.end.y)
+    }
+
+    /**
+     * Snap a 2D point onto the nearest part of a line
+     * @param x the x coordinate of the point
+     * @param y the y coordinate of the point
+     * @param x1 the x coordinate of the start of the line
+     * @param y1 the y coordinate of the start of the line
+     * @param x2 the x coordinate of the end of the line
+     * @param y2 the y coordinate of the end of the line
+     * @return the point snapped onto the line
+     */
+    fun snapToLine(x: Float, y: Float, x1: Float, y1: Float, x2: Float, y2: Float): Vector2 {
+        val ab = square(x2 - x1) + square(y2 - y1)
+        val ap = square(x - x1) + square(y - y1)
+        val bp = square(x - x2) + square(y - y2)
+
+        val t = ((ap - bp + ab) / (2 * ab)).coerceIn(0f, 1f)
+        val projectedX = x1 + t * (x2 - x1)
+        val projectedY = y1 + t * (y2 - y1)
+        return Vector2(projectedX, projectedY)
+    }
+
+    /**
+     * Snap a 2D point onto the nearest part of a 3D line
+     * @param point the point
+     * @param x1 the x coordinate of the start of the line
+     * @param y1 the y coordinate of the start of the line
+     * @param z1 the z coordinate of the start of the line
+     * @param x2 the x coordinate of the end of the line
+     * @param y2 the y coordinate of the end of the line
+     * @param z2 the z coordinate of the end of the line
+     * @return the 3D point snapped onto the line
+     */
+    fun snapTo3DLine(point: Vector2, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float): Vector3 {
+        return snapTo3DLine(point.x, point.y, x1, y1, z1, x2, y2, z2)
+    }
+
+    /**
+     * Snap a 2D point onto the nearest part of a 3D line
+     * @param x the x coordinate of the point
+     * @param y the y coordinate of the point
+     * @param x1 the x coordinate of the start of the line
+     * @param y1 the y coordinate of the start of the line
+     * @param z1 the z coordinate of the start of the line
+     * @param x2 the x coordinate of the end of the line
+     * @param y2 the y coordinate of the end of the line
+     * @param z2 the z coordinate of the end of the line
+     * @return the 3D point snapped onto the line
+     */
+    fun snapTo3DLine(
+        x: Float,
+        y: Float,
+        x1: Float,
+        y1: Float,
+        z1: Float,
+        x2: Float,
+        y2: Float,
+        z2: Float
+    ): Vector3 {
+        val ab = square(x2 - x1) + square(y2 - y1)
+        val ap = square(x - x1) + square(y - y1)
+        val bp = square(x - x2) + square(y - y2)
+
+        val t = ((ap - bp + ab) / (2 * ab)).coerceIn(0f, 1f)
+        val projectedX = x1 + t * (x2 - x1)
+        val projectedY = y1 + t * (y2 - y1)
+        val projectedZ = z1 + t * (z2 - z1)
+        return Vector3(projectedX, projectedY, projectedZ)
     }
 
 }
