@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import com.kylecorry.sol.tests.isCloseTo
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import java.util.stream.Stream
 
 internal class CylindricalEquidistantProjectionTest {
@@ -30,6 +31,25 @@ internal class CylindricalEquidistantProjectionTest {
         assertThat(pixels.x).isCloseTo(expectedX, 0.5f)
         assertThat(pixels.y).isCloseTo(expectedY, 0.5f)
     }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 1",
+        "90, 0",
+        "45, 0.7071068",
+        "-45, 0.7071068",
+        "30, 0.8660254",
+        "-30, 0.8660254",
+        "60, 0.5",
+        "-60, 0.5",
+        "80, 0.1736482",
+        "-80, 0.1736482",
+    )
+    fun getScaleForLatitude(latitude: Double, expected: Float) {
+        val scale = CylindricalEquidistantProjection.getScaleForLatitude(latitude)
+        assertThat(scale).isCloseTo(expected, 0.0001f)
+    }
+
 
     companion object {
         @JvmStatic
