@@ -66,7 +66,7 @@ internal class GeometryTest {
         // Below line
         "1, -1, 0.6, 0.2"
     )
-    fun snapToLine(x: Float, y: Float, expectedX: Float, expectedY: Float) {
+    fun snapToLine2DTo2D(x: Float, y: Float, expectedX: Float, expectedY: Float) {
         val x1 = 0f
         val y1 = 0f
         val x2 = 3f
@@ -98,7 +98,7 @@ internal class GeometryTest {
         // Below line
         "1, -1, 0.6, 0.2, 0.4"
     )
-    fun snapTo3DLine(x: Float, y: Float, expectedX: Float, expectedY: Float, expectedZ: Float) {
+    fun snapToLine2DTo3D(x: Float, y: Float, expectedX: Float, expectedY: Float, expectedZ: Float) {
         val x1 = 0f
         val y1 = 0f
         val z1 = 0f
@@ -107,13 +107,47 @@ internal class GeometryTest {
         val z2 = 2f
 
         // Raw
-        assertEquals(Vector3(expectedX, expectedY, expectedZ), Geometry.snapTo3DLine(Vector2(x, y), x1, y1, z1, x2, y2, z2), 0.00001f)
+        assertEquals(Vector3(expectedX, expectedY, expectedZ), Geometry.snapToLine(Vector2(x, y), x1, y1, z1, x2, y2, z2), 0.00001f)
 
         // Objects
         assertEquals(
             Vector3(expectedX, expectedY, expectedZ),
-            Geometry.snapTo3DLine(Vector2(x, y), x1, y1, z1, x2, y2, z2),
+            Geometry.snapToLine(Vector2(x, y), x1, y1, z1, x2, y2, z2),
             0.00001f
+        )
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 0, 0, 0, 0",
+        "3, 1, 3, 3, 1, 2",
+        // Before line
+        "-1, -1, -1, 0, 0, 0",
+        // After line
+        "4, 2, 3, 3, 1, 2",
+        // On line
+        "1, 0.333333, 0.666667, 1, 0.333333, 0.666667",
+        // Above line
+        "1, 1, 1, 1.2857, 0.4286, 0.8571",
+        // Below line
+        "1, -1, 0.8, 0.7714, 0.2571, 0.5143"
+    )
+    fun snapToLine3DTo3D(x: Float, y: Float, z: Float, expectedX: Float, expectedY: Float, expectedZ: Float) {
+        val x1 = 0f
+        val y1 = 0f
+        val z1 = 0f
+        val x2 = 3f
+        val y2 = 1f
+        val z2 = 2f
+
+        // Raw
+        assertEquals(Vector3(expectedX, expectedY, expectedZ), Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2), 0.0001f)
+
+        // Objects
+        assertEquals(
+            Vector3(expectedX, expectedY, expectedZ),
+            Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2),
+            0.0001f
         )
     }
 
