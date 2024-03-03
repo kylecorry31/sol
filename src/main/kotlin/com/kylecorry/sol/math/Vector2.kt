@@ -41,6 +41,14 @@ data class Vector2(val x: Float, val y: Float) {
         return (other - this).magnitude()
     }
 
+    fun squaredMagnitude(): Float {
+        return x * x + y * y
+    }
+
+    fun squaredDistanceTo(other: Vector2): Float {
+        return (other - this).squaredMagnitude()
+    }
+
     fun angleBetween(other: Vector2): Float {
         return (other - this).angle()
     }
