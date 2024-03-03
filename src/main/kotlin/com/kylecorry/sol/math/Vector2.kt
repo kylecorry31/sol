@@ -34,6 +34,7 @@ data class Vector2(val x: Float, val y: Float) {
 
     fun normalize(): Vector2 {
         val length = magnitude()
+        if (length == 0f) return this
         return Vector2(x / length, y / length)
     }
 
