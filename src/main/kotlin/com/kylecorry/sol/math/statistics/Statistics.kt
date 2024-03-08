@@ -75,7 +75,7 @@ object Statistics {
 
         val idx = sorted.lastIndex * quantile
 
-        if (!interpolate){
+        if (!interpolate) {
             // Round toward zero to match the behavior of numpy
             return sorted[idx.round(RoundingMethod.TowardZero)]
         }
@@ -137,11 +137,9 @@ object Statistics {
         for (i in 1..distributions.lastIndex) {
             val m2 = distributions[i].mean
             val var2 = distributions[i].variance
-            val joint = mean * var2 + m2 * variance
-            val sumVar = variance + var2
-            val multVar = variance * var2
-            variance = multVar / sumVar
-            mean = joint / sumVar
+            val k = variance / (variance + var2)
+            mean += k * (m2 - mean)
+            variance *= (1 - k)
         }
 
         return GaussianDistribution(mean, sqrt(variance))
