@@ -21,18 +21,19 @@ import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculato
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
-import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
 import com.kylecorry.sol.time.Time.getClosestPastTime
 import com.kylecorry.sol.time.Time.getClosestTime
-import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import java.time.*
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 object Astronomy : IAstronomyService {
@@ -374,6 +375,26 @@ object Astronomy : IAstronomyService {
             EclipseType.Solar -> SolarEclipseCalculator(maxDuration = maxSearch)
         }
         return calculator.getNextEclipse(time.toInstant(), location)
+    }
+
+    override fun getEclipseMagnitude(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
+        val calculator = when (type) {
+            EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
+            EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
+            EclipseType.Solar -> SolarEclipseCalculator()
+        }
+
+        return calculator.getMagnitude(time.toInstant(), location)
+    }
+
+    override fun getEclipseObscuration(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
+        val calculator = when (type) {
+            EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
+            EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
+            EclipseType.Solar -> SolarEclipseCalculator()
+        }
+
+        return calculator.getObscuration(time.toInstant(), location)
     }
 
     override fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {

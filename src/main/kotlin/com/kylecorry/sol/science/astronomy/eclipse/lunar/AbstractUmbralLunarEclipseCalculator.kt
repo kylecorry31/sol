@@ -86,4 +86,12 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         )
     }
 
+    override fun getMagnitude(time: Instant, location: Coordinate): Float? {
+        return null
+    }
+
+    override fun getObscuration(time: Instant, location: Coordinate): Float? {
+        return null
+    }
+
 }

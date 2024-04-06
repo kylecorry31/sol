@@ -11,4 +11,16 @@ interface IEclipseService {
         type: EclipseType,
         maxSearch: Duration? = null
     ): Eclipse?
+
+    fun getEclipseMagnitude(
+        time: ZonedDateTime,
+        location: Coordinate,
+        type: EclipseType
+    ): Float?
+
+    fun getEclipseObscuration(
+        time: ZonedDateTime,
+        location: Coordinate,
+        type: EclipseType
+    ): Float?
 }

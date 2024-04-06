@@ -5,4 +5,8 @@ import java.time.Instant
 
 internal interface EclipseCalculator {
     fun getNextEclipse(after: Instant, location: Coordinate): Eclipse?
+
+    fun getMagnitude(time: Instant, location: Coordinate): Float?
+
+    fun getObscuration(time: Instant, location: Coordinate): Float?
 }

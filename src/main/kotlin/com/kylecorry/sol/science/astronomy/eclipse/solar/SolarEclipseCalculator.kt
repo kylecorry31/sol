@@ -90,6 +90,14 @@ internal class SolarEclipseCalculator(
         return Eclipse(start, end, maxMagnitude, maxObscuration, peak)
     }
 
+    override fun getMagnitude(time: Instant, location: Coordinate): Float {
+        return getVisibleMagnitude(time.toUniversalTime(), location).first
+    }
+
+    override fun getObscuration(time: Instant, location: Coordinate): Float {
+        return getVisibleMagnitude(time.toUniversalTime(), location).second
+    }
+
     /**
      * Get the approximate time of the next eclipse.
      * This will search for eclipses until the maximum duration is reached, at which point it will return null.
@@ -123,7 +131,7 @@ internal class SolarEclipseCalculator(
             val maximum = nextEclipse.maximum.plus(searchAmount).coerceIn(after, maxSearch)
             val start = nextEclipse.maximum.coerceIn(after, maxSearch)
 
-            if (minimum >= maxSearch){
+            if (minimum >= maxSearch) {
                 return null
             }
 
