@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.science.meteorology.clouds.*
+import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -101,6 +102,27 @@ object Meteorology : IWeatherService {
             time,
             pressureChangeThreshold,
             pressureStormChangeThreshold
+        )
+    }
+
+    override fun forecast(
+        observations: List<WeatherObservation<*>>,
+        dailyTemperatureRange: Range<Temperature>?,
+        pressureChangeThreshold: Float,
+        pressureStormChangeThreshold: Float,
+        time: Instant
+    ): List<WeatherForecast> {
+        val pressures = observations.filterIsInstance<WeatherObservation.PressureObservation>()
+            .map { it.asReading() }
+        val clouds = observations.filterIsInstance<WeatherObservation.CloudGenusObservation>()
+            .map { it.asReading() }
+        return forecast(
+            pressures,
+            clouds,
+            dailyTemperatureRange,
+            pressureChangeThreshold,
+            pressureStormChangeThreshold,
+            time
         )
     }
 

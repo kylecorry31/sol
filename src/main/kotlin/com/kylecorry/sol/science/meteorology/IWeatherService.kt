@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
+import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
@@ -61,6 +62,23 @@ interface IWeatherService : ICloudService, ISeasonService {
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
+        dailyTemperatureRange: Range<Temperature>?,
+        pressureChangeThreshold: Float = 0.5f,
+        pressureStormChangeThreshold: Float = 2f,
+        time: Instant = Instant.now()
+    ): List<WeatherForecast>
+
+    /**
+     * Forecast the weather for the next few hours
+     * @param observations the weather observations
+     * @param dailyTemperatureRange the daily temperature range for the given time (the next 24 hours, but can be less than that)
+     * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
+     * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
+     * @param time the time to calculate the forecast after
+     * @return the predicted weather (now and later - times are not accurate yet)
+     */
+    fun forecast(
+        observations: List<WeatherObservation<*>>,
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
