@@ -10,7 +10,7 @@ import kotlin.math.*
 
 data class Coordinate(val latitude: Double, val longitude: Double) {
 
-    val isNorthernHemisphere = latitude > 0
+    val isNorthernHemisphere = latitude >= 0
 
     override fun toString(): String {
         return "$latitude, $longitude"

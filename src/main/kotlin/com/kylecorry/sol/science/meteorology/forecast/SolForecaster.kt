@@ -1,66 +1,28 @@
-package com.kylecorry.sol.science.meteorology
+package com.kylecorry.sol.science.meteorology.forecast
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.science.meteorology.*
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-import com.kylecorry.sol.science.meteorology.clouds.CloudGenusMatcher
-import com.kylecorry.sol.science.meteorology.clouds.CloudMatcher
 import com.kylecorry.sol.science.meteorology.clouds.CloudPrecipitationCalculator
+import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.middle
-import com.kylecorry.sol.units.Pressure
-import com.kylecorry.sol.units.Reading
-import com.kylecorry.sol.units.Temperature
-import com.kylecorry.sol.units.TemperatureUnits
+import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.absoluteValue
 
-internal object WeatherForecastService {
+internal object SolForecaster : Forecaster {
 
     private val thunderstormMinTemperature = Temperature(55f, TemperatureUnits.F).celsius()
     private val cloudPrecipitationCalculator = CloudPrecipitationCalculator()
-
-    private fun getTendency(
-        pressures: List<Reading<Pressure>>,
-        threshold: Float
-    ): PressureTendency {
-        if (pressures.size < 2) {
-            return PressureTendency(PressureCharacteristic.Steady, 0f)
-        }
-
-        val pressure = pressures.last()
-
-        val targetTime = pressure.time.minus(Duration.ofHours(3))
-        val lastPressure = pressures.minBy {
-            if (it == pressure) {
-                Long.MAX_VALUE
-            } else {
-                Duration.between(
-                    it.time,
-                    targetTime
-                ).abs().seconds
-            }
-        }
-        return Meteorology.getTendency(
-            lastPressure.value,
-            pressure.value,
-            Duration.between(lastPressure.time, pressure.time),
-            threshold
-        )
-    }
 
     private fun getPressureSystem(pressures: List<Reading<Pressure>>): PressureSystem? {
         if (pressures.isEmpty()) {
             return null
         }
         val pressure = pressures.last()
-        return if (Meteorology.isHighPressure(pressure.value)) {
-            PressureSystem.High
-        } else if (Meteorology.isLowPressure(pressure.value)) {
-            PressureSystem.Low
-        } else {
-            null
-        }
+        return ForecastHelper.getPressureSystem(pressure.value)
     }
 
     private fun doCloudsIndicateFront(clouds: List<Reading<CloudGenus?>>): Boolean {
@@ -109,7 +71,33 @@ internal object WeatherForecastService {
         return null
     }
 
-    fun forecast(
+    override fun forecast(
+        observations: List<WeatherObservation<*>>,
+        dailyTemperatureRange: Range<Temperature>?,
+        time: Instant,
+        pressureChangeThreshold: Float,
+        pressureStormChangeThreshold: Float,
+        location: Coordinate
+    ): List<WeatherForecast> {
+        val pressures = observations
+            .filterIsInstance<WeatherObservation.Pressure>()
+            .map { it.asReading() }
+
+        val clouds = observations
+            .filterIsInstance<WeatherObservation.CloudGenus>()
+            .map { it.asReading() }
+
+        return forecast(
+            pressures,
+            clouds,
+            dailyTemperatureRange,
+            time,
+            pressureChangeThreshold,
+            pressureStormChangeThreshold
+        )
+    }
+
+    private fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
         dailyTemperatureRange: Range<Temperature>? = null,
@@ -204,7 +192,7 @@ internal object WeatherForecastService {
         if (filteredClouds.none { it.time >= cloudsUpToDateTime }) {
             filteredClouds = emptyList()
         }
-        val tendency = getTendency(filteredPressures, pressureChangeThreshold)
+        val tendency = ForecastHelper.getTendency(filteredPressures, pressureChangeThreshold)
         val system = getPressureSystem(filteredPressures)
         val cloudFront = doCloudsIndicateFront(filteredClouds)
         val cloudWarmFront = doCloudsIndicateWarmFront(filteredClouds)
@@ -272,17 +260,21 @@ internal object WeatherForecastService {
                 null
             }
 
-        if (conditions.contains(WeatherCondition.Precipitation)) {
-            getPrecipitationType(dailyTemperatureRange)?.let { conditions.add(it) }
-        }
-
-        if (afterConditions.contains(WeatherCondition.Precipitation)) {
-            getPrecipitationType(dailyTemperatureRange)?.let { afterConditions.add(it) }
-        }
 
         // TODO: Now, soon, and later buckets (or predict next X hours)
-        val now = WeatherForecast(null, conditions.distinct(), front, system, tendency)
-        val after = WeatherForecast(null, afterConditions.distinct(), null, afterSystem)
+        val now = WeatherForecast(
+            null,
+            ForecastHelper.addSecondaryConditions(conditions, dailyTemperatureRange),
+            front,
+            system,
+            tendency
+        )
+        val after = WeatherForecast(
+            null,
+            ForecastHelper.addSecondaryConditions(afterConditions, dailyTemperatureRange),
+            null,
+            afterSystem
+        )
 
         val arrivalTime = getArrivalTime(time, now, filteredClouds)
 
@@ -317,20 +309,5 @@ internal object WeatherForecastService {
         return cloudIndicatedArrivalRange?.middle()
     }
 
-    private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {
-        temperatures ?: return null
-
-        if (temperatures.start.celsius().temperature > 0) {
-            return WeatherCondition.Rain
-        }
-
-        if (temperatures.end.celsius().temperature <= 0) {
-            return WeatherCondition.Snow
-        }
-
-        return null
-    }
-
     private val noChangeMaxHistory = Duration.ofHours(8)
-
 }

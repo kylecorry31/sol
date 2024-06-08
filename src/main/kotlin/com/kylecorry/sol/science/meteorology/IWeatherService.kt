@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
+import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.units.*
 import java.time.Duration
@@ -57,6 +58,8 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
      * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
      * @param time the time to calculate the forecast after
+     * @param location the location to calculate the forecast for (may be used to determine climate zone / hemisphere - does not need to be very accurate)
+     * @param source the source to use to derive the forecast
      * @return the predicted weather (now and later - times are not accurate yet)
      */
     fun forecast(
@@ -65,7 +68,9 @@ interface IWeatherService : ICloudService, ISeasonService {
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
-        time: Instant = Instant.now()
+        time: Instant = Instant.now(),
+        location: Coordinate = Coordinate.zero,
+        source: ForecastSource = ForecastSource.Sol
     ): List<WeatherForecast>
 
     /**
@@ -75,6 +80,8 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
      * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
      * @param time the time to calculate the forecast after
+     * @param location the location to calculate the forecast for (may be used to determine climate zone / hemisphere - does not need to be very accurate)
+     * @param source the source to use to derive the forecast
      * @return the predicted weather (now and later - times are not accurate yet)
      */
     fun forecast(
@@ -82,7 +89,9 @@ interface IWeatherService : ICloudService, ISeasonService {
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
-        time: Instant = Instant.now()
+        time: Instant = Instant.now(),
+        location: Coordinate = Coordinate.zero,
+        source: ForecastSource = ForecastSource.Sol
     ): List<WeatherForecast>
 
     /**

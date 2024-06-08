@@ -217,6 +217,7 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                         WeatherCondition.Rain
                     ),
                     weatherLater(
@@ -236,6 +237,7 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                         WeatherCondition.Snow
                     ),
                     weatherLater(
@@ -254,7 +256,8 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
@@ -272,7 +275,8 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
@@ -288,7 +292,8 @@ class MeteorologyTest {
                         WeatherFront.Warm,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
-                        WeatherCondition.Precipitation
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         null
@@ -411,6 +416,7 @@ class MeteorologyTest {
                         WeatherCondition.Thunderstorm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                         WeatherCondition.Rain
                     ),
                     weatherLater(
@@ -432,6 +438,7 @@ class MeteorologyTest {
                         WeatherCondition.Thunderstorm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                         WeatherCondition.Rain
                     ),
                     weatherLater(
@@ -453,6 +460,7 @@ class MeteorologyTest {
                         WeatherCondition.Thunderstorm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
+                        WeatherCondition.Overcast,
                         WeatherCondition.Rain
                     ),
                     weatherLater(
@@ -472,7 +480,8 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.Steady, 0f),
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
                     ),
                     weatherLater(
                         PressureSystem.High,
@@ -489,7 +498,8 @@ class MeteorologyTest {
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Precipitation
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast
                     ),
                     weatherLater(
                         null
@@ -595,7 +605,8 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.Falling, -1f),
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
                     ),
                     weatherLater(
                         PressureSystem.High,
@@ -633,7 +644,8 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
                     ),
                     weatherLater(
                         PressureSystem.High,

@@ -1,16 +1,21 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.units.*
-import com.kylecorry.sol.science.shared.Season
-import com.kylecorry.sol.science.meteorology.clouds.*
+import com.kylecorry.sol.science.meteorology.clouds.CloudCover
+import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
+import com.kylecorry.sol.science.meteorology.clouds.CloudLevel
+import com.kylecorry.sol.science.meteorology.clouds.CloudService
+import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
+import com.kylecorry.sol.science.meteorology.forecast.SolForecaster
+import com.kylecorry.sol.science.meteorology.forecast.ZambrettiForecaster
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
+import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -93,15 +98,20 @@ object Meteorology : IWeatherService {
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
-        time: Instant
+        time: Instant,
+        location: Coordinate,
+        source: ForecastSource
     ): List<WeatherForecast> {
-        return WeatherForecastService.forecast(
-            pressures,
-            clouds,
+        val pressureObservations = pressures.map { WeatherObservation.Pressure(it.time, it.value) }
+        val cloudObservations = clouds.map { WeatherObservation.CloudGenus(it.time, it.value) }
+        return forecast(
+            pressureObservations + cloudObservations,
             dailyTemperatureRange,
-            time,
             pressureChangeThreshold,
-            pressureStormChangeThreshold
+            pressureStormChangeThreshold,
+            time,
+            location,
+            source
         )
     }
 
@@ -110,19 +120,23 @@ object Meteorology : IWeatherService {
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
-        time: Instant
+        time: Instant,
+        location: Coordinate,
+        source: ForecastSource
     ): List<WeatherForecast> {
-        val pressures = observations.filterIsInstance<WeatherObservation.PressureObservation>()
-            .map { it.asReading() }
-        val clouds = observations.filterIsInstance<WeatherObservation.CloudGenusObservation>()
-            .map { it.asReading() }
-        return forecast(
-            pressures,
-            clouds,
+
+        val forecaster = when (source) {
+            ForecastSource.Zambretti -> ZambrettiForecaster
+            ForecastSource.Sol -> SolForecaster
+        }
+
+        return forecaster.forecast(
+            observations.sortedBy { it.time },
             dailyTemperatureRange,
+            time,
             pressureChangeThreshold,
             pressureStormChangeThreshold,
-            time
+            location
         )
     }
 
