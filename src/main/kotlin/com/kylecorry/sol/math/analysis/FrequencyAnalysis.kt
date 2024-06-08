@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.ComplexNumber
+import kotlin.math.PI
+import kotlin.math.cos
 
 object FrequencyAnalysis {
 
@@ -24,6 +26,19 @@ object FrequencyAnalysis {
 
     fun getMagnitudeOfFrequency(data: List<Float>, frequency: Float, sampleRate: Float): Float {
         return getMagnitudeOfFrequencyFFT(fft(data), frequency, sampleRate)
+    }
+
+    fun hanningWindow(length: Int): FloatArray {
+        val window = FloatArray(length)
+        for (i in 0..<length) {
+            window[i] = 0.5f * (1 - cos(2 * PI.toFloat() * i / (length - 1).toFloat()))
+        }
+        return window
+    }
+
+    fun hanningWindow(data: List<Float>): List<Float> {
+        val window = hanningWindow(data.size)
+        return data.mapIndexed { index, value -> value * window[index] }
     }
 
     // OPERATIONS ON FFT
