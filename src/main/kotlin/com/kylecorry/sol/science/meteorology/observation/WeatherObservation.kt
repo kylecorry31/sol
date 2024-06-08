@@ -13,6 +13,10 @@ sealed class WeatherObservation<T>(
 ) {
     class PressureObservation(time: Instant, value: Pressure) : WeatherObservation<Pressure>(time, value)
     class WindSpeedObservation(time: Instant, value: Speed) : WeatherObservation<Speed>(time, value)
+
+    /**
+     * A wind direction observation - the direction the wind is coming from.
+     */
     class WindDirectionObservation(time: Instant, value: Bearing) : WeatherObservation<Bearing>(time, value)
     class CloudGenusObservation(time: Instant, value: CloudGenus?) : WeatherObservation<CloudGenus?>(time, value)
 
