@@ -41,19 +41,6 @@ object FrequencyAnalysis {
         return data.mapIndexed { index, value -> value * window[index] }
     }
 
-    fun spectogram(data: List<Float>, windowSize: Int, overlap: Int): List<List<Float>> {
-        val window = hanningWindow(windowSize)
-        val step = windowSize - overlap
-        val spectogram = mutableListOf<List<Float>>()
-        var i = 0
-        while (i < data.size - windowSize) {
-            val windowed = data.subList(i, i + windowSize).mapIndexed { index, value -> value * window[index] }
-            spectogram.add(windowed)
-            i += step
-        }
-        return spectogram
-    }
-
     // OPERATIONS ON FFT
 
     fun getMostResonantFrequencyFFT(fft: List<ComplexNumber>, sampleRate: Float): Float? {
