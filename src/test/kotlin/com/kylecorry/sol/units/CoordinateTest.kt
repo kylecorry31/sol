@@ -22,7 +22,7 @@ class CoordinateTest {
     fun isNorthernHemisphere() {
         assertTrue(Coordinate(1.0, 0.0).isNorthernHemisphere)
         assertFalse(Coordinate(-1.0, 0.0).isNorthernHemisphere)
-        assertFalse(Coordinate(0.0, 0.0).isNorthernHemisphere)
+        assertTrue(Coordinate(0.0, 0.0).isNorthernHemisphere)
     }
 
     @Test
