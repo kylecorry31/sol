@@ -6,11 +6,15 @@ import kotlin.math.PI
 internal object FastFourierTransform {
 
     fun fft(data: List<Float>): List<ComplexNumber> {
-        val size = data.size
         val complexData = data.map { ComplexNumber(it, 0f) }
+        return fftComplex(complexData)
+    }
+
+    private fun fftComplex(data: List<ComplexNumber>): List<ComplexNumber> {
+        val size = data.size
 
         if (size <= 1) {
-            return complexData
+            return data
         }
 
         if (size and (size - 1) != 0) {
@@ -18,8 +22,8 @@ internal object FastFourierTransform {
         }
 
         // Split input into even and odd indexed elements
-        val evenSequence = fft(data.filterIndexed { index, _ -> index % 2 == 0 })
-        val oddSequence = fft(data.filterIndexed { index, _ -> index % 2 != 0 })
+        val evenSequence = fftComplex(data.filterIndexed { index, _ -> index % 2 == 0 })
+        val oddSequence = fftComplex(data.filterIndexed { index, _ -> index % 2 != 0 })
 
         // Compute the twiddle factors
         val twiddleFactors =
@@ -34,6 +38,14 @@ internal object FastFourierTransform {
         }
 
         return combinedSequence
+    }
+
+    fun ifft(fft: List<ComplexNumber>): List<Float> {
+        val size = fft.size
+        val conjugatedInput = fft.map { it.conjugate() }
+        val fftOfConjugated = fftComplex(conjugatedInput)
+        val conjugatedResult = fftOfConjugated.map { it.conjugate() }
+        return conjugatedResult.map { it.real / size }
     }
 
 }

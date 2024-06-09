@@ -12,6 +12,10 @@ object FrequencyAnalysis {
         return FastFourierTransform.fft(data)
     }
 
+    fun ifft(fft: List<ComplexNumber>): List<Float> {
+        return FastFourierTransform.ifft(fft)
+    }
+
     fun getMostResonantFrequency(data: List<Float>, sampleRate: Float): Float? {
         return getMostResonantFrequencies(data, sampleRate, 1).firstOrNull()
     }
@@ -50,6 +54,7 @@ object FrequencyAnalysis {
     fun getMostResonantFrequenciesFFT(fft: List<ComplexNumber>, sampleRate: Float, count: Int): List<Float> {
         return fft
             .withIndex()
+            .take(fft.size / 2)
             .sortedByDescending { it.value.magnitude }
             .take(count)
             .map { getFrequencyFFT(it.index, fft.size, sampleRate) }
@@ -67,7 +72,13 @@ object FrequencyAnalysis {
     }
 
     fun getFrequencyFFT(index: Int, size: Int, sampleRate: Float): Float {
-        return index.toFloat() / size * sampleRate
+        val value = 1.0f / (size * 1 / sampleRate)
+        val N = (size - 1) / 2 + 1
+        return if (index < N) {
+            index * value
+        } else {
+            (index - size) * value
+        }
     }
 
     fun getIndexFFT(frequency: Float, size: Int, sampleRate: Float): Int {

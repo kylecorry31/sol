@@ -29,6 +29,17 @@ class FrequencyAnalysisTest {
     }
 
     @Test
+    fun ifft(){
+        val data =
+            List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() + 0.5f * sin(it.toFloat() / 1024f * 2 * Math.PI * 3).toFloat() }
+        val fft = FrequencyAnalysis.fft(data)
+        val ifft = FrequencyAnalysis.ifft(fft)
+        for (i in data.indices){
+            assertEquals(data[i], ifft[i], 0.001f)
+        }
+    }
+
+    @Test
     fun getMostResonantFrequency() {
         // Sine wave with frequency 1 Hz (power of 2 size)
         val data = List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() }
@@ -43,9 +54,9 @@ class FrequencyAnalysisTest {
     fun getMostResonantFrequencies() {
         // Sine wave with frequency of 1 Hz + half power sine wave with frequency of 3 Hz (power of 2 size)
         val data =
-            List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() + sin(it.toFloat() / 1024f * 2 * Math.PI * 3).toFloat() }
+            List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() + 0.5f * sin(it.toFloat() / 1024f * 2 * Math.PI * 3).toFloat() }
 
-        val frequencies = FrequencyAnalysis.getMostResonantFrequencies(data, 1024f, 10).filter { it < 1000 }
+        val frequencies = FrequencyAnalysis.getMostResonantFrequencies(data, 1024f, 2)
         assertEquals(1f, frequencies[0], 0.001f)
         assertEquals(3f, frequencies[1], 0.001f)
     }
@@ -60,14 +71,19 @@ class FrequencyAnalysisTest {
         assertEquals(0f, spectrum[0].second, 0.001f)
         assertEquals(1f, spectrum[1].first, 0.001f)
         assertEquals(512f, spectrum[1].second, 0.001f)
+        assertEquals(-1f, spectrum[1023].first, 0.001f)
     }
 
     @Test
     fun getMagnitudeOfFrequency() {
-        // Sine wave with frequency 1 Hz (power of 2 size)
-        val data = List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() }
-        val magnitude = FrequencyAnalysis.getMagnitudeOfFrequency(data, 1f, 1024f)
-        assertEquals(512f, magnitude, 0.001f)
+        // Sine wave with frequency of 1 Hz + half power sine wave with frequency of 3 Hz (power of 2 size)
+        val data =
+            List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() + 0.5f * sin(it.toFloat() / 1024f * 2 * Math.PI * 3).toFloat() }
+        val magnitude1 = FrequencyAnalysis.getMagnitudeOfFrequency(data, 1f, 1024f)
+        assertEquals(512f, magnitude1, 0.001f)
+
+        val magnitude2 = FrequencyAnalysis.getMagnitudeOfFrequency(data, 3f, 1024f)
+        assertEquals(256f, magnitude2, 0.001f)
     }
 
     private fun complexEquals(expected: ComplexNumber, actual: ComplexNumber, tolerance: Float = 0.0001f) {

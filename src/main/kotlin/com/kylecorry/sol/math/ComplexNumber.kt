@@ -31,6 +31,10 @@ data class ComplexNumber(val real: Float, val imaginary: Float) {
         return ComplexNumber(real * other, imaginary * other)
     }
 
+    fun conjugate(): ComplexNumber {
+        return ComplexNumber(real, -imaginary)
+    }
+
     companion object {
 
         /**
