@@ -53,17 +53,18 @@ object FrequencyAnalysis {
 
     fun getMostResonantFrequenciesFFT(fft: List<ComplexNumber>, sampleRate: Float, count: Int): List<Float> {
         return fft
-            .withIndex()
+            .asSequence()
             .take(fft.size / 2)
+            .withIndex()
             .sortedByDescending { it.value.magnitude }
             .take(count)
             .map { getFrequencyFFT(it.index, fft.size, sampleRate) }
+            .toList()
     }
 
     fun getFrequencySpectrumFFT(fft: List<ComplexNumber>, sampleRate: Float): List<Pair<Float, Float>> {
         return fft
-            .withIndex()
-            .map { Pair(getFrequencyFFT(it.index, fft.size, sampleRate), it.value.magnitude) }
+            .mapIndexed { index, value -> Pair(getFrequencyFFT(index, fft.size, sampleRate), value.magnitude) }
     }
 
     fun getMagnitudeOfFrequencyFFT(fft: List<ComplexNumber>, frequency: Float, sampleRate: Float): Float {
@@ -72,7 +73,7 @@ object FrequencyAnalysis {
     }
 
     fun getFrequencyFFT(index: Int, size: Int, sampleRate: Float): Float {
-        val value = 1.0f / (size * 1 / sampleRate)
+        val value = sampleRate / size
         val N = (size - 1) / 2 + 1
         return if (index < N) {
             index * value
@@ -82,7 +83,12 @@ object FrequencyAnalysis {
     }
 
     fun getIndexFFT(frequency: Float, size: Int, sampleRate: Float): Int {
-        return (frequency / sampleRate * size).toInt()
+        val value = sampleRate / size
+        return if (frequency >= 0) {
+            (frequency / value).toInt()
+        } else {
+            (size + frequency / value).toInt()
+        }
     }
 
 }
