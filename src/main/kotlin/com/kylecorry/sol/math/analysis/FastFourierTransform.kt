@@ -6,12 +6,12 @@ import kotlin.math.PI
 internal object FastFourierTransform {
 
     fun fft(data: List<Float>, twiddleFactors: List<ComplexNumber> = getTwiddleFactors(data.size)): List<ComplexNumber> {
-        val complexData = data.map { ComplexNumber(it, 0f) }.toMutableList()
+        val complexData = Array(data.size) { ComplexNumber(data[it], 0f) }
         bitReverse(complexData)
-        return fftIterative(complexData, twiddleFactors)
+        return fftIterative(complexData, twiddleFactors).toList()
     }
 
-    private fun fftIterative(data: MutableList<ComplexNumber>, twiddleFactors: List<ComplexNumber>): List<ComplexNumber> {
+    private fun fftIterative(data: Array<ComplexNumber>, twiddleFactors: List<ComplexNumber>): Array<ComplexNumber> {
         val n = data.size
         var m = 1
         while (m < n) {
@@ -29,7 +29,7 @@ internal object FastFourierTransform {
         return data
     }
 
-    private fun bitReverse(data: MutableList<ComplexNumber>) {
+    private fun bitReverse(data: Array<ComplexNumber>) {
         val n = data.size
         var j = 0
         for (i in 0..<n - 1) {
@@ -49,7 +49,7 @@ internal object FastFourierTransform {
 
     fun ifft(fft: List<ComplexNumber>, twiddleFactors: List<ComplexNumber> = getTwiddleFactors(fft.size)): List<Float> {
         val size = fft.size
-        val conjugatedInput = fft.map { it.conjugate() }.toMutableList()
+        val conjugatedInput = Array(size) { fft[it].conjugate() }
         bitReverse(conjugatedInput)
         val fftOfConjugated = fftIterative(conjugatedInput, twiddleFactors)
         val conjugatedResult = fftOfConjugated.map { it.conjugate() }
