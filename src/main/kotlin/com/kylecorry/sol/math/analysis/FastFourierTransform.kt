@@ -6,40 +6,52 @@ import kotlin.math.PI
 internal object FastFourierTransform {
 
     fun fft(data: List<Float>, twiddleFactors: List<ComplexNumber> = getTwiddleFactors(data.size)): List<ComplexNumber> {
-        val complexData = data.map { ComplexNumber(it, 0f) }
-        return fftComplex(complexData, twiddleFactors)
+        val complexData = data.map { ComplexNumber(it, 0f) }.toMutableList()
+        bitReverse(complexData)
+        return fftIterative(complexData, twiddleFactors)
     }
 
-    private fun fftComplex(data: List<ComplexNumber>, twiddleFactors: List<ComplexNumber>, twiddleStep: Int = 1): List<ComplexNumber> {
-        val size = data.size
-
-        if (size <= 1) {
-            return data
+    private fun fftIterative(data: MutableList<ComplexNumber>, twiddleFactors: List<ComplexNumber>): List<ComplexNumber> {
+        val n = data.size
+        var m = 1
+        while (m < n) {
+            val m2 = m * 2
+            for (k in 0..<m) {
+                val twiddleFactor = twiddleFactors[k * n / m2]
+                for (i in k..<n step m2) {
+                    val t = twiddleFactor * data[i + m]
+                    data[i + m] = data[i] - t
+                    data[i] += t
+                }
+            }
+            m = m2
         }
+        return data
+    }
 
-        if (size and (size - 1) != 0) {
-            throw IllegalArgumentException("Length of inputSequence must be a power of 2")
+    private fun bitReverse(data: MutableList<ComplexNumber>) {
+        val n = data.size
+        var j = 0
+        for (i in 0..<n - 1) {
+            if (i < j) {
+                val temp = data[i]
+                data[i] = data[j]
+                data[j] = temp
+            }
+            var k = n / 2
+            while (k <= j) {
+                j -= k
+                k /= 2
+            }
+            j += k
         }
-
-        // Split input into even and odd indexed elements
-        val evenSequence = fftComplex(data.filterIndexed { index, _ -> index % 2 == 0 }, twiddleFactors, twiddleStep * 2)
-        val oddSequence = fftComplex(data.filterIndexed { index, _ -> index % 2 != 0 }, twiddleFactors, twiddleStep * 2)
-
-        // Combine the results
-        val combinedSequence = MutableList(size) { ComplexNumber(0f, 0f) }
-        for (k in 0..<size / 2) {
-            val twiddleOddK = twiddleFactors[twiddleStep * k] * oddSequence[k]
-            combinedSequence[k] = evenSequence[k] + twiddleOddK
-            combinedSequence[k + size / 2] = evenSequence[k] - twiddleOddK
-        }
-
-        return combinedSequence
     }
 
     fun ifft(fft: List<ComplexNumber>, twiddleFactors: List<ComplexNumber> = getTwiddleFactors(fft.size)): List<Float> {
         val size = fft.size
-        val conjugatedInput = fft.map { it.conjugate() }
-        val fftOfConjugated = fftComplex(conjugatedInput, twiddleFactors)
+        val conjugatedInput = fft.map { it.conjugate() }.toMutableList()
+        bitReverse(conjugatedInput)
+        val fftOfConjugated = fftIterative(conjugatedInput, twiddleFactors)
         val conjugatedResult = fftOfConjugated.map { it.conjugate() }
         return conjugatedResult.map { it.real / size }
     }
