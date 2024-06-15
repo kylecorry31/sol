@@ -9,6 +9,7 @@ import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
 import com.kylecorry.sol.tests.parametrized
+import com.kylecorry.sol.tests.performanceTest
 import com.kylecorry.sol.time.Time.duration
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -643,6 +644,21 @@ class AstronomyTest {
         assertDate(expectedEnd, times?.end, Duration.ofMinutes(1))
     }
 
+//    @Test
+//    fun solarEclipsePerformance() {
+//        val start = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
+//        performanceTest(1000) {
+//            Astronomy.getNextEclipse(start, Coordinate(0.0, 0.0), EclipseType.Solar, Duration.ofDays(365))
+//        }
+//    }
+
+//    @Test
+//    fun lunarEclipsePerformance() {
+//        val start = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
+//        performanceTest(1000) {
+//            Astronomy.getNextEclipse(start, Coordinate(0.0, 0.0), EclipseType.PartialLunar, Duration.ofDays(365))
+//        }
+//    }
 
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {
         assertEquals(expected.phase, actual.phase)
