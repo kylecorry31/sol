@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.statistics
 
+import com.kylecorry.sol.tests.performanceTest
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
@@ -28,4 +29,12 @@ class TextureTest {
         assertEquals(0.14f, features.correlation, 0.1f)
         assertEquals(0.33f, features.max, 0.1f)
     }
+
+//    @Test
+//    fun measurePerformance() {
+//        val glcm = Array(255) { Array(255) { Math.random().toFloat() } }
+//        performanceTest(10000) {
+//            Texture.features(glcm)
+//        }
+//    }
 }
