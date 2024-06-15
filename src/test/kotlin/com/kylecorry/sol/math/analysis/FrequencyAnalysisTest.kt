@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.ComplexNumber
+import com.kylecorry.sol.tests.performanceTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.sin
@@ -96,12 +97,8 @@ class FrequencyAnalysisTest {
 //        val data = List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() }
 //        val runs = 100000
 //        val twiddleFactors = FrequencyAnalysis.getTwiddleFactorsFFT(data.size)
-//        val start = System.currentTimeMillis()
-//        for (i in 0..runs){
+//        performanceTest(runs){
 //            FrequencyAnalysis.fft(data, twiddleFactors)
 //        }
-//        val end = System.currentTimeMillis()
-//        val timePerRun = (end - start) / runs.toFloat()
-//        println("FFT: ${end - start} ms, $timePerRun ms/run")
 //    }
 }

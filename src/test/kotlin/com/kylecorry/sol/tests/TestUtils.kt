@@ -80,3 +80,10 @@ fun assertVector(
     assertThat(actual.x).isCloseTo(expected.x, tolerance)
     assertThat(actual.y).isCloseTo(expected.y, tolerance)
 }
+
+inline fun performanceTest(repetitions: Int, crossinline test: () -> Unit) {
+    val start = System.currentTimeMillis()
+    repeat(repetitions) { test() }
+    val timePerTest = (System.currentTimeMillis() - start).toFloat() / repetitions
+    println("Performance test took ${timePerTest * repetitions} ms, $timePerTest ms/test")
+}
