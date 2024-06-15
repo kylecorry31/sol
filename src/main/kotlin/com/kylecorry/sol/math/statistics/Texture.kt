@@ -22,8 +22,8 @@ object Texture {
         var correlation = 0f
 
         // Texture measures and mean
-        for (i in 0 until glcm.rows()) {
-            for (j in 0 until glcm.columns()) {
+        for (i in 0..<glcm.rows()) {
+            for (j in 0..<glcm.columns()) {
                 val p = glcm[i][j]
                 val ijSquare = square((i - j).toFloat())
                 angularSecondMoment += square(p)
@@ -40,21 +40,19 @@ object Texture {
         }
 
         // Variance calculation
-        for (i in 0 until glcm.rows()) {
-            for (j in 0 until glcm.columns()) {
+        for (i in 0..<glcm.rows()) {
+            for (j in 0..<glcm.columns()) {
                 val p = glcm[i][j]
                 varianceI += p * square(i - meanI)
                 varianceJ += p * square(j - meanJ)
+                correlation += p * (i - meanI) * (j - meanJ)
             }
         }
 
         // Correlation calculation
         val denominator = sqrt(varianceI * varianceJ)
-        for (i in 0 until glcm.rows()) {
-            for (j in 0 until glcm.columns()) {
-                val p = glcm[i][j]
-                correlation += p * ((i - meanI) * (j - meanJ)) / denominator
-            }
+        if (denominator != 0f) {
+            correlation /= denominator
         }
 
         return TextureFeatures(
