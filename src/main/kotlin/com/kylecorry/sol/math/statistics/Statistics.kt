@@ -33,6 +33,20 @@ object Statistics {
         return values.average().toFloat()
     }
 
+    fun meanVector2(values: List<Vector2>): Vector2 {
+        if (values.isEmpty()) {
+            return Vector2(Float.NaN, Float.NaN)
+        }
+
+        var x = 0.0
+        var y = 0.0
+        for (value in values) {
+            x += value.x
+            y += value.y
+        }
+        return Vector2((x / values.size).toFloat(), (y / values.size).toFloat())
+    }
+
     fun geometricMean(values: List<Float>): Float {
         if (values.isEmpty()) {
             return 0f

@@ -20,6 +20,7 @@ import com.kylecorry.sol.time.Time.toUTC
 import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.time.Time.utc
+import com.kylecorry.sol.units.Reading
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -428,6 +429,8 @@ class TimeTest {
         val readings = Time.getReadings(start, end, step) { it.toEpochSecond() }
         val duration = readings.duration()
         assertEquals(Duration.ofHours(23), duration)
+
+        assertEquals(Duration.ZERO, emptyList<Reading<*>>().duration())
     }
 
     @ParameterizedTest

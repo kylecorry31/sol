@@ -90,4 +90,18 @@ class FrequencyAnalysisTest {
         assertEquals(expected.real, actual.real, tolerance)
         assertEquals(expected.imaginary, actual.imaginary, tolerance)
     }
+
+//    @Test
+//    fun fftPerformance(){
+//        val data = List(1024) { sin(it.toFloat() / 1024f * 2 * Math.PI).toFloat() }
+//        val runs = 100000
+//        val twiddleFactors = FrequencyAnalysis.getTwiddleFactorsFFT(data.size)
+//        val start = System.currentTimeMillis()
+//        for (i in 0..runs){
+//            FrequencyAnalysis.fft(data, twiddleFactors)
+//        }
+//        val end = System.currentTimeMillis()
+//        val timePerRun = (end - start) / runs.toFloat()
+//        println("FFT: ${end - start} ms, $timePerRun ms/run")
+//    }
 }

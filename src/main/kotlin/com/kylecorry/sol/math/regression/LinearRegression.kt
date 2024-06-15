@@ -3,6 +3,7 @@ package com.kylecorry.sol.math.regression
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.statistics.Statistics
 
 class LinearRegression(data: List<Vector2>) : IRegression1D {
 
@@ -18,8 +19,9 @@ class LinearRegression(data: List<Vector2>) : IRegression1D {
             return LinearEquation(0f, 0f)
         }
 
-        val xBar = data.map { it.x }.average().toFloat()
-        val yBar = data.map { it.y }.average().toFloat()
+        val mean = Statistics.meanVector2(data)
+        val xBar = mean.x
+        val yBar = mean.y
 
         var ssxx = 0.0f
         var ssxy = 0.0f
