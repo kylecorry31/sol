@@ -27,7 +27,7 @@ internal object DecimalFormatter {
         }
 
         val builder = StringBuilder(if (strict) "0." else "#.")
-        for (i in 0 until decimalPlaces) {
+        for (i in 0..<decimalPlaces) {
             builder.append(if (strict) '0' else '#')
         }
 
