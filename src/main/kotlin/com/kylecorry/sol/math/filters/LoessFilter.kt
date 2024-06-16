@@ -52,7 +52,7 @@ class LoessFilter(
 
                 val nearest = getNearest(xs, ys, i)
 
-                val maxDistance = nearest.last().second
+                val maxDistance = nearest.lastOrNull()?.second ?: 0f
 
                 if (maxDistance == 0f) {
                     res[i] = y
