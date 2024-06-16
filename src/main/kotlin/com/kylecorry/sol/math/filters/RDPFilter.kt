@@ -44,12 +44,12 @@ class RDPFilter<T>(
     }
 
     private fun findFurthest(startIndex: Int, endIndex: Int, allPoints: List<T>): Int {
-        var maxDistance = Float.NEGATIVE_INFINITY
+        var maxDistance = epsilon
         var maxIndex = -1
         val start = allPoints[startIndex]
         val end = allPoints[endIndex]
 
-        for (i in (startIndex + 1) until endIndex) {
+        for (i in (startIndex + 1)..<endIndex) {
             val distance = abs(crossTrackDistance(allPoints[i], start, end))
             if (distance > maxDistance) {
                 maxDistance = distance
@@ -57,7 +57,9 @@ class RDPFilter<T>(
             }
         }
 
-        return if (maxDistance > epsilon) maxIndex else -1
+        return maxIndex
     }
+
+
 
 }
