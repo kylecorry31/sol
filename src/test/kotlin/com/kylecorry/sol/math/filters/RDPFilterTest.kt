@@ -56,5 +56,7 @@ internal class RDPFilterTest {
         val filtered2 = rdp2.filter(points)
 
         assertEquals(expected2, filtered2)
+
+        assertEquals(emptyList<Vector2>(), rdp1.filter(emptyList()))
     }
 }

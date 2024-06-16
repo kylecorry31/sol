@@ -7,9 +7,10 @@ class ProximityChangeFilter1D(
     override fun filter(data: List<Float>): List<Float> {
         val filter = ProximityChangeFilterGeneric<Float>(
             changeThreshold,
-            { previous, _ -> previous }) { start, end ->
-            end - start
-        }
+            fillFn = { previous, _ -> previous },
+            distanceFn = { start, end ->
+                end - start
+            })
         return filter.filter(data)
     }
 

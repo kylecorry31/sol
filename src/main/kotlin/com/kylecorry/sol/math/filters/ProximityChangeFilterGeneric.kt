@@ -18,7 +18,7 @@ class ProximityChangeFilterGeneric<T>(
         var lastValid = points.first()
         filtered.add(lastValid)
 
-        for (i in 1 until points.size) {
+        for (i in 1..<points.size) {
             val current = points[i]
             val change = abs(distanceFn(current, lastValid))
 
