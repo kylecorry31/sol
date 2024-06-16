@@ -96,4 +96,19 @@ internal class LoessFilter2DTest {
 
         assertEquals(0.0f, fitResiduals, 0.00001f)
     }
+
+    @Test
+    fun filterLineReversed() {
+        val values = (0..100).map { it.toFloat() to it.toFloat() }.reversed().map { it.toVector2() }
+
+        val filter = LoessFilter2D(0.3f, 4)
+
+        val actual = filter.filter(values)
+
+        val fitResiduals = actual.zip(values).sumOfFloat {
+            (it.second.y - it.first.y).pow(2)
+        }
+
+        assertEquals(0.0f, fitResiduals, 0.0001f)
+    }
 }
