@@ -436,6 +436,38 @@ class SolMathTest {
         assertEquals(expected, actual)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "1, 1, 1",
+        "100, 200, 100",
+        "200, 100, 100",
+        "0, 0, 0",
+        "0, 1, 1",
+        "1, 0, 1",
+        "-1, 1, 1",
+        "400, 600, 200",
+    )
+    fun greatestCommonDivisor(a: Int, b: Int, expected: Int) {
+        val actual = SolMath.greatestCommonDivisor(a, b)
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1, 1, 1",
+        "100, 200, 200",
+        "200, 100, 200",
+        "0, 0, 0",
+        "0, 1, 0",
+        "1, 0, 0",
+        "-1, 1, 1",
+        "400, 600, 1200",
+    )
+    fun leastCommonMultiple(a: Int, b: Int, expected: Int) {
+        val actual = SolMath.leastCommonMultiple(a, b)
+        assertEquals(expected, actual)
+    }
+
     companion object {
 
         @JvmStatic
