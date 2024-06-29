@@ -474,6 +474,24 @@ object SolMath {
         return currentA
     }
 
+    fun greatestCommonDivisor(a: Double, b: Double, precision: Double = 0.0001): Double {
+        val maxIterations = 1000
+        var currentA = a
+        var currentB = b
+        var iterations = 0
+        while (currentB.absoluteValue > precision && iterations < maxIterations) {
+            val temp = currentB
+            currentB = currentA % currentB
+            currentA = temp
+            iterations++
+        }
+        return currentA
+    }
+
+    fun greatestCommonDivisor(a: Float, b: Float): Float {
+        return greatestCommonDivisor(a.toDouble(), b.toDouble()).toFloat()
+    }
+
     fun greatestCommonDivisor(a: Int, b: Int): Int {
         return greatestCommonDivisor(a.toLong(), b.toLong()).toInt()
     }
@@ -489,6 +507,14 @@ object SolMath {
         return leastCommonMultiple(a.toLong(), b.toLong()).toInt()
     }
 
+    fun leastCommonMultiple(a: Double, b: Double): Double {
+        if (a == 0.0 || b == 0.0) {
+            return 0.0
+        }
+        return abs(a) * (abs(b) / greatestCommonDivisor(a, b))
+    }
 
-
+    fun leastCommonMultiple(a: Float, b: Float): Float {
+        return leastCommonMultiple(a.toDouble(), b.toDouble()).toFloat()
+    }
 }

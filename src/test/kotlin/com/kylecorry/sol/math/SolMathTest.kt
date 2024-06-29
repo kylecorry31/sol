@@ -462,10 +462,41 @@ class SolMathTest {
         "1, 0, 0",
         "-1, 1, 1",
         "400, 600, 1200",
+        "3800, 7600, 7600"
     )
     fun leastCommonMultiple(a: Int, b: Int, expected: Int) {
         val actual = SolMath.leastCommonMultiple(a, b)
         assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1.0, 1.0, 1.0",
+        "1.5, 1.0, 0.5",
+        "1.4, 1.0, 0.2",
+        "0.01, 3.8, 0.01",
+        "0.0, 1.0, 1.0",
+        "1.0, 0.0, 1.0",
+        "0.0, 0.0, 0.0",
+    )
+    fun greatestCommonDivisorFloat(a: Float, b: Float, expected: Float) {
+        val actual = SolMath.greatestCommonDivisor(a, b)
+        assertEquals(expected, actual, 0.001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "1.0, 1.0, 1.0",
+        "1.5, 1.0, 3.0",
+        "1.4, 1.0, 7.0",
+        "0.01, 3.8, 3.8",
+        "0.0, 1.0, 0.0",
+        "1.0, 0.0, 0.0",
+        "0.0, 0.0, 0.0",
+    )
+    fun leastCommonMultipleFloat(a: Float, b: Float, expected: Float) {
+        val actual = SolMath.leastCommonMultiple(a, b)
+        assertEquals(expected, actual, 0.001f)
     }
 
     companion object {
