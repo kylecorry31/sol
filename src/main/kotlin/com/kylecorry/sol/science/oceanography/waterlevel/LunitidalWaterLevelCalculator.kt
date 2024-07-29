@@ -181,7 +181,7 @@ class LunitidalWaterLevelCalculator(
         if (lowerMoonTransitMap.containsKey(getKey(time))) {
             return lowerMoonTransitMap[getKey(time)]
         }
-        val transit = Astronomy.getMoonEvents(time, Coordinate(location.latitude, location.longitude + 180)).transit
+        val transit = Astronomy.getMoonEvents(time, Coordinate(-location.latitude, location.longitude + 180)).transit
             ?: return null
         lowerMoonTransitMap[getKey(time)] = transit
         return transit

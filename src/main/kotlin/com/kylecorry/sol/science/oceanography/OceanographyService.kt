@@ -125,7 +125,7 @@ class OceanographyService : IOceanographyService {
     }
 
     private fun getLastMoonUnderfootTime(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
-        return getLastMoonTransit(Coordinate(location.latitude, location.longitude + 180), time)
+        return getLastMoonTransit(Coordinate(-location.latitude, location.longitude + 180), time)
     }
 
     companion object {
