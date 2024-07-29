@@ -16,6 +16,10 @@ object Time {
         return Duration.ofMillis(millis.toLong())
     }
 
+    fun hours(duration: Duration): Double {
+        return duration.toMillis() / 1000.0 / 60.0 / 60.0
+    }
+
     fun LocalDateTime.toZonedDateTime(): ZonedDateTime {
         return ZonedDateTime.of(this, ZoneId.systemDefault())
     }

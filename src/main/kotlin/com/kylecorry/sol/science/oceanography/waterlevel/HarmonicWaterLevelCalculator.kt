@@ -4,6 +4,8 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.science.oceanography.AstronomicalArgumentCalculator
 import com.kylecorry.sol.science.oceanography.NodeFactorCalculator
 import com.kylecorry.sol.science.oceanography.TidalHarmonic
+import com.kylecorry.sol.science.oceanography.TideConstituent
+import com.kylecorry.sol.time.Time
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId

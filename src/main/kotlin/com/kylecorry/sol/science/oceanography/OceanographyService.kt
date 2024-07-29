@@ -6,8 +6,10 @@ import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.*
-import java.time.*
+import java.time.Duration
+import java.time.ZonedDateTime
 
 class OceanographyService : IOceanographyService {
 
@@ -19,9 +21,11 @@ class OceanographyService : IOceanographyService {
                 MoonTruePhase.New, MoonTruePhase.Full -> {
                     return TidalRange.Spring
                 }
+
                 MoonTruePhase.FirstQuarter, MoonTruePhase.ThirdQuarter -> {
                     return TidalRange.Neap
                 }
+
                 else -> {
                     // Do nothing
                 }
@@ -63,6 +67,53 @@ class OceanographyService : IOceanographyService {
             pressureDiff * 100 / (Geology.GRAVITY * waterDensity),
             DistanceUnits.Meters
         )
+    }
+
+    override fun getLunitidalInterval(highTideTime: ZonedDateTime, location: Coordinate): Duration? {
+        // Step 1: Get the time of the moon transit prior to the high tide
+        val over = getLastMoonTransit(location, highTideTime)
+        val under = getLastMoonUnderfootTime(location, highTideTime)
+        val lastTransit = Time.getClosestPastTime(highTideTime, listOf(over, under)) ?: return null
+
+        // Step 2: Calculate the time between the moon transit and the high tide
+        return Duration.between(lastTransit, highTideTime)
+    }
+
+    override fun getMeanLunitidalInterval(
+        highTideTimes: List<ZonedDateTime>,
+        location: Coordinate
+    ): Duration? {
+        val intervals = highTideTimes.mapNotNull { getLunitidalInterval(it, location) }
+        if (intervals.isEmpty()) {
+            return null
+        }
+
+        var averageDuration = Duration.ZERO
+        val needsCorrection = intervals.any { it > Duration.ofHours(8) } && intervals.any { it < Duration.ofHours(4) }
+
+        for (i in intervals.indices) {
+            var interval = intervals[i]
+            if (needsCorrection) {
+                if (interval < Duration.ofHours(4)) {
+                    interval += Duration.ofHours(12)
+                }
+            }
+            averageDuration = averageDuration.plus(interval)
+        }
+
+        return averageDuration.dividedBy(intervals.size.toLong())
+    }
+
+    private fun getLastMoonTransit(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
+        val todayMoon = Astronomy.getMoonEvents(time, location).transit
+        val yesterdayMoon = Astronomy.getMoonEvents(time.minusDays(1), location).transit
+        val tomorrowMoon = Astronomy.getMoonEvents(time.plusDays(1), location).transit
+
+        return Time.getClosestPastTime(time, listOf(yesterdayMoon, todayMoon, tomorrowMoon))
+    }
+
+    private fun getLastMoonUnderfootTime(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
+        return getLastMoonTransit(Coordinate(location.latitude, location.longitude + 180), time)
     }
 
     companion object {

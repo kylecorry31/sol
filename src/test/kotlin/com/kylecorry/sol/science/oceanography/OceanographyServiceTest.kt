@@ -1,22 +1,17 @@
 package com.kylecorry.sol.science.oceanography
 
-import com.kylecorry.sol.science.oceanography.waterlevel.HarmonicWaterLevelCalculator
+import com.kylecorry.sol.math.statistics.Statistics
+import com.kylecorry.sol.science.oceanography.waterlevel.*
 import com.kylecorry.sol.time.Time.atEndOfDay
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.units.Pressure
-import com.kylecorry.sol.units.PressureUnits
+import com.kylecorry.sol.time.Time.roundNearestMinute
+import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.provider.Arguments
 import java.io.File
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.Month
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.net.http.HttpClient
+import java.time.*
 import java.util.stream.Stream
 
 internal class OceanographyServiceTest {
@@ -78,6 +73,113 @@ internal class OceanographyServiceTest {
             assertEquals(expected[i].isHigh, tides[i].isHigh)
             timeEquals(tides[i].time, expected[i].time, Duration.ofMinutes(30))
         }
+    }
+
+    @Test
+    fun canGetTides() {
+        val service = OceanographyService()
+        val location = Coordinate(42.8150, -70.8733)
+        val start = ZonedDateTime.of(2024, 7, 1, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val end = ZonedDateTime.of(2024, 7, 29, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val station = "8452660"
+        val url =
+            "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20240701&end_date=20240730&datum=MLLW&station=$station&time_zone=lst_ldt&units=english&interval=hilo&format=csv"
+        File("temp").mkdirs()
+
+        val sourceString = if (File("temp/${station}.csv").exists()) {
+            File("temp/${station}.csv").readText()
+        } else {
+            // Download the file
+            val httpClient = HttpClient.newHttpClient()
+            val request = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .build()
+            val response = httpClient.send(request, java.net.http.HttpResponse.BodyHandlers.ofString())
+            val body = response.body()
+            File("temp/${station}.csv").writeText(body)
+            body
+        }
+
+        val source = sourceString.trim().lines().drop(1).map {
+            val parts = it.split(",")
+            Tide(
+                LocalDateTime.parse(parts[0].replace(" ", "T")).atZone(ZoneId.of("America/New_York")),
+                parts[2] == "H",
+                parts[1].toFloat()
+            )
+        }
+
+        val highs = source.filter { it.isHigh }.map { it.time }
+        val lows = source.filter { !it.isHigh }.map { it.time }
+        val localLunitidalInterval = service.getMeanLunitidalInterval(highs, location) ?: Duration.ZERO
+        val localLowLunitidalInterval = service.getMeanLunitidalInterval(lows, location) ?: Duration.ZERO
+        val utcLunitidalInterval = service.getMeanLunitidalInterval(highs) ?: Duration.ZERO
+
+        println("Local lunitidal interval: $localLunitidalInterval")
+        println("UTC lunitidal interval: $utcLunitidalInterval")
+
+        val calculators = listOf(
+            "LUNITIDAL HARMONIC (LOCAL)" to HarmonicLunitidalWaterLevelCalculator(localLunitidalInterval, location),
+            "LUNITIDAL HARMONIC (UTC)" to HarmonicLunitidalWaterLevelCalculator(utcLunitidalInterval),
+            "TIDE CLOCK" to TideClockWaterLevelCalculator(Tide.high(highs.first()), TideConstituent.M2.speed),
+            "LUNITIDAL (LOCAL)" to LunitidalWaterLevelCalculator(localLunitidalInterval, location),
+            "LUNITIDAL (LOCAL; HIGH AND LOW)" to LunitidalWaterLevelCalculator(
+                localLunitidalInterval,
+                location,
+                localLowLunitidalInterval
+            ),
+            "LUNITIDAL (UTC)" to LunitidalWaterLevelCalculator(utcLunitidalInterval),
+        )
+
+        calculators.forEach { (name, calculator) ->
+            testCalculator(name, calculator, start, end, source)
+        }
+    }
+
+    private fun testCalculator(
+        name: String,
+        calculator: IWaterLevelCalculator,
+        start: ZonedDateTime,
+        end: ZonedDateTime,
+        references: List<Tide>
+    ) {
+        val service = OceanographyService()
+        val tides = service.getTides(
+            calculator,
+            start,
+            end
+        )
+
+        val deltas = mutableListOf<Float>()
+
+
+        for (i in tides.indices) {
+            val tide = tides[i].time.roundNearestMinute()
+            val refTide =
+                references.filter { it.isHigh == tides[i].isHigh }
+                    .minByOrNull { Duration.between(it.time, tide).abs() }!!
+            val d = Duration.between(refTide.time, tide).abs()
+            deltas.add(d.toMinutes().toFloat())
+        }
+
+        val average = Statistics.mean(deltas)
+        val max = deltas.max()
+        val quantile95 = Statistics.quantile(deltas, 0.95f)
+        val quantile80 = Statistics.quantile(deltas, 0.8f)
+        val quantile50 = Statistics.quantile(deltas, 0.5f)
+//        println(name)
+//        println("Average: $average")
+//        println("Max: $max")
+//        println("95th percentile: $quantile95")
+//        println("80th percentile: $quantile80")
+//        println("50th percentile: $quantile50")
+//        println()
+
+        assertTrue(average < 35)
+        assertTrue(max < 90)
+        assertTrue(quantile95 < 70)
+        assertTrue(quantile80 < 60)
+        assertTrue(quantile50 < 30)
     }
 
 
