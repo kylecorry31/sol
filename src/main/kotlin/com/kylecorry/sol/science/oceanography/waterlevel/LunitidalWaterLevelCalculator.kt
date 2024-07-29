@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
 
 import com.kylecorry.sol.science.astronomy.Astronomy
+import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.science.oceanography.Tide
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
@@ -33,10 +34,17 @@ class LunitidalWaterLevelCalculator(
         val calculator = if (previous.isHigh == next.isHigh) {
             val durationBetween = Duration.between(previous.time, next.time)
             val low = previous.time.plus(durationBetween.dividedBy(2))
-            getCalculator(
-                Tide.high(previous.time),
-                Tide.low(low),
-            )
+            if (low.isBefore(time)) {
+                getCalculator(
+                    Tide.low(low),
+                    Tide.high(next.time)
+                )
+            } else {
+                getCalculator(
+                    Tide.high(previous.time),
+                    Tide.low(low)
+                )
+            }
         } else {
             getCalculator(
                 previous,
@@ -156,22 +164,26 @@ class LunitidalWaterLevelCalculator(
         return getTide(time, false, isNext)
     }
 
+    private fun getKey(time: ZonedDateTime): LocalDate {
+        return time.toLocalDate()
+    }
+
     private fun getUpperMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        if (upperMoonTransitMap.containsKey(time.toLocalDate())) {
-            return upperMoonTransitMap[time.toLocalDate()]
+        if (upperMoonTransitMap.containsKey(getKey(time))) {
+            return upperMoonTransitMap[getKey(time)]
         }
         val transit = Astronomy.getMoonEvents(time, location).transit ?: return null
-        upperMoonTransitMap[time.toLocalDate()] = transit
+        upperMoonTransitMap[getKey(time)] = transit
         return transit
     }
 
     private fun getLowerMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        if (lowerMoonTransitMap.containsKey(time.toLocalDate())) {
-            return lowerMoonTransitMap[time.toLocalDate()]
+        if (lowerMoonTransitMap.containsKey(getKey(time))) {
+            return lowerMoonTransitMap[getKey(time)]
         }
         val transit = Astronomy.getMoonEvents(time, Coordinate(location.latitude, location.longitude + 180)).transit
             ?: return null
-        lowerMoonTransitMap[time.toLocalDate()] = transit
+        lowerMoonTransitMap[getKey(time)] = transit
         return transit
     }
 }

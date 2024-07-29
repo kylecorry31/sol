@@ -114,6 +114,7 @@ internal class OceanographyServiceTest {
         val localLunitidalInterval = service.getMeanLunitidalInterval(highs, location) ?: Duration.ZERO
         val localLowLunitidalInterval = service.getMeanLunitidalInterval(lows, location) ?: Duration.ZERO
         val utcLunitidalInterval = service.getMeanLunitidalInterval(highs) ?: Duration.ZERO
+        val utcLowLunitidalInterval = service.getMeanLunitidalInterval(lows) ?: Duration.ZERO
 
         println("Local lunitidal interval: $localLunitidalInterval")
         println("UTC lunitidal interval: $utcLunitidalInterval")
@@ -128,7 +129,10 @@ internal class OceanographyServiceTest {
                 location,
                 localLowLunitidalInterval
             ),
-            "LUNITIDAL (UTC)" to LunitidalWaterLevelCalculator(utcLunitidalInterval),
+            "LUNITIDAL (UTC)" to LunitidalWaterLevelCalculator(
+                utcLunitidalInterval,
+                lowLunitidalInterval = utcLowLunitidalInterval
+            ),
         )
 
         calculators.forEach { (name, calculator) ->
@@ -167,13 +171,13 @@ internal class OceanographyServiceTest {
         val quantile95 = Statistics.quantile(deltas, 0.95f)
         val quantile80 = Statistics.quantile(deltas, 0.8f)
         val quantile50 = Statistics.quantile(deltas, 0.5f)
-//        println(name)
-//        println("Average: $average")
-//        println("Max: $max")
-//        println("95th percentile: $quantile95")
-//        println("80th percentile: $quantile80")
-//        println("50th percentile: $quantile50")
-//        println()
+        println(name)
+        println("Average: $average")
+        println("Max: $max")
+        println("95th percentile: $quantile95")
+        println("80th percentile: $quantile80")
+        println("50th percentile: $quantile50")
+        println()
 
         assertTrue(average < 35)
         assertTrue(max < 90)

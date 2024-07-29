@@ -76,7 +76,13 @@ class OceanographyService : IOceanographyService {
         val lastTransit = Time.getClosestPastTime(highTideTime, listOf(over, under)) ?: return null
 
         // Step 2: Calculate the time between the moon transit and the high tide
-        return Duration.between(lastTransit, highTideTime)
+        var duration = Duration.between(lastTransit, highTideTime)
+
+        while (duration > Duration.ofHours(12)) {
+            duration -= Duration.ofHours(12)
+        }
+
+        return duration
     }
 
     override fun getMeanLunitidalInterval(
@@ -101,7 +107,13 @@ class OceanographyService : IOceanographyService {
             averageDuration = averageDuration.plus(interval)
         }
 
-        return averageDuration.dividedBy(intervals.size.toLong())
+        averageDuration = averageDuration.dividedBy(intervals.size.toLong())
+
+        while (averageDuration > Duration.ofHours(12)) {
+            averageDuration -= Duration.ofHours(12)
+        }
+
+        return averageDuration
     }
 
     private fun getLastMoonTransit(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
