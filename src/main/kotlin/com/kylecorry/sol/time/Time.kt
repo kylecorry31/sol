@@ -2,10 +2,13 @@ package com.kylecorry.sol.time
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.roundNearest
+import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Reading
 import java.time.*
 import java.time.temporal.ChronoUnit
 import java.time.temporal.Temporal
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 object Time {
 
@@ -156,7 +159,7 @@ object Time {
         valueFn: (time: ZonedDateTime) -> T
     ): List<Reading<T>> {
 
-        if (step.isZero || step.isNegative){
+        if (step.isZero || step.isNegative) {
             return emptyList()
         }
 
@@ -263,6 +266,21 @@ object Time {
 
     fun ZonedDateTime.plusMillis(millis: Long): ZonedDateTime {
         return this.plusNanos(millis * 1000000L)
+    }
+
+    fun getSolarTimeOffset(longitude: Double): Duration {
+        return hours(longitude / 15)
+    }
+
+    fun getLongitudeFromSolarTimeOffset(offset: Duration): Double {
+        return hours(offset) * 15
+    }
+
+    fun getApproximateTimeZone(location: Coordinate): ZoneId {
+        val offset = getSolarTimeOffset(location.longitude)
+        val offsetHours = hours(offset).roundToInt()
+        val symbol = if (offsetHours >= 0) "+" else "-"
+        return ZoneId.of("${symbol}${offsetHours.absoluteValue}")
     }
 
 }

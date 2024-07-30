@@ -20,6 +20,7 @@ import com.kylecorry.sol.time.Time.toUTC
 import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.time.Time.utc
+import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Reading
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -39,7 +40,7 @@ class TimeTest {
         "0.03125, PT1M52S",
         "0.00048828125, PT1S",
     )
-    fun hours(hours: Double, expectedStr: String){
+    fun hours(hours: Double, expectedStr: String) {
         val expected = Duration.parse(expectedStr)
         val actual = Time.hours(hours)
         assertDurationEquals(expected, actual, Duration.ofSeconds(1))
@@ -102,7 +103,7 @@ class TimeTest {
     }
 
     @Test
-    fun localPlusHours(){
+    fun localPlusHours() {
         val time = LocalDateTime.of(2020, 1, 1, 12, 0)
         val expected = LocalDateTime.of(2020, 1, 1, 13, 30)
         val actual = time.plusHours(1.5)
@@ -110,7 +111,7 @@ class TimeTest {
     }
 
     @Test
-    fun toUtcLocal(){
+    fun toUtcLocal() {
         val time = ZonedDateTime.of(2020, 1, 1, 12, 0, 0, 0, ZoneId.of("America/New_York"))
         val expected = LocalDateTime.of(2020, 1, 1, 17, 0, 0, 0)
         val actual = time.toUTCLocal()
@@ -118,7 +119,7 @@ class TimeTest {
     }
 
     @Test
-    fun instantToUtcZoned(){
+    fun instantToUtcZoned() {
         val time = Instant.ofEpochMilli(0)
         val expected = ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"))
         val actual = time.utc()
@@ -126,15 +127,16 @@ class TimeTest {
     }
 
     @Test
-    fun instantToZoned(){
+    fun instantToZoned() {
         val time = Instant.ofEpochMilli(24 * 60 * 60 * 1000)
-        val expected = ZonedDateTime.of(1970, 1, 2, 0, 0, 0, 0, ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault())
+        val expected =
+            ZonedDateTime.of(1970, 1, 2, 0, 0, 0, 0, ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault())
         val actual = time.toZonedDateTime()
         assertEquals(expected, actual)
     }
 
     @Test
-    fun instantIsInPast(){
+    fun instantIsInPast() {
         val past = Instant.now().minusSeconds(1)
         val future = Instant.now().plusSeconds(1)
         assertTrue(past.isInPast())
@@ -142,14 +144,14 @@ class TimeTest {
     }
 
     @Test
-    fun instantIsOlderThan(){
+    fun instantIsOlderThan() {
         val time = Instant.now().minusSeconds(100)
         assertTrue(time.isOlderThan(Duration.ofSeconds(10)))
         assertFalse(time.isOlderThan(Duration.ofSeconds(110)))
     }
 
     @Test
-    fun duration(){
+    fun duration() {
         val expected = Duration.ofHours(1).plusMinutes(2).plusSeconds(3)
         val actual = duration(1, 2, 3)
         assertEquals(expected, actual)
@@ -158,7 +160,7 @@ class TimeTest {
     }
 
     @Test
-    fun hoursUntil(){
+    fun hoursUntil() {
         val start = Instant.now()
         val end = start.plusSeconds(3600)
         val actual = start.hoursUntil(end)
@@ -166,7 +168,7 @@ class TimeTest {
     }
 
     @Test
-    fun daysBetweenLocalDates(){
+    fun daysBetweenLocalDates() {
         val start = LocalDate.of(2020, 1, 1)
         val end = LocalDate.of(2020, 1, 2)
         val actual = start.daysUntil(end)
@@ -174,7 +176,7 @@ class TimeTest {
     }
 
     @Test
-    fun instantPlusHours(){
+    fun instantPlusHours() {
         val time = Instant.now()
         val expected = time.plus(Duration.ofHours(1))
         val actual = time.plusHours(1)
@@ -255,7 +257,7 @@ class TimeTest {
     }
 
     @Test
-    fun canGetClosestPastTimeInstant(){
+    fun canGetClosestPastTimeInstant() {
         val now = Instant.now()
         val times = listOf(
             now.minusSeconds(100),
@@ -344,7 +346,7 @@ class TimeTest {
     }
 
     @Test
-    fun hoursBetween(){
+    fun hoursBetween() {
         val start = zdt(2020, Month.JANUARY, 1, 12)
         val end = zdt(2020, Month.JANUARY, 1, 13)
         val actual = Time.hoursBetween(start, end)
@@ -352,7 +354,7 @@ class TimeTest {
     }
 
     @Test
-    fun getReadingsDate(){
+    fun getReadingsDate() {
         val date = LocalDate.of(2020, Month.JANUARY, 1)
         val step = Duration.ofHours(1)
         val readings = Time.getReadings(date, ZoneId.systemDefault(), step) { it.toEpochSecond() }
@@ -371,7 +373,7 @@ class TimeTest {
     }
 
     @Test
-    fun getReadingsZoned(){
+    fun getReadingsZoned() {
         val start = zdt(2020, Month.JANUARY, 1, 0)
         val end = zdt(2020, Month.JANUARY, 1, 23)
         val step = Duration.ofHours(1)
@@ -386,7 +388,7 @@ class TimeTest {
     }
 
     @Test
-    fun getReadingsBackwards(){
+    fun getReadingsBackwards() {
         val start = zdt(2020, Month.JANUARY, 1, 0)
         val end = zdt(2019, Month.DECEMBER, 30, 0)
         val step = Duration.ofHours(1)
@@ -395,7 +397,7 @@ class TimeTest {
     }
 
     @Test
-    fun getReadingsNoStep(){
+    fun getReadingsNoStep() {
         val start = zdt(2020, Month.JANUARY, 1, 0)
         val end = zdt(2020, Month.JANUARY, 1, 23)
         val step = Duration.ZERO
@@ -404,7 +406,7 @@ class TimeTest {
     }
 
     @Test
-    fun getReadingsNegativeStep(){
+    fun getReadingsNegativeStep() {
         val start = zdt(2020, Month.JANUARY, 1, 0)
         val end = zdt(2020, Month.JANUARY, 1, 23)
         val step = Duration.ofHours(-1)
@@ -413,7 +415,7 @@ class TimeTest {
     }
 
     @Test
-    fun getYearlyValues(){
+    fun getYearlyValues() {
         val year = 2020
         val values = Time.getYearlyValues(year) { it.dayOfYear.toLong() }
         assertEquals(366, values.size)
@@ -422,7 +424,7 @@ class TimeTest {
     }
 
     @Test
-    fun durationOfReadings(){
+    fun durationOfReadings() {
         val start = zdt(2020, Month.JANUARY, 1, 0)
         val end = zdt(2020, Month.JANUARY, 1, 23)
         val step = Duration.ofHours(1)
@@ -466,7 +468,7 @@ class TimeTest {
     }
 
     @Test
-    fun roundNearestMinuteLocalDefault(){
+    fun roundNearestMinuteLocalDefault() {
         val time = LocalDateTime.of(2020, Month.JANUARY, 1, 1, 23, 45)
         val actual = time.roundNearestMinute()
         val expected = LocalDateTime.of(2020, Month.JANUARY, 1, 1, 24)
@@ -474,7 +476,7 @@ class TimeTest {
     }
 
     @Test
-    fun roundNearestMinuteZonedDefault(){
+    fun roundNearestMinuteZonedDefault() {
         val time = zdt(2020, Month.JANUARY, 1, 1, 23).withSecond(45)
         val actual = time.roundNearestMinute()
         val expected = zdt(2020, Month.JANUARY, 1, 1, 24)
@@ -482,7 +484,7 @@ class TimeTest {
     }
 
     @Test
-    fun middle(){
+    fun middle() {
         val start = zdt(2020, Month.JANUARY, 1, 0)
         val end = zdt(2020, Month.JANUARY, 2, 0)
         val actual = Range(start, end).middle()
@@ -491,7 +493,7 @@ class TimeTest {
     }
 
     @Test
-    fun plusMillisLocal(){
+    fun plusMillisLocal() {
         val time = LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 0, 0)
         val actual = time.plusMillis(1000)
         val expected = LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 1, 0)
@@ -499,10 +501,75 @@ class TimeTest {
     }
 
     @Test
-    fun plusMillisZoned(){
+    fun plusMillisZoned() {
         val time = zdt(2020, Month.JANUARY, 1, 0, 0)
         val actual = time.plusMillis(1000)
         val expected = zdt(2020, Month.JANUARY, 1, 0, 0).withSecond(1)
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0",
+        "15, 1",
+        "30, 2",
+        "45, 3",
+        "60, 4",
+        "180, 12",
+        "-15, -1",
+        "-30, -2",
+        "-45, -3",
+        "-60, -4",
+        "-180, -12",
+        "20, 1.3333",
+        "-20, -1.3333",
+    )
+    fun getSolarTimeOffset(longitude: Double, offset: Double) {
+        val expected = Time.hours(offset)
+        assertDurationEquals(expected, Time.getSolarTimeOffset(longitude), Duration.ofMinutes(1))
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0",
+        "1, 15",
+        "2, 30",
+        "3, 45",
+        "4, 60",
+        "12, 180",
+        "-1, -15",
+        "-2, -30",
+        "-3, -45",
+        "-4, -60",
+        "-12, -180",
+        "1.3333, 20",
+        "-1.3333, -20",
+    )
+    fun getLongitudeFromSolarTimeOffset(offset: Double, longitude: Double) {
+        assertEquals(longitude, Time.getLongitudeFromSolarTimeOffset(Time.hours(offset)), 0.001)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, +0",
+        "15, +1",
+        "30, +2",
+        "45, +3",
+        "60, +4",
+        "180, +12",
+        "-15, -1",
+        "-30, -2",
+        "-45, -3",
+        "-60, -4",
+        "-180, -12",
+        "20, +1",
+        "-20, -1",
+        "30, +2",
+        "-30, -2",
+    )
+    fun getApproximateTimeZone(longitude: Double, offset: String) {
+        val expected = ZoneId.of(offset)
+        val actual = Time.getApproximateTimeZone(Coordinate(0.0, longitude))
         assertEquals(expected, actual)
     }
 
