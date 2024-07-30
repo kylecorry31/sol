@@ -1,12 +1,11 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
 
+import com.kylecorry.sol.math.RingBuffer
 import com.kylecorry.sol.science.astronomy.Astronomy
-import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.science.oceanography.Tide
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
 import java.time.Duration
-import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class LunitidalWaterLevelCalculator(
@@ -15,9 +14,9 @@ class LunitidalWaterLevelCalculator(
     private val lowLunitidalInterval: Duration? = null
 ) : IWaterLevelCalculator {
 
-    // TODO: LRU cache
-    private val upperMoonTransitMap = mutableMapOf<LocalDate, ZonedDateTime>()
-    private val lowerMoonTransitMap = mutableMapOf<LocalDate, ZonedDateTime>()
+    private val moonTransits = RingBuffer<ZonedDateTime>(24)
+
+    private val antipodeLocation = Coordinate(-location.latitude, location.longitude + 180)
 
     private var cachedCalculator: IWaterLevelCalculator? = null
     private var cachedCalculatorTideStart: Tide? = null
@@ -102,57 +101,11 @@ class LunitidalWaterLevelCalculator(
 
     private fun getTide(time: ZonedDateTime, isHigh: Boolean, isNext: Boolean): ZonedDateTime? {
         val interval = if (isHigh) lunitidalInterval else (lowLunitidalInterval ?: lunitidalInterval)
-        return shortCircuitTransitTime(time, interval, isNext)
-    }
-
-    private fun shortCircuitTransitTime(time: ZonedDateTime, interval: Duration, isNext: Boolean): ZonedDateTime? {
-        val shortCircuitDuration = Duration.ofHours(12)
-        if (isNext) {
-            val lookups = listOf(
-                0L to true,
-                0L to false,
-                1L to true,
-                1L to false,
-                -1L to true,
-                -1L to false
-            )
-            val times = mutableListOf<ZonedDateTime>()
-            for (lookup in lookups) {
-                val transit = if (lookup.second) {
-                    getUpperMoonTransit(time.plusDays(lookup.first))?.plus(interval)
-                } else {
-                    getLowerMoonTransit(time.plusDays(lookup.first))?.plus(interval)
-                }
-                if (transit != null && transit.isAfter(time) && transit.isBefore(time.plus(shortCircuitDuration))) {
-                    return transit
-                } else if (transit != null) {
-                    times.add(transit)
-                }
-            }
-            return Time.getClosestFutureTime(time, times)
+        val tides = getTideTimes(time, interval)
+        return if (isNext) {
+            Time.getClosestFutureTime(time, tides)
         } else {
-            val lookups = listOf(
-                0L to true,
-                0L to false,
-                -1L to true,
-                -1L to false,
-                1L to true,
-                1L to false
-            )
-            val times = mutableListOf<ZonedDateTime>()
-            for (lookup in lookups) {
-                val transit = if (lookup.second) {
-                    getUpperMoonTransit(time.plusDays(lookup.first))?.plus(interval)
-                } else {
-                    getLowerMoonTransit(time.plusDays(lookup.first))?.plus(interval)
-                }
-                if (transit != null && transit.isBefore(time) && transit.isAfter(time.minus(shortCircuitDuration))) {
-                    return transit
-                } else if (transit != null) {
-                    times.add(transit)
-                }
-            }
-            return Time.getClosestPastTime(time, times)
+            Time.getClosestPastTime(time, tides)
         }
     }
 
@@ -164,26 +117,75 @@ class LunitidalWaterLevelCalculator(
         return getTide(time, false, isNext)
     }
 
-    private fun getKey(time: ZonedDateTime): LocalDate {
-        return time.toLocalDate()
-    }
-
     private fun getUpperMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        if (upperMoonTransitMap.containsKey(getKey(time))) {
-            return upperMoonTransitMap[getKey(time)]
-        }
-        val transit = Astronomy.getMoonEvents(time, location).transit ?: return null
-        upperMoonTransitMap[getKey(time)] = transit
-        return transit
+        return Astronomy.getMoonEvents(time, location).transit
     }
 
     private fun getLowerMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        if (lowerMoonTransitMap.containsKey(getKey(time))) {
-            return lowerMoonTransitMap[getKey(time)]
+        return Astronomy.getMoonEvents(time, antipodeLocation).transit
+    }
+
+    private fun getTideTimes(time: ZonedDateTime, interval: Duration): List<ZonedDateTime> {
+        val shortCircuitDuration = Duration.ofHours(14)
+        val tides = moonTransits.toList().map { it.plus(interval) }.toMutableList()
+
+        var before = tides.firstOrNull { it.isBefore(time) && it.isAfter(time.minus(shortCircuitDuration)) }
+        var after = tides.firstOrNull { it.isAfter(time) && it.isBefore(time.plus(shortCircuitDuration)) }
+
+        if (before == null) {
+            val maxDays = 2
+            var index = 0
+            while (before == null && index < maxDays) {
+                val beforeUpper = getUpperMoonTransit(time.minusDays(index.toLong()))
+                val beforeLower = getLowerMoonTransit(time.minusDays(index.toLong()))
+                if (beforeUpper != null && !tides.contains(beforeUpper)) {
+                    tides.add(beforeUpper.plus(interval))
+                    moonTransits.add(beforeUpper)
+                }
+
+                if (beforeLower != null && !tides.contains(beforeLower)) {
+                    tides.add(beforeLower.plus(interval))
+                    moonTransits.add(beforeLower)
+                }
+
+                val closest =
+                    Time.getClosestPastTime(time, listOf(beforeUpper?.plus(interval), beforeLower?.plus(interval)))
+
+                if (closest != null && closest.isBefore(time) && closest.isAfter(time.minus(shortCircuitDuration))) {
+                    before = closest
+                }
+
+                index++
+            }
         }
-        val transit = Astronomy.getMoonEvents(time, Coordinate(-location.latitude, location.longitude + 180)).transit
-            ?: return null
-        lowerMoonTransitMap[getKey(time)] = transit
-        return transit
+
+        if (after == null) {
+            val maxDays = 2
+            var index = 0
+            while (after == null && index < maxDays) {
+                val afterUpper = getUpperMoonTransit(time.plusDays(index.toLong()))
+                val afterLower = getLowerMoonTransit(time.plusDays(index.toLong()))
+                if (afterUpper != null && !tides.contains(afterUpper)) {
+                    tides.add(afterUpper.plus(interval))
+                    moonTransits.add(afterUpper)
+                }
+
+                if (afterLower != null && !tides.contains(afterLower)) {
+                    tides.add(afterLower.plus(interval))
+                    moonTransits.add(afterLower)
+                }
+
+                val closest =
+                    Time.getClosestFutureTime(time, listOf(afterUpper?.plus(interval), afterLower?.plus(interval)))
+
+                if (closest != null && closest.isAfter(time) && closest.isBefore(time.plus(shortCircuitDuration))) {
+                    after = closest
+                }
+
+                index++
+            }
+        }
+
+        return tides
     }
 }

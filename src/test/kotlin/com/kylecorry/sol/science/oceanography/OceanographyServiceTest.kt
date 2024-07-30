@@ -1,7 +1,9 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.science.oceanography.waterlevel.*
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.roundNearestMinute
 import com.kylecorry.sol.units.*
@@ -113,11 +115,15 @@ internal class OceanographyServiceTest {
         val lows = source.filter { !it.isHigh }.map { it.time }
         val localLunitidalInterval = service.getMeanLunitidalInterval(highs, location) ?: Duration.ZERO
         val localLowLunitidalInterval = service.getMeanLunitidalInterval(lows, location) ?: Duration.ZERO
-        val utcLunitidalInterval = service.getMeanLunitidalInterval(highs) ?: Duration.ZERO
-        val utcLowLunitidalInterval = service.getMeanLunitidalInterval(lows) ?: Duration.ZERO
+        val utcLunitidalInterval =
+            service.getMeanLunitidalInterval(highs) ?: Duration.ZERO
+        val utcLowLunitidalInterval =
+            service.getMeanLunitidalInterval(lows) ?: Duration.ZERO
 
-        println("Local lunitidal interval: $localLunitidalInterval")
-        println("UTC lunitidal interval: $utcLunitidalInterval")
+        println("Local lunitidal interval: ${Time.hours(localLunitidalInterval).roundPlaces(2)}")
+        println("UTC lunitidal interval: ${Time.hours(utcLunitidalInterval).roundPlaces(2)}")
+        println("UTC low lunitidal interval: ${Time.hours(utcLowLunitidalInterval).roundPlaces(2)}")
+        println()
 
         val calculators = listOf(
             "LUNITIDAL HARMONIC (LOCAL)" to HarmonicLunitidalWaterLevelCalculator(localLunitidalInterval, location),
