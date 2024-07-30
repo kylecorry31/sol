@@ -12,6 +12,9 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
 
     val isNorthernHemisphere = latitude >= 0
 
+    val antipode: Coordinate
+        get() = Coordinate(-latitude, toLongitude(longitude + 180))
+
     override fun toString(): String {
         return "$latitude, $longitude"
     }

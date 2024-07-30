@@ -16,7 +16,7 @@ class LunitidalWaterLevelCalculator(
 
     private val moonTransits = RingBuffer<ZonedDateTime>(24)
 
-    private val antipodeLocation = Coordinate(-location.latitude, location.longitude + 180)
+    private val antipodeLocation = location.antipode
 
     private var cachedCalculator: IWaterLevelCalculator? = null
     private var cachedCalculatorTideStart: Tide? = null
