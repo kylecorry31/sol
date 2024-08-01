@@ -79,7 +79,16 @@ class LunitidalWaterLevelCalculator(
                 }
             }
         } else {
-            getHighTide(time, false)?.let { Tide.high(it) }
+            val previousHigh = getHighTide(time, false)
+            val nextHigh = getHighTide(time, true)
+            val low = previousHigh?.plus(Duration.between(previousHigh, nextHigh).dividedBy(2))
+            Time.getClosestPastTime(time, listOf(previousHigh, low))?.let {
+                if (it == previousHigh) {
+                    Tide.high(it)
+                } else {
+                    Tide.low(it)
+                }
+            }
         }
     }
 
@@ -95,12 +104,22 @@ class LunitidalWaterLevelCalculator(
                 }
             }
         } else {
-            getHighTide(time, true)?.let { Tide.high(it) }
+            val previousHigh = getHighTide(time, false)
+            val nextHigh = getHighTide(time, true)
+            val low = previousHigh?.plus(Duration.between(previousHigh, nextHigh).dividedBy(2))
+            Time.getClosestFutureTime(time, listOf(nextHigh, low))?.let {
+                if (it == nextHigh) {
+                    Tide.high(it)
+                } else {
+                    Tide.low(it)
+                }
+            }
         }
     }
 
     private fun getTide(time: ZonedDateTime, isHigh: Boolean, isNext: Boolean): ZonedDateTime? {
-        val interval = if (isHigh) lunitidalInterval else (lowLunitidalInterval ?: lunitidalInterval)
+        val interval =
+            if (isHigh) lunitidalInterval else (lowLunitidalInterval ?: lunitidalInterval)
         val tides = getTideTimes(time, interval)
         return if (isNext) {
             Time.getClosestFutureTime(time, tides)
@@ -122,36 +141,53 @@ class LunitidalWaterLevelCalculator(
     }
 
     private fun getLowerMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        return Astronomy.getMoonEvents(time, antipodeLocation).transit
+        return Astronomy.getMoonEvents(
+            time.withZoneSameInstant(
+                Time.getApproximateTimeZone(
+                    antipodeLocation
+                )
+            ), antipodeLocation
+        ).transit
     }
 
     private fun getTideTimes(time: ZonedDateTime, interval: Duration): List<ZonedDateTime> {
         val shortCircuitDuration = Duration.ofHours(14)
         val tides = moonTransits.toList().map { it.plus(interval) }.toMutableList()
 
-        var before = tides.firstOrNull { it.isBefore(time) && it.isAfter(time.minus(shortCircuitDuration)) }
-        var after = tides.firstOrNull { it.isAfter(time) && it.isBefore(time.plus(shortCircuitDuration)) }
+        var before =
+            tides.firstOrNull { it.isBefore(time) && it.isAfter(time.minus(shortCircuitDuration)) }
+        var after =
+            tides.firstOrNull { it.isAfter(time) && it.isBefore(time.plus(shortCircuitDuration)) }
 
         if (before == null) {
             val maxDays = 2
             var index = 0
+            // TODO: Check if it approximately contains, in case the time is slightly off
             while (before == null && index < maxDays) {
                 val beforeUpper = getUpperMoonTransit(time.minusDays(index.toLong()))
                 val beforeLower = getLowerMoonTransit(time.minusDays(index.toLong()))
-                if (beforeUpper != null && !tides.contains(beforeUpper)) {
+                if (beforeUpper != null && !tides.contains(beforeUpper.plus(interval))) {
                     tides.add(beforeUpper.plus(interval))
                     moonTransits.add(beforeUpper)
                 }
 
-                if (beforeLower != null && !tides.contains(beforeLower)) {
+                if (beforeLower != null && !tides.contains(beforeLower.plus(interval))) {
                     tides.add(beforeLower.plus(interval))
                     moonTransits.add(beforeLower)
                 }
 
                 val closest =
-                    Time.getClosestPastTime(time, listOf(beforeUpper?.plus(interval), beforeLower?.plus(interval)))
+                    Time.getClosestPastTime(
+                        time,
+                        listOf(beforeUpper?.plus(interval), beforeLower?.plus(interval))
+                    )
 
-                if (closest != null && closest.isBefore(time) && closest.isAfter(time.minus(shortCircuitDuration))) {
+                if (closest != null && closest.isBefore(time) && closest.isAfter(
+                        time.minus(
+                            shortCircuitDuration
+                        )
+                    )
+                ) {
                     before = closest
                 }
 
@@ -165,20 +201,28 @@ class LunitidalWaterLevelCalculator(
             while (after == null && index < maxDays) {
                 val afterUpper = getUpperMoonTransit(time.plusDays(index.toLong()))
                 val afterLower = getLowerMoonTransit(time.plusDays(index.toLong()))
-                if (afterUpper != null && !tides.contains(afterUpper)) {
+                if (afterUpper != null && !tides.contains(afterUpper.plus(interval))) {
                     tides.add(afterUpper.plus(interval))
                     moonTransits.add(afterUpper)
                 }
 
-                if (afterLower != null && !tides.contains(afterLower)) {
+                if (afterLower != null && !tides.contains(afterLower.plus(interval))) {
                     tides.add(afterLower.plus(interval))
                     moonTransits.add(afterLower)
                 }
 
                 val closest =
-                    Time.getClosestFutureTime(time, listOf(afterUpper?.plus(interval), afterLower?.plus(interval)))
+                    Time.getClosestFutureTime(
+                        time,
+                        listOf(afterUpper?.plus(interval), afterLower?.plus(interval))
+                    )
 
-                if (closest != null && closest.isAfter(time) && closest.isBefore(time.plus(shortCircuitDuration))) {
+                if (closest != null && closest.isAfter(time) && closest.isBefore(
+                        time.plus(
+                            shortCircuitDuration
+                        )
+                    )
+                ) {
                     after = closest
                 }
 
