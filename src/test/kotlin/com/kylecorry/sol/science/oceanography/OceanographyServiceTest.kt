@@ -1,10 +1,14 @@
 package com.kylecorry.sol.science.oceanography
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.roundPlaces
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.statistics.Statistics
+import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.oceanography.waterlevel.*
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
+import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.roundNearestMinute
 import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,6 +19,7 @@ import java.io.File
 import java.net.http.HttpClient
 import java.time.*
 import java.util.stream.Stream
+import kotlin.math.acos
 
 internal class OceanographyServiceTest {
     @Test
@@ -37,44 +42,85 @@ internal class OceanographyServiceTest {
 
     @Test
     fun getTidesHarmonics() {
-        val harmonics = listOf(
-            TidalHarmonic(TideConstituent.M2, 1.66f, 2.3f),
-            TidalHarmonic(TideConstituent.S2, 0.35f, 25f),
-            TidalHarmonic(TideConstituent.N2, 0.41f, 345.8f),
-            TidalHarmonic(TideConstituent.K1, 0.2f, 166.1f),
-            TidalHarmonic(TideConstituent.O1, 0.15f, 202f),
-            TidalHarmonic(TideConstituent.P1, 0.07f, 176.6f),
-            TidalHarmonic(TideConstituent.M4, 0.19f, 35.8f),
-            TidalHarmonic(TideConstituent.K2, 0.1f, 21.7f),
-            TidalHarmonic(TideConstituent.L2, 0.04f, 349.9f),
-            TidalHarmonic(TideConstituent.MS4, 0.05f, 106.4f),
-            TidalHarmonic(TideConstituent.Z0, 0f, 0f)
-        )
-
-        val zone = ZoneId.of("America/New_York")
-        val date = LocalDate.of(2023, 12, 22).atStartOfDay(zone)
-
-        val expected = listOf(
-            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(3, 31), zone)),
-            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(10, 23), zone)),
-            Tide.high(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(15, 56), zone)),
-            Tide.low(ZonedDateTime.of(date.toLocalDate(), LocalTime.of(21, 36), zone))
-        )
-
-        val service = OceanographyService()
-
-        val tides = service.getTides(
-            HarmonicWaterLevelCalculator(harmonics),
-            date,
-            date.atEndOfDay()
-        )
-
-        assertEquals(expected.size, tides.size)
-
-        for (i in tides.indices) {
-            assertEquals(expected[i].isHigh, tides[i].isHigh)
-            timeEquals(tides[i].time, expected[i].time, Duration.ofMinutes(30))
+        val constituents = listOf(
+            Triple(1, 0.505968f, 2.3f),
+            Triple(2, 0.10668f, 25.0f),
+            Triple(3, 0.124968f, 345.8f),
+            Triple(4, 0.06096000000000001f, 166.1f),
+            Triple(5, 0.057912000000000005f, 35.8f),
+            Triple(6, 0.045720000000000004f, 202.0f),
+            Triple(7, 0.006096000000000001f, 220.1f),
+            Triple(8, 0.009144f, 19.5f),
+            Triple(9, 0.006096000000000001f, 5.1f),
+            Triple(10, 0.027432f, 347.9f),
+            Triple(11, 0.021336000000000004f, 341.0f),
+            Triple(12, 0.0f, 222.9f),
+            Triple(13, 0.024384000000000003f, 344.5f),
+            Triple(14, 0.018288f, 333.0f),
+            Triple(15, 0.0030480000000000004f, 195.7f),
+            Triple(16, 0.0030480000000000004f, 345.5f),
+            Triple(17, 0.006096000000000001f, 121.9f),
+            Triple(18, 0.0030480000000000004f, 204.0f),
+            Triple(19, 0.006096000000000001f, 181.1f),
+            Triple(20, 0.018288f, 73.9f),
+            Triple(21, 0.015240000000000002f, 75.1f),
+            Triple(22, 0.06096000000000001f, 145.3f),
+            Triple(23, 0.0f, 0.0f),
+            Triple(24, 0.0f, 0.0f),
+            Triple(25, 0.0030480000000000004f, 230.9f),
+            Triple(26, 0.012192000000000001f, 185.3f),
+            Triple(27, 0.009144f, 9.0f),
+            Triple(28, 0.0f, 252.2f),
+            Triple(29, 0.0030480000000000004f, 172.9f),
+            Triple(30, 0.021336000000000004f, 176.6f),
+            Triple(31, 0.0030480000000000004f, 48.8f),
+            Triple(32, 0.006096000000000001f, 34.1f),
+            Triple(33, 0.012192000000000001f, 349.9f),
+            Triple(34, 0.009144f, 357.1f),
+            Triple(35, 0.030480000000000004f, 21.7f),
+            Triple(36, 0.0f, 330.4f),
+            Triple(37, 0.015240000000000002f, 106.4f)
+        ).mapNotNull {
+            val (order, amplitude, phase) = it
+            val constituent = TideConstituent.entries.firstOrNull { it.id == order.toLong() }
+            if (constituent == null) {
+                null
+            } else {
+                TidalHarmonic(constituent, amplitude, phase)
+            }
         }
+
+        val start = ZonedDateTime.of(2024, 7, 1, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val end = ZonedDateTime.of(2024, 7, 29, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val station = "8452660"
+        val url =
+            "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=NOS.COOPS.TAC.WL&begin_date=20240701&end_date=20240730&datum=MLLW&station=$station&time_zone=lst_ldt&units=english&interval=hilo&format=csv"
+        File("temp").mkdirs()
+
+        val sourceString = if (File("temp/${station}.csv").exists()) {
+            File("temp/${station}.csv").readText()
+        } else {
+            // Download the file
+            val httpClient = HttpClient.newHttpClient()
+            val request = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .build()
+            val response = httpClient.send(request, java.net.http.HttpResponse.BodyHandlers.ofString())
+            val body = response.body()
+            File("temp/${station}.csv").writeText(body)
+            body
+        }
+
+        val source = sourceString.trim().lines().drop(1).map {
+            val parts = it.split(",")
+            Tide(
+                LocalDateTime.parse(parts[0].replace(" ", "T")).atZone(ZoneId.of("America/New_York")),
+                parts[2] == "H",
+                parts[1].toFloat()
+            )
+        }
+
+        testCalculator("Harmonic", HarmonicWaterLevelCalculator(constituents), start, end, source)
     }
 
     @Test

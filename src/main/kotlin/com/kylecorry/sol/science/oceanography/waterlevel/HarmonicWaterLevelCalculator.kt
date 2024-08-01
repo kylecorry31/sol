@@ -15,11 +15,7 @@ class HarmonicWaterLevelCalculator(private val harmonics: List<TidalHarmonic>) :
     IWaterLevelCalculator {
     override fun calculate(time: ZonedDateTime): Float {
         // TODO: This is a hack to get the correct year for the astronomical arguments
-        val year = if (time.year <= 2021){
-            2021
-        } else {
-            2022
-        }
+        val year = 2022
         val start = ZonedDateTime.of(
             LocalDateTime.of(year, 1, 1, 0, 0),
             ZoneId.of("UTC")
