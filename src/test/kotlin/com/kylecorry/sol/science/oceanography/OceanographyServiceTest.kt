@@ -3,6 +3,7 @@ package com.kylecorry.sol.science.oceanography
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.optimization.GoldenSearchExtremaFinder
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.oceanography.waterlevel.*
@@ -203,7 +204,8 @@ internal class OceanographyServiceTest {
         val tides = service.getTides(
             calculator,
             start,
-            end
+            end,
+            GoldenSearchExtremaFinder(30.0, 1.0)
         )
 
         val deltas = mutableListOf<Float>()
