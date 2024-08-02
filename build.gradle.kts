@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.kylecorry"
-version = "9.8.1"
+version = "9.8.2"
 
 afterEvaluate {
     publishing {
