@@ -1,7 +1,6 @@
 package com.kylecorry.sol.math.analysis
 
-import org.junit.jupiter.api.Assertions.*
-
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -70,6 +69,34 @@ internal class TrigonometryTest {
     ) {
         val actual = Trigonometry.toUnitAngle(originalAngle, start, isCounterClockwise)
         assertEquals(expected, actual, 0.0001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 0, 0",
+        "0, 1, 1, 1",
+        "1, 0, -1, 1",
+        "1, 1, 0, 2",
+    )
+    fun getRangeY(amplitude: Float, verticalOffset: Float, expectedMin: Float, expectedMax: Float) {
+        val wave = CosineWave(amplitude, 1f, 0f, verticalOffset)
+        val range = Trigonometry.getRangeY(wave)
+        assertEquals(expectedMin, range.start, 0.0001f)
+        assertEquals(expectedMax, range.end, 0.0001f)
+    }
+
+    @Test
+    fun getCombinationRangeY() {
+        val waves = listOf(
+            CosineWave(1f, 1f, 0f, 0f),
+            CosineWave(2f, 3f, 1f, 1f),
+            CosineWave(3f, 2f, 0f, 0f)
+        )
+
+        val range = Trigonometry.getCombinationRangeY(waves)
+
+        assertEquals(-5f, range.start, 0.0001f)
+        assertEquals(7f, range.end, 0.0001f)
     }
 
 }

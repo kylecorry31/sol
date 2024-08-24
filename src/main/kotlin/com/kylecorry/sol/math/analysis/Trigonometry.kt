@@ -1,8 +1,10 @@
 package com.kylecorry.sol.math.analysis
 
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.normalizeAngle
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
 
 object Trigonometry {
@@ -93,6 +95,16 @@ object Trigonometry {
 
         val amplitude = (if (first.y > second.y) 1 else -1) * deltaY / 2
         return CosineWave(amplitude, frequency.toFloat(), first.x, verticalShift)
+    }
+
+    fun getRangeY(waveform: Waveform): Range<Float> {
+        return Range(-waveform.amplitude + waveform.verticalShift, waveform.amplitude + waveform.verticalShift)
+    }
+
+    fun getCombinationRangeY(waveforms: List<Waveform>): Range<Float> {
+        val ranges = waveforms.map { getRangeY(it) }
+        // TODO: To get a more accurate range, factor in the phase of the waveforms
+        return Range(ranges.sumOfFloat { it.start }, ranges.sumOfFloat { it.end })
     }
 
 }
