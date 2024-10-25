@@ -144,18 +144,18 @@ internal class Moon : ICelestialLocator {
 
         for (phase in MoonTruePhase.values()) {
             if (phase.startAngle <= phaseAngle && phase.endAngle >= phaseAngle) {
-                return MoonPhase(phase, illumination)
+                return MoonPhase(phase, illumination, phaseAngle.toFloat())
             }
 
             // Handle new moon
             if (phase.startAngle >= phase.endAngle) {
                 if (phase.startAngle <= phaseAngle || phase.endAngle >= phaseAngle) {
-                    return MoonPhase(phase, illumination)
+                    return MoonPhase(phase, illumination, phaseAngle.toFloat())
                 }
             }
         }
 
-        return MoonPhase(MoonTruePhase.New, illumination)
+        return MoonPhase(MoonTruePhase.New, illumination, phaseAngle.toFloat())
     }
 
     fun getNextMeanPhase(date: UniversalTime, moonTruePhase: MoonTruePhase): UniversalTime {

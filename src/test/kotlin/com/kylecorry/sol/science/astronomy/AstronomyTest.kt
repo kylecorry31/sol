@@ -448,7 +448,8 @@ class AstronomyTest {
 
         val actual = Astronomy.getMoonPhase(ZonedDateTime.parse(date))
         assertMoonPhases(
-            MoonPhase(phase, illumination),
+            // TODO: Not testing angle right now
+            MoonPhase(phase, illumination, 0f),
             actual,
             tolerance
         )
