@@ -73,4 +73,9 @@ interface IMoonService {
         withRefraction: Boolean = false,
         withParallax: Boolean = false
     ): Range<ZonedDateTime>?
+
+    /**
+     * The tilt of the illuminated fraction of the moon in degrees clockwise from the top of the moon.
+     */
+    fun getMoonTilt(time: ZonedDateTime, location: Coordinate): Float
 }

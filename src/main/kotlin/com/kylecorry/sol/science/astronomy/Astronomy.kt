@@ -352,6 +352,10 @@ object Astronomy : IAstronomyService {
         )
     }
 
+    override fun getMoonTilt(time: ZonedDateTime, location: Coordinate): Float {
+        return moon.getTilt(time.toUniversalTime(), location)
+    }
+
     override fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
         val sl = wrap(getSolarLongitude(date), 0f, 360f)
         return when {

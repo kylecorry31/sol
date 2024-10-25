@@ -644,6 +644,25 @@ class AstronomyTest {
         assertDate(expectedEnd, times?.end, Duration.ofMinutes(1))
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 2020-09-13T12:00:00Z, -3.4",
+        "42, -72, 2024-10-25T00:00:00Z, 113.6",
+        "-60, 180, 2024-10-25T00:00:00Z, -43.1",
+    )
+    fun getMoonTilt(
+        latitude: Double,
+        longitude: Double,
+        time: String,
+        expected: Float
+    ) {
+        val actual = Astronomy.getMoonTilt(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
+        )
+        assertEquals(expected, actual, 0.5f)
+    }
+
 //    @Test
 //    fun solarEclipsePerformance() {
 //        val start = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)

@@ -3,11 +3,9 @@ package com.kylecorry.sol.science.astronomy.locators
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.polynomial
-import com.kylecorry.sol.math.SolMath.roundNearest
 import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
@@ -15,11 +13,11 @@ import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.*
-import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
-import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
 import java.time.Duration
-import kotlin.math.absoluteValue
-import kotlin.math.floor
+import kotlin.math.*
 
 internal class Moon : ICelestialLocator {
 
@@ -194,6 +192,26 @@ internal class Moon : ICelestialLocator {
         } else {
             intK + ending
         }
+    }
+
+    fun getTilt(date: UniversalTime, location: Coordinate): Float {
+        val parallacticAngle = AstroUtils.getParallacticAngle(this, date, location)
+        val moonPositionAngle = getMoonPositionAngle(date)
+        return (moonPositionAngle - parallacticAngle).toFloat()
+    }
+
+    private fun getMoonPositionAngle(ut: UniversalTime): Double {
+        val sunCoords = sun.getCoordinates(ut)
+        val moonCoords = getCoordinates(ut)
+        val sunRA = sunCoords.rightAscension.toRadians()
+        val sunDec = sunCoords.declination.toRadians()
+        val moonRA = moonCoords.rightAscension.toRadians()
+        val moonDec = moonCoords.declination.toRadians()
+
+        return atan2(
+            cos(sunDec) * sin(sunRA - moonRA),
+            sin(sunDec) * cos(moonDec) - cos(sunDec) * sin(moonDec) * cos(sunRA - moonRA)
+        ).toDegrees()
     }
 
     private fun getMoonPhaseAngle(ut: UniversalTime): Double {

@@ -1,12 +1,19 @@
 package com.kylecorry.sol.science.astronomy
 
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.tanDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
+import com.kylecorry.sol.science.astronomy.units.toSiderealTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import kotlin.math.atan
+import kotlin.math.atan2
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)
 internal object AstroUtils {
@@ -79,6 +86,24 @@ internal object AstroUtils {
             withRefraction,
             distance
         )
+    }
+
+    fun getParallacticAngle(
+        locator: ICelestialLocator,
+        ut: UniversalTime,
+        location: Coordinate
+    ): Float {
+        val coords = locator.getCoordinates(ut)
+        val hourAngle = coords.getHourAngle(ut.toSiderealTime().atLongitude(location.longitude)) * 15
+        val latitude = location.latitude
+        val declination = coords.declination
+        val q = atan2(
+            sinDegrees(hourAngle),
+            (tanDegrees(latitude) * cosDegrees(declination) - sinDegrees(declination) * cosDegrees(
+                hourAngle
+            ))
+        ).toDegrees()
+        return q.toFloat()
     }
 
     private fun getLocation(
