@@ -664,6 +664,25 @@ class AstronomyTest {
         assertEquals(expected, actual, 0.5f)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 2020-09-13T12:00:00Z, 108.1",
+        "42, -72, 2024-10-25T00:00:00Z, -7.5",
+        "-60, 180, 2024-10-25T00:00:00Z, 149.2",
+    )
+    fun getMoonParallacticAngle(
+        latitude: Double,
+        longitude: Double,
+        time: String,
+        expected: Float
+    ) {
+        val actual = Astronomy.getMoonParallacticAngle(
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude)
+        )
+        assertEquals(expected, actual, 1.5f)
+    }
+
 //    @Test
 //    fun solarEclipsePerformance() {
 //        val start = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
