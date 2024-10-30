@@ -12,5 +12,7 @@ enum class VolumeUnits(val id: Int, val liters: Float) {
     ImperialPints(9, 0.568261f),
     ImperialQuarts(10, 1.13652f),
     ImperialOunces(11, 0.0284131f),
-    ImperialGallons(12, 4.54609f)
+    ImperialGallons(12, 4.54609f),
+    USTeaspoons(13, 0.00492892159f),
+    USTablespoons(14, 0.0147867648f),
 }
