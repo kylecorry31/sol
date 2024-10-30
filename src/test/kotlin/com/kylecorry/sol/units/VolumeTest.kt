@@ -52,6 +52,10 @@ internal class VolumeTest {
                 Arguments.of(
                     Volume(1f, VolumeUnits.USTablespoons),
                     Volume(3f, VolumeUnits.USTeaspoons)
+                ),
+                Arguments.of(
+                    Volume(1f, VolumeUnits.ImperialTablespoons),
+                    Volume(3f, VolumeUnits.ImperialTeaspoons)
                 )
             )
         }
