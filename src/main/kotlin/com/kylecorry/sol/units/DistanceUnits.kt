@@ -8,5 +8,6 @@ enum class DistanceUnits(val id: Int, val meters: Float, val isMetric: Boolean) 
     Feet(5, 1 / 3.28084f, false),
     Kilometers(6, 1000f, true),
     Meters(7, 1f, true),
-    NauticalMiles(8, 1852f, false)
+    NauticalMiles(8, 1852f, false),
+    Millimeters(9, 0.001f, true),
 }

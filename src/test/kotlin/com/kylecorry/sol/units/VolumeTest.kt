@@ -49,6 +49,10 @@ internal class VolumeTest {
                     Volume(1f, VolumeUnits.ImperialQuarts),
                     Volume(1136.52f, VolumeUnits.Milliliter)
                 ),
+                Arguments.of(
+                    Volume(1f, VolumeUnits.USTablespoons),
+                    Volume(3f, VolumeUnits.USTeaspoons)
+                )
             )
         }
 
