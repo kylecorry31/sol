@@ -17,7 +17,7 @@ enum class TideConstituent(val id: Long, val speed: Float) {
     S6(12, 90f),
     MU2(13, 27.968208f),
     _2N2(14, 27.895355f),
-//    OO1(15, 16.139101f),
+    OO1(15, 16.139101f),
     LAM2(16, 29.455626f),
     S1(17, 15f),
     M1(18, 14.496694f),

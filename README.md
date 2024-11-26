@@ -19,4 +19,4 @@ Astronomy algorithms are a combination of custom made algorithms and implementat
 
 - [osgb](https://github.com/kylecorry31/osgb/blob/master/LICENSE)
 - [Geo-Coordinate-Conversion-Java](https://github.com/kylecorry31/Geo-Coordinate-Conversion-Java/blob/master/GDAL_License.TXT)
-- Tide corrections are computed using [uptide](https://github.com/stephankramer/uptide/blob/master/LICENSE)
+- Tide corrections are computed using [pyTMD](https://github.com/tsutterley/pyTMD)
