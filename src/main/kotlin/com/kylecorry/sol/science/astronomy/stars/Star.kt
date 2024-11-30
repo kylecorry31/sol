@@ -82,4 +82,5 @@ enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Fl
     // Orion
     Saiph(EquatorialCoordinate(toDegrees(-9.0, 40.0, 10.58), timeToAngle(5, 47, 45.389)), 2.06f),
     Meissa(EquatorialCoordinate(toDegrees(9.0, 56.0, 2.96), timeToAngle(5, 35, 8.278)), 3.66f),
+    Mintaka(EquatorialCoordinate(toDegrees(0.0, -17.0, 56.74), timeToAngle(5, 32, 0.4)), 2.41f),
 }
