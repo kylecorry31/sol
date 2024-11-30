@@ -1,18 +1,21 @@
 package com.kylecorry.sol.science.astronomy
 
-import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
+import com.kylecorry.sol.science.astronomy.stars.Star
+import com.kylecorry.sol.science.geography.Geography
+import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
 import com.kylecorry.sol.tests.parametrized
-import com.kylecorry.sol.tests.performanceTest
 import com.kylecorry.sol.time.Time.duration
+import com.kylecorry.sol.units.Coordinate
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
@@ -698,6 +701,28 @@ class AstronomyTest {
 //            Astronomy.getNextEclipse(start, Coordinate(0.0, 0.0), EclipseType.PartialLunar, Duration.ofDays(365))
 //        }
 //    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "Sirius, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 134.06, 19.0",
+        "Betelgeuse, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 129.63, 45.81",
+        "Rigel, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 151.6, 37.0",
+    )
+    fun canGetStarPosition(
+        name: String,
+        latitude: Double,
+        longitude: Double,
+        time: String,
+        azimuth: Float,
+        altitude: Float
+    ) {
+        val star = Star.entries.find { it.name == name } ?: fail("Star not found")
+        val actualAzimuth = Astronomy.getStarAzimuth(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
+        val actualAltitude = Astronomy.getStarAltitude(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
+        assertEquals(azimuth, actualAzimuth.value, 0.5f)
+        assertEquals(altitude, actualAltitude, 0.5f)
+
+    }
 
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {
         assertEquals(expected.phase, actual.phase)

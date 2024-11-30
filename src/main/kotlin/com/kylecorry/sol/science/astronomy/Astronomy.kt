@@ -11,6 +11,7 @@ import com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalcul
 import com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.locators.MeteorShowerLocator
 import com.kylecorry.sol.science.astronomy.locators.Moon
+import com.kylecorry.sol.science.astronomy.locators.StarLocator
 import com.kylecorry.sol.science.astronomy.locators.Sun
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShowerPeak
@@ -18,6 +19,7 @@ import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
+import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
@@ -641,6 +643,28 @@ object Astronomy : IAstronomyService {
         }
 
         return Range(nextRise, nextSet ?: time.atEndOfDay())
+    }
+
+    override fun getStarAltitude(
+        star: Star,
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean
+    ): Float {
+        return AstroUtils.getAltitude(
+            StarLocator(star),
+            time.toUniversalTime(),
+            location,
+            withRefraction = withRefraction
+        )
+    }
+
+    override fun getStarAzimuth(
+        star: Star,
+        time: ZonedDateTime,
+        location: Coordinate
+    ): Bearing {
+        return AstroUtils.getAzimuth(StarLocator(star), time.toUniversalTime(), location)
     }
 
 }

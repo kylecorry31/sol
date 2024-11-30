@@ -6,4 +6,4 @@ import com.kylecorry.sol.science.shared.ISeasonService
 
 // TODO: Move solar panel service out of this
 interface IAstronomyService : IEclipseService, ISunService, IMoonService,
-    IMeteorShowerService, ISeasonService
+    IMeteorShowerService, ISeasonService, IStarService

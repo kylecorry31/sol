@@ -1,0 +1,22 @@
+package com.kylecorry.sol.science.astronomy
+
+import com.kylecorry.sol.science.astronomy.stars.Star
+import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.Coordinate
+import java.time.ZonedDateTime
+
+interface IStarService {
+    fun getStarAltitude(
+        star: Star,
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean = false
+    ): Float
+
+    fun getStarAzimuth(
+        star: Star,
+        time: ZonedDateTime,
+        location: Coordinate
+    ): Bearing
+
+}

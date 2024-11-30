@@ -517,4 +517,14 @@ object SolMath {
     fun leastCommonMultiple(a: Float, b: Float): Float {
         return leastCommonMultiple(a.toDouble(), b.toDouble()).toFloat()
     }
+
+    fun toDegrees(degrees: Double, minutes: Double = 0.0, seconds: Double = 0.0): Double {
+        val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
+        return sign * (degrees.absoluteValue + minutes.absoluteValue / 60 + seconds.absoluteValue / 3600)
+    }
+
+    fun toDegrees(degrees: Float, minutes: Float = 0f, seconds: Float = 0f): Float {
+        val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
+        return sign * (degrees.absoluteValue + minutes.absoluteValue / 60 + seconds.absoluteValue / 3600)
+    }
 }
