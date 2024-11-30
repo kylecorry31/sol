@@ -16,6 +16,7 @@ import com.kylecorry.sol.science.astronomy.units.timeToAngle
 // http://cdsportal.u-strasbg.fr/?target=Rigel
 // List from https://en.wikipedia.org/wiki/List_of_brightest_stars
 enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Float) {
+    // Top 50 brightest stars
     Sirius(EquatorialCoordinate(toDegrees(-16.0, 42.0, 58.0), timeToAngle(6, 45, 8.92)), -1.46f),
     Canopus(EquatorialCoordinate(toDegrees(-52.0, 41.0, 44.4), timeToAngle(6, 23, 57.11)), -0.74f),
     RigilKentaurus(EquatorialCoordinate(toDegrees(-60.0, 50.0, 2.4), timeToAngle(14, 39, 36.49)), -0.1f),
@@ -65,4 +66,20 @@ enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Fl
     Alphard(EquatorialCoordinate(toDegrees(-8.0, 39.0, 31.0), timeToAngle(9, 27, 35.24)), 1.97f),
     Hamal(EquatorialCoordinate(toDegrees(23.0, 27.0, 44.7), timeToAngle(2, 7, 10.41)), 2.01f),
     Diphda(EquatorialCoordinate(toDegrees(-17.0, 59.0, 11.8), timeToAngle(0, 43, 35.37)), 2.01f),
+
+    ////// Important stars in constellations that aren't in the top 50 //////
+
+    // Ursa Major
+    Merak(EquatorialCoordinate(toDegrees(56.0, 22.0, 56.76), timeToAngle(11, 1, 50.48)), 2.37f),
+    Phecda(EquatorialCoordinate(toDegrees(53.0, 41.0, 41.14), timeToAngle(11, 53, 49.847)), 2.44f),
+    Megrez(EquatorialCoordinate(toDegrees(57.0, 1.0, 57.42), timeToAngle(12, 15, 25.56)), 3.32f),
+    Mizar(EquatorialCoordinate(toDegrees(54.0, 55.0, 31.27), timeToAngle(13, 23, 55.54)), 2.04f),
+
+    // Southern Cross
+    Imai(EquatorialCoordinate(toDegrees(-58.0, 44.0, 56.13), timeToAngle(12, 15, 8.718)), 2.752f),
+    Ginan(EquatorialCoordinate(toDegrees(-60.0, 24.0, 4.13), timeToAngle(12, 21, 21.608)), 3.57f),
+
+    // Orion
+    Saiph(EquatorialCoordinate(toDegrees(-9.0, 40.0, 10.58), timeToAngle(5, 47, 45.389)), 2.06f),
+    Meissa(EquatorialCoordinate(toDegrees(9.0, 56.0, 2.96), timeToAngle(5, 35, 8.278)), 3.66f),
 }
