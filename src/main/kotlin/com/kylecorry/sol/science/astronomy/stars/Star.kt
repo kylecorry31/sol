@@ -4,11 +4,16 @@ import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.timeToAngle
 
-// Source: https://irsa.ipac.caltech.edu/cgi-bin/Gator/nph-dd?catalog=gaia_dr3_source&mode=html&passproj&
 /**
- * This work has made use of data from the European Space Agency (ESA) mission Gaia (https://www.cosmos.esa.int/gaia), processed by the Gaia Data Processing and Analysis Consortium (DPAC, https://www.cosmos.esa.int/web/gaia/dpac/consortium). Funding for the DPAC has been provided by national institutions, in particular the institutions participating in the Gaia Multilateral Agreement.
+ * This research has made use of the SIMBAD database,
+ * operated at CDS, Strasbourg, France
+ *
+ * 2000,A&AS,143,9 , "The SIMBAD astronomical database", Wenger et al.
+ *
+ * https://doi.org/10.1051/aas:2000332
  */
 
+// http://cdsportal.u-strasbg.fr/?target=Rigel
 // List from https://en.wikipedia.org/wiki/List_of_brightest_stars
 enum class Star(internal val coordinate: EquatorialCoordinate) {
     Sirius(EquatorialCoordinate(toDegrees(-16.0, 42.0, 58.0), timeToAngle(6, 45, 8.92))),
