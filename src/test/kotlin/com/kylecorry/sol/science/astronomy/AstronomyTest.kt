@@ -13,6 +13,7 @@ import com.kylecorry.sol.tests.assertDuration
 import com.kylecorry.sol.tests.parametrized
 import com.kylecorry.sol.time.Time.duration
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -721,6 +722,16 @@ class AstronomyTest {
         val actualAltitude = Astronomy.getStarAltitude(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
         assertEquals(azimuth, actualAzimuth.value, 0.5f)
         assertEquals(altitude, actualAltitude, 0.5f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "68.06, 1316.4",
+        "67.92, 1324.8"
+    )
+    fun canGetZenithDistance(altitude: Float, expected: Float) {
+        val actual = Astronomy.getZenithDistance(altitude).convertTo(DistanceUnits.NauticalMiles).distance
+        assertEquals(expected, actual, 0.1f)
 
     }
 
