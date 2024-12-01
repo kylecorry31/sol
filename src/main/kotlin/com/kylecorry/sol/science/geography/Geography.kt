@@ -5,6 +5,8 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
+import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -123,5 +125,21 @@ object Geography {
             Distance.meters(alt.toFloat())
         )
     }
+
+
+    fun trilaterate(readings: List<Geofence>): Geofence {
+        require(readings.size >= 2) { "At least two readings are required for trilateration." }
+
+        val cartesianPoints = readings.map {
+            getECEF(Location(it.center, Distance.meters(0f))).toFloatArray().toList()
+        }
+
+        val optimizer = LeastSquaresOptimizer()
+        val result = optimizer.optimize(cartesianPoints, readings.map { it.radius.meters().distance })
+        val resultLocation = getLocationFromECEF(Vector3(result[0], result[1], result[2])).coordinate
+        val averageError = readings.map { abs(it.center.distanceTo(resultLocation)) }.average().toFloat()
+        return Geofence(resultLocation, Distance.meters(averageError))
+    }
+
 
 }
