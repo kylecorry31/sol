@@ -4,10 +4,11 @@ import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
-import com.kylecorry.sol.math.sumOfFloat
-import com.kylecorry.sol.science.geology.CoordinateBounds
+import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
+import com.kylecorry.sol.science.geography.projections.AzimuthalEquidistantProjection
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
 import com.kylecorry.sol.units.*
@@ -125,6 +126,26 @@ object Geography {
         )
     }
 
+    fun trilaterate(readings: List<Geofence>): List<Coordinate> {
+        if (readings.size < 2) {
+            return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
+        }
+
+        // There are 2 possible solutions for 2 readings
+        if (readings.size == 2) {
+            return trilaterate2(readings)
+        }
+
+        val projection = AzimuthalEquidistantProjection(readings.first().center)
+        val points = readings.map { projection.toPixels(it.center).let { vector2 -> listOf(vector2.x, vector2.y) } }
+        val radii = readings.map { it.radius.meters().distance }
+
+        val optimizer = LeastSquaresOptimizer()
+        val result = optimizer.optimize(points, radii)
+
+        return listOf(projection.toCoordinate(Vector2(result[0], result[1])))
+    }
+
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
         val scale = 1000.0
         val cartesianPoints = readings.map {
@@ -159,50 +180,4 @@ object Geography {
 
         return listOf(Coordinate(latitude1, longitude1), Coordinate(latitude2, longitude2))
     }
-
-    fun trilaterate(readings: List<Geofence>): List<Coordinate> {
-
-        if (readings.size < 2) {
-            return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
-        }
-
-        if (readings.size == 2) {
-            return trilaterate2(readings)
-        }
-
-        // Step 1: Calculate all intersections
-        val intersections = mutableListOf<Coordinate>()
-        for (i in readings.indices) {
-            for (j in i + 1 until readings.size) {
-                intersections.addAll(trilaterate2(listOf(readings[i], readings[j])))
-            }
-        }
-
-        // Step 2: Get the boundary of the intersection triangle (the points that are closest together)
-        val boundary = intersections.mapIndexed { index, coordinate ->
-
-            // Proximity to the other 2 points of the triangle
-            val distance = intersections
-                .filterIndexed { i, _ -> i != index }
-                .map { it.distanceTo(coordinate) }
-                .take(2)
-                .sumOfFloat { it }
-
-            Pair(coordinate, distance)
-        }
-            .sortedBy { it.second }
-            .take(3)
-
-        if (boundary.size < 2) {
-            return listOf(boundary.firstOrNull()?.first ?: readings.first().center)
-        }
-
-        // Step 3: Calculate the center
-        // TODO: Use a better algorithm for determining the center
-        val center = CoordinateBounds.from(boundary.map { it.first }).center
-
-        return listOf(center)
-    }
-
-
 }

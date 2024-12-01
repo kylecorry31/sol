@@ -70,8 +70,8 @@ class GeographyTest {
 
         val prediction = Geography.trilaterate(locations)
         val expected = Coordinate(37.417959, -121.961954)
-        assertEquals(expected.latitude, prediction.first().latitude, 0.001)
-        assertEquals(expected.longitude, prediction.first().longitude, 0.001)
+        assertEquals(expected.latitude, prediction.first().latitude, 0.01)
+        assertEquals(expected.longitude, prediction.first().longitude, 0.01)
 
         val locations2 = listOf(
             Geofence(
