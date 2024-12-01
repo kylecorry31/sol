@@ -14,9 +14,9 @@ import com.kylecorry.sol.science.astronomy.units.timeToAngle
  */
 
 // http://cdsportal.u-strasbg.fr/?target=Rigel
-// List from https://en.wikipedia.org/wiki/List_of_brightest_stars
+// https://en.wikipedia.org/wiki/List_of_brightest_stars
+// https://en.wikipedia.org/wiki/List_of_stars_for_navigation
 enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Float) {
-    // Top 50 brightest stars
     Sirius(EquatorialCoordinate(toDegrees(-16.0, 42.0, 58.0), timeToAngle(6, 45, 8.92)), -1.46f),
     Canopus(EquatorialCoordinate(toDegrees(-52.0, 41.0, 44.4), timeToAngle(6, 23, 57.11)), -0.74f),
     RigilKentaurus(EquatorialCoordinate(toDegrees(-60.0, 50.0, 2.4), timeToAngle(14, 39, 36.49)), -0.1f),
@@ -66,6 +66,27 @@ enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Fl
     Alphard(EquatorialCoordinate(toDegrees(-8.0, 39.0, 31.0), timeToAngle(9, 27, 35.24)), 1.97f),
     Hamal(EquatorialCoordinate(toDegrees(23.0, 27.0, 44.7), timeToAngle(2, 7, 10.41)), 2.01f),
     Diphda(EquatorialCoordinate(toDegrees(-17.0, 59.0, 11.8), timeToAngle(0, 43, 35.37)), 2.01f),
+
+    ////// Important stars for navigation that aren't in the top 50 //////
+    Alpheratz(EquatorialCoordinate(toDegrees(29.0, 5.0, 25.55), timeToAngle(0, 8, 23.26)), 2.06f),
+    Ankaa(EquatorialCoordinate(toDegrees(-42.0, 18.0, 21.55), timeToAngle(0, 26, 17.051)), 2.38f),
+    Schedar(EquatorialCoordinate(toDegrees(56.0, 32.0, 14.39), timeToAngle(0, 40, 30.443)), 2.23f),
+    Acamar(EquatorialCoordinate(toDegrees(-40.0, 18.0, 16.85), timeToAngle(2, 58, 15.675)), 3.2f),
+    Menkar(EquatorialCoordinate(toDegrees(4.0, 5.0, 23.06), timeToAngle(3, 2, 16.773)), 2.53f),
+    Capella(EquatorialCoordinate(toDegrees(45.0, 59.0, 52.77), timeToAngle(5, 16, 41.359)), 0.08f),
+    Suhail(EquatorialCoordinate(toDegrees(-43.0, 25.0, 57.33), timeToAngle(9, 7, 59.758)), 2.21f),
+    Denebola(EquatorialCoordinate(toDegrees(14.0, 34.0, 19.41), timeToAngle(11, 49, 3.578)), 2.13f),
+    Gienah(EquatorialCoordinate(toDegrees(-17.0, 32.0, 30.95), timeToAngle(12, 15, 48.371)), 2.58f),
+    Menkent(EquatorialCoordinate(toDegrees(-36.0, 22.0, 11.84), timeToAngle(14, 6, 40.948)), 2.05f),
+    Zubenelgenubi(EquatorialCoordinate(toDegrees(-16.0, 2.0, 30.4), timeToAngle(14, 50, 52.713)), 2.75f),
+    Kochab(EquatorialCoordinate(toDegrees(74.0, 9.0, 19.81), timeToAngle(14, 50, 42.326)), 2.08f),
+    Alphecca(EquatorialCoordinate(toDegrees(26.0, 42.0, 52.87), timeToAngle(15, 34, 41.268)), 2.24f),
+    Sabik(EquatorialCoordinate(toDegrees(-15.0, 43.0, 29.66), timeToAngle(17, 10, 22.687)), 2.42f),
+    Rasalhague(EquatorialCoordinate(toDegrees(17.0, 34.0, 56.069), timeToAngle(12, 33, 36.13)), 2.07f),
+    Eltanin(EquatorialCoordinate(toDegrees(51.0, 29.0, 20.02), timeToAngle(17, 56, 36.37)), 2.23f),
+    Nunki(EquatorialCoordinate(toDegrees(-26.0, 17.0, 48.21), timeToAngle(18, 55, 15.926)), 2.067f),
+    Enif(EquatorialCoordinate(toDegrees(9.0, 52.0, 30.03), timeToAngle(21, 44, 11.156)), 2.39f),
+    Markab(EquatorialCoordinate(toDegrees(15.0, 12.0, 18.96), timeToAngle(23, 4, 45.653)), 2.48f),
 
     ////// Important stars in constellations that aren't in the top 50 //////
 

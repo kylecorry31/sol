@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy.stars
 
 enum class Constellation(val edges: List<Pair<Star, Star>>) {
-    UrsaMajor(
+    BigDipper(
         listOf(
             Star.Alkaid to Star.Mizar,
             Star.Mizar to Star.Alioth,
@@ -11,7 +11,7 @@ enum class Constellation(val edges: List<Pair<Star, Star>>) {
             Star.Phecda to Star.Megrez
         )
     ),
-    Crux(
+    SouthernCross(
         listOf(
             Star.Acrux to Star.Gacrux,
             Star.Mimosa to Star.Imai
