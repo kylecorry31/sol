@@ -12,9 +12,14 @@ class GreenwichSiderealTimeTest {
 
     @Test
     fun toSiderealTime() {
-        val ut = UniversalTime.of(2010, Month.FEBRUARY, 7, 23, 30)
-        val gst = ut.toSiderealTime()
-        assertEquals(gst.hours, 8.698091, 0.0000005)
+//        val ut = UniversalTime.of(2010, Month.FEBRUARY, 7, 23, 30)
+//        val gst = ut.toSiderealTime()
+//        assertEquals(gst.hours, 8.698091, 0.0000005)
+        val ut = UniversalTime.of(1987, Month.APRIL, 10, 0, 0, 0)
+        val gmst = ut.toSiderealTime()
+        val gast = ut.toSiderealTime(true)
+        assertEquals(timeToDecimal(13, 10, 46.3668), gmst.hours, 0.000001)
+        assertEquals(timeToDecimal(13, 10, 46.1351), gast.hours, 0.000001)
     }
 
     @Test

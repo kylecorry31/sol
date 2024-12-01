@@ -163,6 +163,32 @@ object Geometry {
         return a1 + a2 - a3
     }
 
+    fun getIntersections(circle1: Circle, circle2: Circle): List<Vector2> {
+        val d = circle1.center.distanceTo(circle2.center)
+        if (d >= circle1.radius + circle2.radius) {
+            return emptyList()
+        }
+
+        if (d <= abs(circle1.radius - circle2.radius)) {
+            return emptyList()
+        }
+
+        val r1 = circle1.radius
+        val r2 = circle2.radius
+
+        val a = (square(r1) - square(r2) + square(d)) / (2 * d)
+        val h = sqrt(square(r1) - square(a))
+
+        val p2 = circle1.center + (circle2.center - circle1.center).normalize().times(a)
+        val x3 = p2.x + h * (circle2.center.y - circle1.center.y) / d
+        val y3 = p2.y - h * (circle2.center.x - circle1.center.x) / d
+
+        val x4 = p2.x - h * (circle2.center.y - circle1.center.y) / d
+        val y4 = p2.y + h * (circle2.center.x - circle1.center.x) / d
+
+        return listOf(Vector2(x3, y3), Vector2(x4, y4))
+    }
+
     // Snapping
 
     /**

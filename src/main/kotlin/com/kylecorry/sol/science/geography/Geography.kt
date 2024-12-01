@@ -133,6 +133,13 @@ object Geography {
 
         // There are 2 possible solutions for 2 readings
         if (readings.size == 2) {
+//            val projection = AzimuthalEquidistantProjection(readings.first().center)
+//            val circles = readings.map {
+//                Circle(projection.toPixels(it.center), it.radius.meters().distance)
+//            }
+//            val intersections = Geometry.getIntersections(circles[0], circles[1])
+//            return intersections.map { projection.toCoordinate(it) }
+
             return trilaterate2(readings)
         }
 
@@ -147,7 +154,7 @@ object Geography {
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
-        val scale = 1000.0
+        val scale = 1.0
         val cartesianPoints = readings.map {
             listOf(
                 cos(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,

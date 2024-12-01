@@ -1,6 +1,11 @@
 package com.kylecorry.sol.science.geography
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.science.astronomy.Astronomy
+import com.kylecorry.sol.science.astronomy.stars.Star
+import com.kylecorry.sol.science.astronomy.units.UniversalTime
+import com.kylecorry.sol.science.astronomy.units.toSiderealTime
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
@@ -9,6 +14,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.time.ZonedDateTime
 
 class GeographyTest {
 
@@ -74,15 +80,68 @@ class GeographyTest {
         assertEquals(expected.longitude, prediction.first().longitude, 0.01)
 
         val locations2 = listOf(
+//            Geofence(
+//                Coordinate(37.673442, -90.234036),
+//                Distance.nauticalMiles(107.5f)
+//            ),
+//            Geofence(
+//                Coordinate(36.109997, -90.953669),
+//                Distance.nauticalMiles(145f)
+//            ),
             Geofence(
-                Coordinate(37.673442, -90.234036),
-                Distance.nauticalMiles(107.5f)
+                Coordinate(
+                    Star.Dubhe.coordinate.declination,
+                    SolMath.wrap(
+                        Star.Dubhe.coordinate.getHourAngle(UniversalTime.now().toSiderealTime(true)),
+                        -180.0,
+                        180.0
+                    )
+                ),
+                Astronomy.getZenithDistance(
+                    Astronomy.getStarAltitude(
+                        Star.Dubhe,
+                        ZonedDateTime.now(),
+                        Coordinate(42.0, -72.0)
+                    )
+                )
             ),
             Geofence(
-                Coordinate(36.109997, -90.953669),
-                Distance.nauticalMiles(145f)
+                Coordinate(
+                    Star.Alphecca.coordinate.declination,
+                    SolMath.wrap(
+                        Star.Alphecca.coordinate.getHourAngle(UniversalTime.now().toSiderealTime(true)),
+                        -180.0,
+                        180.0
+                    )
+                ),
+                Astronomy.getZenithDistance(
+                    Astronomy.getStarAltitude(
+                        Star.Alphecca,
+                        ZonedDateTime.now(),
+                        Coordinate(42.0, -72.0)
+                    )
+                )
             ),
+            Geofence(
+                Coordinate(
+                    Star.Betelgeuse.coordinate.declination,
+                    SolMath.wrap(
+                        Star.Betelgeuse.coordinate.getHourAngle(UniversalTime.now().toSiderealTime(true)),
+                        -180.0,
+                        180.0
+                    )
+                ),
+                Astronomy.getZenithDistance(
+                    Astronomy.getStarAltitude(
+                        Star.Betelgeuse,
+                        ZonedDateTime.now(),
+                        Coordinate(42.0, -72.0)
+                    )
+                )
+            )
         )
+
+        // SolMath.wrap(Star.Polaris.coordinate.rightAscensionHours * 15 + 15 * timeToDecimal(21, 45, 0), 0.0, 360.0)
 
         val prediction2 = Geography.trilaterate(locations2)
         val expected2 = listOf(Coordinate(36.989311, -88.151426), Coordinate(38.238380, -92.390485))
