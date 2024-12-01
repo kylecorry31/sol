@@ -6,7 +6,6 @@ import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Location
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -71,9 +70,27 @@ class GeographyTest {
 
         val prediction = Geography.trilaterate(locations)
         val expected = Coordinate(37.417959, -121.961954)
-        assertEquals(expected.latitude, prediction.center.latitude, 0.01)
-        assertEquals(expected.longitude, prediction.center.longitude, 0.01)
-        assertTrue(prediction.radius.meters().distance < 500)
+        assertEquals(expected.latitude, prediction.first().latitude, 0.001)
+        assertEquals(expected.longitude, prediction.first().longitude, 0.001)
+
+        val locations2 = listOf(
+            Geofence(
+                Coordinate(37.673442, -90.234036),
+                Distance.nauticalMiles(107.5f)
+            ),
+            Geofence(
+                Coordinate(36.109997, -90.953669),
+                Distance.nauticalMiles(145f)
+            ),
+        )
+
+        val prediction2 = Geography.trilaterate(locations2)
+        val expected2 = listOf(Coordinate(36.989311, -88.151426), Coordinate(38.238380, -92.390485))
+        assertEquals(expected2.size, prediction2.size)
+        assertEquals(expected2[0].latitude, prediction2[0].latitude, 0.001)
+        assertEquals(expected2[0].longitude, prediction2[0].longitude, 0.001)
+        assertEquals(expected2[1].latitude, prediction2[1].latitude, 0.001)
+        assertEquals(expected2[1].longitude, prediction2[1].longitude, 0.001)
     }
 
 }

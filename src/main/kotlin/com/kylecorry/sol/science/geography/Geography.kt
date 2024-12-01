@@ -5,13 +5,12 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
+import com.kylecorry.sol.math.Vector3Precise
+import com.kylecorry.sol.math.sumOfFloat
+import com.kylecorry.sol.science.geology.CoordinateBounds
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Location
+import com.kylecorry.sol.units.*
 import kotlin.math.*
 
 object Geography {
@@ -126,19 +125,83 @@ object Geography {
         )
     }
 
-
-    fun trilaterate(readings: List<Geofence>): Geofence {
-        require(readings.size >= 2) { "At least two readings are required for trilateration." }
-
+    private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
+        val scale = 1000.0
         val cartesianPoints = readings.map {
-            getECEF(Location(it.center, Distance.meters(0f))).toFloatArray().toList()
+            listOf(
+                cos(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
+                sin(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
+                sin(it.center.latitude.toRadians()) * scale
+            )
         }
 
-        val optimizer = LeastSquaresOptimizer()
-        val result = optimizer.optimize(cartesianPoints, readings.map { it.radius.meters().distance })
-        val resultLocation = getLocationFromECEF(Vector3(result[0], result[1], result[2])).coordinate
-        val averageError = readings.map { abs(it.center.distanceTo(resultLocation)) }.average().toFloat()
-        return Geofence(resultLocation, Distance.meters(averageError))
+        val radii = readings.map { (it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f).toRadians() }
+
+        val x1 = Vector3Precise.from(cartesianPoints[0].toDoubleArray())
+        val x2 = Vector3Precise.from(cartesianPoints[1].toDoubleArray())
+        val q = x1.dot(x2) / square(scale)
+        val a = (cos(radii[0]) - cos(radii[1]) * q) / (1 - q * q)
+        val b = (cos(radii[1]) - cos(radii[0]) * q) / (1 - q * q)
+        val n = x1.cross(x2)
+
+        val x0 = x1.times(a) + x2.times(b)
+
+        val t = sqrt((square(scale) - x0.dot(x0)) / n.dot(n))
+
+        val p1 = (x0 + n.times(t)).times(1 / scale)
+        val p2 = (x0 - n.times(t)).times(1 / scale)
+
+        val latitude1 = (atan2(p1.z, sqrt(square(p1.x) + square(p1.y)))).toDegrees()
+        val longitude1 = (atan2(p1.y, p1.x)).toDegrees()
+
+        val latitude2 = (atan2(p2.z, sqrt(square(p2.x) + square(p2.y)))).toDegrees()
+        val longitude2 = (atan2(p2.y, p2.x)).toDegrees()
+
+        return listOf(Coordinate(latitude1, longitude1), Coordinate(latitude2, longitude2))
+    }
+
+    fun trilaterate(readings: List<Geofence>): List<Coordinate> {
+
+        if (readings.size < 2) {
+            return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
+        }
+
+        if (readings.size == 2) {
+            return trilaterate2(readings)
+        }
+
+        // Step 1: Calculate all intersections
+        val intersections = mutableListOf<Coordinate>()
+        for (i in readings.indices) {
+            for (j in i + 1 until readings.size) {
+                intersections.addAll(trilaterate2(listOf(readings[i], readings[j])))
+            }
+        }
+
+        // Step 2: Get the boundary of the intersection triangle (the points that are closest together)
+        val boundary = intersections.mapIndexed { index, coordinate ->
+
+            // Proximity to the other 2 points of the triangle
+            val distance = intersections
+                .filterIndexed { i, _ -> i != index }
+                .map { it.distanceTo(coordinate) }
+                .take(2)
+                .sumOfFloat { it }
+
+            Pair(coordinate, distance)
+        }
+            .sortedBy { it.second }
+            .take(3)
+
+        if (boundary.size < 2) {
+            return listOf(boundary.firstOrNull()?.first ?: readings.first().center)
+        }
+
+        // Step 3: Calculate the center
+        // TODO: Use a better algorithm for determining the center
+        val center = CoordinateBounds.from(boundary.map { it.first }).center
+
+        return listOf(center)
     }
 
 
