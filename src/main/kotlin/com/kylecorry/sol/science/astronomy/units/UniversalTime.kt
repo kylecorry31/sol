@@ -2,10 +2,13 @@ package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
+import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.time.Time.utc
 import java.time.*
+import kotlin.math.cos
 import kotlin.math.floor
 
 typealias UniversalTime = LocalDateTime
@@ -42,7 +45,7 @@ internal fun UniversalTime.jd0(): Double {
     return floor(365.25 * (Y + 4716)) + B - 1094.5 // Regular julian day - 1
 }
 
-internal fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
+internal fun UniversalTime.toSiderealTime(apparent: Boolean = false): GreenwichSiderealTime {
     val jd = toJulianDay(false)
     val jd0 = jd0()
 
@@ -59,6 +62,13 @@ internal fun UniversalTime.toSiderealTime(): GreenwichSiderealTime {
     val ut = toLocalTime().toDecimalHours()
 
     val gst = t0 + 1.002738 * ut
+
+    if (apparent) {
+        val nutation = LongitudinalNutation.getNutationInLongitude(this)
+        val obilquity = EclipticObliquity.getTrueObliquityOfEcliptic(this)
+        val deltaPsi = (nutation * cos(obilquity.toRadians())) / 15
+        return GreenwichSiderealTime(gst + deltaPsi)
+    }
 
     return GreenwichSiderealTime(gst)
 }

@@ -4,11 +4,9 @@ import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
-import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
 import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
-import com.kylecorry.sol.science.geography.projections.AzimuthalEquidistantProjection
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
 import com.kylecorry.sol.units.*
@@ -136,14 +134,23 @@ object Geography {
             return trilaterate2(readings)
         }
 
-        val projection = AzimuthalEquidistantProjection(readings.first().center)
-        val points = readings.map { projection.toPixels(it.center).let { vector2 -> listOf(vector2.x, vector2.y) } }
-        val radii = readings.map { it.radius.meters().distance }
-
         val optimizer = LeastSquaresOptimizer()
-        val result = optimizer.optimize(points, radii)
+        val result = optimizer.optimize(
+            readings.map { listOf(it.center.latitude.toFloat(), it.center.longitude.toFloat()) },
+            readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f },
+            distanceFn = { a, b ->
+                Distance.meters(
+                    Coordinate(a[0].toDouble(), a[1].toDouble()).distanceTo(
+                        Coordinate(
+                            b[0].toDouble(),
+                            b[1].toDouble()
+                        )
+                    )
+                ).convertTo(DistanceUnits.NauticalMiles).distance / 60f
+            }
+        )
 
-        return listOf(projection.toCoordinate(Vector2(result[0], result[1])))
+        return listOf(Coordinate(result[0].toDouble(), result[1].toDouble()))
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {

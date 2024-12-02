@@ -12,7 +12,8 @@ class LeastSquaresOptimizer {
         errors: List<Float>,
         maxIterations: Int = 100,
         maxAllowedStep: Float = 500f,
-        dampingFactor: Float = 0.1f
+        dampingFactor: Float = 0.1f,
+        distanceFn: (List<Float>, List<Float>) -> Float = { a, b -> Geometry.euclideanDistance(a, b) }
     ): List<Float> {
         if (points.size < 2) {
             return points.firstOrNull() ?: emptyList()
@@ -31,11 +32,11 @@ class LeastSquaresOptimizer {
         for (i in 0 until maxIterations) {
 
             val f = points.mapIndexed { i, point ->
-                Geometry.euclideanDistance(point, guess) - errors[i]
+                distanceFn(point, guess) - errors[i]
             }.toTypedArray()
 
             val jacobian = points.mapIndexed { i, point ->
-                val distance = Geometry.euclideanDistance(point, guess)
+                val distance = distanceFn(point, guess)
                 point.mapIndexed { j, value -> (guess[j] - value) / distance }.toTypedArray()
             }.toTypedArray()
 
