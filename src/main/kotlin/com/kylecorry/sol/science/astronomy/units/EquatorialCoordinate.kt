@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.units.Coordinate
 
 internal class EquatorialCoordinate(
     _declination: Double,
@@ -14,6 +15,10 @@ internal class EquatorialCoordinate(
 
     fun getHourAngle(siderealTime: SiderealTime): Double {
         return wrap(siderealTime.hours - rightAscensionHours, 0.0, 24.0)
+    }
+
+    fun getZenithCoordinate(ut: UniversalTime): Coordinate {
+        return Coordinate(declination, getHourAngle(ut.toSiderealTime(true)))
     }
 
     override fun equals(other: Any?): Boolean {

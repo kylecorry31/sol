@@ -7,7 +7,7 @@ import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
-import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
+import com.kylecorry.sol.math.sumOfFloat
 import com.kylecorry.sol.science.geography.projections.AzimuthalEquidistantProjection
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
@@ -131,30 +131,55 @@ object Geography {
             return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
         }
 
-        // There are 2 possible solutions for 2 readings
-        if (readings.size == 2) {
-//            val projection = AzimuthalEquidistantProjection(readings.first().center)
-//            val circles = readings.map {
-//                Circle(projection.toPixels(it.center), it.radius.meters().distance)
-//            }
-//            val intersections = Geometry.getIntersections(circles[0], circles[1])
-//            return intersections.map { projection.toCoordinate(it) }
+        // Step 1: Calculate all intersections
+        val intersections = mutableListOf<Coordinate>()
+        for (i in readings.indices) {
+            for (j in i + 1 until readings.size) {
+                intersections.addAll(trilaterate2(listOf(readings[i], readings[j])))
+            }
+        }
+        // Step 2: Get the boundary of the intersection triangle (the points that are closest together)
+        val boundary = intersections.mapIndexed { index, coordinate ->
+            // Proximity to the other 2 points of the triangle
+            val distance = intersections
+                .filterIndexed { i, _ -> i != index }
+                .map { it.distanceTo(coordinate) }
+                .sorted()
+                .take(2)
+                .sumOfFloat { it }
+            Pair(coordinate, distance)
+        }
+            .sortedBy { it.second }
+            .take(3)
+            .map { it.first }
 
-            return trilaterate2(readings)
+        if (boundary.size <= 2) {
+            return boundary
+        }
+        // Step 3: Calculate the center
+        val projection = AzimuthalEquidistantProjection(boundary.first())
+        val projected = boundary.map { projection.toPixels(it) }
+        // Calculate center of mass
+        var cx = 0f
+        var cy = 0f
+        var a = 0f
+
+        for (i in 0 until projected.lastIndex) {
+            cx += (projected[i].x + projected[i + 1].x) * (projected[i].x * projected[i + 1].y - projected[i + 1].x * projected[i].y)
+            cy += (projected[i].y + projected[i + 1].y) * (projected[i].x * projected[i + 1].y - projected[i + 1].x * projected[i].y)
+            a += projected[i].x * projected[i + 1].y - projected[i + 1].x * projected[i].y
         }
 
-        val projection = AzimuthalEquidistantProjection(readings.first().center)
-        val points = readings.map { projection.toPixels(it.center).let { vector2 -> listOf(vector2.x, vector2.y) } }
-        val radii = readings.map { it.radius.meters().distance }
+        cx /= 3 * a
+        cy /= 3 * a
 
-        val optimizer = LeastSquaresOptimizer()
-        val result = optimizer.optimize(points, radii)
+        val centerCoordinate = projection.toCoordinate(Vector2(cx, cy))
 
-        return listOf(projection.toCoordinate(Vector2(result[0], result[1])))
+        return listOf(centerCoordinate)
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
-        val scale = 1.0
+        val scale = 1000.0
         val cartesianPoints = readings.map {
             listOf(
                 cos(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
@@ -185,6 +210,9 @@ object Geography {
         val latitude2 = (atan2(p2.z, sqrt(square(p2.x) + square(p2.y)))).toDegrees()
         val longitude2 = (atan2(p2.y, p2.x)).toDegrees()
 
-        return listOf(Coordinate(latitude1, longitude1), Coordinate(latitude2, longitude2))
+        return listOf(
+            Coordinate(latitude1, longitude1),
+            Coordinate(latitude2, longitude2)
+        ).filter { !it.latitude.isNaN() && !it.longitude.isNaN() }
     }
 }

@@ -47,53 +47,30 @@ internal fun UniversalTime.jd0(): Double {
 
 internal fun UniversalTime.toSiderealTime(apparent: Boolean = false): GreenwichSiderealTime {
     val jd = toJulianDay(false)
-    val jdWithTime = toJulianDay(true)
-    val t = (jd - 2451545.0) / 36525.0
-    val gmst = SolMath.polynomial(
-        t,
-        280.46061837 + 360.98564736629 * (jdWithTime - 2451545.0),
-        0.0,
-        0.000387933,
-        -1 / 38710000.0
-    )
+    val jd0 = jd0()
 
-//    val jd = toJulianDay(true)
-//    val t = (jd - 2451545.0) / 36525.0
-//    val gmst = 280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * t * t - t * t * t / 38710000.0
+    val days = jd - jd0
+
+    val t = (jd0 - 2415020.0) / 36525.0
+
+    val r = SolMath.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
+
+    val b = 24 - r + 24 * (year - 1900)
+
+    val t0 = 0.0657098 * days - b
+
+    val ut = toLocalTime().toDecimalHours()
+
+    val gst = t0 + 1.002738 * ut
 
     if (apparent) {
         val nutation = LongitudinalNutation.getNutationInLongitude(this)
         val obilquity = EclipticObliquity.getTrueObliquityOfEcliptic(this)
-        val deltaPsi = nutation * cos(obilquity.toRadians())
-        return GreenwichSiderealTime(Time.hours(degreesToTime(gmst + deltaPsi)))
+        val deltaPsi = (nutation * cos(obilquity.toRadians())) / 15
+        return GreenwichSiderealTime(gst + deltaPsi)
     }
 
-    return GreenwichSiderealTime(Time.hours(degreesToTime(gmst)))
-
-//    val jd0 = jd0()
-//
-//    val days = jd - jd0
-//
-//    val t = (jd0 - 2415020.0) / 36525.0
-//
-//    val r = SolMath.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
-//
-//    val b = 24 - r + 24 * (year - 1900)
-//
-//    val t0 = 0.0657098 * days - b
-//
-//    val ut = toLocalTime().toDecimalHours()
-//
-//    val gst = t0 + 1.002738 * ut
-//
-//    if (apparent) {
-//        val nutation = LongitudinalNutation.getNutationInLongitude(this)
-//        val obilquity = EclipticObliquity.getTrueObliquityOfEcliptic(this)
-//        val deltaPsi = nutation * cos(obilquity.toRadians())
-//        return GreenwichSiderealTime(gst + deltaPsi)
-//    }
-//
-//    return GreenwichSiderealTime(gst)
+    return GreenwichSiderealTime(gst)
 }
 
 fun ZonedDateTime.toUniversalTime(): UniversalTime {
