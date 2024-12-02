@@ -669,7 +669,7 @@ object Astronomy : IAstronomyService {
 
     override fun getZenithDistance(altitude: Float): Distance {
         val zenith = 90f - altitude
-        return Distance.nauticalMiles(zenith * 60).meters()
+        return Distance.nauticalMiles(zenith * 60)
     }
 
 }

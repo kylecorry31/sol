@@ -1,6 +1,9 @@
 package com.kylecorry.sol.science.geography
 
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.science.astronomy.Astronomy
+import com.kylecorry.sol.science.astronomy.stars.Star
+import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
@@ -9,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.time.ZonedDateTime
 
 class GeographyTest {
 
@@ -74,15 +78,49 @@ class GeographyTest {
         assertEquals(expected.longitude, prediction.first().longitude, 0.01)
 
         val locations2 = listOf(
+//            Geofence(
+//                Coordinate(37.673442, -90.234036),
+//                Distance.nauticalMiles(107.5f)
+//            ),
+//            Geofence(
+//                Coordinate(36.109997, -90.953669),
+//                Distance.nauticalMiles(145f)
+//            ),
             Geofence(
-                Coordinate(37.673442, -90.234036),
-                Distance.nauticalMiles(107.5f)
+                Star.Alpheratz.coordinate.getZenithCoordinate(ZonedDateTime.now().toUniversalTime()),
+                Astronomy.getZenithDistance(
+                    Astronomy.getStarAltitude(
+                        Star.Alpheratz,
+                        ZonedDateTime.now(),
+                        Coordinate(42.0, -72.0),
+                        true
+                    )
+                )
             ),
             Geofence(
-                Coordinate(36.109997, -90.953669),
-                Distance.nauticalMiles(145f)
+                Star.Capella.coordinate.getZenithCoordinate(ZonedDateTime.now().toUniversalTime()),
+                Astronomy.getZenithDistance(
+                    Astronomy.getStarAltitude(
+                        Star.Capella,
+                        ZonedDateTime.now(),
+                        Coordinate(42.0, -72.0),
+                        true
+                    )
+                )
             ),
+            Geofence(
+                Star.Polaris.coordinate.getZenithCoordinate(ZonedDateTime.now().toUniversalTime()),
+                Astronomy.getZenithDistance(
+                    Astronomy.getStarAltitude(
+                        Star.Polaris,
+                        ZonedDateTime.now(),
+                        Coordinate(42.0, -72.0),
+                        true
+                    )
+                )
+            )
         )
+
 
         val prediction2 = Geography.trilaterate(locations2)
         val expected2 = listOf(Coordinate(36.989311, -88.151426), Coordinate(38.238380, -92.390485))

@@ -4,11 +4,9 @@ import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
-import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
-import com.kylecorry.sol.math.sumOfFloat
-import com.kylecorry.sol.science.geography.projections.AzimuthalEquidistantProjection
+import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
 import com.kylecorry.sol.units.*
@@ -131,51 +129,28 @@ object Geography {
             return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
         }
 
-        // Step 1: Calculate all intersections
-        val intersections = mutableListOf<Coordinate>()
-        for (i in readings.indices) {
-            for (j in i + 1 until readings.size) {
-                intersections.addAll(trilaterate2(listOf(readings[i], readings[j])))
+        // There are 2 possible solutions for 2 readings
+        if (readings.size == 2) {
+            return trilaterate2(readings)
+        }
+
+        val optimizer = LeastSquaresOptimizer()
+        val result = optimizer.optimize(
+            readings.map { listOf(it.center.latitude.toFloat(), it.center.longitude.toFloat()) },
+            readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f },
+            distanceFn = { a, b ->
+                Distance.meters(
+                    Coordinate(a[0].toDouble(), a[1].toDouble()).distanceTo(
+                        Coordinate(
+                            b[0].toDouble(),
+                            b[1].toDouble()
+                        )
+                    )
+                ).convertTo(DistanceUnits.NauticalMiles).distance / 60f
             }
-        }
-        // Step 2: Get the boundary of the intersection triangle (the points that are closest together)
-        val boundary = intersections.mapIndexed { index, coordinate ->
-            // Proximity to the other 2 points of the triangle
-            val distance = intersections
-                .filterIndexed { i, _ -> i != index }
-                .map { it.distanceTo(coordinate) }
-                .sorted()
-                .take(2)
-                .sumOfFloat { it }
-            Pair(coordinate, distance)
-        }
-            .sortedBy { it.second }
-            .take(3)
-            .map { it.first }
+        )
 
-        if (boundary.size <= 2) {
-            return boundary
-        }
-        // Step 3: Calculate the center
-        val projection = AzimuthalEquidistantProjection(boundary.first())
-        val projected = boundary.map { projection.toPixels(it) }
-        // Calculate center of mass
-        var cx = 0f
-        var cy = 0f
-        var a = 0f
-
-        for (i in 0 until projected.lastIndex) {
-            cx += (projected[i].x + projected[i + 1].x) * (projected[i].x * projected[i + 1].y - projected[i + 1].x * projected[i].y)
-            cy += (projected[i].y + projected[i + 1].y) * (projected[i].x * projected[i + 1].y - projected[i + 1].x * projected[i].y)
-            a += projected[i].x * projected[i + 1].y - projected[i + 1].x * projected[i].y
-        }
-
-        cx /= 3 * a
-        cy /= 3 * a
-
-        val centerCoordinate = projection.toCoordinate(Vector2(cx, cy))
-
-        return listOf(centerCoordinate)
+        return listOf(Coordinate(result[0].toDouble(), result[1].toDouble()))
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
@@ -210,9 +185,6 @@ object Geography {
         val latitude2 = (atan2(p2.z, sqrt(square(p2.x) + square(p2.y)))).toDegrees()
         val longitude2 = (atan2(p2.y, p2.x)).toDegrees()
 
-        return listOf(
-            Coordinate(latitude1, longitude1),
-            Coordinate(latitude2, longitude2)
-        ).filter { !it.latitude.isNaN() && !it.longitude.isNaN() }
+        return listOf(Coordinate(latitude1, longitude1), Coordinate(latitude2, longitude2))
     }
 }
