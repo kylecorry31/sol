@@ -20,9 +20,13 @@ import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.stars.Star
+import com.kylecorry.sol.science.astronomy.stars.StarAltitudeReading
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
+import com.kylecorry.sol.science.geography.Geography
+import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
@@ -670,6 +674,33 @@ object Astronomy : IAstronomyService {
     override fun getZenithDistance(altitude: Float): Distance {
         val zenith = 90f - altitude
         return Distance.nauticalMiles(zenith * 60)
+    }
+
+    override fun getLocationFromStars(starReadings: List<StarAltitudeReading>): Coordinate? {
+        if (starReadings.size <= 1) {
+            return null
+        }
+
+        val zenithLocations = starReadings.mapIndexed { index, reading ->
+            val distance = getZenithDistance(reading.altitude)
+            val coordinate = reading.star.coordinate.getZenithCoordinate(reading.time.toUniversalTime())
+            Geofence(coordinate, distance)
+        }
+
+        val location = Geography.trilaterate(zenithLocations)
+
+        if (location.size <= 1) {
+            return location.firstOrNull()
+        }
+
+        // There are multiple possible locations, determine which is most likely based on the timezone
+        val referenceTime = starReadings.first().time
+        val offset =
+            Duration.ofSeconds(referenceTime.zone.rules.getStandardOffset(referenceTime.toInstant()).totalSeconds.toLong())
+        val timezoneLongitude = Time.getLongitudeFromSolarTimeOffset(offset)
+        val timezoneLocation = Coordinate(0.0, timezoneLongitude)
+
+        return location.minByOrNull { it.distanceTo(timezoneLocation) }
     }
 
 }

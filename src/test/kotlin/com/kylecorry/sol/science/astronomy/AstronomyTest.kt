@@ -5,14 +5,14 @@ import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.stars.Star
-import com.kylecorry.sol.science.geography.Geography
-import com.kylecorry.sol.science.geology.Geology
+import com.kylecorry.sol.science.astronomy.stars.StarAltitudeReading
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
 import com.kylecorry.sol.tests.parametrized
 import com.kylecorry.sol.time.Time.duration
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -732,7 +732,41 @@ class AstronomyTest {
     fun canGetZenithDistance(altitude: Float, expected: Float) {
         val actual = Astronomy.getZenithDistance(altitude).convertTo(DistanceUnits.NauticalMiles).distance
         assertEquals(expected, actual, 0.1f)
+    }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, false",
+        "1, false",
+        "2, true",
+        "3, true",
+        "4, true",
+        "5, true",
+    )
+    fun canGetLocationFromStars(numberOfStars: Int, hasFix: Boolean) {
+        val location = Coordinate(42.0, -72.0)
+        val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val stars = Star.entries.map { star ->
+            val altitude = Astronomy.getStarAltitude(star, time, location, true)
+            val distance = Astronomy.getZenithDistance(altitude)
+            star to distance
+        }.sortedBy { it.second.distance }
+            .map { it.first }
+            .take(numberOfStars)
+
+        val readings = stars.map {
+            val altitude = Astronomy.getStarAltitude(it, time, location, true)
+            StarAltitudeReading(it, altitude, time)
+        }
+
+        val actual = Astronomy.getLocationFromStars(readings)
+
+        if (hasFix) {
+            assertNotNull(actual)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.kilometers(5f).meters().distance)
+        } else {
+            assertNull(actual)
+        }
     }
 
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {
