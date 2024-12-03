@@ -134,6 +134,17 @@ fun Matrix.appendRow(value: Float): Matrix {
     return LinearAlgebra.appendRow(this, value)
 }
 
+fun Matrix.column(index: Int): Matrix {
+    return arrayOf(transpose()[index])
+}
+
+fun Matrix.setColumn(index: Int, column: Array<Float>): Matrix {
+    for (i in column.indices) {
+        this[i][index] = column[i]
+    }
+    return this
+}
+
 /**
  * Creates an identity matrix
  */

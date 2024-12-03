@@ -18,7 +18,10 @@ internal class EquatorialCoordinate(
     }
 
     fun getZenithCoordinate(ut: UniversalTime): Coordinate {
-        return Coordinate(declination, -timeToAngle(getHourAngle(ut.toSiderealTime(true)), 0, 0))
+        return Coordinate(
+            declination,
+            Coordinate.toLongitude(-timeToAngle(getHourAngle(ut.toSiderealTime(true)), 0, 0))
+        )
     }
 
     override fun equals(other: Any?): Boolean {

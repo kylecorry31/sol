@@ -138,6 +138,8 @@ object Geography {
         val result = optimizer.optimize(
             readings.map { listOf(it.center.latitude.toFloat(), it.center.longitude.toFloat()) },
             readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f },
+            maxIterations = 200,
+            dampingFactor = 1f,
             distanceFn = { a, b ->
                 Distance.meters(
                     Coordinate(a[0].toDouble(), a[1].toDouble()).distanceTo(

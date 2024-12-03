@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.algebra
 
+import kotlin.math.absoluteValue
 import kotlin.math.min
+import kotlin.math.sqrt
 
 object LinearAlgebra {
 
@@ -217,6 +219,65 @@ object LinearAlgebra {
             }
             m[sr, sc]
         }
+    }
+
+    fun qr(m: Matrix): Pair<Matrix, Matrix> {
+        val rows = m.rows()
+        val cols = m.columns()
+
+        val q = createMatrix(rows, cols) { _, _ -> 0f }
+        val r = createMatrix(cols, cols) { _, _ -> 0f }
+
+        for (j in 0 until cols) {
+            var v = m.column(j)
+
+            for (i in 0 until j) {
+                val qi = q.column(i)
+                r[i, j] = qi.dot(v.transpose())[0, 0]
+                v = v.subtract(qi.multiply(r[i, j]))
+            }
+
+            r[j, j] = norm(v)
+            q.setColumn(j, v.divide(r[j, j])[0])
+        }
+
+        return q to r
+    }
+
+    /**
+     * Returns a column matrix of the diagonal of the matrix
+     */
+    fun diagonal(m: Matrix): Matrix {
+        return createMatrix(1, min(m.rows(), m.columns())) { i, _ ->
+            m[i, i]
+        }
+    }
+
+    fun eigenvalues(m: Matrix, tolerance: Float = 1e-12f, maxIterations: Int = 1000): Array<Float> {
+        var old = m
+        var new = m
+
+        var diff = Float.MAX_VALUE
+        var iterations = 0
+        while (diff > tolerance && iterations < maxIterations) {
+            val (q, r) = qr(new)
+            new = r.dot(q)
+            diff = max(new.subtract(old).mapped { it.absoluteValue })
+            old = new
+            iterations++
+        }
+
+        return diagonal(new)[0]
+    }
+
+    fun norm(m: Matrix): Float {
+        return sqrt(
+            m.sumOf { values ->
+                values.sumOf { value ->
+                    value * value.toDouble()
+                }
+            }
+        ).toFloat()
     }
 
     fun appendColumn(m: Matrix, col: FloatArray): Matrix {
