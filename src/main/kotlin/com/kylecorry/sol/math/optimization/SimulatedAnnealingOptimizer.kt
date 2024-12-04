@@ -10,6 +10,7 @@ class SimulatedAnnealingOptimizer(
     private val stepSize: Double,
     private val maxIterations: Int = 1000,
     private val minimumTemperature: Double = 0.0,
+    private val initialValue: Pair<Double, Double>? = null,
     private val coolingFn: (t0: Double, t: Double, k: Int) -> Double = { t0: Double, _: Double, k: Int ->
         t0 / (k + 1).toDouble()
     }
@@ -25,8 +26,8 @@ class SimulatedAnnealingOptimizer(
     ): Pair<Double, Double> {
         val myFn = { x: Double, y: Double -> if (maximize) -fn(x, y) else fn(x, y) }
 
-        var bestX = lerp(random.nextDouble(), xRange.start, xRange.end)
-        var bestY = lerp(random.nextDouble(), yRange.start, yRange.end)
+        var bestX = initialValue?.first ?: lerp(random.nextDouble(), xRange.start, xRange.end)
+        var bestY = initialValue?.second ?: lerp(random.nextDouble(), yRange.start, yRange.end)
         var bestZ = myFn(bestX, bestY)
 
         var x = bestX

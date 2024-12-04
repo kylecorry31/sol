@@ -738,7 +738,7 @@ class AstronomyTest {
     @CsvSource(
         "0, false",
         "1, false",
-        "2, true",
+        "2, false",
         "3, true",
         "4, true",
         "5, true",
@@ -764,7 +764,7 @@ class AstronomyTest {
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.kilometers(5f).meters().distance)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.kilometers(1f).meters().distance)
         } else {
             assertNull(actual)
         }

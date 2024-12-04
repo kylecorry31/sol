@@ -8,7 +8,8 @@ import kotlin.random.Random
 
 class HillClimbingOptimizer(
     private val step: Double = 1.0,
-    private val maxIterations: Int = 1000
+    private val maxIterations: Int = 1000,
+    private val initialValue: Pair<Double, Double>? = null
 ) : IOptimizer {
 
     private val random = Random(1)
@@ -26,8 +27,8 @@ class HillClimbingOptimizer(
                 fn(pos.first, pos.second)
             }
         }
-        val x = lerp(random.nextDouble(), xRange.start, xRange.end)
-        val y = lerp(random.nextDouble(), yRange.start, yRange.end)
+        val x = initialValue?.first ?: lerp(random.nextDouble(), xRange.start, xRange.end)
+        val y = initialValue?.second ?: lerp(random.nextDouble(), yRange.start, yRange.end)
         var position = x to y
         var z = myFn(position)
         var bestNeighbor = getBestNeighbor(position, xRange, yRange, step, myFn)
