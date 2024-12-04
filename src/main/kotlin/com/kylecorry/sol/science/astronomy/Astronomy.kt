@@ -3,9 +3,7 @@ package com.kylecorry.sol.science.astronomy
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.wrap
-import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
@@ -23,10 +21,10 @@ import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculat
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarAltitudeReading
+import com.kylecorry.sol.science.astronomy.stars.StarLocationCalculator
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
-import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
@@ -680,44 +678,7 @@ object Astronomy : IAstronomyService {
         starReadings: List<StarAltitudeReading>,
         approximateLocation: Coordinate?
     ): Coordinate? {
-        if (starReadings.size <= 2) {
-            return null
-        }
-
-        val referenceTime = starReadings.first().time
-        val offset =
-            Duration.ofSeconds(referenceTime.zone.rules.getStandardOffset(referenceTime.toInstant()).totalSeconds.toLong())
-        val timezoneLongitude = Time.getLongitudeFromSolarTimeOffset(offset)
-
-        var step = 10.0
-        var lat = approximateLocation?.latitude ?: 0.0
-        var lon = approximateLocation?.longitude ?: timezoneLongitude
-
-        while (step > 0.001) {
-            val optimizer =
-                SimulatedAnnealingOptimizer(1000.0, stepSize = step, maxIterations = 200, initialValue = Pair(lon, lat))
-            val result = optimizer.optimize(
-                Range(lon - step * 2, lon + step * 2),
-                Range(lat - step * 6, lat + step * 6),
-                false,
-                { lon, lat ->
-                    starReadings.sumOf { reading ->
-                        val expectedAltitude = getStarAltitude(
-                            reading.star,
-                            reading.time,
-                            Coordinate(lat, lon),
-                            withRefraction = false
-                        )
-                        square(reading.altitude - expectedAltitude.toDouble())
-                    }
-                }
-            )
-            lat = result.second
-            lon = result.first
-            step *= 0.5
-        }
-
-        return Coordinate(lat, lon)
+        return StarLocationCalculator().getLocationFromStars(starReadings, approximateLocation)
     }
 
 }

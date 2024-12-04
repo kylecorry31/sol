@@ -283,4 +283,10 @@ object Time {
         return ZoneId.of("${symbol}${offsetHours.absoluteValue}")
     }
 
+    fun getLocationFromTimeZone(zone: ZoneId): Coordinate {
+        val offset = Duration.ofSeconds(zone.rules.getStandardOffset(Instant.now()).totalSeconds.toLong())
+        val timezoneLongitude = getLongitudeFromSolarTimeOffset(offset)
+        return Coordinate(0.0, timezoneLongitude)
+    }
+
 }

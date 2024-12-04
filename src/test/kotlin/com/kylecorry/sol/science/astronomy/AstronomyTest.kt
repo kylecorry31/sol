@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy
 
+import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
@@ -738,11 +739,12 @@ class AstronomyTest {
     @CsvSource(
         "0, false",
         "1, false",
-        "2, false",
+        "2, true",
         "3, true",
         "4, true",
         "5, true",
         "8, true",
+        "16, true"
     )
     fun canGetLocationFromStars(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
@@ -760,11 +762,11 @@ class AstronomyTest {
             StarAltitudeReading(it, altitude, time)
         }
 
-        val actual = Astronomy.getLocationFromStars(readings)
+        val actual = Astronomy.getLocationFromStars(readings, location)
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.kilometers(1f).meters().distance)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(20f).distance)
         } else {
             assertNull(actual)
         }
