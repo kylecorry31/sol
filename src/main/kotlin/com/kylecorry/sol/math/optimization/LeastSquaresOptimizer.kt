@@ -13,7 +13,9 @@ class LeastSquaresOptimizer {
         maxIterations: Int = 100,
         maxAllowedStep: Float = 500f,
         dampingFactor: Float = 0.1f,
-        distanceFn: (List<Float>, List<Float>) -> Float = { a, b -> Geometry.euclideanDistance(a, b) }
+        tolerance: Float = 0.0001f,
+        distanceFn: (List<Float>, List<Float>) -> Float = { a, b -> Geometry.euclideanDistance(a, b) },
+        weightingFn: (index: Int, point: List<Float>, error: Float) -> Float = { index, point, error -> 1f }
     ): List<Float> {
         if (points.size < 2) {
             return points.firstOrNull() ?: emptyList()
@@ -26,18 +28,18 @@ class LeastSquaresOptimizer {
             points.map { it[index] }.average().toFloat()
         }.toMutableList()
 
-        val epsilon = 0.0001f
         var lastError = Float.MAX_VALUE
         var averageError = 0f
         for (i in 0 until maxIterations) {
 
             val f = points.mapIndexed { i, point ->
-                distanceFn(point, guess) - errors[i]
+                (distanceFn(point, guess) - errors[i]) * weightingFn(i, point, errors[i])
             }.toTypedArray()
 
             val jacobian = points.mapIndexed { i, point ->
                 val distance = distanceFn(point, guess)
-                point.mapIndexed { j, value -> (guess[j] - value) / distance }.toTypedArray()
+                point.mapIndexed { j, value -> ((guess[j] - value) / distance) * weightingFn(i, point, errors[i]) }
+                    .toTypedArray()
             }.toTypedArray()
 
             val jacobianT = jacobian.transpose()
@@ -61,7 +63,7 @@ class LeastSquaresOptimizer {
 
             val error = f.map { abs(it) }.sum()
             averageError = f.map { abs(it) }.average().toFloat()
-            if (abs(lastError - error) < epsilon) {
+            if (abs(lastError - error) < tolerance) {
                 lastError = error
                 break
             }

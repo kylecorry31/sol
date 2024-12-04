@@ -687,7 +687,7 @@ object Astronomy : IAstronomyService {
             Geofence(coordinate, distance)
         }
 
-        val location = Geography.trilaterate(zenithLocations)
+        val location = Geography.trilaterate(zenithLocations, isWeighted = true)
 
         if (location.size <= 1) {
             return location.firstOrNull()

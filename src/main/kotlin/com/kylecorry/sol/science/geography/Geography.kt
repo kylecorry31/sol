@@ -124,7 +124,7 @@ object Geography {
         )
     }
 
-    fun trilaterate(readings: List<Geofence>): List<Coordinate> {
+    fun trilaterate(readings: List<Geofence>, isWeighted: Boolean = false): List<Coordinate> {
         if (readings.size < 2) {
             return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
         }
@@ -139,7 +139,15 @@ object Geography {
             readings.map { listOf(it.center.latitude.toFloat(), it.center.longitude.toFloat()) },
             readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f },
             maxIterations = 200,
-            dampingFactor = 1f,
+            dampingFactor = 0.5f,
+            tolerance = 0.0001f,
+            weightingFn = { index, point, error ->
+                if (isWeighted) {
+                    1f / (error * error + 1)
+                } else {
+                    1f
+                }
+            },
             distanceFn = { a, b ->
                 Distance.meters(
                     Coordinate(a[0].toDouble(), a[1].toDouble()).distanceTo(

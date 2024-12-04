@@ -742,6 +742,7 @@ class AstronomyTest {
         "3, true",
         "4, true",
         "5, true",
+        "8, true",
     )
     fun canGetLocationFromStars(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
