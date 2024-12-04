@@ -6,5 +6,8 @@ import com.kylecorry.sol.units.Distance
 
 interface ICelestialNavigationService {
     fun getZenithDistance(altitude: Float): Distance
-    fun getLocationFromStars(starReadings: List<StarAltitudeReading>): Coordinate?
+    fun getLocationFromStars(
+        starReadings: List<StarAltitudeReading>,
+        approximateLocation: Coordinate? = null
+    ): Coordinate?
 }

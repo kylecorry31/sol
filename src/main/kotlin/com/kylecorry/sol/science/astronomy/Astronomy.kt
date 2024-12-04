@@ -676,7 +676,10 @@ object Astronomy : IAstronomyService {
         return Distance.nauticalMiles(zenith * 60)
     }
 
-    override fun getLocationFromStars(starReadings: List<StarAltitudeReading>): Coordinate? {
+    override fun getLocationFromStars(
+        starReadings: List<StarAltitudeReading>,
+        approximateLocation: Coordinate?
+    ): Coordinate? {
         if (starReadings.size <= 2) {
             return null
         }
@@ -687,8 +690,8 @@ object Astronomy : IAstronomyService {
         val timezoneLongitude = Time.getLongitudeFromSolarTimeOffset(offset)
 
         var step = 10.0
-        var lat = 0.0
-        var lon = timezoneLongitude
+        var lat = approximateLocation?.latitude ?: 0.0
+        var lon = approximateLocation?.longitude ?: timezoneLongitude
 
         while (step > 0.001) {
             val optimizer =
