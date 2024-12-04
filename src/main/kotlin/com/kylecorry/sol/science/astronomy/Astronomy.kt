@@ -26,6 +26,7 @@ import com.kylecorry.sol.science.astronomy.stars.StarAltitudeReading
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
@@ -680,9 +681,14 @@ object Astronomy : IAstronomyService {
             return null
         }
 
+        val referenceTime = starReadings.first().time
+        val offset =
+            Duration.ofSeconds(referenceTime.zone.rules.getStandardOffset(referenceTime.toInstant()).totalSeconds.toLong())
+        val timezoneLongitude = Time.getLongitudeFromSolarTimeOffset(offset)
+
         var step = 10.0
         var lat = 0.0
-        var lon = -75.0
+        var lon = timezoneLongitude
 
         while (step > 0.001) {
             val optimizer =
