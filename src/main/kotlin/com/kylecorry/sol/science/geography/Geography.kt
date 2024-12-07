@@ -160,7 +160,7 @@ object Geography {
             }
         )
 
-        return listOf(Coordinate(result[0].toDouble(), result[1].toDouble()))
+        return listOf(Coordinate.constrained(result[0].toDouble(), Coordinate.toLongitude(result[1].toDouble())))
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
@@ -195,6 +195,6 @@ object Geography {
         val latitude2 = (atan2(p2.z, sqrt(square(p2.x) + square(p2.y)))).toDegrees()
         val longitude2 = (atan2(p2.y, p2.x)).toDegrees()
 
-        return listOf(Coordinate(latitude1, longitude1), Coordinate(latitude2, longitude2))
+        return listOf(Coordinate.constrained(latitude1, longitude1), Coordinate.constrained(latitude2, longitude2))
     }
 }

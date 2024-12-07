@@ -25,11 +25,11 @@ internal class StarLocationCalculator {
         val timezoneLocation = Time.getLocationFromTimeZone(starReadings.first().time.zone)
 
         var step = 10.0
-        var lat = approximateLocation?.latitude ?: timezoneLocation.latitude
+        var lat = constrainLatitude(approximateLocation?.latitude ?: timezoneLocation.latitude)
         var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
 
         // Step 2: Refine the location using triangulation
-        val approximateLocation = triangulateApproximateLocation(starReadings, Coordinate(lat, lon))
+        val approximateLocation = triangulateApproximateLocation(starReadings, Coordinate.constrained(lat, lon))
         if (approximateLocation != null) {
             lat = approximateLocation.latitude
             lon = approximateLocation.longitude
@@ -48,7 +48,7 @@ internal class StarLocationCalculator {
 
             val result = optimizer.optimize(
                 Range(lon - step * 2, lon + step * 2),
-                Range(lat - step * 6, lat + step * 6),
+                Range(constrainLatitude(lat - step * 6), constrainLatitude(lat + step * 6)),
                 false,
                 { lon, lat ->
                     starReadings.mapIndexed { i, reading ->
@@ -67,7 +67,7 @@ internal class StarLocationCalculator {
             step *= 0.5
         }
 
-        return Coordinate(lat, Coordinate.toLongitude(lon))
+        return Coordinate.constrained(lat, lon)
     }
 
     private fun triangulateApproximateLocation(
@@ -89,6 +89,10 @@ internal class StarLocationCalculator {
         }
 
         return location.minByOrNull { it.distanceTo(approximateLocation) }
+    }
+
+    private fun constrainLatitude(latitude: Double): Double {
+        return latitude.coerceIn(-90.0, 90.0)
     }
 
 }

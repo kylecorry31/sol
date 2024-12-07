@@ -5,7 +5,10 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
-import kotlin.math.*
+import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 data class Coordinate(val latitude: Double, val longitude: Double) {
@@ -75,6 +78,10 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
 
         fun toLongitude(degrees: Double): Double {
             return SolMath.wrap(degrees, -180.0, 180.0)
+        }
+
+        fun constrained(latitude: Double, longitude: Double): Coordinate {
+            return Coordinate(latitude.coerceIn(-90.0, 90.0), toLongitude(longitude))
         }
 
     }
