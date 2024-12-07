@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy
 
-import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
@@ -706,9 +705,9 @@ class AstronomyTest {
 
     @ParameterizedTest
     @CsvSource(
-        "Sirius, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 134.06, 19.0",
-        "Betelgeuse, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 129.63, 45.81",
-        "Rigel, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 151.6, 37.0",
+        "Sirius, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 134.0935, 19.0154",
+        "Betelgeuse, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 129.6620, 45.8404",
+        "Rigel, 40.59117, -74.11905, 2024-11-30T23:00:00-05, 151.6243, 37.0076",
     )
     fun canGetStarPosition(
         name: String,
@@ -720,9 +719,10 @@ class AstronomyTest {
     ) {
         val star = Star.entries.find { it.name == name } ?: fail("Star not found")
         val actualAzimuth = Astronomy.getStarAzimuth(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
-        val actualAltitude = Astronomy.getStarAltitude(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
-        assertEquals(azimuth, actualAzimuth.value, 0.5f)
-        assertEquals(altitude, actualAltitude, 0.5f)
+        val actualAltitude =
+            Astronomy.getStarAltitude(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude), true)
+        assertEquals(azimuth, actualAzimuth.value, 0.01f)
+        assertEquals(altitude, actualAltitude, 0.01f)
     }
 
     @ParameterizedTest

@@ -16,7 +16,12 @@ import com.kylecorry.sol.science.astronomy.units.timeToAngle
 // http://cdsportal.u-strasbg.fr/?target=Rigel
 // https://en.wikipedia.org/wiki/List_of_brightest_stars
 // https://en.wikipedia.org/wiki/List_of_stars_for_navigation
-enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Float) {
+enum class Star(
+    internal val coordinate: EquatorialCoordinate,
+    val magnitude: Float,
+    val motion: ProperMotion? = null
+) {
+    // TODO: Add proper motion to all stars
     Sirius(EquatorialCoordinate(toDegrees(-16.0, 42.0, 58.0), timeToAngle(6, 45, 8.92)), -1.46f),
     Canopus(EquatorialCoordinate(toDegrees(-52.0, 41.0, 44.4), timeToAngle(6, 23, 57.11)), -0.74f),
     RigilKentaurus(EquatorialCoordinate(toDegrees(-60.0, 50.0, 2.4), timeToAngle(14, 39, 36.49)), -0.1f),
@@ -105,3 +110,8 @@ enum class Star(internal val coordinate: EquatorialCoordinate, val magnitude: Fl
     Meissa(EquatorialCoordinate(toDegrees(9.0, 56.0, 2.96), timeToAngle(5, 35, 8.278)), 3.66f),
     Mintaka(EquatorialCoordinate(toDegrees(0.0, -17.0, 56.74), timeToAngle(5, 32, 0.4)), 2.41f),
 }
+
+/**
+ * Proper motion of a star in milliarcseconds per year
+ */
+data class ProperMotion(val declination: Double, val rightAscension: Double)
