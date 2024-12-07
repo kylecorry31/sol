@@ -43,8 +43,8 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
         ) / 3600
 
         val processionRA =
-            (motion?.rightAscension ?: 0.0) * t / (10 * 3600) // cosDegrees(star.coordinate.declination)
-        val processionDec = (motion?.declination ?: 0.0) * t / (10 * 3600)
+            (motion?.rightAscension ?: 0.0) * t * 100
+        val processionDec = (motion?.declination ?: 0.0) * t * 100
 
         val declination = coords.declination + processionDec
         val rightAscension = coords.rightAscension + processionRA
