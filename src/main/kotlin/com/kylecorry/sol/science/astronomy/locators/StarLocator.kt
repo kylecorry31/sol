@@ -43,8 +43,8 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
         ) / 3600
 
         val processionRA =
-            (motion?.rightAscension ?: 0.0) * t * 100
-        val processionDec = (motion?.declination ?: 0.0) * t * 100
+            motion.rightAscension * t * 100
+        val processionDec = motion.declination * t * 100
 
         val declination = coords.declination + processionDec
         val rightAscension = coords.rightAscension + processionRA

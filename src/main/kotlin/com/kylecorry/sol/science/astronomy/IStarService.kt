@@ -19,4 +19,9 @@ interface IStarService {
         location: Coordinate
     ): Bearing
 
+    /**
+     * Get the color temperature of a star in Kelvin
+     */
+    fun getColorTemperature(star: Star): Float
+
 }

@@ -669,6 +669,10 @@ object Astronomy : IAstronomyService {
         return AstroUtils.getAzimuth(StarLocator(star), time.toUniversalTime(), location)
     }
 
+    override fun getColorTemperature(star: Star): Float {
+        return 4600f * ((1 / (0.92f * star.colorIndexBV + 1.7f)) + (1 / (0.92f * star.colorIndexBV + 0.62f)))
+    }
+
     override fun getZenithDistance(altitude: Float): Distance {
         val zenith = 90f - altitude
         return Distance.nauticalMiles(zenith * 60)
