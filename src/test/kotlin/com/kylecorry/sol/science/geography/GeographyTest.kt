@@ -70,8 +70,8 @@ class GeographyTest {
 
         val prediction = Geography.trilaterate(locations)
         val expected = Coordinate(37.417959, -121.961954)
-        assertEquals(expected.latitude, prediction.first().latitude, 0.01)
-        assertEquals(expected.longitude, prediction.first().longitude, 0.01)
+        assertEquals(expected.latitude, prediction.locations.first().latitude, 0.01)
+        assertEquals(expected.longitude, prediction.locations.first().longitude, 0.01)
 
         val locations2 = listOf(
             Geofence(
@@ -86,11 +86,11 @@ class GeographyTest {
 
         val prediction2 = Geography.trilaterate(locations2)
         val expected2 = listOf(Coordinate(36.989311, -88.151426), Coordinate(38.238380, -92.390485))
-        assertEquals(expected2.size, prediction2.size)
-        assertEquals(expected2[0].latitude, prediction2[0].latitude, 0.001)
-        assertEquals(expected2[0].longitude, prediction2[0].longitude, 0.001)
-        assertEquals(expected2[1].latitude, prediction2[1].latitude, 0.001)
-        assertEquals(expected2[1].longitude, prediction2[1].longitude, 0.001)
+        assertEquals(expected2.size, prediction2.locations.size)
+        assertEquals(expected2[0].latitude, prediction2.locations[0].latitude, 0.001)
+        assertEquals(expected2[0].longitude, prediction2.locations[0].longitude, 0.001)
+        assertEquals(expected2[1].latitude, prediction2.locations[1].latitude, 0.001)
+        assertEquals(expected2[1].longitude, prediction2.locations[1].longitude, 0.001)
     }
 
 }

@@ -15,7 +15,8 @@ internal class StarLocationCalculator {
 
     fun getLocationFromStars(
         starReadings: List<StarAltitudeReading>,
-        approximateLocation: Coordinate?
+        approximateLocation: Coordinate?,
+        adjustForAltitudeBias: Boolean = false
     ): Coordinate? {
         if (starReadings.size <= 1) {
             return null
@@ -29,7 +30,7 @@ internal class StarLocationCalculator {
         var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
 
         // Step 2: Refine the location using triangulation
-        val approximateLocation = triangulateApproximateLocation(starReadings, Coordinate.constrained(lat, lon))
+        val (approximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate.constrained(lat, lon))
         if (approximateLocation != null) {
             lat = approximateLocation.latitude
             lon = approximateLocation.longitude
@@ -58,7 +59,10 @@ internal class StarLocationCalculator {
                             Coordinate(lat, lon),
                             true
                         )
-                        square(reading.altitude - expectedAltitude.toDouble()) * weights[i]
+                        square(
+                            reading.altitude + (if (adjustForAltitudeBias) (bias
+                                ?: 0f) else 0f) - expectedAltitude.toDouble()
+                        ) * weights[i]
                     }.sum()
                 }
             )
@@ -73,9 +77,9 @@ internal class StarLocationCalculator {
     private fun triangulateApproximateLocation(
         starReadings: List<StarAltitudeReading>,
         approximateLocation: Coordinate
-    ): Coordinate? {
+    ): Pair<Coordinate?, Float?> {
         if (starReadings.size <= 1) {
-            return null
+            return null to null
         }
 
         val zenithLocations = starReadings.mapIndexed { index, reading ->
@@ -83,12 +87,12 @@ internal class StarLocationCalculator {
             val coordinate = reading.star.coordinate.getZenithCoordinate(reading.time.toUniversalTime())
             Geofence(coordinate, distance)
         }
-        val location = Geography.trilaterate(zenithLocations, isWeighted = true)
-        if (location.size <= 1) {
-            return location.firstOrNull()
+        val result = Geography.trilaterate(zenithLocations, calculateBias = true)
+        if (result.locations.size <= 1) {
+            return result.locations.firstOrNull() to result.biasDegrees
         }
 
-        return location.minByOrNull { it.distanceTo(approximateLocation) }
+        return result.locations.minByOrNull { it.distanceTo(approximateLocation) } to result.biasDegrees
     }
 
     private fun constrainLatitude(latitude: Double): Double {

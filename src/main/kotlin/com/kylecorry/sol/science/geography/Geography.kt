@@ -124,43 +124,79 @@ object Geography {
         )
     }
 
-    fun trilaterate(readings: List<Geofence>, isWeighted: Boolean = false): List<Coordinate> {
+    fun trilaterate(
+        readings: List<Geofence>,
+        isWeighted: Boolean = false,
+        calculateBias: Boolean = false
+    ): TrilaterationResult {
         if (readings.size < 2) {
-            return readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()
+            return TrilaterationResult(readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf())
         }
 
         // There are 2 possible solutions for 2 readings
         if (readings.size == 2) {
-            return trilaterate2(readings)
+            return TrilaterationResult(trilaterate2(readings))
         }
 
         val optimizer = LeastSquaresOptimizer()
-        val result = optimizer.optimize(
-            readings.map { listOf(it.center.latitude.toFloat(), it.center.longitude.toFloat()) },
-            readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f },
-            maxIterations = 200,
-            dampingFactor = 0.5f,
-            tolerance = 0.0001f,
-            weightingFn = { index, point, error ->
-                if (isWeighted) {
-                    1f / (error * error + 1)
-                } else {
-                    1f
-                }
-            },
-            distanceFn = { a, b ->
-                Distance.meters(
-                    Coordinate(a[0].toDouble(), a[1].toDouble()).distanceTo(
-                        Coordinate(
-                            b[0].toDouble(),
-                            b[1].toDouble()
-                        )
+        val distanceFn = { point: List<Float>, guess: List<Float> ->
+            Distance.meters(
+                Coordinate(point[0].toDouble(), point[1].toDouble()).distanceTo(
+                    Coordinate(
+                        guess[0].toDouble(),
+                        guess[1].toDouble()
                     )
-                ).convertTo(DistanceUnits.NauticalMiles).distance / 60f
+                )
+            ).convertTo(DistanceUnits.NauticalMiles).distance / 60f
+        }
+
+        val distanceFnWithCorrection = { point: List<Float>, guess: List<Float> ->
+            distanceFn(point, guess) + if (calculateBias) guess[2] else 0f
+        }
+
+        val weightingFn = { index: Int, point: List<Float>, error: Float ->
+            if (isWeighted) {
+                1f / (error * error + 1)
+            } else {
+                1f
+            }
+        }
+
+        val errors = readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f }
+
+        val result = optimizer.optimize(
+            readings.map {
+                listOf(
+                    it.center.latitude.toFloat(),
+                    it.center.longitude.toFloat()
+                ) + if (calculateBias) listOf(0f) else emptyList()
+            },
+            errors,
+            maxIterations = 200,
+            dampingFactor = 1f,
+            tolerance = 0.0001f,
+            weightingFn = weightingFn,
+            distanceFn = distanceFnWithCorrection,
+            jacobianFn = { index, point, guess ->
+                val distance = distanceFn(point, guess)
+                point.mapIndexed { j, value ->
+                    if (j < 2) {
+                        (guess[j] - value) / distance * weightingFn(index, point, errors[index])
+                    } else {
+                        1f
+                    }
+                }
             }
         )
 
-        return listOf(Coordinate.constrained(result[0].toDouble(), Coordinate.toLongitude(result[1].toDouble())))
+        return TrilaterationResult(
+            listOf(
+                Coordinate.constrained(
+                    result[0].toDouble(),
+                    Coordinate.toLongitude(result[1].toDouble())
+                )
+            ), if (calculateBias) result[2] else null
+        )
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {

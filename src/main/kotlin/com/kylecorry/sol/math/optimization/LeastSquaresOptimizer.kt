@@ -1,8 +1,6 @@
 package com.kylecorry.sol.math.optimization
 
-import com.kylecorry.sol.math.algebra.dot
-import com.kylecorry.sol.math.algebra.inverse
-import com.kylecorry.sol.math.algebra.transpose
+import com.kylecorry.sol.math.algebra.LinearAlgebra
 import com.kylecorry.sol.math.geometry.Geometry
 import kotlin.math.abs
 
@@ -14,8 +12,14 @@ class LeastSquaresOptimizer {
         maxAllowedStep: Float = 500f,
         dampingFactor: Float = 0.1f,
         tolerance: Float = 0.0001f,
-        distanceFn: (List<Float>, List<Float>) -> Float = { a, b -> Geometry.euclideanDistance(a, b) },
-        weightingFn: (index: Int, point: List<Float>, error: Float) -> Float = { index, point, error -> 1f }
+        distanceFn: (point: List<Float>, guess: List<Float>) -> Float = { a, b -> Geometry.euclideanDistance(a, b) },
+        weightingFn: (index: Int, point: List<Float>, error: Float) -> Float = { index, point, error -> 1f },
+        jacobianFn: (index: Int, point: List<Float>, guess: List<Float>) -> List<Float> = { index, point, guess ->
+            val distance = distanceFn(point, guess)
+            point.mapIndexed { j, value ->
+                (guess[j] - value) / distance * weightingFn(index, point, errors[index])
+            }
+        }
     ): List<Float> {
         if (points.size < 2) {
             return points.firstOrNull() ?: emptyList()
@@ -33,32 +37,24 @@ class LeastSquaresOptimizer {
         for (i in 0 until maxIterations) {
 
             val f = points.mapIndexed { i, point ->
-                (distanceFn(point, guess) - errors[i]) * weightingFn(i, point, errors[i])
+                (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])
             }.toTypedArray()
 
             val jacobian = points.mapIndexed { i, point ->
-                val distance = distanceFn(point, guess)
-                point.mapIndexed { j, value -> ((guess[j] - value) / distance) * weightingFn(i, point, errors[i]) }
-                    .toTypedArray()
+                jacobianFn(i, point, guess).toTypedArray()
             }.toTypedArray()
 
-            val jacobianT = jacobian.transpose()
+            val step = LinearAlgebra.leastSquares(jacobian, f)
 
-            val jacobianTJacobian = jacobianT.dot(jacobian)
-
-            val jacobianTF = jacobianT.dot(arrayOf(f).transpose())
-
-            val step = jacobianTJacobian.inverse().dot(jacobianTF)
-
-            if ((step.maxOfOrNull { abs(it[0]) } ?: 0f) > maxAllowedStep) {
-                val maxStep = step.maxOfOrNull { abs(it[0]) } ?: 0f
+            if ((step.maxOfOrNull { abs(it) } ?: 0f) > maxAllowedStep) {
+                val maxStep = step.maxOfOrNull { abs(it) } ?: 0f
                 step.forEachIndexed { index, it ->
-                    step[index][0] = it[0] / maxStep * maxAllowedStep
+                    step[index] = it / maxStep * maxAllowedStep
                 }
             }
 
             guess.forEachIndexed { index, value ->
-                guess[index] -= step[index][0] * dampingFactor
+                guess[index] += step[index] * dampingFactor
             }
 
             val error = f.map { abs(it) }.sum()
