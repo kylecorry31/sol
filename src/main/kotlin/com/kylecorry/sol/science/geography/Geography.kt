@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.geography
 
+import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toDegrees
@@ -179,7 +180,7 @@ object Geography {
                 val distance = distanceFn(point, guess)
                 point.mapIndexed { j, value ->
                     if (j < 2) {
-                        (guess[j] - value) / distance * weightingFn(index, point, errors[index])
+                        deltaAngle(value, guess[j]) / distance * weightingFn(index, point, errors[index])
                     } else {
                         1f
                     }
