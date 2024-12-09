@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.algebra.LinearAlgebra
+import com.kylecorry.sol.math.algebra.norm
+import com.kylecorry.sol.math.algebra.toColumnMatrix
 import com.kylecorry.sol.math.geometry.Geometry
 import kotlin.math.abs
 
@@ -12,6 +14,7 @@ class LeastSquaresOptimizer {
         maxAllowedStep: Float = 500f,
         dampingFactor: Float = 0.1f,
         tolerance: Float = 0.0001f,
+        initialValue: List<Float>? = null,
         distanceFn: (point: List<Float>, guess: List<Float>) -> Float = { a, b -> Geometry.euclideanDistance(a, b) },
         weightingFn: (index: Int, point: List<Float>, error: Float) -> Float = { index, point, error -> 1f },
         jacobianFn: (index: Int, point: List<Float>, guess: List<Float>) -> List<Float> = { index, point, guess ->
@@ -28,12 +31,10 @@ class LeastSquaresOptimizer {
         require(points.size == errors.size) { "The number of points and errors must be equal." }
 
         // Initial guess for the observer location (average of the points)
-        val guess = points[0].mapIndexed { index, _ ->
+        val guess = initialValue?.toMutableList() ?: points[0].mapIndexed { index, _ ->
             points.map { it[index] }.average().toFloat()
         }.toMutableList()
 
-        var lastError = Float.MAX_VALUE
-        var averageError = 0f
         for (i in 0 until maxIterations) {
 
             val f = points.mapIndexed { i, point ->
@@ -57,13 +58,10 @@ class LeastSquaresOptimizer {
                 guess[index] += step[index] * dampingFactor
             }
 
-            val error = f.map { abs(it) }.sum()
-            averageError = f.map { abs(it) }.average().toFloat()
-            if (abs(lastError - error) < tolerance) {
-                lastError = error
+            val delta = step.toColumnMatrix().norm()
+            if (delta < tolerance) {
                 break
             }
-            lastError = error
         }
 
         return guess

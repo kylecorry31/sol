@@ -5,6 +5,8 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
+import kotlin.math.absoluteValue
+import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -69,6 +71,17 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
         val z = sinDegrees(latitude)
 
         return Vector3(x.toFloat(), y.toFloat(), z.toFloat())
+    }
+
+    /**
+     * Get the angle between two coordinates (through the center of the Earth)
+     */
+    fun degreesBetween(other: Coordinate): Float {
+        return acos(
+            sinDegrees(latitude) * sinDegrees(other.latitude) +
+                    cosDegrees(latitude) * cosDegrees(other.latitude) *
+                    cosDegrees(longitude - other.longitude)
+        ).toDegrees().toFloat().absoluteValue
     }
 
     companion object {

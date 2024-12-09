@@ -1,6 +1,5 @@
 package com.kylecorry.sol.math.algebra
 
-import com.kylecorry.sol.math.SolMath.real
 import com.kylecorry.sol.shared.ArrayUtils.swap
 import kotlin.math.absoluteValue
 import kotlin.math.min
@@ -333,7 +332,7 @@ object LinearAlgebra {
      * @param b The vector b
      * @return The solution x
      */
-    fun leastSquares(a: Matrix, b: Array<Float>): Array<Float> {
+    fun leastSquares(a: Matrix, b: Vector): Vector {
         val isUnderdetermined = a.rows() < a.columns()
         if (isUnderdetermined) {
             return leastNorm(a, b)
@@ -341,7 +340,7 @@ object LinearAlgebra {
 
         val jt = a.transpose()
         val jtj = jt.dot(a)
-        val jtr = jt.dot(createMatrix(b.size, 1) { i, _ -> b[i] })
+        val jtr = jt.dot(b.toColumnMatrix())
         return solveLinear(jtj, jtr.transpose()[0])
     }
 

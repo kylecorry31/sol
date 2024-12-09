@@ -140,14 +140,12 @@ object Geography {
 
         val optimizer = LeastSquaresOptimizer()
         val distanceFn = { point: List<Float>, guess: List<Float> ->
-            Distance.meters(
-                Coordinate(point[0].toDouble(), point[1].toDouble()).distanceTo(
-                    Coordinate(
-                        guess[0].toDouble(),
-                        guess[1].toDouble()
-                    )
+            Coordinate(point[0].toDouble(), point[1].toDouble()).degreesBetween(
+                Coordinate(
+                    guess[0].toDouble(),
+                    guess[1].toDouble()
                 )
-            ).convertTo(DistanceUnits.NauticalMiles).distance / 60f
+            )
         }
 
         val distanceFnWithCorrection = { point: List<Float>, guess: List<Float> ->
@@ -174,7 +172,7 @@ object Geography {
             errors,
             maxIterations = 200,
             dampingFactor = 1f,
-            tolerance = 0.0001f,
+            tolerance = 0.000001f,
             weightingFn = weightingFn,
             distanceFn = distanceFnWithCorrection,
             jacobianFn = { index, point, guess ->
