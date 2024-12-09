@@ -1,5 +1,7 @@
 package com.kylecorry.sol.math.algebra
 
+import com.kylecorry.sol.math.SolMath.real
+import com.kylecorry.sol.shared.ArrayUtils.swap
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -278,6 +280,69 @@ object LinearAlgebra {
                 }
             }
         ).toFloat()
+    }
+
+    fun solveLinear(a: Matrix, b: Array<Float>): Array<Float> {
+        require(a.rows() == a.columns()) { "Matrix must be square" }
+        require(a.rows() == b.size) { "Matrix rows must be the same size as the vector" }
+
+        val n = a.columns()
+        val ab = a.appendColumn(b.toFloatArray())
+
+        // Convert to row echelon form
+        for (i in 0 until n) {
+            var maxRow = i
+            for (j in i + 1 until n) {
+                if (ab[j, i].absoluteValue > ab[maxRow, i].absoluteValue) {
+                    maxRow = j
+                }
+            }
+
+            ab.swap(i, maxRow)
+
+            for (j in i + 1 until n) {
+                val factor = ab[j, i] / ab[i, i]
+                for (k in i until n + 1) {
+                    ab[j, k] -= ab[i, k] * factor
+                }
+            }
+        }
+
+        // Back substitution
+        val x = FloatArray(n)
+        for (i in n - 1 downTo 0) {
+            x[i] = ab[i, n] / ab[i, i]
+            for (j in i - 1 downTo 0) {
+                ab[j, n] -= ab[j, i] * x[i]
+            }
+        }
+
+        return x.toTypedArray()
+    }
+
+    fun leastNorm(a: Matrix, b: Array<Float>): Array<Float> {
+        val (q, r) = qr(a.transpose())
+        val y = q.dot(r.inverse().transpose()).dot(createMatrix(b.size, 1) { i, _ -> b[i] })
+        return y.transpose()[0]
+    }
+
+    /**
+     * Solves the least squares problem for the matrix equation Ax = b.
+     * If A is underdetermined, the least norm solution is returned instead.
+     * @param a The matrix A
+     * @param b The vector b
+     * @return The solution x
+     */
+    fun leastSquares(a: Matrix, b: Array<Float>): Array<Float> {
+        val isUnderdetermined = a.rows() < a.columns()
+        if (isUnderdetermined) {
+            return leastNorm(a, b)
+        }
+
+        val jt = a.transpose()
+        val jtj = jt.dot(a)
+        val jtr = jt.dot(createMatrix(b.size, 1) { i, _ -> b[i] })
+        return solveLinear(jtj, jtr.transpose()[0])
     }
 
     fun appendColumn(m: Matrix, col: FloatArray): Matrix {

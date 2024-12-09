@@ -118,6 +118,10 @@ fun Matrix.cofactor(r: Int, c: Int): Matrix {
     return LinearAlgebra.cofactor(this, r, c)
 }
 
+fun Matrix.norm(): Float {
+    return LinearAlgebra.norm(this)
+}
+
 fun Matrix.appendColumn(col: FloatArray): Matrix {
     return LinearAlgebra.appendColumn(this, col)
 }

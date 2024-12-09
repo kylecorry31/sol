@@ -502,6 +502,74 @@ class LinearAlgebraTest {
         assertEquals(expected, actual, 0.00001f)
     }
 
+    @Test
+    fun solveLinear(){
+        val a1 = createMatrix(2, 2, 0f)
+        a1[0, 0] = 2f
+        a1[0, 1] = 1f
+        a1[1, 0] = 1f
+        a1[1, 1] = -1f
+        val b1 = arrayOf(-4f, -2f)
+        val expected1 = arrayOf(-2f, 0f)
+        val actual1 = LinearAlgebra.solveLinear(a1, b1)
+        assertEquals(expected1, actual1, 0.00001f)
+
+        val a2 = createMatrix(3, 3, 0f)
+        a2[0, 0] = 2f
+        a2[0, 1] = -5f
+        a2[0, 2] = 3f
+        a2[1, 0] = 3f
+        a2[1, 1] = -1f
+        a2[1, 2] = 4f
+        a2[2, 0] = 1f
+        a2[2, 1] = 3f
+        a2[2, 2] = 2f
+        val b2 = arrayOf(8f, 7f, -3f)
+        val expected2 = arrayOf(6f, -1f, -3f)
+        val actual2 = LinearAlgebra.solveLinear(a2, b2)
+        assertEquals(expected2, actual2, 0.00001f)
+    }
+
+    @Test
+    fun leastSquares(){
+        // Well conditioned
+        val a1 = createMatrix(2, 2, 0f)
+        a1[0, 0] = 2f
+        a1[0, 1] = 1f
+        a1[1, 0] = 1f
+        a1[1, 1] = -1f
+        val b1 = arrayOf(7f, -1f)
+        val expected1 = arrayOf(2f, 3f)
+        val actual1 = LinearAlgebra.leastSquares(a1, b1)
+        assertEquals(expected1, actual1, 0.00001f)
+
+        // Overdetermined
+        val a2 = createMatrix(3, 2, 0f)
+        a2[0, 0] = 1f
+        a2[0, 1] = 1f
+        a2[1, 0] = 1f
+        a2[1, 1] = -1f
+        a2[2, 0] = 1f
+        a2[2, 1] = 0f
+        val b2 = arrayOf(3f, 1f, 2f)
+        val expected2 = arrayOf(2f, 1f)
+        val actual2 = LinearAlgebra.leastSquares(a2, b2)
+        assertEquals(expected2, actual2, 0.00001f)
+
+        // Underdetermined
+        val a3 = createMatrix(2, 3, 0f)
+        a3[0, 0] = 1f
+        a3[0, 1] = 1f
+        a3[0, 2] = 1f
+        a3[1, 0] = 0f
+        a3[1, 1] = 1f
+        a3[1, 2] = 2f
+        val b3 = arrayOf(6f, 5f)
+        val expected3 = arrayOf(2.5f, 2f, 1.5f)
+        val actual3 = LinearAlgebra.leastSquares(a3, b3)
+        assertEquals(expected3, actual3, 0.00001f)
+    }
+
     private fun assertEquals(m1: Matrix, m2: Matrix, tolerance: Float = 0f) {
         assertEquals(m1.rows(), m2.rows())
         assertEquals(m1.columns(), m2.columns())
@@ -510,6 +578,14 @@ class LinearAlgebraTest {
             for (c in 0 until m1.columns()) {
                 assertEquals(m1[r, c], m2[r, c], tolerance)
             }
+        }
+    }
+
+    private fun assertEquals(m1: Array<Float>, m2: Array<Float>, tolerance: Float = 0f) {
+        assertEquals(m1.size, m2.size)
+
+        for (i in m1.indices) {
+            assertEquals(m1[i], m2[i], tolerance)
         }
     }
 
