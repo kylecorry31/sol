@@ -1,10 +1,12 @@
 package com.kylecorry.sol.science.astronomy.stars
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.algebra.LinearAlgebra
 import com.kylecorry.sol.math.algebra.norm
+import com.kylecorry.sol.math.optimization.ConvergenceOptimizer
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.Astronomy.getStarAltitude
@@ -32,12 +34,67 @@ internal class StarLocationCalculator {
             return getLocationFromStarsAltitudeOnly(starReadings, approximateLocation, false)
         }
 
+        val optimizer = ConvergenceOptimizer(
+            1f,
+            0.0001f,
+            0.0 to 0.0
+        ) { stepSize, center ->
+            SimulatedAnnealingOptimizer(
+                1000.0,
+                stepSize = stepSize.toDouble(),
+                maxIterations = 200,
+                initialValue = center
+            )
+        }
+
+        val (azimuthBias, altitudeBias) = optimizer.optimize(
+            Range(-20.0, 20.0),
+            Range(-20.0, 20.0),
+            false
+        ) { azimuthBias, altitudeBias ->
+            val newStars = starReadings.map {
+                StarReading(
+                    it.star,
+                    it.altitude + altitudeBias.toFloat(),
+                    it.azimuth?.plus(azimuthBias.toFloat()),
+                    it.time
+                )
+            }
+
+            val location = getLocationFromStarsAltitudeAzimuth(newStars, approximateLocation)
+
+            newStars.mapIndexed { i, reading ->
+                val expectedAltitude =
+                    getStarAltitude(reading.star, reading.time, location, true)
+                val expectedAzimuth = Astronomy.getStarAzimuth(
+                    reading.star,
+                    reading.time,
+                    location
+                ).value
+                square(reading.altitude - expectedAltitude).toDouble() +
+                        square(deltaAngle(reading.azimuth!!, expectedAzimuth)).toDouble()
+            }.sum()
+        }
+
+        return getLocationFromStarsAltitudeAzimuth(starReadings.map {
+            StarReading(
+                it.star,
+                it.altitude + altitudeBias.toFloat(),
+                it.azimuth?.plus(azimuthBias.toFloat()),
+                it.time
+            )
+        }, approximateLocation)
+    }
+
+    private fun getLocationFromStarsAltitudeAzimuth(
+        starReadings: List<StarReading>,
+        approximateLocation: Coordinate?
+    ): Coordinate {
         val timezoneLocation = Time.getLocationFromTimeZone(starReadings.first().time.zone)
 
         var lat = constrainLatitude(approximateLocation?.latitude ?: timezoneLocation.latitude)
         var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
 
-        // TODO: Use the LeastSquaresOptimizer and account for bias (both azimuth and altitude)
         for (i in 0 until 20) {
             val expectedAltitudes = starReadings.map {
                 getStarAltitude(it.star, it.time, Coordinate(lat, lon), true)
@@ -73,7 +130,7 @@ internal class StarLocationCalculator {
         return Coordinate.constrained(lat, lon)
     }
 
-    fun getLocationFromStarsAltitudeOnly(
+    private fun getLocationFromStarsAltitudeOnly(
         starReadings: List<StarReading>,
         approximateLocation: Coordinate?,
         adjustForAltitudeBias: Boolean = false
@@ -99,38 +156,46 @@ internal class StarLocationCalculator {
         }
 
         // Step 3: Further refine the location using simulated annealing
-        while (step > 0.0001) {
-            val optimizer =
-                SimulatedAnnealingOptimizer(1000.0, stepSize = step, maxIterations = 200, initialValue = Pair(lon, lat))
-            var weights = starReadings.map {
-                1 / square(90.0 - it.altitude)
-            }
-            val totalWeight = weights.sum()
-            weights = weights.map { it / totalWeight }
-
-            val result = optimizer.optimize(
-                Range(lon - step * 2, lon + step * 2),
-                Range(constrainLatitude(lat - step * 6), constrainLatitude(lat + step * 6)),
-                false,
-                { lon, lat ->
-                    starReadings.mapIndexed { i, reading ->
-                        val expectedAltitude = getStarAltitude(
-                            reading.star,
-                            reading.time,
-                            Coordinate(lat, lon),
-                            true
-                        )
-                        square(
-                            reading.altitude + (if (adjustForAltitudeBias) (bias
-                                ?: 0f) else 0f) - expectedAltitude.toDouble()
-                        ) * weights[i]
-                    }.sum()
-                }
+        val optimizer = ConvergenceOptimizer(
+            step.toFloat(),
+            0.0001f,
+            lon to lat,
+        ) { stepSize, center ->
+            SimulatedAnnealingOptimizer(
+                1000.0,
+                stepSize = stepSize.toDouble(),
+                maxIterations = 200,
+                initialValue = center
             )
-            lat = result.second
-            lon = result.first
-            step *= 0.5
         }
+
+
+        var weights = starReadings.map {
+            1 / square(90.0 - it.altitude)
+        }
+        val totalWeight = weights.sum()
+        weights = weights.map { it / totalWeight }
+        val result = optimizer.optimize(
+            Range(lon - step * 2, lon + step * 2),
+            Range(constrainLatitude(lat - step * 6), constrainLatitude(lat + step * 6)),
+            false
+        ) { lon, lat ->
+            starReadings.mapIndexed { i, reading ->
+                val expectedAltitude = getStarAltitude(
+                    reading.star,
+                    reading.time,
+                    Coordinate.constrained(lat, lon),
+                    true
+                )
+                square(
+                    reading.altitude + (if (adjustForAltitudeBias) (bias
+                        ?: 0f) else 0f) - expectedAltitude.toDouble()
+                ) * weights[i]
+            }.sum()
+        }
+
+        lat = result.second
+        lon = result.first
 
         return Coordinate.constrained(lat, lon)
     }

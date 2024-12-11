@@ -786,6 +786,8 @@ class AstronomyTest {
     fun canGetLocationFromStarsAltitudeAndAzimuth(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val altitudeBias = if (numberOfStars > 2) 1f else 0f
+        val azimuthBias = if (numberOfStars > 2) 3f else 0f
         val stars = Star.entries.map { star ->
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
@@ -795,16 +797,16 @@ class AstronomyTest {
             .take(numberOfStars)
 
         val readings = stars.map {
-            val altitude = Astronomy.getStarAltitude(it, time, location, true)
-            val azimuth = Astronomy.getStarAzimuth(it, time, location).value
+            val altitude = Astronomy.getStarAltitude(it, time, location, true) + altitudeBias
+            val azimuth = Astronomy.getStarAzimuth(it, time, location).value + azimuthBias
             StarReading(it, altitude, azimuth, time)
         }
 
-        val actual = Astronomy.getLocationFromStars(readings, Coordinate(40.0, -70.0))
+        val actual = Astronomy.getLocationFromStars(readings)
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(1f).distance)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(10f).distance)
         } else {
             assertNull(actual)
         }
