@@ -284,6 +284,11 @@ object Time {
     }
 
     fun getLocationFromTimeZone(zone: ZoneId): Coordinate {
+        val lookupLocation = TimeZoneLocations.getLocation(zone.id)
+        if (lookupLocation != null) {
+            return lookupLocation
+        }
+
         val offset = Duration.ofSeconds(zone.rules.getStandardOffset(Instant.now()).totalSeconds.toLong())
         val timezoneLongitude = getLongitudeFromSolarTimeOffset(offset)
         return Coordinate(0.0, timezoneLongitude)
