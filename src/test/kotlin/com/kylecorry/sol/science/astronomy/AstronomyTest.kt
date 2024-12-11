@@ -5,7 +5,7 @@ import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.stars.Star
-import com.kylecorry.sol.science.astronomy.stars.StarAltitudeReading
+import com.kylecorry.sol.science.astronomy.stars.StarReading
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
@@ -746,7 +746,7 @@ class AstronomyTest {
         "8, true",
         "16, true"
     )
-    fun canGetLocationFromStars(numberOfStars: Int, hasFix: Boolean) {
+    fun canGetLocationFromStarsAltitudeOnly(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
         val stars = Star.entries.map { star ->
@@ -759,14 +759,52 @@ class AstronomyTest {
 
         val readings = stars.map {
             val altitude = Astronomy.getStarAltitude(it, time, location, true)
-            StarAltitudeReading(it, altitude, time)
+            StarReading(it, altitude, null, time)
         }
 
-        val actual = Astronomy.getLocationFromStars(readings, location)
+        val actual = Astronomy.getLocationFromStars(readings, Coordinate(40.0, -70.0))
 
         if (hasFix) {
             assertNotNull(actual)
             assertEquals(0f, actual!!.distanceTo(location), Distance.meters(20f).distance)
+        } else {
+            assertNull(actual)
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, false",
+        "1, false",
+        "2, true",
+        "3, true",
+        "4, true",
+        "5, true",
+        "8, true",
+        "16, true"
+    )
+    fun canGetLocationFromStarsAltitudeAndAzimuth(numberOfStars: Int, hasFix: Boolean) {
+        val location = Coordinate(42.0, -72.0)
+        val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
+        val stars = Star.entries.map { star ->
+            val altitude = Astronomy.getStarAltitude(star, time, location, true)
+            val distance = Astronomy.getZenithDistance(altitude)
+            star to distance
+        }.sortedBy { it.second.distance }
+            .map { it.first }
+            .take(numberOfStars)
+
+        val readings = stars.map {
+            val altitude = Astronomy.getStarAltitude(it, time, location, true)
+            val azimuth = Astronomy.getStarAzimuth(it, time, location).value
+            StarReading(it, altitude, azimuth, time)
+        }
+
+        val actual = Astronomy.getLocationFromStars(readings, Coordinate(40.0, -70.0))
+
+        if (hasFix) {
+            assertNotNull(actual)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(1f).distance)
         } else {
             assertNull(actual)
         }

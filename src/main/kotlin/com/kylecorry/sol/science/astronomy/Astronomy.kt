@@ -20,8 +20,8 @@ import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.stars.Star
-import com.kylecorry.sol.science.astronomy.stars.StarAltitudeReading
 import com.kylecorry.sol.science.astronomy.stars.StarLocationCalculator
+import com.kylecorry.sol.science.astronomy.stars.StarReading
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
@@ -679,7 +679,7 @@ object Astronomy : IAstronomyService {
     }
 
     override fun getLocationFromStars(
-        starReadings: List<StarAltitudeReading>,
+        starReadings: List<StarReading>,
         approximateLocation: Coordinate?
     ): Coordinate? {
         return StarLocationCalculator().getLocationFromStars(starReadings, approximateLocation)

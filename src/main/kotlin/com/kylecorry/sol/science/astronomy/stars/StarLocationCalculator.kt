@@ -2,6 +2,9 @@ package com.kylecorry.sol.science.astronomy.stars
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.algebra.LinearAlgebra
+import com.kylecorry.sol.math.algebra.norm
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.Astronomy.getStarAltitude
@@ -10,11 +13,68 @@ import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.tan
 
 internal class StarLocationCalculator {
 
     fun getLocationFromStars(
-        starReadings: List<StarAltitudeReading>,
+        starReadings: List<StarReading>,
+        approximateLocation: Coordinate?
+    ): Coordinate? {
+        if (starReadings.size <= 1) {
+            return null
+        }
+
+        // If there are no azimuth readings, delegate to the other method
+        if (starReadings.any { it.azimuth == null } || starReadings.size == 2) {
+            return getLocationFromStarsAltitudeOnly(starReadings, approximateLocation, false)
+        }
+
+        val timezoneLocation = Time.getLocationFromTimeZone(starReadings.first().time.zone)
+
+        var lat = constrainLatitude(approximateLocation?.latitude ?: timezoneLocation.latitude)
+        var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
+
+        // TODO: Use the LeastSquaresOptimizer and account for bias (both azimuth and altitude)
+        for (i in 0 until 20) {
+            val expectedAltitudes = starReadings.map {
+                getStarAltitude(it.star, it.time, Coordinate(lat, lon), true)
+            }
+
+            // Step 3: Determine lines of position
+            val linesOfPosition = expectedAltitudes.mapIndexed { i, alt ->
+                val distance = starReadings[i].altitude - alt
+                val azimuth = starReadings[i].azimuth ?: 0f
+                val lineAngle = azimuth + 90f
+                val m = tan(lineAngle.toRadians())
+                val pointX = cos(azimuth.toRadians()) * distance
+                val pointY = sin(azimuth.toRadians()) * distance
+                val b = pointY - m * pointX
+                arrayOf(-m, 1f) to b
+            }
+
+            // Solve using least squares
+            val ls = LinearAlgebra.leastSquares(
+                linesOfPosition.map { it.first }.toTypedArray(),
+                linesOfPosition.map { it.second }.toTypedArray()
+            )
+
+            if (ls.norm() < 0.000001) {
+                break
+            }
+
+            val newCoord = Coordinate(lat + ls[0].toDouble(), lon + ls[1].toDouble())
+            lat = newCoord.latitude
+            lon = newCoord.longitude
+        }
+
+        return Coordinate.constrained(lat, lon)
+    }
+
+    fun getLocationFromStarsAltitudeOnly(
+        starReadings: List<StarReading>,
         approximateLocation: Coordinate?,
         adjustForAltitudeBias: Boolean = false
     ): Coordinate? {
@@ -28,6 +88,7 @@ internal class StarLocationCalculator {
         var step = 10.0
         var lat = constrainLatitude(approximateLocation?.latitude ?: timezoneLocation.latitude)
         var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
+
 
         // Step 2: Refine the location using triangulation
         val (approximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate.constrained(lat, lon))
@@ -75,7 +136,7 @@ internal class StarLocationCalculator {
     }
 
     private fun triangulateApproximateLocation(
-        starReadings: List<StarAltitudeReading>,
+        starReadings: List<StarReading>,
         approximateLocation: Coordinate
     ): Pair<Coordinate?, Float?> {
         if (starReadings.size <= 1) {
