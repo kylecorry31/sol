@@ -29,5 +29,13 @@ enum class Constellation(val edges: List<Pair<Star, Star>>) {
             Star.Bellatrix to Star.Meissa,
             Star.Betelgeuse to Star.Meissa
         )
-    )
+    ),
+    Cassiopeia(
+        listOf(
+            Star.Caph to Star.Schedar,
+            Star.Schedar to Star.GammaCassiopeiae,
+            Star.GammaCassiopeiae to Star.Ruchbah,
+            Star.Ruchbah to Star.Segin
+        )
+    ),
 }
