@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.astronomy
 
+import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -23,5 +24,14 @@ interface IStarService {
      * Get the color temperature of a star in Kelvin
      */
     fun getColorTemperature(star: Star): Float
+
+    /**
+     * Matches the readings to stars
+     */
+    fun plateSolve(
+        readings: List<AltitudeAzimuth>,
+        time: ZonedDateTime,
+        approximateLocation: Coordinate? = null
+    ): List<Pair<AltitudeAzimuth, Star>>
 
 }

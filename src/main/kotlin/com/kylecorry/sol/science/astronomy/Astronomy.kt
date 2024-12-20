@@ -19,12 +19,15 @@ import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
+import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
+import com.kylecorry.sol.science.astronomy.stars.PlateSolver
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarLocationCalculator
 import com.kylecorry.sol.science.astronomy.stars.StarReading
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.getClosestFutureTime
@@ -671,6 +674,14 @@ object Astronomy : IAstronomyService {
 
     override fun getColorTemperature(star: Star): Float {
         return 4600f * ((1 / (0.92f * star.colorIndexBV + 1.7f)) + (1 / (0.92f * star.colorIndexBV + 0.62f)))
+    }
+
+    override fun plateSolve(
+        readings: List<AltitudeAzimuth>,
+        time: ZonedDateTime,
+        approximateLocation: Coordinate?
+    ): List<Pair<AltitudeAzimuth, Star>> {
+        return PlateSolver().solve(readings, time, approximateLocation ?: Time.getLocationFromTimeZone(time.zone))
     }
 
     override fun getZenithDistance(altitude: Float): Distance {

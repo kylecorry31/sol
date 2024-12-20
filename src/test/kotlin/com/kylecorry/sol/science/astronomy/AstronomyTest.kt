@@ -4,6 +4,8 @@ import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
+import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
+import com.kylecorry.sol.science.astronomy.stars.Constellation
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarReading
 import com.kylecorry.sol.science.shared.Season
@@ -810,6 +812,25 @@ class AstronomyTest {
         } else {
             assertNull(actual)
         }
+    }
+
+    @Test
+    fun plateSolve() {
+        val time = ZonedDateTime.of(2024, 12, 1, 0, 0, 0, 0, ZoneId.of("UTC"))
+        val location = Coordinate(42.0, -72.0)
+        val actualStars = Constellation.Orion.edges.flatMap { listOf(it.first, it.second) }.distinct()
+        val readings = actualStars.map {
+            AltitudeAzimuth(
+                Astronomy.getStarAltitude(it, time, location, true),
+                Astronomy.getStarAzimuth(it, time, location).value
+            )
+        }
+
+        val stars = Astronomy.plateSolve(readings, time).map { it.second }
+
+        // Verify that the solver found the correct stars
+        assertEquals(actualStars.size, stars.size)
+        assertTrue(actualStars.containsAll(stars))
     }
 
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {

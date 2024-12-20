@@ -2,7 +2,11 @@ package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.normalizeAngle
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
@@ -105,6 +109,14 @@ object Trigonometry {
         val ranges = waveforms.map { getRangeY(it) }
         // TODO: To get a more accurate range, factor in the phase of the waveforms
         return Range(ranges.sumOfFloat { it.start }, ranges.sumOfFloat { it.end })
+    }
+
+    fun angularDistance(azimuth1: Float, altitude1: Float, azimuth2: Float, altitude2: Float): Float {
+        val sinAlt1 = sinDegrees(altitude1)
+        val cosAlt1 = cosDegrees(altitude1)
+        val sinAlt2 = sinDegrees(altitude2)
+        val cosAlt2 = cosDegrees(altitude2)
+        return acos(sinAlt1 * sinAlt2 + cosAlt1 * cosAlt2 * cosDegrees(azimuth2 - azimuth1)).toDegrees()
     }
 
 }
