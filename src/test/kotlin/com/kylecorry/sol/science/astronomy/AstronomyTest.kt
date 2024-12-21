@@ -826,7 +826,7 @@ class AstronomyTest {
             )
         }
 
-        val stars = Astronomy.plateSolve(readings, time).map { it.second }
+        val stars = Astronomy.plateSolve(readings, time).map { it.star }
 
         // Verify that the solver found the correct stars
         assertEquals(actualStars.size, stars.size)

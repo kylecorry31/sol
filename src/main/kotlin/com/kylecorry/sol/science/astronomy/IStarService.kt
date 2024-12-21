@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
+import com.kylecorry.sol.science.astronomy.stars.DetectedStar
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -33,6 +34,6 @@ interface IStarService {
         time: ZonedDateTime,
         approximateLocation: Coordinate? = null,
         tolerance: Float = 0.04f
-    ): List<Pair<AltitudeAzimuth, Star>>
+    ): List<DetectedStar>
 
 }

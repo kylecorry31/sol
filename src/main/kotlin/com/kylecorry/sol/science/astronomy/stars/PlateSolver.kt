@@ -17,7 +17,7 @@ internal class PlateSolver(
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
         approximateLocation: Coordinate = Time.getLocationFromTimeZone(time.zone)
-    ): List<Pair<AltitudeAzimuth, Star>> {
+    ): List<DetectedStar> {
         if (readings.size < numNeighbors + 1) {
             // Not enough readings to solve
             return emptyList()
@@ -30,53 +30,48 @@ internal class PlateSolver(
         val catalogQuads = getAllQuads(Star.entries, time, approximateLocation)
 
         // Step 3: Match the star quads
-        val matches = mutableListOf<Triple<AltitudeAzimuth, Star, Float>>()
+        val matches = mutableListOf<DetectedStar>()
         val queue = readingsQuads.toMutableList()
         while (queue.isNotEmpty()) {
             val reading = queue.removeAt(0)
-            val possibleMatches = catalogQuads.sortedBy {
-                reading.second.zip(it.second.second).maxOf { (a, b) ->
-                    (a - b).absoluteValue
-                }
-            }.take(6)
+            val possibleMatches = catalogQuads.map {
+                it to getConfidence(reading.second, it.second.second)
+            }.sortedByDescending { it.second }.take(6)
 
             // Go through each possible match and see if it is a better match than what is recorded
-            var minDistanceMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
+            var mostConfidentMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
             for (possibleMatch in possibleMatches) {
-                val distance =
-                    reading.second.zip(possibleMatch.second.second).maxOf { (a, b) ->
-                        (a - b).absoluteValue
-                    }
-                if (matches.none { it.second == possibleMatch.first } || distance < matches.first { it.second == possibleMatch.first }.third) {
-                    val existing = matches.filter { it.second == possibleMatch.first }
+                val confidence = possibleMatch.second
+                if (matches.none { it.star == possibleMatch.first.first } || confidence > matches.first { it.star == possibleMatch.first.first }.confidence) {
+                    val existing = matches.filter { it.star == possibleMatch.first.first }
                     matches.removeAll(existing)
-                    queue.addAll(readingsQuads.filter { q -> existing.any { q.first == it.first } })
-                    minDistanceMatch = possibleMatch
+                    queue.addAll(readingsQuads.filter { q -> existing.any { q.first == it.reading } })
+                    mostConfidentMatch = possibleMatch.first
                     break
                 }
             }
 
-            if (minDistanceMatch == null) {
+            if (mostConfidentMatch == null) {
                 continue
             }
 
-            val count = reading.second.zip(minDistanceMatch.second.second).count { (a, b) ->
+            val count = reading.second.zip(mostConfidentMatch.second.second).count { (a, b) ->
                 (a - b).absoluteValue < tolerance
             }
 
             if (count >= minMatches) {
+                val confidence = getConfidence(reading.second, mostConfidentMatch.second.second)
                 matches.add(
-                    Triple(
+                    DetectedStar(
+                        mostConfidentMatch.first,
                         reading.first,
-                        minDistanceMatch.first,
-                        reading.second.zip(minDistanceMatch.second.second).maxOf { (a, b) ->
-                            (a - b).absoluteValue
-                        })
+                        confidence
+                    )
                 )
             }
         }
 
-        return matches.map { Pair(it.first, it.second) }
+        return matches
     }
 
     private fun getAllQuads(
@@ -169,5 +164,13 @@ internal class PlateSolver(
             quads.add(Pair(reading, normalizedDistances))
         }
         return quads
+    }
+
+    private fun getConfidence(v1: FloatArray, v2: FloatArray): Float {
+        val percentDifferences = v1.zip(v2).map { (a, b) ->
+            (a - b).absoluteValue / ((a + b) / 2)
+        }
+
+        return 1 - percentDifferences.max()
     }
 }
