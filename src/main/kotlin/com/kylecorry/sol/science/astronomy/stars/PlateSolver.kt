@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 internal class PlateSolver(
-    private val tolerance: Float = 0.02f,
+    private val tolerance: Float = 0.04f,
     private val minMatches: Int = 5,
     private val numNeighbors: Int = 3
 ) {
@@ -31,12 +31,34 @@ internal class PlateSolver(
         val catalogQuads = getAllQuads(Star.entries, time, approximateLocation)
 
         // Step 3: Match the star quads
-        val matches = mutableListOf<Pair<AltitudeAzimuth, Star>>()
-        for (reading in readingsQuads) {
-            val minDistanceMatch = catalogQuads.minBy {
+        val matches = mutableListOf<Triple<AltitudeAzimuth, Star, Float>>()
+        val queue = readingsQuads.toMutableList()
+        while (queue.isNotEmpty()) {
+            val reading = queue.removeAt(0)
+            val possibleMatches = catalogQuads.sortedBy {
                 reading.second.zip(it.second.second).sumOfFloat { (a, b) ->
                     (a - b).absoluteValue
                 }
+            }.take(6)
+
+            // Go through each possible match and see if it is a better match than what is recorded
+            var minDistanceMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
+            for (possibleMatch in possibleMatches) {
+                val distance =
+                    reading.second.zip(possibleMatch.second.second).sumOfFloat { (a, b) ->
+                        (a - b).absoluteValue
+                    }
+                if (matches.none { it.second == possibleMatch.first } || distance < matches.first { it.second == possibleMatch.first }.third) {
+                    val existing = matches.filter { it.second == possibleMatch.first }
+                    matches.removeAll(existing)
+                    queue.addAll(readingsQuads.filter { q -> existing.any { q.first == it.first } })
+                    minDistanceMatch = possibleMatch
+                    break
+                }
+            }
+
+            if (minDistanceMatch == null) {
+                continue
             }
 
             val count = reading.second.zip(minDistanceMatch.second.second).count { (a, b) ->
@@ -44,11 +66,18 @@ internal class PlateSolver(
             }
 
             if (count >= minMatches) {
-                matches.add(Pair(reading.first, minDistanceMatch.first))
+                matches.add(
+                    Triple(
+                        reading.first,
+                        minDistanceMatch.first,
+                        reading.second.zip(minDistanceMatch.second.second).sumOfFloat { (a, b) ->
+                            (a - b).absoluteValue
+                        })
+                )
             }
         }
 
-        return matches
+        return matches.map { Pair(it.first, it.second) }
     }
 
     private fun getAllQuads(
@@ -56,13 +85,13 @@ internal class PlateSolver(
         time: ZonedDateTime,
         approximateLocation: Coordinate
     ): List<Pair<Star, Pair<AltitudeAzimuth, FloatArray>>> {
-        val degreesOfSeparation = 1f
-        val degreesStep = 0.1f
+        val degreesOfSeparation = 10f
+        val degreesStep = 0.2f
         var currentSeparation = 0f
 
         // Remove stars that are way below the horizon
         // TODO: Also remove stars that are way out of sight based on the input readings
-        var starReadings = stars.map {
+        val starReadings = stars.map {
             it to AltitudeAzimuth(
                 Astronomy.getStarAltitude(it, time, approximateLocation, true),
                 Astronomy.getStarAzimuth(it, time, approximateLocation).value
@@ -76,7 +105,7 @@ internal class PlateSolver(
                     getQuads(
                         starReadings.map { it.second },
                         currentSeparation,
-                        currentSeparation + 60f
+                        currentSeparation + 80f
                     )
                 )
             )
@@ -135,12 +164,10 @@ internal class PlateSolver(
             val maxDistance = distances.maxOrNull() ?: 0f
 
             // Normalize the distances
-            val normalizedDistances = distances.map { it / maxDistance }.toFloatArray()
+            val normalizedDistances = distances.map { it / maxDistance }.sorted().toFloatArray()
 
             quads.add(Pair(reading, normalizedDistances))
         }
         return quads
     }
-
-
 }

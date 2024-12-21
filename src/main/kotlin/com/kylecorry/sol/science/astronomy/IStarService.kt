@@ -31,7 +31,8 @@ interface IStarService {
     fun plateSolve(
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
-        approximateLocation: Coordinate? = null
+        approximateLocation: Coordinate? = null,
+        tolerance: Float = 0.04f
     ): List<Pair<AltitudeAzimuth, Star>>
 
 }

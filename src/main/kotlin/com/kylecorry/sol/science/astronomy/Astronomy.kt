@@ -19,11 +19,7 @@ import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.rst.NewtonsRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
-import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
-import com.kylecorry.sol.science.astronomy.stars.PlateSolver
-import com.kylecorry.sol.science.astronomy.stars.Star
-import com.kylecorry.sol.science.astronomy.stars.StarLocationCalculator
-import com.kylecorry.sol.science.astronomy.stars.StarReading
+import com.kylecorry.sol.science.astronomy.stars.*
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.science.shared.Season
@@ -679,9 +675,14 @@ object Astronomy : IAstronomyService {
     override fun plateSolve(
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
-        approximateLocation: Coordinate?
+        approximateLocation: Coordinate?,
+        tolerance: Float
     ): List<Pair<AltitudeAzimuth, Star>> {
-        return PlateSolver().solve(readings, time, approximateLocation ?: Time.getLocationFromTimeZone(time.zone))
+        return PlateSolver(tolerance).solve(
+            readings,
+            time,
+            approximateLocation ?: Time.getLocationFromTimeZone(time.zone)
+        )
     }
 
     override fun getZenithDistance(altitude: Float): Distance {
