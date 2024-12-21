@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.astronomy.stars
 
 import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.sumOfFloat
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
@@ -36,7 +35,7 @@ internal class PlateSolver(
         while (queue.isNotEmpty()) {
             val reading = queue.removeAt(0)
             val possibleMatches = catalogQuads.sortedBy {
-                reading.second.zip(it.second.second).sumOfFloat { (a, b) ->
+                reading.second.zip(it.second.second).maxOf { (a, b) ->
                     (a - b).absoluteValue
                 }
             }.take(6)
@@ -45,7 +44,7 @@ internal class PlateSolver(
             var minDistanceMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
             for (possibleMatch in possibleMatches) {
                 val distance =
-                    reading.second.zip(possibleMatch.second.second).sumOfFloat { (a, b) ->
+                    reading.second.zip(possibleMatch.second.second).maxOf { (a, b) ->
                         (a - b).absoluteValue
                     }
                 if (matches.none { it.second == possibleMatch.first } || distance < matches.first { it.second == possibleMatch.first }.third) {
@@ -70,7 +69,7 @@ internal class PlateSolver(
                     Triple(
                         reading.first,
                         minDistanceMatch.first,
-                        reading.second.zip(minDistanceMatch.second.second).sumOfFloat { (a, b) ->
+                        reading.second.zip(minDistanceMatch.second.second).maxOf { (a, b) ->
                             (a - b).absoluteValue
                         })
                 )
@@ -112,7 +111,8 @@ internal class PlateSolver(
             currentSeparation += degreesStep
         }
 
-        return quads.distinct()
+        // Remove duplicates (based on the start and distance array)
+        return quads.distinctBy { it.first to it.second.second.toList() }.toList()
     }
 
     private fun getQuads(
@@ -164,7 +164,7 @@ internal class PlateSolver(
             val maxDistance = distances.maxOrNull() ?: 0f
 
             // Normalize the distances
-            val normalizedDistances = distances.map { it / maxDistance }.sorted().toFloatArray()
+            val normalizedDistances = distances.map { it / maxDistance }.toFloatArray()
 
             quads.add(Pair(reading, normalizedDistances))
         }
