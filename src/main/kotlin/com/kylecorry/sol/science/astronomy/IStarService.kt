@@ -33,7 +33,9 @@ interface IStarService {
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
         approximateLocation: Coordinate? = null,
-        tolerance: Float = 0.04f
+        tolerance: Float = 0.04f,
+        minMatches: Int = 5,
+        numNeighbors: Int = 3
     ): List<DetectedStar>
 
 }

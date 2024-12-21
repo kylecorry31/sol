@@ -676,9 +676,11 @@ object Astronomy : IAstronomyService {
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
         approximateLocation: Coordinate?,
-        tolerance: Float
+        tolerance: Float,
+        minMatches: Int,
+        numNeighbors: Int
     ): List<DetectedStar> {
-        return PlateSolver(tolerance).solve(
+        return PlateSolver(tolerance, minMatches, numNeighbors).solve(
             readings,
             time,
             approximateLocation ?: Time.getLocationFromTimeZone(time.zone)
