@@ -6,11 +6,13 @@ import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
+import kotlin.math.max
 
 internal class PlateSolver(
     private val tolerance: Float = 0.04f,
     private val minMatches: Int = 5,
-    private val numNeighbors: Int = 3
+    private val numNeighbors: Int = 3,
+    private val minMagnitude: Float = 4f
 ) {
 
     fun solve(
@@ -85,7 +87,8 @@ internal class PlateSolver(
 
         // Remove stars that are way below the horizon
         // TODO: Also remove stars that are way out of sight based on the input readings
-        val starReadings = stars.map {
+        // NOTE: Magnitude is inverted, so lower is brighter
+        val starReadings = stars.filter { it.magnitude <= minMagnitude }.map {
             it to AltitudeAzimuth(
                 Astronomy.getStarAltitude(it, time, approximateLocation, true),
                 Astronomy.getStarAzimuth(it, time, approximateLocation).value
@@ -168,7 +171,7 @@ internal class PlateSolver(
 
     private fun getConfidence(v1: FloatArray, v2: FloatArray): Float {
         val percentDifferences = v1.zip(v2).map { (a, b) ->
-            (a - b).absoluteValue / ((a + b) / 2)
+            (a - b).absoluteValue / max(a, b)
         }
 
         return 1 - percentDifferences.max()

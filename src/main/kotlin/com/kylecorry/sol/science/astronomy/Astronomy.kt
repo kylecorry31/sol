@@ -678,9 +678,10 @@ object Astronomy : IAstronomyService {
         approximateLocation: Coordinate?,
         tolerance: Float,
         minMatches: Int,
-        numNeighbors: Int
+        numNeighbors: Int,
+        minMagnitude: Float
     ): List<DetectedStar> {
-        return PlateSolver(tolerance, minMatches, numNeighbors).solve(
+        return PlateSolver(tolerance, minMatches, numNeighbors, minMagnitude).solve(
             readings,
             time,
             approximateLocation ?: Time.getLocationFromTimeZone(time.zone)
