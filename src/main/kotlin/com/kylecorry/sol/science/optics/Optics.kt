@@ -6,7 +6,11 @@ import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Distance
-import kotlin.math.*
+import com.kylecorry.sol.units.Quantity
+import com.kylecorry.sol.units.meters
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 object Optics {
 
@@ -16,8 +20,8 @@ object Optics {
      * @param distance The distance to the object
      * @return The angular size in degrees
      */
-    fun getAngularSize(diameter: Distance, distance: Distance): Float {
-        return getAngularSize(diameter.meters().distance, distance.meters().distance)
+    fun getAngularSize(diameter: Quantity<Distance>, distance: Quantity<Distance>): Float {
+        return getAngularSize(diameter.meters().amount, distance.meters().amount)
     }
 
     /**
@@ -173,17 +177,17 @@ object Optics {
         return Vector2(point.x + xCorrection, point.y + yCorrection)
     }
 
-    fun luxToCandela(lux: Float, distance: Distance): Float {
-        val meters = distance.meters().distance
+    fun luxToCandela(lux: Float, distance: Quantity<Distance>): Float {
+        val meters = distance.meters().amount
         return lux * meters * meters
     }
 
-    fun luxAtDistance(candela: Float, distance: Distance): Float {
-        val meters = distance.meters().distance
+    fun luxAtDistance(candela: Float, distance: Quantity<Distance>): Float {
+        val meters = distance.meters().amount
         return candela / (meters * meters)
     }
 
-    fun lightBeamDistance(candela: Float): Distance {
+    fun lightBeamDistance(candela: Float): Quantity<Distance> {
         return Distance.meters(sqrt(candela * 4))
     }
 

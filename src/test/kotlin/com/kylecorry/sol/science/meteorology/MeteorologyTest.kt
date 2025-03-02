@@ -85,7 +85,7 @@ class MeteorologyTest {
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikeDistances")
-    fun lightningStrikeDanger(distance: Distance, expected: Boolean) {
+    fun lightningStrikeDanger(distance: Quantity<Distance>, expected: Boolean) {
         val danger = Meteorology.isLightningStrikeDangerous(distance)
         assertEquals(expected, danger)
     }
@@ -110,7 +110,7 @@ class MeteorologyTest {
     @MethodSource("provideSeaLevelPressure")
     fun convertsToSeaLevel(
         pressure: Pressure,
-        altitude: Distance,
+        altitude: Quantity<Distance>,
         temperature: Temperature?,
         expected: Pressure
     ) {

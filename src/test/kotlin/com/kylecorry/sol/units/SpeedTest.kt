@@ -20,13 +20,13 @@ internal class SpeedTest {
         @JvmStatic
         fun provideSpeedConversions(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Speed(1f, DistanceUnits.Meters, TimeUnits.Seconds), Speed(1f, DistanceUnits.Meters, TimeUnits.Seconds)),
-                Arguments.of(Speed(1f, DistanceUnits.Meters, TimeUnits.Seconds), Speed(0.001f, DistanceUnits.Meters, TimeUnits.Milliseconds)),
-                Arguments.of(Speed(1f, DistanceUnits.Meters, TimeUnits.Seconds), Speed(60f, DistanceUnits.Meters, TimeUnits.Minutes)),
-                Arguments.of(Speed(1f, DistanceUnits.Meters, TimeUnits.Seconds), Speed(3600f, DistanceUnits.Meters, TimeUnits.Hours)),
-                Arguments.of(Speed(1f, DistanceUnits.Meters, TimeUnits.Seconds), Speed(86400f, DistanceUnits.Meters, TimeUnits.Days)),
-                Arguments.of(Speed(5f, DistanceUnits.Feet, TimeUnits.Hours), Speed(3657.6f, DistanceUnits.Centimeters, TimeUnits.Days)),
-                Arguments.of(Speed(86400f, DistanceUnits.Centimeters, TimeUnits.Days), Speed(0.01f, DistanceUnits.Meters, TimeUnits.Seconds))
+                Arguments.of(Speed(1f, Distance.Meters, TimeUnits.Seconds), Speed(1f, Distance.Meters, TimeUnits.Seconds)),
+                Arguments.of(Speed(1f, Distance.Meters, TimeUnits.Seconds), Speed(0.001f, Distance.Meters, TimeUnits.Milliseconds)),
+                Arguments.of(Speed(1f, Distance.Meters, TimeUnits.Seconds), Speed(60f, Distance.Meters, TimeUnits.Minutes)),
+                Arguments.of(Speed(1f, Distance.Meters, TimeUnits.Seconds), Speed(3600f, Distance.Meters, TimeUnits.Hours)),
+                Arguments.of(Speed(1f, Distance.Meters, TimeUnits.Seconds), Speed(86400f, Distance.Meters, TimeUnits.Days)),
+                Arguments.of(Speed(5f, Distance.Feet, TimeUnits.Hours), Speed(3657.6f, Distance.Centimeters, TimeUnits.Days)),
+                Arguments.of(Speed(86400f, Distance.Centimeters, TimeUnits.Days), Speed(0.01f, Distance.Meters, TimeUnits.Seconds))
             )
         }
 

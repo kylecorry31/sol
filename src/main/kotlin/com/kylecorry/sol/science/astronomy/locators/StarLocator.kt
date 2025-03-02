@@ -9,6 +9,7 @@ import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.Quantity
 import kotlin.math.*
 
 internal class StarLocator(private val star: Star) : ICelestialLocator {
@@ -69,7 +70,7 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
         return EquatorialCoordinate(dec, ra)
     }
 
-    override fun getDistance(ut: UniversalTime): Distance? {
+    override fun getDistance(ut: UniversalTime): Quantity<Distance>? {
         return null
     }
 }

@@ -24,10 +24,10 @@ object Meteorology : IWeatherService {
     private val cloudService = CloudService()
 
     override fun getSeaLevelPressure(
-        pressure: Pressure, altitude: Distance, temperature: Temperature?
+        pressure: Pressure, altitude: Quantity<Distance>, temperature: Temperature?
     ): Pressure {
         val hpa = pressure.hpa().pressure
-        val meters = altitude.meters().distance
+        val meters = altitude.meters().amount
         val celsius = temperature?.celsius()?.temperature
         val adjustedPressure = if (celsius != null) {
             hpa * (1 - ((0.0065f * meters) / (celsius + 0.0065f * meters + 273.15f))).pow(
@@ -197,9 +197,9 @@ object Meteorology : IWeatherService {
         return speedOfSound * seconds
     }
 
-    override fun isLightningStrikeDangerous(distance: Distance): Boolean {
+    override fun isLightningStrikeDangerous(distance: Quantity<Distance>): Boolean {
         // https://www.weather.gov/media/zhu/ZHU_Training_Page/lightning_stuff/lightning/lightning_facts.pdf
-        return distance.meters().distance <= 10000
+        return distance.meters().amount <= 10000
     }
 
     override fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
@@ -222,11 +222,11 @@ object Meteorology : IWeatherService {
     }
 
     override fun getTemperatureAtElevation(
-        temperature: Temperature, baseElevation: Distance, destElevation: Distance
+        temperature: Temperature, baseElevation: Quantity<Distance>, destElevation: Quantity<Distance>
     ): Temperature {
         val celsius = temperature.celsius().temperature
-        val baseMeters = baseElevation.meters().distance
-        val destMeters = destElevation.meters().distance
+        val baseMeters = baseElevation.meters().amount
+        val destMeters = destElevation.meters().amount
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
         return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
     }
@@ -239,7 +239,7 @@ object Meteorology : IWeatherService {
         return cloudService.getPrecipitationChance(cloud)
     }
 
-    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
+    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Quantity<Distance>> {
         return cloudService.getHeightRange(level, location)
     }
 

@@ -12,6 +12,8 @@ import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 import com.kylecorry.sol.time.Time.plusMillis
 import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.Quantity
+import com.kylecorry.sol.units.meters
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.pow
@@ -40,7 +42,7 @@ internal class Sun : ICelestialLocator {
         return EquatorialCoordinate(declination, rightAscension, true)
     }
 
-    override fun getDistance(ut: UniversalTime): Distance {
+    override fun getDistance(ut: UniversalTime): Quantity<Distance> {
         val T = ut.toJulianCenturies()
         val trueAnomaly = getTrueAnomaly(T)
         val ecc = getEccentricity(T)
@@ -49,7 +51,7 @@ internal class Sun : ICelestialLocator {
     }
 
     fun getAngularDiameter(ut: UniversalTime): Double {
-        val au = getDistance(ut).meters().distance / 149597870700.0
+        val au = getDistance(ut).meters().amount / 149597870700.0
         return 2 * 959.63 / (3600 * au)
     }
 

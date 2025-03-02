@@ -5,6 +5,7 @@ import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
+import com.kylecorry.sol.units.Quantity
 import java.time.Duration
 import java.time.ZonedDateTime
 
@@ -52,7 +53,7 @@ interface IMoonService {
         withParallax: Boolean = false
     ): Boolean
 
-    fun getMoonDistance(time: ZonedDateTime): Distance
+    fun getMoonDistance(time: ZonedDateTime): Quantity<Distance>
 
     fun isSuperMoon(time: ZonedDateTime): Boolean
 

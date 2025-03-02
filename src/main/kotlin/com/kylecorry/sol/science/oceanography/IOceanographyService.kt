@@ -6,6 +6,7 @@ import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Pressure
+import com.kylecorry.sol.units.Quantity
 import java.time.Duration
 import java.time.ZonedDateTime
 
@@ -15,7 +16,7 @@ interface IOceanographyService {
         pressure: Pressure,
         seaLevelPressure: Pressure,
         isSaltWater: Boolean = true
-    ): Distance
+    ): Quantity<Distance>
 
     fun getTidalRange(time: ZonedDateTime): TidalRange
 

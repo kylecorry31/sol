@@ -52,9 +52,9 @@ class OceanographyService : IOceanographyService {
         pressure: Pressure,
         seaLevelPressure: Pressure,
         isSaltWater: Boolean
-    ): Distance {
+    ): Quantity<Distance> {
         if (pressure <= seaLevelPressure) {
-            return Distance(0f, DistanceUnits.Meters)
+            return Distance.meters(0f)
         }
 
         val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
@@ -63,9 +63,8 @@ class OceanographyService : IOceanographyService {
                 PressureUnits.Hpa
             ).pressure
 
-        return Distance(
+        return Distance.meters(
             pressureDiff * 100 / (Geology.GRAVITY * waterDensity),
-            DistanceUnits.Meters
         )
     }
 

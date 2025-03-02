@@ -89,37 +89,37 @@ object Geology : IGeologyService {
         return atan(grade / 100f).toDegrees()
     }
 
-    override fun getInclination(distance: Distance, elevationChange: Distance): Float {
+    override fun getInclination(distance: Quantity<Distance>, elevationChange: Quantity<Distance>): Float {
         return getInclinationFromSlopeGrade(getSlopeGrade(distance, elevationChange))
     }
 
     override fun getHeightFromInclination(
-        distance: Distance,
+        distance: Quantity<Distance>,
         bottomInclination: Float,
         topInclination: Float
-    ): Distance {
+    ): Quantity<Distance> {
         val up = getSlopeGrade(topInclination) / 100f
         val down = getSlopeGrade(bottomInclination) / 100f
 
         if (up.isInfinite() || down.isInfinite()) {
-            return Distance(Float.POSITIVE_INFINITY, distance.units)
+            return Quantity(Float.POSITIVE_INFINITY, distance.units)
         }
 
-        return Distance(((up - down) * distance.distance).absoluteValue, distance.units)
+        return Quantity(((up - down) * distance.amount).absoluteValue, distance.units)
     }
 
     override fun getDistanceFromInclination(
-        height: Distance,
+        height: Quantity<Distance>,
         bottomInclination: Float,
         topInclination: Float
-    ): Distance {
+    ): Quantity<Distance> {
         val up = getSlopeGrade(topInclination) / 100f
         val down = getSlopeGrade(bottomInclination) / 100f
 
         if (up.isInfinite() || down.isInfinite()) {
-            return Distance(0f, height.units)
+            return Quantity(0f, height.units)
         }
-        return Distance((height.distance / (up - down)).absoluteValue, height.units)
+        return Quantity((height.amount / (up - down)).absoluteValue, height.units)
     }
 
     override fun getInclination(angle: Float): Float {
@@ -130,9 +130,9 @@ object Geology : IGeologyService {
         }
     }
 
-    override fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float {
-        val y = vertical.meters().distance
-        val x = horizontal.meters().distance
+    override fun getSlopeGrade(horizontal: Quantity<Distance>, vertical: Quantity<Distance>): Float {
+        val y = vertical.meters().amount
+        val x = horizontal.meters().amount
 
         if (x == 0f && y > 0f) {
             return Float.POSITIVE_INFINITY
@@ -151,13 +151,13 @@ object Geology : IGeologyService {
 
     override fun getSlopeGrade(
         start: Coordinate,
-        startElevation: Distance,
+        startElevation: Quantity<Distance>,
         end: Coordinate,
-        endElevation: Distance
+        endElevation: Quantity<Distance>
     ): Float {
         return getSlopeGrade(
             Distance.meters(start.distanceTo(end)),
-            Distance.meters(endElevation.meters().distance - startElevation.meters().distance)
+            Distance.meters(endElevation.meters().amount - startElevation.meters().amount)
         )
     }
 
@@ -169,7 +169,7 @@ object Geology : IGeologyService {
         return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing(0f)
     }
 
-    override fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance {
+    override fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Quantity<Distance> {
         // TODO: Factor in temperature
         val hpa = pressure.hpa().pressure
         val seaHpa = seaLevelPressure.hpa().pressure
@@ -186,19 +186,19 @@ object Geology : IGeologyService {
     }
 
     override fun getMapDistance(
-        measurement: Distance,
-        scaleFrom: Distance,
-        scaleTo: Distance
-    ): Distance {
+        measurement: Quantity<Distance>,
+        scaleFrom: Quantity<Distance>,
+        scaleTo: Quantity<Distance>
+    ): Quantity<Distance> {
         val scaledMeasurement = measurement.convertTo(scaleFrom.units)
-        return Distance(
-            scaleTo.distance * scaledMeasurement.distance / scaleFrom.distance,
+        return Quantity(
+            scaleTo.amount * scaledMeasurement.amount / scaleFrom.amount,
             scaleTo.units
         )
     }
 
-    override fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
-        return Distance(ratioTo * measurement.distance / ratioFrom, measurement.units)
+    override fun getMapDistance(measurement: Quantity<Distance>, ratioFrom: Float, ratioTo: Float): Quantity<Distance> {
+        return Quantity(ratioTo * measurement.amount / ratioFrom, measurement.units)
     }
 
     override fun getBounds(points: List<Coordinate>): CoordinateBounds {
@@ -320,7 +320,7 @@ object Geology : IGeologyService {
         point: Coordinate,
         start: Coordinate,
         end: Coordinate
-    ): Distance {
+    ): Quantity<Distance> {
         // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
         if (point == start || point == end) {
             return Distance.meters(0f)
@@ -344,7 +344,7 @@ object Geology : IGeologyService {
         point: Coordinate,
         start: Coordinate,
         end: Coordinate
-    ): Distance {
+    ): Quantity<Distance> {
 
         if (point == start) {
             return Distance.meters(0f)
@@ -376,12 +376,12 @@ object Geology : IGeologyService {
     ): Coordinate {
         val alongTrack = getAlongTrackDistance(point, start, end)
 
-        if (alongTrack.distance < 0) {
+        if (alongTrack.amount < 0) {
             return start
         }
 
         val lineDistance = start.distanceTo(end)
-        if (alongTrack.distance > lineDistance) {
+        if (alongTrack.amount > lineDistance) {
             return end
         }
 
@@ -394,7 +394,7 @@ object Geology : IGeologyService {
         return from.plus(distance.toDouble(), bearing)
     }
 
-    override fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean): Distance {
+    override fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean): Quantity<Distance> {
         if (points.size < 2) {
             return Distance.meters(0f)
         }
@@ -407,7 +407,7 @@ object Geology : IGeologyService {
         return Distance.meters(distance)
     }
 
-    override fun getElevationGain(elevations: List<Distance>): Distance {
+    override fun getElevationGain(elevations: List<Quantity<Distance>>): Quantity<Distance> {
         var sum = 0f
 
         if (elevations.isEmpty()) {
@@ -415,8 +415,8 @@ object Geology : IGeologyService {
         }
 
         for (i in 1..<elevations.size) {
-            val current = elevations[i].meters().distance
-            val last = elevations[i - 1].meters().distance
+            val current = elevations[i].meters().amount
+            val last = elevations[i - 1].meters().amount
             val change = current - last
             if (change > 0) {
                 sum += change
@@ -425,7 +425,7 @@ object Geology : IGeologyService {
         return Distance.meters(sum)
     }
 
-    override fun getElevationLoss(elevations: List<Distance>): Distance {
+    override fun getElevationLoss(elevations: List<Quantity<Distance>>): Quantity<Distance> {
         var sum = 0f
 
         if (elevations.isEmpty()) {
@@ -433,8 +433,8 @@ object Geology : IGeologyService {
         }
 
         for (i in 1..<elevations.size) {
-            val current = elevations[i].meters().distance
-            val last = elevations[i - 1].meters().distance
+            val current = elevations[i].meters().amount
+            val last = elevations[i - 1].meters().amount
             val change = current - last
             if (change < 0) {
                 sum += change

@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.Quantity
 import java.time.Duration
 import java.time.ZonedDateTime
 
@@ -61,7 +62,7 @@ interface ISunService {
         withParallax: Boolean = false
     ): Duration
 
-    fun getSunDistance(time: ZonedDateTime): Distance
+    fun getSunDistance(time: ZonedDateTime): Quantity<Distance>
 
     /**
      * Gets the solar radiation for the given time in kW/m^2

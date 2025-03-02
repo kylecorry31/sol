@@ -2,13 +2,10 @@ package com.kylecorry.sol.science.optics
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.science.physics.PhysicsService
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.MethodSource
 
 class OpticsTest {
 
@@ -88,8 +85,8 @@ class OpticsTest {
         assertEquals(
             expected,
             Optics.getAngularSize(
-                Distance.meters(diameter).convertTo(DistanceUnits.Feet),
-                Distance.meters(distance).convertTo(DistanceUnits.Miles)
+                Distance.meters(diameter).convertTo(Distance.Feet),
+                Distance.meters(distance).convertTo(Distance.Miles)
             ),
             0.001f
         )
@@ -142,8 +139,8 @@ class OpticsTest {
     )
     fun beamDistance(candela: Float, distanceMeters: Float) {
         val beamDistance = Optics.lightBeamDistance(candela)
-        assertEquals(distanceMeters, beamDistance.distance, 0.5f)
-        assertEquals(DistanceUnits.Meters, beamDistance.units)
+        assertEquals(distanceMeters, beamDistance.amount, 0.5f)
+        assertEquals(Distance.Meters, beamDistance.units)
     }
 
     @ParameterizedTest

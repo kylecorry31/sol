@@ -2,11 +2,7 @@ package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.isCloseTo
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.CompassDirection
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import kotlin.math.absoluteValue
+import com.kylecorry.sol.units.*
 import kotlin.math.max
 
 class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) :
@@ -20,7 +16,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     val center: Coordinate
         get() {
             val lat = (north + south) / 2
-            val lon = if (west <= east){
+            val lon = if (west <= east) {
                 (west + east) / 2
             } else {
                 (west + east + 360) / 2
@@ -29,7 +25,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             return Coordinate(lat, Coordinate.toLongitude(lon))
         }
 
-    fun height(): Distance {
+    fun height(): Quantity<Distance> {
         return Distance.meters(
             max(
                 northWest.distanceTo(southWest),
@@ -38,7 +34,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
         )
     }
 
-    fun width(): Distance {
+    fun width(): Quantity<Distance> {
         if (0.0 in south..north) {
             return Distance.meters(Coordinate(0.0, west).distanceTo(Coordinate(0.0, east)))
         }
@@ -54,7 +50,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     override fun contains(location: Coordinate): Boolean {
         val containsLatitude = location.latitude in south..north
 
-        val containsLongitude = if (isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)){
+        val containsLongitude = if (isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)) {
             true
         } else if (east < 0 && west > 0) {
             location.longitude >= west || location.longitude <= east
@@ -107,7 +103,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
 
             // This is to support the case where the whole map is shown
-            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)){
+            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)) {
                 return CoordinateBounds(north, maxLongitude!!, south, minLongitude!!)
             }
 

@@ -1,11 +1,11 @@
 package com.kylecorry.sol.units
 
-data class Speed(val speed: Float, val distanceUnits: DistanceUnits, val timeUnits: TimeUnits){
+data class Speed(val speed: Float, val distanceUnits: Distance, val timeUnits: TimeUnits) {
 
-    fun convertTo(newDistanceUnits: DistanceUnits, newTimeUnits: TimeUnits): Speed {
-        val distance = Distance(speed, distanceUnits).convertTo(newDistanceUnits).distance
+    fun convertTo(newDistance: Distance, newTimeUnits: TimeUnits): Speed {
+        val distance = Quantity(speed, distanceUnits).convertTo(newDistance).amount
         val newSpeed = (distance / timeUnits.seconds) * newTimeUnits.seconds
-        return Speed(newSpeed, newDistanceUnits, newTimeUnits)
+        return Speed(newSpeed, newDistance, newTimeUnits)
     }
 
 }

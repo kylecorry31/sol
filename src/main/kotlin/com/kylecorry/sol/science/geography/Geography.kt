@@ -92,9 +92,9 @@ object Geography {
         val b = ReferenceEllipsoid.wgs84.b
         val e = sqrt(1 - square(b) / square(a))
         val n = a / sqrt(1 - square(e) * square(sin(lat)))
-        val x = (n + location.elevation.meters().distance) * cos(lat) * cos(lon)
-        val y = (n + location.elevation.meters().distance) * cos(lat) * sin(lon)
-        val z = (n * (1 - square(e)) + location.elevation.meters().distance) * sin(lat)
+        val x = (n + location.elevation.meters().amount) * cos(lat) * cos(lon)
+        val y = (n + location.elevation.meters().amount) * cos(lat) * sin(lon)
+        val z = (n * (1 - square(e)) + location.elevation.meters().amount) * sin(lat)
         return Vector3(x.toFloat(), y.toFloat(), z.toFloat())
     }
 
@@ -161,7 +161,7 @@ object Geography {
             }
         }
 
-        val errors = readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f }
+        val errors = readings.map { it.radius.convertTo(Distance.NauticalMiles).amount / 60f }
 
         val result = optimizer.optimize(
             readings.map {
@@ -208,7 +208,7 @@ object Geography {
             )
         }
 
-        val radii = readings.map { (it.radius.convertTo(DistanceUnits.NauticalMiles).distance / 60f).toRadians() }
+        val radii = readings.map { (it.radius.convertTo(Distance.NauticalMiles).amount / 60f).toRadians() }
 
         val x1 = Vector3Precise.from(cartesianPoints[0].toDoubleArray())
         val x2 = Vector3Precise.from(cartesianPoints[1].toDoubleArray())

@@ -1,10 +1,7 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Pressure
+import com.kylecorry.sol.units.*
 
 interface IGeologyService {
 
@@ -30,7 +27,7 @@ interface IGeologyService {
     fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing
 
     // Altitude
-    fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance
+    fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Quantity<Distance>
 
     // Gravity
     fun getGravity(coordinate: Coordinate): Float
@@ -55,7 +52,7 @@ interface IGeologyService {
      * @param vertical The vertical distance
      * @return The slope grade as a percentage
      */
-    fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float
+    fun getSlopeGrade(horizontal: Quantity<Distance>, vertical: Quantity<Distance>): Float
 
     /**
      * Determines the grade (percent)
@@ -65,7 +62,12 @@ interface IGeologyService {
      * @param endElevation The ending elevation
      * @return The slope grade as a percentage
      */
-    fun getSlopeGrade(start: Coordinate, startElevation: Distance, end: Coordinate, endElevation: Distance): Float
+    fun getSlopeGrade(
+        start: Coordinate,
+        startElevation: Quantity<Distance>,
+        end: Coordinate,
+        endElevation: Quantity<Distance>
+    ): Float
 
 
     /**
@@ -75,7 +77,11 @@ interface IGeologyService {
      * @param topInclination The inclination angle to the top (degrees)
      * @return The estimated height of the object
      */
-    fun getHeightFromInclination(distance: Distance, bottomInclination: Float, topInclination: Float): Distance
+    fun getHeightFromInclination(
+        distance: Quantity<Distance>,
+        bottomInclination: Float,
+        topInclination: Float
+    ): Quantity<Distance>
 
     /**
      * Estimates the distance to an object
@@ -84,7 +90,11 @@ interface IGeologyService {
      * @param topInclination The inclination angle to the top (degrees)
      * @return The estimated distance to the object
      */
-    fun getDistanceFromInclination(height: Distance, bottomInclination: Float, topInclination: Float): Distance
+    fun getDistanceFromInclination(
+        height: Quantity<Distance>,
+        bottomInclination: Float,
+        topInclination: Float
+    ): Quantity<Distance>
 
     /**
      * Calculates the inclination from a unit angle
@@ -93,7 +103,7 @@ interface IGeologyService {
     fun getInclination(angle: Float): Float
 
     fun getInclinationFromSlopeGrade(grade: Float): Float
-    fun getInclination(distance: Distance, elevationChange: Distance): Float
+    fun getInclination(distance: Quantity<Distance>, elevationChange: Quantity<Distance>): Float
 
     // Coordinates / navigation
 
@@ -101,9 +111,13 @@ interface IGeologyService {
 
     fun getRegion(coordinate: Coordinate): Region
 
-    fun getMapDistance(measurement: Distance, scaleFrom: Distance, scaleTo: Distance): Distance
+    fun getMapDistance(
+        measurement: Quantity<Distance>,
+        scaleFrom: Quantity<Distance>,
+        scaleTo: Quantity<Distance>
+    ): Quantity<Distance>
 
-    fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance
+    fun getMapDistance(measurement: Quantity<Distance>, ratioFrom: Float, ratioTo: Float): Quantity<Distance>
 
     fun getBounds(points: List<Coordinate>): CoordinateBounds
 
@@ -149,18 +163,18 @@ interface IGeologyService {
         highAccuracy: Boolean = true
     ): NavigationVector
 
-    fun getCrossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Distance
+    fun getCrossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Quantity<Distance>
 
-    fun getAlongTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Distance
+    fun getAlongTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate): Quantity<Distance>
 
     fun getNearestPoint(point: Coordinate, start: Coordinate, end: Coordinate): Coordinate
 
     fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate
 
-    fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Distance
+    fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Quantity<Distance>
 
-    fun getElevationGain(elevations: List<Distance>): Distance
+    fun getElevationGain(elevations: List<Quantity<Distance>>): Quantity<Distance>
 
-    fun getElevationLoss(elevations: List<Distance>): Distance
+    fun getElevationLoss(elevations: List<Quantity<Distance>>): Quantity<Distance>
 
 }

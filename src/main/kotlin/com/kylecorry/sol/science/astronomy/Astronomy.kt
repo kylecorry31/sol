@@ -32,7 +32,7 @@ import com.kylecorry.sol.time.Time.getClosestTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.units.Quantity
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
@@ -183,7 +183,7 @@ object Astronomy : IAstronomyService {
         }
     }
 
-    override fun getSunDistance(time: ZonedDateTime): Distance {
+    override fun getSunDistance(time: ZonedDateTime): Quantity<Distance> {
         return sun.getDistance(time.toUniversalTime())
     }
 
@@ -326,7 +326,7 @@ object Astronomy : IAstronomyService {
         return getMoonAltitude(time, location, withRefraction, withParallax) > 0
     }
 
-    override fun getMoonDistance(time: ZonedDateTime): Distance {
+    override fun getMoonDistance(time: ZonedDateTime): Quantity<Distance> {
         return moon.getDistance(time.toUniversalTime())
     }
 
@@ -336,7 +336,7 @@ object Astronomy : IAstronomyService {
             return false
         }
         val distance = getMoonDistance(time)
-        return distance.convertTo(DistanceUnits.Kilometers).distance <= 360000f
+        return distance.convertTo(Distance.Kilometers).amount <= 360000f
     }
 
     override fun getMoonAboveHorizonTimes(
@@ -688,7 +688,7 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getZenithDistance(altitude: Float): Distance {
+    override fun getZenithDistance(altitude: Float): Quantity<Distance> {
         val zenith = 90f - altitude
         return Distance.nauticalMiles(zenith * 60)
     }
