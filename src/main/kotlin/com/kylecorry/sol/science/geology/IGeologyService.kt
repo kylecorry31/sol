@@ -27,7 +27,7 @@ interface IGeologyService {
     fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing
 
     // Altitude
-    fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Quantity<Distance>
+    fun getAltitude(pressure: Quantity<Pressure>, seaLevelPressure: Quantity<Pressure>): Quantity<Distance>
 
     // Gravity
     fun getGravity(coordinate: Coordinate): Float

@@ -2,10 +2,10 @@ package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.time.Time
-import org.junit.jupiter.api.Assertions.*
+import com.kylecorry.sol.units.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -31,7 +31,7 @@ class MeteorologyTest {
     @ParameterizedTest
     @MethodSource("provideWeatherForecasts")
     fun forecast(
-        pressures: List<Reading<Pressure>>,
+        pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
         temperatures: Range<Temperature>?,
         now: WeatherForecast,
@@ -45,8 +45,8 @@ class MeteorologyTest {
     @ParameterizedTest
     @MethodSource("provideTendencies")
     fun tendency(
-        last: Pressure,
-        current: Pressure,
+        last: Quantity<Pressure>,
+        current: Quantity<Pressure>,
         duration: Duration,
         threshold: Float,
         expectedTendency: PressureTendency
@@ -109,26 +109,26 @@ class MeteorologyTest {
     @ParameterizedTest
     @MethodSource("provideSeaLevelPressure")
     fun convertsToSeaLevel(
-        pressure: Pressure,
+        pressure: Quantity<Pressure>,
         altitude: Quantity<Distance>,
         temperature: Temperature?,
-        expected: Pressure
+        expected: Quantity<Pressure>
     ) {
         val reading = Meteorology.getSeaLevelPressure(pressure, altitude, temperature)
-        assertEquals(expected.pressure, reading.pressure, 0.1f)
+        assertEquals(expected.amount, reading.amount, 0.1f)
         assertEquals(expected.units, reading.units)
     }
 
     @ParameterizedTest
     @MethodSource("provideHighPressures")
-    fun isHigh(pressure: Pressure, isHigh: Boolean) {
+    fun isHigh(pressure: Quantity<Pressure>, isHigh: Boolean) {
         val ret = Meteorology.isHighPressure(pressure)
         assertEquals(isHigh, ret)
     }
 
     @ParameterizedTest
     @MethodSource("provideLowPressures")
-    fun isLow(pressure: Pressure, isLow: Boolean) {
+    fun isLow(pressure: Quantity<Pressure>, isLow: Boolean) {
         val ret = Meteorology.isLowPressure(pressure)
         assertEquals(isLow, ret)
     }
@@ -139,22 +139,22 @@ class MeteorologyTest {
         @JvmStatic
         fun provideLowPressures(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Pressure(1000f, PressureUnits.Hpa), true),
-                Arguments.of(Pressure(1009.144f, PressureUnits.Hpa), true),
-                Arguments.of(Pressure(1009.145f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1013f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1030f, PressureUnits.Hpa), false),
+                Arguments.of(Quantity(1000f, Pressure.Hpa), true),
+                Arguments.of(Quantity(1009.144f, Pressure.Hpa), true),
+                Arguments.of(Quantity(1009.145f, Pressure.Hpa), false),
+                Arguments.of(Quantity(1013f, Pressure.Hpa), false),
+                Arguments.of(Quantity(1030f, Pressure.Hpa), false),
             )
         }
 
         @JvmStatic
         fun provideHighPressures(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Pressure(1000f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1013f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1022.688f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1022.689f, PressureUnits.Hpa), true),
-                Arguments.of(Pressure(1030f, PressureUnits.Hpa), true),
+                Arguments.of(Quantity(1000f, Pressure.Hpa), false),
+                Arguments.of(Quantity(1013f, Pressure.Hpa), false),
+                Arguments.of(Quantity(1022.688f, Pressure.Hpa), false),
+                Arguments.of(Quantity(1022.689f, Pressure.Hpa), true),
+                Arguments.of(Quantity(1030f, Pressure.Hpa), true),
             )
         }
 
@@ -162,40 +162,40 @@ class MeteorologyTest {
         fun provideSeaLevelPressure(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Pressure(0f, PressureUnits.Hpa),
+                    Quantity(0f, Pressure.Hpa),
                     Distance.meters(0f),
                     null,
-                    Pressure(0f, PressureUnits.Hpa)
+                    Quantity(0f, Pressure.Hpa)
                 ),
                 Arguments.of(
-                    Pressure(0f, PressureUnits.Hpa),
+                    Quantity(0f, Pressure.Hpa),
                     Distance.meters(0f),
                     Temperature(0f, TemperatureUnits.C),
-                    Pressure(0f, PressureUnits.Hpa)
+                    Quantity(0f, Pressure.Hpa)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Distance.meters(-100f),
                     null,
-                    Pressure(988.2f, PressureUnits.Hpa)
+                    Quantity(988.2f, Pressure.Hpa)
                 ),
                 Arguments.of(
-                    Pressure(980f, PressureUnits.Hpa),
+                    Quantity(980f, Pressure.Hpa),
                     Distance.meters(200f),
                     null,
-                    Pressure(1003.48f, PressureUnits.Hpa)
+                    Quantity(1003.48f, Pressure.Hpa)
                 ),
                 Arguments.of(
-                    Pressure(980f, PressureUnits.Hpa),
+                    Quantity(980f, Pressure.Hpa),
                     Distance.meters(1000f),
                     Temperature(15f, TemperatureUnits.C),
-                    Pressure(1101.93f, PressureUnits.Hpa)
+                    Quantity(1101.93f, Pressure.Hpa)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Distance.meters(-100f),
                     Temperature(28f, TemperatureUnits.C),
-                    Pressure(988.71f, PressureUnits.Hpa)
+                    Quantity(988.71f, Pressure.Hpa)
                 ),
             )
         }
@@ -806,7 +806,7 @@ class MeteorologyTest {
             )
         }
 
-        private fun pressures(last: Float, now: Float): List<Reading<Pressure>> {
+        private fun pressures(last: Float, now: Float): List<Reading<Quantity<Pressure>>> {
             val time = weatherTime
             return listOf(
                 Reading(Pressure.hpa(last), time.minus(Duration.ofHours(3))),
@@ -858,85 +858,85 @@ class MeteorologyTest {
         fun provideTendencies(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1001f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
+                    Quantity(1001f, Pressure.Hpa),
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 1 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1004f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
+                    Quantity(1004f, Pressure.Hpa),
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1003f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
+                    Quantity(1003f, Pressure.Hpa),
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Rising, 1f)
                 ),
                 Arguments.of(
-                    Pressure(1004f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1004f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1002f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1002f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1002f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1002f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(3),
                     1 / 3f,
                     PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1003f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1003f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(3),
                     1 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
-                    Pressure(1002f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1002f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(2),
                     1 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
-                    Pressure(1008f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1008f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ofHours(4),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -2f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ZERO,
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
-                    Pressure(1000.1f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    Quantity(1000.1f, Pressure.Hpa),
+                    Quantity(1000f, Pressure.Hpa),
                     Duration.ZERO,
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)

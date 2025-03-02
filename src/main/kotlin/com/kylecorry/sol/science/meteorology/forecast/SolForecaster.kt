@@ -17,7 +17,7 @@ internal object SolForecaster : Forecaster {
     private val thunderstormMinTemperature = Temperature(55f, TemperatureUnits.F).celsius()
     private val cloudPrecipitationCalculator = CloudPrecipitationCalculator()
 
-    private fun getPressureSystem(pressures: List<Reading<Pressure>>): PressureSystem? {
+    private fun getPressureSystem(pressures: List<Reading<Quantity<Pressure>>>): PressureSystem? {
         if (pressures.isEmpty()) {
             return null
         }
@@ -98,7 +98,7 @@ internal object SolForecaster : Forecaster {
     }
 
     private fun forecast(
-        pressures: List<Reading<Pressure>>,
+        pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
         dailyTemperatureRange: Range<Temperature>? = null,
         time: Instant = Instant.now(),
@@ -154,7 +154,7 @@ internal object SolForecaster : Forecaster {
 
     private fun getNextStartTime(
         time: Instant,
-        pressures: List<Reading<Pressure>>,
+        pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>
     ): Instant? {
         val times = pressures.map { it.time } + clouds.map { it.time }
@@ -172,7 +172,7 @@ internal object SolForecaster : Forecaster {
     }
 
     private fun forecastHelper(
-        pressures: List<Reading<Pressure>>,
+        pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
         dailyTemperatureRange: Range<Temperature>? = null,
         time: Instant = Instant.now(),

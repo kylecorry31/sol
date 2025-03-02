@@ -10,7 +10,9 @@ import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Pressure
+import com.kylecorry.sol.units.Quantity
 import com.kylecorry.sol.units.Temperature
+import com.kylecorry.sol.units.hpa
 import java.time.Duration
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -113,7 +115,7 @@ internal object ZambrettiForecaster : Forecaster {
 
     private fun forecast(
         location: Coordinate,
-        pressure: Pressure,
+        pressure: Quantity<Pressure>,
         tendency: PressureTendency,
         windDirection: Bearing?,
         dailyTemperatureRange: Range<Temperature>?,
@@ -121,7 +123,7 @@ internal object ZambrettiForecaster : Forecaster {
         changeThreshold: Float
     ): List<WeatherForecast> {
 
-        val hpa = pressure.hpa().pressure
+        val hpa = pressure.hpa().amount
 
         // TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)
 

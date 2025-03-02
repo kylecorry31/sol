@@ -3,6 +3,7 @@ package com.kylecorry.sol.science.meteorology.forecast
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.*
 import com.kylecorry.sol.units.Pressure
+import com.kylecorry.sol.units.Quantity
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
 import java.time.Duration
@@ -34,7 +35,7 @@ internal object ForecastHelper {
         return mutableConditions.distinct()
     }
 
-    fun getPressureSystem(pressure: Pressure): PressureSystem? {
+    fun getPressureSystem(pressure: Quantity<Pressure>): PressureSystem? {
         return if (Meteorology.isHighPressure(pressure)) {
             PressureSystem.High
         } else if (Meteorology.isLowPressure(pressure)) {
@@ -45,7 +46,7 @@ internal object ForecastHelper {
     }
 
     fun getTendency(
-        pressures: List<Reading<Pressure>>,
+        pressures: List<Reading<Quantity<Pressure>>>,
         threshold: Float
     ): PressureTendency {
         if (pressures.size < 2) {

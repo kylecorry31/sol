@@ -15,14 +15,14 @@ import java.time.ZonedDateTime
 interface IWeatherService : ICloudService, ISeasonService {
 
     fun getSeaLevelPressure(
-        pressure: Pressure,
+        pressure: Quantity<Pressure>,
         altitude: Quantity<Distance>,
         temperature: Temperature? = null
-    ): Pressure
+    ): Quantity<Pressure>
 
-    fun isHighPressure(pressure: Pressure): Boolean
+    fun isHighPressure(pressure: Quantity<Pressure>): Boolean
 
-    fun isLowPressure(pressure: Pressure): Boolean
+    fun isLowPressure(pressure: Quantity<Pressure>): Boolean
 
     /**
      * Calculates the tendency
@@ -33,8 +33,8 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @return The pressure tendency (hPa / hr)
      */
     fun getTendency(
-        last: Pressure,
-        current: Pressure,
+        last: Quantity<Pressure>,
+        current: Quantity<Pressure>,
         duration: Duration,
         changeThreshold: Float
     ): PressureTendency
@@ -63,7 +63,7 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @return the predicted weather (now and later - times are not accurate yet)
      */
     fun forecast(
-        pressures: List<Reading<Pressure>>,
+        pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float = 0.5f,
