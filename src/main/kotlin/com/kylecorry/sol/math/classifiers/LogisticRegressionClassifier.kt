@@ -4,10 +4,7 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.statistics.Statistics
-import kotlin.math.ceil
 import kotlin.math.ln
-import kotlin.math.log
-import kotlin.math.min
 
 /**
  * A logistic regression classifier

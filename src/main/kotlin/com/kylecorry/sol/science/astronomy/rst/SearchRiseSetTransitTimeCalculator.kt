@@ -7,12 +7,11 @@ import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.time.Time.atStartOfDay
-import com.kylecorry.sol.time.Time.middle
-import com.kylecorry.sol.time.Time.plusMillis
-import com.kylecorry.sol.time.Time.toUTCLocal
-import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Coordinate
-import java.time.*
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
     override fun calculate(

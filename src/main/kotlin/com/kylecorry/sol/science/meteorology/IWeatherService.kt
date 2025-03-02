@@ -2,15 +2,13 @@ package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
 import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
+import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 interface IWeatherService : ICloudService, ISeasonService {
 

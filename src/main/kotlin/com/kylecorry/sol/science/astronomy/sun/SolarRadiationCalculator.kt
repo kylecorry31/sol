@@ -2,11 +2,11 @@ package com.kylecorry.sol.science.astronomy.sun
 
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.locators.Sun
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.Coordinate
 import kotlin.math.pow
 
 internal class SolarRadiationCalculator {

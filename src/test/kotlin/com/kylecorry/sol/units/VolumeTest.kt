@@ -9,10 +9,10 @@ import java.util.stream.Stream
 internal class VolumeTest {
     @ParameterizedTest
     @MethodSource("provideConversions")
-    fun convertTo(volume: Volume, expected: Volume) {
+    fun convertTo(volume: Quantity<Volume>, expected: Quantity<Volume>) {
         val converted = volume.convertTo(expected.units)
         assertEquals(expected.units, converted.units)
-        assertEquals(expected.volume, converted.volume, 0.0001f)
+        assertEquals(expected.amount, converted.amount, 0.0001f)
     }
 
     companion object {
@@ -21,41 +21,41 @@ internal class VolumeTest {
         fun provideConversions(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Volume(2f, VolumeUnits.Liters),
-                    Volume(0.528344f, VolumeUnits.USGallons)
+                    Quantity(2f, Volume.Liters),
+                    Quantity(0.528344f, Volume.USGallons)
                 ),
                 Arguments.of(
-                    Volume(3f, VolumeUnits.USGallons),
-                    Volume(11.3562f, VolumeUnits.Liters)
+                    Quantity(3f, Volume.USGallons),
+                    Quantity(11.3562f, Volume.Liters)
                 ),
                 Arguments.of(
-                    Volume(3f, VolumeUnits.ImperialGallons),
-                    Volume(461.16525f, VolumeUnits.USOunces)
+                    Quantity(3f, Volume.ImperialGallons),
+                    Quantity(461.16525f, Volume.USOunces)
                 ),
                 Arguments.of(
-                    Volume(4f, VolumeUnits.Milliliter),
-                    Volume(0.014078f, VolumeUnits.ImperialCups)
+                    Quantity(4f, Volume.Milliliter),
+                    Quantity(0.014078f, Volume.ImperialCups)
                 ),
-                Arguments.of(Volume(4f, VolumeUnits.USPints), Volume(2f, VolumeUnits.USQuarts)),
+                Arguments.of(Quantity(4f, Volume.USPints), Quantity(2f, Volume.USQuarts)),
                 Arguments.of(
-                    Volume(4f, VolumeUnits.USCups),
-                    Volume(3.3307f, VolumeUnits.ImperialCups)
-                ),
-                Arguments.of(
-                    Volume(4f, VolumeUnits.ImperialOunces),
-                    Volume(0.2f, VolumeUnits.ImperialPints)
+                    Quantity(4f, Volume.USCups),
+                    Quantity(3.3307f, Volume.ImperialCups)
                 ),
                 Arguments.of(
-                    Volume(1f, VolumeUnits.ImperialQuarts),
-                    Volume(1136.52f, VolumeUnits.Milliliter)
+                    Quantity(4f, Volume.ImperialOunces),
+                    Quantity(0.2f, Volume.ImperialPints)
                 ),
                 Arguments.of(
-                    Volume(1f, VolumeUnits.USTablespoons),
-                    Volume(3f, VolumeUnits.USTeaspoons)
+                    Quantity(1f, Volume.ImperialQuarts),
+                    Quantity(1136.52f, Volume.Milliliter)
                 ),
                 Arguments.of(
-                    Volume(1f, VolumeUnits.ImperialTablespoons),
-                    Volume(3f, VolumeUnits.ImperialTeaspoons)
+                    Quantity(1f, Volume.USTablespoons),
+                    Quantity(3f, Volume.USTeaspoons)
+                ),
+                Arguments.of(
+                    Quantity(1f, Volume.ImperialTablespoons),
+                    Quantity(3f, Volume.ImperialTeaspoons)
                 )
             )
         }

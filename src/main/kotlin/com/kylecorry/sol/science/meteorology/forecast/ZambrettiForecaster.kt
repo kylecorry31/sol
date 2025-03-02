@@ -7,12 +7,7 @@ import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.time.Time.plusHours
 import com.kylecorry.sol.time.Time.toZonedDateTime
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Pressure
-import com.kylecorry.sol.units.Quantity
-import com.kylecorry.sol.units.Temperature
-import com.kylecorry.sol.units.hpa
+import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
 import java.time.ZonedDateTime

@@ -1,18 +1,18 @@
 package com.kylecorry.sol.science.astronomy.rst
 
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
-import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
-import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
-import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
-import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
+import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
+import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
+import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
+import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
+import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.time.Time.plusHours
+import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Quantity
 import java.time.ZonedDateTime
