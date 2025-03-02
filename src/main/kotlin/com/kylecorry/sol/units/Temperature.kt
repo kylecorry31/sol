@@ -1,39 +1,23 @@
 package com.kylecorry.sol.units
 
-data class Temperature(val temperature: Float, val units: TemperatureUnits) :
-    Comparable<Temperature> {
-
-    fun convertTo(toUnits: TemperatureUnits): Temperature {
-        val c = when (units) {
-            TemperatureUnits.C -> temperature
-            TemperatureUnits.F -> (temperature - 32) * 5 / 9
-        }
-
-        val newTemp = when (toUnits) {
-            TemperatureUnits.C -> c
-            TemperatureUnits.F -> (c * 9 / 5) + 32
-        }
-
-        return Temperature(newTemp, toUnits)
-    }
-
-    fun celsius(): Temperature {
-        return convertTo(TemperatureUnits.C)
-    }
+enum class Temperature(override val id: Int, override val multiplierToBase: Float, override val offsetToBase: Float) :
+    PhysicalUnit {
+    Fahrenheit(1, 5 / 9f, -32f),
+    Celsius(2, 1f, 0f);
 
     companion object {
         val zero = celsius(0f)
 
-        fun celsius(temperature: Float): Temperature {
-            return Temperature(temperature, TemperatureUnits.C)
+        fun celsius(temperature: Float): Quantity<Temperature> {
+            return Quantity(temperature, Celsius)
         }
 
-        fun fahrenheit(temperature: Float): Temperature {
-            return Temperature(temperature, TemperatureUnits.F)
+        fun fahrenheit(temperature: Float): Quantity<Temperature> {
+            return Quantity(temperature, Fahrenheit)
         }
     }
+}
 
-    override fun compareTo(other: Temperature): Int {
-        return convertTo(TemperatureUnits.C).temperature.compareTo(other.convertTo(TemperatureUnits.C).temperature)
-    }
+fun Quantity<Temperature>.celsius(): Quantity<Temperature> {
+    return convertTo(Temperature.Celsius)
 }

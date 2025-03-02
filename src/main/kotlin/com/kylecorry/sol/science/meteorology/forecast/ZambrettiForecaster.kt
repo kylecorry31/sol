@@ -83,7 +83,7 @@ internal object ZambrettiForecaster : Forecaster {
 
     override fun forecast(
         observations: List<WeatherObservation<*>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        dailyTemperatureRange: Range<Quantity<Temperature>>?,
         time: Instant,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
@@ -118,7 +118,7 @@ internal object ZambrettiForecaster : Forecaster {
         pressure: Quantity<Pressure>,
         tendency: PressureTendency,
         windDirection: Bearing?,
-        dailyTemperatureRange: Range<Temperature>?,
+        dailyTemperatureRange: Range<Quantity<Temperature>>?,
         time: ZonedDateTime,
         changeThreshold: Float
     ): List<WeatherForecast> {
@@ -184,7 +184,7 @@ internal object ZambrettiForecaster : Forecaster {
 
     private fun getCurrentConditions(
         z: Double,
-        dailyTemperatureRange: Range<Temperature>?,
+        dailyTemperatureRange: Range<Quantity<Temperature>>?,
     ): List<WeatherCondition> {
         return ForecastHelper.addSecondaryConditions(
             conditions[z.toInt()]?.current ?: emptyList(),
@@ -194,7 +194,7 @@ internal object ZambrettiForecaster : Forecaster {
 
     private fun getLaterConditions(
         z: Double,
-        dailyTemperatureRange: Range<Temperature>?,
+        dailyTemperatureRange: Range<Quantity<Temperature>>?,
     ): List<WeatherCondition> {
         return ForecastHelper.addSecondaryConditions(conditions[z.toInt()]?.later ?: emptyList(), dailyTemperatureRange)
     }

@@ -17,7 +17,7 @@ interface IWeatherService : ICloudService, ISeasonService {
     fun getSeaLevelPressure(
         pressure: Quantity<Pressure>,
         altitude: Quantity<Distance>,
-        temperature: Temperature? = null
+        temperature: Quantity<Temperature>? = null
     ): Quantity<Pressure>
 
     fun isHighPressure(pressure: Quantity<Pressure>): Boolean
@@ -65,7 +65,7 @@ interface IWeatherService : ICloudService, ISeasonService {
     fun forecast(
         pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        dailyTemperatureRange: Range<Quantity<Temperature>>?,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
         time: Instant = Instant.now(),
@@ -86,7 +86,7 @@ interface IWeatherService : ICloudService, ISeasonService {
      */
     fun forecast(
         observations: List<WeatherObservation<*>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        dailyTemperatureRange: Range<Quantity<Temperature>>?,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
         time: Instant = Instant.now(),
@@ -149,8 +149,8 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @return the temperature at the destination
      */
     fun getTemperatureAtElevation(
-        temperature: Temperature,
+        temperature: Quantity<Temperature>,
         baseElevation: Quantity<Distance>,
         destElevation: Quantity<Distance>
-    ): Temperature
+    ): Quantity<Temperature>
 }

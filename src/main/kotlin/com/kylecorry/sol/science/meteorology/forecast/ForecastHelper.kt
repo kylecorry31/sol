@@ -6,12 +6,13 @@ import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Quantity
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
+import com.kylecorry.sol.units.celsius
 import java.time.Duration
 
 internal object ForecastHelper {
     fun addSecondaryConditions(
         conditions: List<WeatherCondition>,
-        dailyTemperatureRange: Range<Temperature>? = null,
+        dailyTemperatureRange: Range<Quantity<Temperature>>? = null,
     ): List<WeatherCondition> {
         val mutableConditions = conditions.toMutableList()
 
@@ -74,14 +75,14 @@ internal object ForecastHelper {
         )
     }
 
-    private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {
+    private fun getPrecipitationType(temperatures: Range<Quantity<Temperature>>?): WeatherCondition? {
         temperatures ?: return null
 
-        if (temperatures.start.celsius().temperature > 0) {
+        if (temperatures.start.celsius().amount > 0) {
             return WeatherCondition.Rain
         }
 
-        if (temperatures.end.celsius().temperature <= 0) {
+        if (temperatures.end.celsius().amount <= 0) {
             return WeatherCondition.Snow
         }
 
