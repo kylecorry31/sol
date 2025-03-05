@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.regression.WeightedLeastSquaresRegression
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.max
 import kotlin.math.pow
 
 // Based on org.apache.commons.math.analysis.interpolation.LoessInterpolator

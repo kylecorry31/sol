@@ -4,10 +4,7 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.columns
 import com.kylecorry.sol.math.algebra.rows
-import kotlin.math.abs
-import kotlin.math.ln
-import kotlin.math.max
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object Texture {
 

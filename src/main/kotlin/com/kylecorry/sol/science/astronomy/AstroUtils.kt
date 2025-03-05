@@ -13,6 +13,7 @@ import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Quantity
+import kotlin.math.atan
 import kotlin.math.atan2
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)

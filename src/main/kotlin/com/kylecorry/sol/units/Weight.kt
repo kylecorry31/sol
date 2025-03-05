@@ -1,18 +1,22 @@
 package com.kylecorry.sol.units
 
-enum class Weight(override val id: Int, override val multiplierToBase: Float) : PhysicalUnit {
-    Pounds(1, 453.592f),
-    Ounces(2, 28.3495f),
-    Kilograms(3, 1000f),
-    Grams(4, 1f);
+import kotlin.math.absoluteValue
 
-    companion object {
-        fun grams(weight: Float): Quantity<Weight> {
-            return Quantity(weight, Grams)
+data class Weight(val weight: Float, val units: WeightUnits) {
+    fun convertTo(newUnits: WeightUnits): Weight {
+        if (units == newUnits) {
+            return this
         }
+        val grams = weight * units.grams
+        return Weight(grams / newUnits.grams, newUnits)
     }
-}
 
-fun Quantity<Weight>.grams(): Quantity<Weight> {
-    return convertTo(Weight.Grams)
+    operator fun plus(other: Weight): Weight {
+        val otherInUnits = other.convertTo(units)
+        return Weight(weight + otherInUnits.weight, units)
+    }
+
+    operator fun times(amount: Number): Weight {
+        return Weight(weight * amount.toFloat().absoluteValue, units)
+    }
 }

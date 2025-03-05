@@ -5,9 +5,7 @@ import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.exp
-import kotlin.math.ln
-import kotlin.math.pow
+import kotlin.math.*
 
 class NeuralNetwork(
     private val layers: List<Layer>,

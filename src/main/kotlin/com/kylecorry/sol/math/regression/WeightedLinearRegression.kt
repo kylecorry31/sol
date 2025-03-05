@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.regression
 
 import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.algebra.*
 import kotlin.math.abs
 import kotlin.math.sqrt
 

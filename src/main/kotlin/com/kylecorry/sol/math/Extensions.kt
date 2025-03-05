@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.algebra.transpose
 import com.kylecorry.sol.shared.Guards
 import kotlin.math.ceil
 import kotlin.math.min

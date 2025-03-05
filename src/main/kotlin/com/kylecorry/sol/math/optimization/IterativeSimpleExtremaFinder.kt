@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
+import kotlin.math.sqrt
 
 class IterativeSimpleExtremaFinder(
     initialStep: Double,
