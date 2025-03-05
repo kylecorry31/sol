@@ -5,7 +5,6 @@ import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Location
-import com.kylecorry.sol.units.meters
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -49,7 +48,7 @@ class GeographyTest {
         val coordinate = Geography.getLocationFromECEF(Vector3(x, y, z))
         assertEquals(expectedLatitude, coordinate.coordinate.latitude, 0.1)
         assertEquals(expectedLongitude, coordinate.coordinate.longitude, 0.1)
-        assertEquals(expectedElevation, coordinate.elevation.meters().amount, 0.1f)
+        assertEquals(expectedElevation, coordinate.elevation.meters().distance, 0.1f)
     }
 
     @Test

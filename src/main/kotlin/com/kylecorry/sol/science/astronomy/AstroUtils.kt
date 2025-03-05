@@ -12,7 +12,6 @@ import com.kylecorry.sol.science.astronomy.units.toSiderealTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
 import kotlin.math.atan
 import kotlin.math.atan2
 
@@ -40,7 +39,7 @@ internal object AstroUtils {
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        distanceToBody: Quantity<Distance>? = null
+        distanceToBody: Distance? = null
     ): Float {
         return getLocation(coordinate, ut, location, withRefraction, distanceToBody).altitude.toFloat()
     }
@@ -65,7 +64,7 @@ internal object AstroUtils {
         coordinate: EquatorialCoordinate,
         ut: UniversalTime,
         location: Coordinate,
-        distanceToBody: Quantity<Distance>? = null
+        distanceToBody: Distance? = null
     ): Bearing {
         val azimuth = getLocation(coordinate, ut, location, false, distanceToBody).azimuth.toFloat()
         return Bearing(azimuth)
@@ -112,7 +111,7 @@ internal object AstroUtils {
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        distanceToBody: Quantity<Distance>? = null
+        distanceToBody: Distance? = null
     ): HorizonCoordinate {
         val horizon = if (distanceToBody != null) {
             HorizonCoordinate.fromEquatorial(coordinate, ut, location, distanceToBody)

@@ -5,7 +5,6 @@ import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.timeToAngle
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
 
 internal class MeteorShowerLocator(private val shower: MeteorShower) : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
@@ -30,7 +29,7 @@ internal class MeteorShowerLocator(private val shower: MeteorShower) : ICelestia
         }
     }
 
-    override fun getDistance(ut: UniversalTime): Quantity<Distance>? {
+    override fun getDistance(ut: UniversalTime): Distance? {
         return null
     }
 

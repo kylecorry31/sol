@@ -15,6 +15,7 @@ import com.kylecorry.sol.tests.parametrized
 import com.kylecorry.sol.time.Time.duration
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -50,7 +51,7 @@ class AstronomyTest {
     fun canGetMoonDistance(time: String, expected: Float) {
         val date = ZonedDateTime.parse(time)
         val distance = Astronomy.getMoonDistance(date)
-        assertEquals(expected, distance.amount, 1f)
+        assertEquals(expected, distance.distance, 1f)
     }
 
     @ParameterizedTest
@@ -732,7 +733,7 @@ class AstronomyTest {
         "67.92, 1324.8"
     )
     fun canGetZenithDistance(altitude: Float, expected: Float) {
-        val actual = Astronomy.getZenithDistance(altitude).convertTo(Distance.NauticalMiles).amount
+        val actual = Astronomy.getZenithDistance(altitude).convertTo(DistanceUnits.NauticalMiles).distance
         assertEquals(expected, actual, 0.1f)
     }
 
@@ -754,7 +755,7 @@ class AstronomyTest {
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
-        }.sortedBy { it.second.amount }
+        }.sortedBy { it.second.distance }
             .map { it.first }
             .take(numberOfStars)
 
@@ -767,7 +768,7 @@ class AstronomyTest {
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(20f).amount)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(20f).distance)
         } else {
             assertNull(actual)
         }
@@ -793,7 +794,7 @@ class AstronomyTest {
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
-        }.sortedBy { it.second.amount }
+        }.sortedBy { it.second.distance }
             .map { it.first }
             .take(numberOfStars)
 
@@ -807,7 +808,7 @@ class AstronomyTest {
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(10f).amount)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(10f).distance)
         } else {
             assertNull(actual)
         }

@@ -11,8 +11,6 @@ import assertk.assertions.prop
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
-import com.sun.tools.doclint.Entity.prop
 import org.junit.jupiter.api.Assertions.*
 
 fun assertk.Assert<Coordinate>.isCloseTo(other: Coordinate, meters: Float) {
@@ -21,9 +19,9 @@ fun assertk.Assert<Coordinate>.isCloseTo(other: Coordinate, meters: Float) {
     }.isLessThan(meters)
 }
 
-fun assertk.Assert<Quantity<Distance>>.isCloseTo(other: Quantity<Distance>, tolerance: Float) {
-    prop("units", Quantity<Distance>::units).isEqualTo(other.units)
-    prop("value", Quantity<Distance>::amount).isCloseTo(other.amount, tolerance)
+fun assertk.Assert<Distance>.isCloseTo(other: Distance, tolerance: Float) {
+    prop("units", Distance::units).isEqualTo(other.units)
+    prop("value", Distance::distance).isCloseTo(other.distance, tolerance)
 }
 
 fun <T> parametrized(cases: Collection<T>, test: (case: T) -> Unit) {

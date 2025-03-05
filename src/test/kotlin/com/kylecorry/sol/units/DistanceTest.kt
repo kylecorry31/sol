@@ -13,8 +13,8 @@ internal class DistanceTest {
         "1, 1, 9, 10"
     )
     fun convertTo(fromId: Int, fromValue: Float, toId: Int, expected: Float) {
-        val distance = Quantity(fromValue, Distance.entries.first { it.id == fromId })
-        val converted = distance.convertTo(Distance.entries.first { it.id == toId })
-        assertEquals(expected, converted.amount, 0.00001f)
+        val distance = Distance(fromValue, DistanceUnits.entries.first { it.id == fromId })
+        val converted = distance.convertTo(DistanceUnits.entries.first { it.id == toId })
+        assertEquals(expected, converted.distance, 0.00001f)
     }
 }

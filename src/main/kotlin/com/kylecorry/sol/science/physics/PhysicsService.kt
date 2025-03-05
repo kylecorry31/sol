@@ -2,17 +2,18 @@ package com.kylecorry.sol.science.physics
 
 import com.kylecorry.sol.math.Quaternion
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
+import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.science.geology.Geology
 import java.time.Duration
+import kotlin.math.sqrt
 
 class PhysicsService : IPhysicsService {
 
-    override fun fallHeight(time: Duration, gravity: Float): Quantity<Distance> {
+    override fun fallHeight(time: Duration, gravity: Float): Distance {
         val seconds = time.toMillis() / 1000f
-        return Distance.meters(0.5f * gravity * seconds * seconds)
+        return Distance(0.5f * gravity * seconds * seconds, DistanceUnits.Meters)
     }
 
     override fun isMetal(magneticField: Vector3, threshold: Float): Boolean {

@@ -15,7 +15,7 @@ import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
+import com.kylecorry.sol.units.DistanceUnits
 import java.time.Duration
 import kotlin.math.*
 
@@ -90,7 +90,7 @@ internal class Moon : ICelestialLocator {
         )
     }
 
-    override fun getDistance(ut: UniversalTime): Quantity<Distance> {
+    override fun getDistance(ut: UniversalTime): Distance {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
         val T = tt.toJulianCenturies()
@@ -117,7 +117,7 @@ internal class Moon : ICelestialLocator {
     }
 
     fun getAngularDiameter(ut: UniversalTime, location: Coordinate = Coordinate.zero): Double {
-        val distance = getDistance(ut).convertTo(Distance.Kilometers).amount
+        val distance = getDistance(ut).convertTo(DistanceUnits.Kilometers).distance
         val s = 358743400 / distance
         val sinPi = 6378.14 / distance
         val h = AstroUtils.getAltitude(this, ut, location, true).toDouble()

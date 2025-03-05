@@ -5,12 +5,11 @@ import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
 import java.time.Duration
 
 interface IPhysicsService {
     // Kinematics
-    fun fallHeight(time: Duration, gravity: Float = Geology.GRAVITY): Quantity<Distance>
+    fun fallHeight(time: Duration, gravity: Float = Geology.GRAVITY): Distance
 
     // Magnetic fields
     fun isMetal(magneticField: Vector3, threshold: Float = 65f): Boolean

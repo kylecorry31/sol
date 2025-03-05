@@ -128,11 +128,11 @@ internal class GeologyTest {
 
     @Test
     fun getMapDistanceVerbal() {
-        val measurement = Quantity(1f, Distance.Inches)
-        val scaleFrom = Quantity(2f, Distance.Centimeters)
-        val scaleTo = Quantity(0.5f, Distance.Kilometers)
+        val measurement = Distance(1f, DistanceUnits.Inches)
+        val scaleFrom = Distance(2f, DistanceUnits.Centimeters)
+        val scaleTo = Distance(0.5f, DistanceUnits.Kilometers)
 
-        val expected = Quantity(0.635f, Distance.Kilometers)
+        val expected = Distance(0.635f, DistanceUnits.Kilometers)
 
         val actual = Geology.getMapDistance(measurement, scaleFrom, scaleTo)
 
@@ -141,11 +141,11 @@ internal class GeologyTest {
 
     @Test
     fun getMapDistanceRatio() {
-        val measurement = Quantity(1f, Distance.Inches)
+        val measurement = Distance(1f, DistanceUnits.Inches)
         val ratioFrom = 0.5f
         val ratioTo = 1.25f
 
-        val expected = Quantity(2.5f, Distance.Inches)
+        val expected = Distance(2.5f, DistanceUnits.Inches)
 
         val actual = Geology.getMapDistance(measurement, ratioFrom, ratioTo)
 
@@ -177,14 +177,14 @@ internal class GeologyTest {
     @MethodSource("provideHeights")
     fun calculateHeights(distance: Float, upAngle: Float, downAngle: Float, expected: Float) {
         val height = Geology.getHeightFromInclination(Distance.meters(distance), downAngle, upAngle)
-        assertEquals(expected, height.amount, 0.01f)
+        assertEquals(expected, height.distance, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideDistances")
     fun calculateDistance(height: Float, upAngle: Float, downAngle: Float, expected: Float) {
         val d = Geology.getDistanceFromInclination(Distance.meters(height), downAngle, upAngle)
-        assertEquals(expected, d.amount, 0.01f)
+        assertEquals(expected, d.distance, 0.01f)
     }
 
     @ParameterizedTest
@@ -203,7 +203,7 @@ internal class GeologyTest {
 
     @ParameterizedTest
     @MethodSource("provideGradeDistance")
-    fun getSlopeGradeFromDistance(vertical: Quantity<Distance>, horizontal: Quantity<Distance>, expected: Float) {
+    fun getSlopeGradeFromDistance(vertical: Distance, horizontal: Distance, expected: Float) {
         val grade = Geology.getSlopeGrade(vertical, horizontal)
         assertEquals(expected, grade, 0.01f)
     }
@@ -403,31 +403,31 @@ internal class GeologyTest {
                     Coordinate(53.2611, -0.7972),
                     Coordinate(53.3206, -1.7297),
                     Coordinate(53.1887, 0.1334),
-                    Distance.kilometers(62.333f).meters().amount
+                    Distance.kilometers(62.333f).meters().distance
                 ),
                 Arguments.of(
                     Coordinate(1.0, 1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(1.11198e5f).amount
+                    Distance.meters(1.11198e5f).distance
                 ),
                 Arguments.of(
                     Coordinate(-1.0, 1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(1.11198e5f).amount
+                    Distance.meters(1.11198e5f).distance
                 ),
                 Arguments.of(
                     Coordinate(-1.0, -1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(-1.11198e5f).amount
+                    Distance.meters(-1.11198e5f).distance
                 ),
                 Arguments.of(
                     Coordinate(1.0, -1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(-1.11198e5f).amount
+                    Distance.meters(-1.11198e5f).distance
                 )
             )
         }

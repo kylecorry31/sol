@@ -8,10 +8,10 @@ import kotlin.math.hypot
  * @property coordinate The geographic coordinate
  * @property elevation The elevation (reference point is unspecified)
  */
-class Location(val coordinate: Coordinate, val elevation: Quantity<Distance>) {
+class Location(val coordinate: Coordinate, val elevation: Distance) {
     fun distanceTo(other: Location, highAccuracy: Boolean = true): Float {
         val horizontal = coordinate.distanceTo(other.coordinate, highAccuracy)
-        val vertical = elevation.meters().amount - other.elevation.meters().amount
+        val vertical = elevation.meters().distance - other.elevation.meters().distance
         return hypot(horizontal, vertical)
     }
 
@@ -26,7 +26,7 @@ class Location(val coordinate: Coordinate, val elevation: Quantity<Distance>) {
     }
 
     fun verticalDistanceTo(other: Location): Float {
-        return elevation.meters().amount - other.elevation.meters().amount
+        return elevation.meters().distance - other.elevation.meters().distance
     }
 
     fun bearingTo(other: Location, highAccuracy: Boolean = true): Bearing {

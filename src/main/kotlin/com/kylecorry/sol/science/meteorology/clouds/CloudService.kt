@@ -1,12 +1,12 @@
 package com.kylecorry.sol.science.meteorology.clouds
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.geology.Region
 import com.kylecorry.sol.science.meteorology.Precipitation
-import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
 
 internal class CloudService : ICloudService {
 
@@ -17,32 +17,27 @@ internal class CloudService : ICloudService {
                 Precipitation.Snow,
                 Precipitation.IcePellets
             )
-
             CloudGenus.Nimbostratus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Snow,
                 Precipitation.IcePellets
             )
-
             CloudGenus.Stratus -> listOf(
                 Precipitation.Drizzle,
                 Precipitation.Snow,
                 Precipitation.SnowGrains
             )
-
             CloudGenus.Stratocumulus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Drizzle,
                 Precipitation.Snow,
                 Precipitation.SnowPellets
             )
-
             CloudGenus.Cumulus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Snow,
                 Precipitation.SnowPellets
             )
-
             CloudGenus.Cumulonimbus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Snow,
@@ -51,7 +46,6 @@ internal class CloudService : ICloudService {
                 Precipitation.SmallHail,
                 Precipitation.Lightning
             )
-
             else -> emptyList()
         }
     }
@@ -72,11 +66,11 @@ internal class CloudService : ICloudService {
         }
     }
 
-    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Quantity<Distance>> {
+    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
         if (level == CloudLevel.Low) {
             return Range(
-                Distance.kilometers(0f),
-                Distance.kilometers(2f)
+                Distance(0f, DistanceUnits.Kilometers),
+                Distance(2f, DistanceUnits.Kilometers)
             )
         }
 
@@ -95,13 +89,12 @@ internal class CloudService : ICloudService {
 
         return when (level) {
             CloudLevel.Mid -> Range(
-                Distance.kilometers(2f),
-                Distance.kilometers(highStart)
+                Distance(2f, DistanceUnits.Kilometers),
+                Distance(highStart, DistanceUnits.Kilometers)
             )
-
             else -> Range(
-                Distance.kilometers(highStart),
-                Distance.kilometers(highEnd)
+                Distance(highStart, DistanceUnits.Kilometers),
+                Distance(highEnd, DistanceUnits.Kilometers)
             )
         }
     }
@@ -111,23 +104,18 @@ internal class CloudService : ICloudService {
             percent < 0.01f -> {
                 CloudCover.NoClouds
             }
-
             percent < 0.1f -> {
                 CloudCover.Few
             }
-
             percent < 0.25f -> {
                 CloudCover.Isolated
             }
-
             percent < 0.5f -> {
                 CloudCover.Scattered
             }
-
             percent < 0.9f -> {
                 CloudCover.Broken
             }
-
             else -> {
                 CloudCover.Overcast
             }

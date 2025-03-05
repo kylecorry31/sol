@@ -303,9 +303,9 @@ internal class OceanographyServiceTest {
 
         val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
 
-        val expected = Quantity(12f, Distance.Meters)
+        val expected = Distance(12f, DistanceUnits.Meters)
 
-        assertEquals(expected.amount, depth.amount, 0.1f)
+        assertEquals(expected.distance, depth.distance, 0.1f)
     }
 
     @Test
@@ -315,7 +315,7 @@ internal class OceanographyServiceTest {
 
         val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
 
-        val expected = Quantity(0f, Distance.Meters)
+        val expected = Distance(0f, DistanceUnits.Meters)
 
         assertEquals(expected, depth)
     }

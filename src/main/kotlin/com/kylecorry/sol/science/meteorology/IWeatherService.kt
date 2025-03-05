@@ -16,7 +16,7 @@ interface IWeatherService : ICloudService, ISeasonService {
 
     fun getSeaLevelPressure(
         pressure: Pressure,
-        altitude: Quantity<Distance>,
+        altitude: Distance,
         temperature: Temperature? = null
     ): Pressure
 
@@ -130,7 +130,7 @@ interface IWeatherService : ICloudService, ISeasonService {
      * @param distance The distance to the lightning strike
      * @return true if the strike is dangerous, false otherwise
      */
-    fun isLightningStrikeDangerous(distance: Quantity<Distance>): Boolean
+    fun isLightningStrikeDangerous(distance: Distance): Boolean
 
     /**
      * Calculates the ambient temperature from sequential temperature readings
@@ -150,7 +150,7 @@ interface IWeatherService : ICloudService, ISeasonService {
      */
     fun getTemperatureAtElevation(
         temperature: Temperature,
-        baseElevation: Quantity<Distance>,
-        destElevation: Quantity<Distance>
+        baseElevation: Distance,
+        destElevation: Distance
     ): Temperature
 }

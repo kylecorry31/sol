@@ -2,6 +2,7 @@ package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.normalizeAngle
 import com.kylecorry.sol.math.SolMath.power
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.tanDegrees
@@ -9,7 +10,7 @@ import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
+import com.kylecorry.sol.units.DistanceUnits
 import kotlin.math.*
 
 internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
@@ -139,7 +140,7 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
             equatorial: EquatorialCoordinate,
             ut: UniversalTime,
             coordinate: Coordinate,
-            distanceToBody: Quantity<Distance>
+            distanceToBody: Distance
         ): HorizonCoordinate {
             return fromEquatorial(
                 equatorial,
@@ -153,9 +154,9 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
             equatorial: EquatorialCoordinate,
             siderealTime: SiderealTime,
             latitude: Double,
-            distanceToBody: Quantity<Distance>
+            distanceToBody: Distance
         ): HorizonCoordinate {
-            val sinPi = 6378.14 / distanceToBody.convertTo(Distance.Kilometers).amount
+            val sinPi = 6378.14 / distanceToBody.convertTo(DistanceUnits.Kilometers).distance
             val hourAngle = equatorial.getHourAngle(siderealTime) * 15
 
             val u = atan(0.99664719 * tanDegrees(latitude))

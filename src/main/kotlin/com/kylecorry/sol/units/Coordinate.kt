@@ -32,8 +32,8 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
         }
     }
 
-    fun plus(distance: Quantity<Distance>, bearing: Bearing): Coordinate {
-        return plus(distance.meters().amount.toDouble(), bearing)
+    fun plus(distance: Distance, bearing: Bearing): Coordinate {
+        return plus(distance.meters().distance.toDouble(), bearing)
     }
 
     fun plus(meters: Double, bearing: Bearing): Coordinate {

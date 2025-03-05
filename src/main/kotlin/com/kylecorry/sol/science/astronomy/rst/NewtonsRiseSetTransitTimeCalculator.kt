@@ -14,7 +14,6 @@ import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
 import com.kylecorry.sol.time.Time.plusHours
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
@@ -97,7 +96,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
 
         // Handle the case where a rise or set is close to the horizon and refraction is messing it up
         if (withRefraction && (rise == null || transit == null || set == null)) {
-            val calculated = calculate(
+            val calculated =  calculate(
                 locator,
                 date,
                 location,
@@ -177,7 +176,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         standardAltitude: Double,
         withRefraction: Boolean,
         coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>,
-        distances: Triple<Quantity<Distance>, Quantity<Distance>, Quantity<Distance>>?
+        distances: Triple<Distance, Distance, Distance>?
     ): Triple<Double, Double, Double>? {
         val apparentSidereal = getApparentSiderealTime(ut)
         val deltaT = TerrestrialTime.getDeltaT(ut.year)
@@ -307,17 +306,17 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
 
     private fun interpolateDistance(
         value: Double,
-        first: Quantity<Distance>,
-        second: Quantity<Distance>,
-        third: Quantity<Distance>
-    ): Quantity<Distance> {
+        first: Distance,
+        second: Distance,
+        third: Distance
+    ): Distance {
         val distance = SolMath.interpolate(
             value,
-            first.amount.toDouble(),
-            second.amount.toDouble(),
-            third.amount.toDouble()
+            first.distance.toDouble(),
+            second.distance.toDouble(),
+            third.distance.toDouble()
         )
-        return Quantity<Distance>(distance.toFloat(), first.units)
+        return Distance(distance.toFloat(), first.units)
     }
 
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {

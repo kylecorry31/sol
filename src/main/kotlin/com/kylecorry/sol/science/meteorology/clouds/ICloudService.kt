@@ -4,7 +4,6 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.Precipitation
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Quantity
 
 interface ICloudService {
     /**
@@ -27,7 +26,7 @@ interface ICloudService {
      * @param location the location
      * @return the height range of the cloud layer
      */
-    fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Quantity<Distance>>
+    fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance>
 
     /**
      * Get the cloud cover label
