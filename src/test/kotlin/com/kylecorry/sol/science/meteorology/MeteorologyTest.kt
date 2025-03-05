@@ -33,7 +33,7 @@ class MeteorologyTest {
     fun forecast(
         pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
-        temperatures: Range<Quantity<Temperature>>?,
+        temperatures: Range<Temperature>?,
         now: WeatherForecast,
         then: WeatherForecast
     ) {
@@ -111,7 +111,7 @@ class MeteorologyTest {
     fun convertsToSeaLevel(
         pressure: Quantity<Pressure>,
         altitude: Quantity<Distance>,
-        temperature: Quantity<Temperature>?,
+        temperature: Temperature?,
         expected: Quantity<Pressure>
     ) {
         val reading = Meteorology.getSeaLevelPressure(pressure, altitude, temperature)
@@ -170,7 +170,7 @@ class MeteorologyTest {
                 Arguments.of(
                     Quantity(0f, Pressure.Hpa),
                     Distance.meters(0f),
-                    Quantity(0f, Temperature.Celsius),
+                    Temperature(0f, TemperatureUnits.C),
                     Quantity(0f, Pressure.Hpa)
                 ),
                 Arguments.of(
@@ -188,13 +188,13 @@ class MeteorologyTest {
                 Arguments.of(
                     Quantity(980f, Pressure.Hpa),
                     Distance.meters(1000f),
-                    Quantity(15f, Temperature.Celsius),
+                    Temperature(15f, TemperatureUnits.C),
                     Quantity(1101.93f, Pressure.Hpa)
                 ),
                 Arguments.of(
                     Quantity(1000f, Pressure.Hpa),
                     Distance.meters(-100f),
-                    Quantity(28f, Temperature.Celsius),
+                    Temperature(28f, TemperatureUnits.C),
                     Quantity(988.71f, Pressure.Hpa)
                 ),
             )
@@ -758,7 +758,7 @@ class MeteorologyTest {
             )
         }
 
-        private fun temperatures(low: Float, high: Float): Range<Quantity<Temperature>> {
+        private fun temperatures(low: Float, high: Float): Range<Temperature> {
             return Range(Temperature.celsius(low), Temperature.celsius(high))
         }
 

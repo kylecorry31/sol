@@ -24,11 +24,11 @@ object Meteorology : IWeatherService {
     private val cloudService = CloudService()
 
     override fun getSeaLevelPressure(
-        pressure: Quantity<Pressure>, altitude: Quantity<Distance>, temperature: Quantity<Temperature>?
+        pressure: Quantity<Pressure>, altitude: Quantity<Distance>, temperature: Temperature?
     ): Quantity<Pressure> {
         val hpa = pressure.hpa().amount
         val meters = altitude.meters().amount
-        val celsius = temperature?.celsius()?.amount
+        val celsius = temperature?.celsius()?.temperature
         val adjustedPressure = if (celsius != null) {
             hpa * (1 - ((0.0065f * meters) / (celsius + 0.0065f * meters + 273.15f))).pow(
                 -5.257f
@@ -95,7 +95,7 @@ object Meteorology : IWeatherService {
     override fun forecast(
         pressures: List<Reading<Quantity<Pressure>>>,
         clouds: List<Reading<CloudGenus?>>,
-        dailyTemperatureRange: Range<Quantity<Temperature>>?,
+        dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
         time: Instant,
@@ -117,7 +117,7 @@ object Meteorology : IWeatherService {
 
     override fun forecast(
         observations: List<WeatherObservation<*>>,
-        dailyTemperatureRange: Range<Quantity<Temperature>>?,
+        dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
         time: Instant,
@@ -222,13 +222,13 @@ object Meteorology : IWeatherService {
     }
 
     override fun getTemperatureAtElevation(
-        temperature: Quantity<Temperature>, baseElevation: Quantity<Distance>, destElevation: Quantity<Distance>
-    ): Quantity<Temperature> {
-        val celsius = temperature.celsius().amount
+        temperature: Temperature, baseElevation: Quantity<Distance>, destElevation: Quantity<Distance>
+    ): Temperature {
+        val celsius = temperature.celsius().temperature
         val baseMeters = baseElevation.meters().amount
         val destMeters = destElevation.meters().amount
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
-        return Quantity(temp, Temperature.Celsius).convertTo(temperature.units)
+        return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
