@@ -1,6 +1,6 @@
 package com.kylecorry.sol.units
 
-enum class Distance(override val id: Int, override val multiplierToBase: Float, val isMetric: Boolean) : PhysicalUnit {
+enum class Distance(override val id: Int, override val multiplierToBase: Float, val isMetric: Boolean) : Unit {
     Centimeters(1, 0.01f, true),
     Inches(2, 1 / (3.28084f * 12), false),
     Miles(3, 5280 / 3.28084f, false),

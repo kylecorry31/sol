@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.meteorology.observation
 
 import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Quantity
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Speed
 import java.time.Instant
@@ -10,7 +9,7 @@ sealed class WeatherObservation<T>(
     val time: Instant,
     val value: T
 ) {
-    class Pressure(time: Instant, value: Quantity<com.kylecorry.sol.units.Pressure>) : WeatherObservation<Quantity<com.kylecorry.sol.units.Pressure>>(time, value)
+    class Pressure(time: Instant, value: com.kylecorry.sol.units.Pressure) : WeatherObservation<com.kylecorry.sol.units.Pressure>(time, value)
     class WindSpeed(time: Instant, value: Speed) : WeatherObservation<Speed>(time, value)
 
     /**

@@ -24,9 +24,9 @@ object Meteorology : IWeatherService {
     private val cloudService = CloudService()
 
     override fun getSeaLevelPressure(
-        pressure: Quantity<Pressure>, altitude: Quantity<Distance>, temperature: Temperature?
-    ): Quantity<Pressure> {
-        val hpa = pressure.hpa().amount
+        pressure: Pressure, altitude: Quantity<Distance>, temperature: Temperature?
+    ): Pressure {
+        val hpa = pressure.hpa().pressure
         val meters = altitude.meters().amount
         val celsius = temperature?.celsius()?.temperature
         val adjustedPressure = if (celsius != null) {
@@ -37,21 +37,21 @@ object Meteorology : IWeatherService {
             hpa * (1 - meters / 44330.0).pow(-5.255).toFloat()
         }
 
-        return Quantity(adjustedPressure, Pressure.Hpa).convertTo(pressure.units)
+        return Pressure(adjustedPressure, PressureUnits.Hpa).convertTo(pressure.units)
     }
 
-    override fun isHighPressure(pressure: Quantity<Pressure>): Boolean {
-        return pressure.hpa().amount >= 1022.689
+    override fun isHighPressure(pressure: Pressure): Boolean {
+        return pressure.hpa().pressure >= 1022.689
     }
 
-    override fun isLowPressure(pressure: Quantity<Pressure>): Boolean {
-        return pressure.hpa().amount <= 1009.144
+    override fun isLowPressure(pressure: Pressure): Boolean {
+        return pressure.hpa().pressure <= 1009.144
     }
 
     override fun getTendency(
-        last: Quantity<Pressure>, current: Quantity<Pressure>, duration: Duration, changeThreshold: Float
+        last: Pressure, current: Pressure, duration: Duration, changeThreshold: Float
     ): PressureTendency {
-        val diff = current.hpa().amount - last.hpa().amount
+        val diff = current.hpa().pressure - last.hpa().pressure
         val dt = duration.seconds
 
         if (dt == 0L) {
@@ -93,7 +93,7 @@ object Meteorology : IWeatherService {
     }
 
     override fun forecast(
-        pressures: List<Reading<Quantity<Pressure>>>,
+        pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
         dailyTemperatureRange: Range<Temperature>?,
         pressureChangeThreshold: Float,

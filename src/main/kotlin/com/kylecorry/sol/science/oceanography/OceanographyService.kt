@@ -49,8 +49,8 @@ class OceanographyService : IOceanographyService {
     }
 
     override fun getDepth(
-        pressure: Quantity<Pressure>,
-        seaLevelPressure: Quantity<Pressure>,
+        pressure: Pressure,
+        seaLevelPressure: Pressure,
         isSaltWater: Boolean
     ): Quantity<Distance> {
         if (pressure <= seaLevelPressure) {
@@ -58,7 +58,10 @@ class OceanographyService : IOceanographyService {
         }
 
         val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
-        val pressureDiff = pressure.hpa().amount - seaLevelPressure.hpa().amount
+        val pressureDiff =
+            pressure.convertTo(PressureUnits.Hpa).pressure - seaLevelPressure.convertTo(
+                PressureUnits.Hpa
+            ).pressure
 
         return Distance.meters(
             pressureDiff * 100 / (Geology.GRAVITY * waterDensity),

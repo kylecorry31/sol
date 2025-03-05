@@ -13,8 +13,8 @@ import java.time.ZonedDateTime
 interface IOceanographyService {
 
     fun getDepth(
-        pressure: Quantity<Pressure>,
-        seaLevelPressure: Quantity<Pressure>,
+        pressure: Pressure,
+        seaLevelPressure: Pressure,
         isSaltWater: Boolean = true
     ): Quantity<Distance>
 

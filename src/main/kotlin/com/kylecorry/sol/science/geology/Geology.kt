@@ -169,10 +169,10 @@ object Geology : IGeologyService {
         return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing(0f)
     }
 
-    override fun getAltitude(pressure: Quantity<Pressure>, seaLevelPressure: Quantity<Pressure>): Quantity<Distance> {
+    override fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Quantity<Distance> {
         // TODO: Factor in temperature
-        val hpa = pressure.hpa().amount
-        val seaHpa = seaLevelPressure.hpa().amount
+        val hpa = pressure.hpa().pressure
+        val seaHpa = seaLevelPressure.hpa().pressure
         val meters = 44330.0 * (1 - (hpa / seaHpa).toDouble().pow(1 / 5.255))
         return Distance.meters(meters.toFloat())
     }
