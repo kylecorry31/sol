@@ -40,6 +40,7 @@ internal class WeightTest {
                 Arguments.of(Weight(3f, WeightUnits.Kilograms), Weight(3000f, WeightUnits.Grams)),
                 Arguments.of(Weight(4f, WeightUnits.Ounces), Weight(0.25f, WeightUnits.Pounds)),
                 Arguments.of(Weight(4f, WeightUnits.Grams), Weight(0.141096f, WeightUnits.Ounces)),
+                Arguments.of(Weight(4f, WeightUnits.Milligrams), Weight(0.004f, WeightUnits.Grams))
             )
         }
 
