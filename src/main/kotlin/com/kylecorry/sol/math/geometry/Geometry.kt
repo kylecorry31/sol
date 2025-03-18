@@ -113,6 +113,28 @@ object Geometry {
         return circle.center.distanceTo(point) <= circle.radius
     }
 
+    fun contains(polygon: Polygon, point: Vector2): Boolean {
+        var isContained = false
+        val x0 = point.x
+        val y0 = point.y
+        for (edge in polygon.edges) {
+            val x1 = edge.start.x
+            val x2 = edge.end.x
+            val y1 = edge.start.y
+            val y2 = edge.end.y
+
+            if (contains(edge, point)) {
+                return true
+            }
+
+            if (y0 < y1 != y0 < y2 && x0 < (x1 + ((y0 - y1) / (y2 - y1)) * (x2 - x1))) {
+                isContained = !isContained
+            }
+        }
+
+        return isContained
+    }
+
     fun pointLineDistance(point: Vector2, line: Line): Float {
         if (line.start == line.end) {
             return point.distanceTo(line.start)
@@ -272,7 +294,17 @@ object Geometry {
      * @param z2 the z coordinate of the end of the line
      * @return the 3D point snapped onto the line
      */
-    fun snapToLine(x: Float, y: Float, z: Float, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float): Vector3 {
+    fun snapToLine(
+        x: Float,
+        y: Float,
+        z: Float,
+        x1: Float,
+        y1: Float,
+        z1: Float,
+        x2: Float,
+        y2: Float,
+        z2: Float
+    ): Vector3 {
         val ab = square(x2 - x1) + square(y2 - y1) + square(z2 - z1)
         val ap = square(x - x1) + square(y - y1) + square(z - z1)
         val bp = square(x - x2) + square(y - y2) + square(z - z2)

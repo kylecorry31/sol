@@ -21,6 +21,34 @@ internal class GeometryTest {
     }
 
     @Test
+    fun containsPolygonVector() {
+        val pentagon = Polygon(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(1f, 0f),
+                Vector2(1.5f, 1f),
+                Vector2(0.5f, 1.5f),
+                Vector2(-0.5f, 1f)
+            )
+        )
+
+        // Centered
+        assertTrue(Geometry.contains(pentagon, Vector2(0.5f, 0.5f)))
+
+        // Inside, towards top
+        assertTrue(Geometry.contains(pentagon, Vector2(0.5f, 0.75f)))
+
+        // On edge
+        assertTrue(Geometry.contains(pentagon, Vector2(0.5f, 1f)))
+
+        // On vertex
+        assertTrue(Geometry.contains(pentagon, Vector2(0.5f, 1.5f)))
+
+        // Outside
+        assertFalse(Geometry.contains(pentagon, Vector2(0.5f, 1.6f)))
+    }
+
+    @Test
     fun getIntersectionLineCircle() {
         val line1 = Line(Vector2(0f, 0f), Vector2(3f, 0f))
         val line2 = Line(Vector2(-5f, -6f), Vector2(4f, 3f))
@@ -107,7 +135,11 @@ internal class GeometryTest {
         val z2 = 2f
 
         // Raw
-        assertEquals(Vector3(expectedX, expectedY, expectedZ), Geometry.snapToLine(Vector2(x, y), x1, y1, z1, x2, y2, z2), 0.00001f)
+        assertEquals(
+            Vector3(expectedX, expectedY, expectedZ),
+            Geometry.snapToLine(Vector2(x, y), x1, y1, z1, x2, y2, z2),
+            0.00001f
+        )
 
         // Objects
         assertEquals(
@@ -141,7 +173,11 @@ internal class GeometryTest {
         val z2 = 2f
 
         // Raw
-        assertEquals(Vector3(expectedX, expectedY, expectedZ), Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2), 0.0001f)
+        assertEquals(
+            Vector3(expectedX, expectedY, expectedZ),
+            Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2),
+            0.0001f
+        )
 
         // Objects
         assertEquals(
