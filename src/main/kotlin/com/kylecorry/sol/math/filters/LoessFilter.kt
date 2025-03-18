@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.filters
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.regression.WeightedLeastSquaresRegression
 import com.kylecorry.sol.math.statistics.Statistics
@@ -54,7 +55,7 @@ class LoessFilter(
 
                 val maxDistance = nearest.lastOrNull()?.second ?: 0f
 
-                if (maxDistance == 0f) {
+                if (SolMath.isZero(maxDistance)) {
                     res[i] = y
                     residuals[i] = abs(y - res[i])
                 } else {

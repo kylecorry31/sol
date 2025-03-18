@@ -85,7 +85,7 @@ class LoessFilter2D(
                 val maxDistance = mappedMaxDistance ?: nearest.last().second
 
                 val w = nearest.map {
-                    if (maxDistance == 0f) {
+                    if (SolMath.isZero(maxDistance)) {
                         1f
                     } else {
                         tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)

@@ -34,7 +34,7 @@ data class Vector2(val x: Float, val y: Float) {
 
     fun normalize(): Vector2 {
         val length = magnitude()
-        if (length == 0f) return this
+        if (SolMath.isZero(length)) return this
         return Vector2(x / length, y / length)
     }
 
@@ -55,7 +55,7 @@ data class Vector2(val x: Float, val y: Float) {
     }
 
     fun rotate(angle: Float, origin: Vector2 = zero): Vector2 {
-        if (angle % 360f == 0f) return this
+        if (SolMath.isZero(angle % 360f)) return this
         val x = this.x - origin.x
         val y = this.y - origin.y
         val cos = cosDegrees(angle)

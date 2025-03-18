@@ -120,7 +120,7 @@ object Statistics {
 
     fun probability(values: List<Float>): List<Float> {
         val sum = values.sum()
-        if (sum == 0f) {
+        if (SolMath.isZero(sum)) {
             return values
         }
 
@@ -138,7 +138,7 @@ object Statistics {
         val maxZ = values.max()
         val exponents = values.map { exp(it - maxZ) }
         val sumExp = exponents.sum()
-        return exponents.map { if (sumExp == 0f) 0f else it / sumExp }
+        return exponents.map { if (SolMath.isZero(sumExp)) 0f else it / sumExp }
     }
 
     fun joint(distributions: List<GaussianDistribution>): GaussianDistribution? {
@@ -237,7 +237,7 @@ object Statistics {
         val actual = confusion.transpose()[classIdx]
         val tp = confusion[classIdx][classIdx]
         val fn = actual.sum() - tp
-        if ((tp + fn) == 0f) {
+        if (SolMath.isZero(tp + fn)) {
             return 0f
         }
         return tp / (tp + fn)
@@ -250,7 +250,7 @@ object Statistics {
         val predicted = confusion[classIdx]
         val tp = confusion[classIdx][classIdx]
         val fp = predicted.sum() - tp
-        if ((tp + fp) == 0f) {
+        if (SolMath.isZero(tp + fp)) {
             return 0f
         }
         return tp / (tp + fp)

@@ -134,15 +134,15 @@ object Geology : IGeologyService {
         val y = vertical.meters().distance
         val x = horizontal.meters().distance
 
-        if (x == 0f && y > 0f) {
+        if (SolMath.isZero(x) && y > 0f) {
             return Float.POSITIVE_INFINITY
         }
 
-        if (x == 0f && y < 0f) {
+        if (SolMath.isZero(x) && y < 0f) {
             return Float.NEGATIVE_INFINITY
         }
 
-        if (x == 0f) {
+        if (SolMath.isZero(x)) {
             return 0f
         }
 

@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.statistics
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.square
 import kotlin.math.PI
 import kotlin.math.exp
@@ -9,7 +10,7 @@ data class GaussianDistribution(val mean: Float, val standardDeviation: Float) {
     val variance = square(standardDeviation)
 
     fun probability(x: Float): Float {
-        if (mean == 0f && standardDeviation == 1f) {
+        if (SolMath.isZero(mean) && SolMath.isApproximatelyEqual(standardDeviation, 1f)) {
             // Normal distribution
             return exp(-square(x) / 2) / sqrt(2 * PI).toFloat()
         }

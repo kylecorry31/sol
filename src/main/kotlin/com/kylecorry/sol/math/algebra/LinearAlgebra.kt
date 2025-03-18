@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.algebra
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.shared.ArrayUtils.swap
 import kotlin.math.absoluteValue
 import kotlin.math.min
@@ -156,7 +157,7 @@ object LinearAlgebra {
         }
 
         val det = determinant(m)
-        if (det == 0f) {
+        if (SolMath.isZero(det)) {
             // No inverse exists
             return createMatrix(m.rows(), m.columns(), 0f)
         }

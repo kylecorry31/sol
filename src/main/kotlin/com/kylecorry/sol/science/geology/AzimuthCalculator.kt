@@ -1,5 +1,6 @@
 package com.kylecorry.sol.science.geology
 
+import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Utils
@@ -26,7 +27,7 @@ internal object AzimuthCalculator {
 
         val sin = east[0] + north[1]
         val cos = east[1] - north[0]
-        val azimuth = if (!(cos == 0f && cos == sin)) atan2(cos, sin) else 0f
+        val azimuth = if (!(SolMath.isZero(cos) && SolMath.isApproximatelyEqual(cos, sin))) atan2(cos, sin) else 0f
 
         if (azimuth.isNaN()){
             return null

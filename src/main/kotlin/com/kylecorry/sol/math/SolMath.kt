@@ -6,6 +6,8 @@ import kotlin.math.*
 
 object SolMath {
 
+    val EPSILON_FLOAT = 1e-5f
+
     fun wrap(value: Float, min: Float, max: Float): Float {
         return wrap(value.toDouble(), min.toDouble(), max.toDouble()).toFloat()
     }
@@ -320,7 +322,7 @@ object SolMath {
 
     fun norm(value: Float, minimum: Float, maximum: Float, shouldClamp: Boolean = false): Float {
         val range = maximum - minimum
-        if (range == 0f) {
+        if (SolMath.isZero(range)) {
             return 0f
         }
         val normal = (value - minimum) / range
@@ -423,7 +425,7 @@ object SolMath {
     fun Float.positive(zeroReplacement: Float = 0f): Float {
         return if (this < 0) {
             -this
-        } else if (this == 0f) {
+        } else if (isZero(this)) {
             zeroReplacement
         } else {
             this
@@ -433,7 +435,7 @@ object SolMath {
     fun Float.negative(zeroReplacement: Float = 0f): Float {
         return if (this > 0) {
             -this
-        } else if (this == 0f) {
+        } else if (isZero(this)) {
             zeroReplacement
         } else {
             this
@@ -526,5 +528,13 @@ object SolMath {
     fun toDegrees(degrees: Float, minutes: Float = 0f, seconds: Float = 0f): Float {
         val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
         return sign * (degrees.absoluteValue + minutes.absoluteValue / 60 + seconds.absoluteValue / 3600)
+    }
+
+    fun isApproximatelyEqual(a: Float, b: Float, tolerance: Float = EPSILON_FLOAT): Boolean {
+        return isZero(a - b, tolerance)
+    }
+
+    fun isZero(value: Float, tolerance: Float = EPSILON_FLOAT): Boolean {
+        return abs(value) < tolerance
     }
 }
