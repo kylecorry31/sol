@@ -1,13 +1,14 @@
 package com.kylecorry.sol.science.physics
 
 import com.kylecorry.sol.math.Quaternion
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.science.geology.Geology
 import java.time.Duration
-import kotlin.math.sqrt
 
 class PhysicsService : IPhysicsService {
 
@@ -41,4 +42,93 @@ class PhysicsService : IPhysicsService {
         val azimuth = Geology.getAzimuth(gravity, magneticField)
         return azimuth to azimuth.inverse()
     }
+
+    override fun getTrajectory2D(
+        initialPosition: Vector2,
+        initialVelocity: Vector2,
+        dragModel: DragModel,
+        timeStep: Float,
+        maxTime: Float,
+    ): List<TrajectoryPoint2D> {
+        val trajectory = mutableListOf<TrajectoryPoint2D>()
+
+        var x = initialPosition.x
+        var y = initialPosition.y
+        var vx = initialVelocity.x
+        var vy = initialVelocity.y
+        var t = 0f
+        var g = Geology.GRAVITY
+
+        trajectory.add(TrajectoryPoint2D(t, Vector2(x, y), Vector2(vx, vy)))
+
+        while (t < maxTime) {
+            val drag = dragModel.getDragAcceleration(Vector2(vx, vy))
+            vx += drag.x * timeStep
+            vy += (drag.y - g) * timeStep
+            x += vx * timeStep
+            y += vy * timeStep
+            t += timeStep
+
+            trajectory.add(TrajectoryPoint2D(t, Vector2(x, y), Vector2(vx, vy)))
+        }
+
+        return trajectory
+    }
+
+    override fun getVelocityVectorForImpact(
+        targetPosition: Vector2,
+        velocity: Float,
+        initialPosition: Vector2,
+        dragModel: DragModel,
+        timeStep: Float,
+        maxTime: Float,
+        minAngle: Float,
+        maxAngle: Float,
+        angleStep: Float,
+        tolerance: Float,
+    ): Vector2 {
+        var currentAngle = minAngle
+        var bestAngle = minAngle
+        var bestError = Float.MAX_VALUE
+        var bestVelocity = Vector2.zero
+
+        while (currentAngle <= maxAngle) {
+            val initialVelocity =
+                Vector2(velocity * SolMath.cosDegrees(currentAngle), velocity * SolMath.sinDegrees(currentAngle))
+            val trajectory = getTrajectory2D(initialPosition, initialVelocity, dragModel, timeStep, maxTime)
+
+            for (point in trajectory) {
+                val error = (point.position - targetPosition).magnitude()
+                if (error < bestError) {
+                    bestError = error
+                    bestAngle = currentAngle
+                    bestVelocity = initialVelocity
+                }
+                if (error < tolerance) {
+                    return initialVelocity
+                }
+            }
+            currentAngle += angleStep
+        }
+
+        return bestVelocity
+    }
+
+}
+
+data class TrajectoryPoint2D(
+    val time: Float,
+    val position: Vector2,
+    val velocity: Vector2
+)
+
+interface DragModel {
+    fun getDragAcceleration(velocity: Vector2): Vector2
+}
+
+class NoDragModel : DragModel {
+    override fun getDragAcceleration(velocity: Vector2): Vector2 {
+        return Vector2.zero
+    }
+
 }
