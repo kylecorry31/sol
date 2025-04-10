@@ -6,4 +6,5 @@ enum class WeightUnits(val id: Int, val grams: Float) {
     Kilograms(3, 1000f),
     Grams(4, 1f),
     Milligrams(5, 0.001f),
+    Grains(6, 0.06479891f),
 }

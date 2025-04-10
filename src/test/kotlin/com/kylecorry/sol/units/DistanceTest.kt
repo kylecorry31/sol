@@ -10,7 +10,8 @@ internal class DistanceTest {
     @ParameterizedTest
     @CsvSource(
         "1, 1, 6, 0.00001",
-        "1, 1, 9, 10"
+        "1, 1, 9, 10",
+        "10, 0.5, 9, 12.7"
     )
     fun convertTo(fromId: Int, fromValue: Float, toId: Int, expected: Float) {
         val distance = Distance(fromValue, DistanceUnits.entries.first { it.id == fromId })
