@@ -3,39 +3,33 @@ package com.kylecorry.sol.science.physics
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.units.Speed
-import com.kylecorry.sol.units.TimeUnits
+import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.Duration
 import java.util.stream.Stream
 
-class PhysicsServiceTest {
+class PhysicsTest {
 
     @ParameterizedTest
     @MethodSource("provideFallHeights")
     fun fallHeight(time: Duration, height: Distance) {
-        val service = PhysicsService()
-        val actualHeight = service.fallHeight(time)
+        val actualHeight = Physics.fallHeight(time)
         assertEquals(actualHeight, height)
     }
 
     @ParameterizedTest
     @MethodSource("provideIsMetal")
     fun isMetal(field: Vector3, threshold: Float, expected: Boolean) {
-        val service = PhysicsService()
-        assertEquals(expected, service.isMetal(field, threshold))
+        assertEquals(expected, Physics.isMetal(field, threshold))
     }
 
     @Test
     fun getTrajectory2D() {
-        val service = PhysicsService()
-
         val initialVelocity = Speed(2670f, DistanceUnits.Feet, TimeUnits.Seconds).convertTo(
             DistanceUnits.Meters,
             TimeUnits.Seconds
@@ -45,7 +39,7 @@ class PhysicsServiceTest {
 
         val scopeHeight = Distance(1.5f, DistanceUnits.Inches).meters().distance
 
-        val initialVelocityVector = service.getVelocityVectorForImpact(
+        val initialVelocityVector = Physics.getVelocityVectorForImpact(
             Vector2(sightIn, 0f),
             initialVelocity,
             Vector2(0f, -scopeHeight),
@@ -58,7 +52,7 @@ class PhysicsServiceTest {
 
         val launchAngle = initialVelocityVector.angle()
 
-        val trajectory = service.getTrajectory2D(
+        val trajectory = Physics.getTrajectory2D(
             initialPosition = Vector2(0f, -scopeHeight),
             initialVelocity = initialVelocityVector,
             dragModel = NoDragModel(),
@@ -139,8 +133,21 @@ class PhysicsServiceTest {
                 "Velocity did not match for $expected"
             )
         }
-
     }
+
+    @ParameterizedTest
+    @CsvSource("1, 1, 0.5")
+    @CsvSource("2, 1, 1")
+    @CsvSource("1, 2, 2")
+    fun getKineticEnergy(mass: Float, speed: Float, expected: Float) {
+        val kilograms = Weight(mass, WeightUnits.Kilograms)
+        val metersPerSecond = Speed(speed, DistanceUnits.Meters, TimeUnits.Seconds)
+        val joules = Physics.getKineticEnergy(kilograms, metersPerSecond).convertTo(
+            EnergyUnits.Joules
+        ).value
+        assertEquals(expected, joules, 0.01f)
+    }
+
 
     companion object {
         @JvmStatic

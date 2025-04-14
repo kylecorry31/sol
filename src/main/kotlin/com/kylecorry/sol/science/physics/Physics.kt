@@ -5,12 +5,10 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.science.geology.Geology
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.units.*
 import java.time.Duration
 
-class PhysicsService : IPhysicsService {
+object Physics : IPhysicsService {
 
     override fun fallHeight(time: Duration, gravity: Float): Distance {
         val seconds = time.toMillis() / 1000f
@@ -112,6 +110,13 @@ class PhysicsService : IPhysicsService {
         }
 
         return bestVelocity
+    }
+
+    override fun getKineticEnergy(mass: Weight, speed: Speed): Energy {
+        val massKg = mass.convertTo(WeightUnits.Kilograms).weight
+        val speedMps = speed.convertTo(DistanceUnits.Meters, TimeUnits.Seconds).speed
+        val joules = 0.5f * massKg * speedMps * speedMps
+        return Energy(joules, EnergyUnits.Joules)
     }
 
 }

@@ -2,13 +2,11 @@ package com.kylecorry.sol.science.optics
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
-import com.kylecorry.sol.science.physics.PhysicsService
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.MethodSource
 
 class OpticsTest {
 
