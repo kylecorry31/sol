@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.sumOfFloat
 import com.kylecorry.sol.science.meteorology.clouds.CloudCover
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.meteorology.clouds.CloudLevel
@@ -11,10 +12,7 @@ import com.kylecorry.sol.science.meteorology.forecast.ZambrettiForecaster
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.units.*
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZonedDateTime
+import java.time.*
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
@@ -246,4 +244,154 @@ object Meteorology : IWeatherService {
     override fun getCloudCover(percent: Float): CloudCover {
         return cloudService.getCloudCover(percent)
     }
+
+    override fun getKoppenGeigerClimateClassification(
+        temperatures: Map<Month, Temperature>,
+        precipitation: Map<Month, Distance>
+    ): KoppenGeigerClimateClassification {
+        // https://www.nature.com/articles/s41597-023-02549-6/tables/1
+        // https://en.wikipedia.org/wiki/K%C3%B6ppen_climate_classification
+        // https://open.oregonstate.education/permaculturedesign/back-matter/koppen-geiger-classification-descriptions
+
+        val temps = temperatures.entries.sortedBy { it.key.value }.map { it.value.celsius().temperature }
+        val precip = precipitation.entries.sortedBy { it.key.value }
+            .map { it.value.convertTo(DistanceUnits.Millimeters).distance }
+
+        val months1 = listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
+        val months2 = listOf(Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER, Month.JANUARY, Month.FEBRUARY, Month.MARCH)
+
+        val isSouthernHemisphere =
+            months1.map { temps[it.value - 1] }.average() < temps[months2.map { it.value - 1 }.average().toInt()]
+
+        val winterMonths = if (isSouthernHemisphere) {
+            listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
+        } else {
+            listOf(Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER, Month.JANUARY, Month.FEBRUARY, Month.MARCH)
+        }
+        val summerMonths = if (isSouthernHemisphere) {
+            listOf(Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER, Month.JANUARY, Month.FEBRUARY, Month.MARCH)
+        } else {
+            listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
+        }
+
+        // Primitives
+        val mat = temps.average()
+        val tCold = temps.min()
+        val tHot = temps.max()
+        val tMon10 = temps.count { it > 10f }
+        val map = precip.sum()
+        val pDry = precip.min()
+        val pSDry = summerMonths.minOf { precip[it.value - 1] }
+        val pSWet = summerMonths.maxOf { precip[it.value - 1] }
+        val pSTotal = summerMonths.sumOfFloat { precip[it.value - 1] }
+        val pWDry = winterMonths.minOf { precip[it.value - 1] }
+        val pWWet = winterMonths.maxOf { precip[it.value - 1] }
+        val pWTotal = winterMonths.sumOfFloat { precip[it.value - 1] }
+        val pThreshold = if (pWTotal / map > 0.7f) {
+            2 * mat
+        } else if (pSTotal / map > 0.7f) {
+            2 * mat + 28f
+        } else {
+            2 * mat + 14f
+        }
+
+        // Group B: Dry
+        if (map < 10 * pThreshold) {
+            val group = KoppenGeigerClimateGroup.Dry
+            val seasonalPrecipitationPattern = when {
+                map < 5 * pThreshold -> KoppenGeigerSeasonalPrecipitationPattern.Desert
+                else -> KoppenGeigerSeasonalPrecipitationPattern.Steppe
+            }
+            val temperaturePattern = if (mat >= 18f) {
+                KoppenGeigerTemperaturePattern.Hot
+            } else {
+                KoppenGeigerTemperaturePattern.Cold
+            }
+            return KoppenGeigerClimateClassification(
+                group,
+                seasonalPrecipitationPattern,
+                temperaturePattern
+            )
+        }
+
+        // Group A: Tropical
+        if (tCold >= 18f) {
+            val group = KoppenGeigerClimateGroup.Tropical
+            val seasonalPrecipitationPattern = when {
+                pDry >= 60f -> KoppenGeigerSeasonalPrecipitationPattern.Rainforest
+                pDry >= 100 - map / 25 -> KoppenGeigerSeasonalPrecipitationPattern.Monsoon
+                // TODO: Replace Savanna with Wet Summer and Dry Summer
+                else -> KoppenGeigerSeasonalPrecipitationPattern.Savanna
+            }
+            return KoppenGeigerClimateClassification(
+                group,
+                seasonalPrecipitationPattern,
+                null
+            )
+        }
+
+        // Group C: Temperate
+        if (tHot > 10 && tCold > 0) {
+            val group = KoppenGeigerClimateGroup.Temperate
+            val seasonalPrecipitationPattern = when {
+                pSDry < 40 && pSDry < pWWet / 3 -> KoppenGeigerSeasonalPrecipitationPattern.DrySummer
+                pWDry < pSWet / 10 -> KoppenGeigerSeasonalPrecipitationPattern.DryWinter
+                else -> KoppenGeigerSeasonalPrecipitationPattern.NoDrySeason
+            }
+            val temperaturePattern = when {
+                tHot >= 22f -> KoppenGeigerTemperaturePattern.HotSummer
+                tMon10 >= 4 -> KoppenGeigerTemperaturePattern.WarmSummer
+                tMon10 >= 1 -> KoppenGeigerTemperaturePattern.ColdSummer
+                else -> null
+            }
+            return KoppenGeigerClimateClassification(
+                group,
+                seasonalPrecipitationPattern,
+                temperaturePattern
+            )
+        }
+
+        // Group D: Continental
+        if (tHot > 10 && tCold <= 0) {
+            val group = KoppenGeigerClimateGroup.Continental
+            val seasonalPrecipitationPattern = when {
+                pSDry < 40 && pSDry < pWWet / 3 -> KoppenGeigerSeasonalPrecipitationPattern.DrySummer
+                pWDry < pSWet / 10 -> KoppenGeigerSeasonalPrecipitationPattern.DryWinter
+                else -> KoppenGeigerSeasonalPrecipitationPattern.NoDrySeason
+            }
+            val temperaturePattern = when {
+                tHot >= 22f -> KoppenGeigerTemperaturePattern.HotSummer
+                tMon10 >= 4 -> KoppenGeigerTemperaturePattern.WarmSummer
+                tCold < -38 -> KoppenGeigerTemperaturePattern.VeryColdWinter
+                else -> KoppenGeigerTemperaturePattern.ColdSummer
+            }
+            return KoppenGeigerClimateClassification(
+                group,
+                seasonalPrecipitationPattern,
+                temperaturePattern
+            )
+        }
+
+        // Group E: Polar
+        val group = KoppenGeigerClimateGroup.Polar
+        val seasonalPrecipitationPattern = when {
+            tHot > 0 -> KoppenGeigerSeasonalPrecipitationPattern.Tundra
+            else -> KoppenGeigerSeasonalPrecipitationPattern.IceCap
+        }
+
+        val temperaturePattern =
+            if (seasonalPrecipitationPattern == KoppenGeigerSeasonalPrecipitationPattern.Tundra && tCold < 0) {
+                KoppenGeigerTemperaturePattern.Cold
+            } else {
+                null
+            }
+
+        return KoppenGeigerClimateClassification(
+            group,
+            seasonalPrecipitationPattern,
+            temperaturePattern
+        )
+    }
+
+
 }

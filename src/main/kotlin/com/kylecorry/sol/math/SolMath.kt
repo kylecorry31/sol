@@ -367,6 +367,22 @@ object SolMath {
         return maxIndex
     }
 
+    fun <T : Comparable<T>> argmin(values: List<T>): Int {
+        if (values.isEmpty()) {
+            return -1
+        }
+
+        var minIndex = 0
+
+        for (i in values.indices) {
+            if (values[i] < values[minIndex]) {
+                minIndex = i
+            }
+        }
+
+        return minIndex
+    }
+
     fun <T> oneHot(value: Int, classes: Int, on: T, off: T): List<T> {
         return List(classes) { if (it == value) on else off }
     }

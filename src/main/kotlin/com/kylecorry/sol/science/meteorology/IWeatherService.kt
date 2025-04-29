@@ -2,15 +2,14 @@ package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.science.meteorology.clouds.ICloudService
 import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
+import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDate
-import java.time.ZonedDateTime
+import java.time.Month
 
 interface IWeatherService : ICloudService, ISeasonService {
 
@@ -153,4 +152,15 @@ interface IWeatherService : ICloudService, ISeasonService {
         baseElevation: Distance,
         destElevation: Distance
     ): Temperature
+
+    /**
+     * Calculates the Koppen-Geiger climate classification
+     * @param temperatures The average monthly temperatures
+     * @param precipitation The average monthly precipitation
+     * @return The Koppen-Geiger climate classification
+     */
+    fun getKoppenGeigerClimateClassification(
+        temperatures: Map<Month, Temperature>,
+        precipitation: Map<Month, Distance>
+    ): KoppenGeigerClimateClassification
 }
