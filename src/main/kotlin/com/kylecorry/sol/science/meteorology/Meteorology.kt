@@ -261,7 +261,7 @@ object Meteorology : IWeatherService {
         val months2 = listOf(Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER, Month.JANUARY, Month.FEBRUARY, Month.MARCH)
 
         val isSouthernHemisphere =
-            months1.map { temps[it.value - 1] }.average() < temps[months2.map { it.value - 1 }.average().toInt()]
+            months1.map { temps[it.value - 1] }.average() < months2.map { temps[it.value - 1] }.average()
 
         val winterMonths = if (isSouthernHemisphere) {
             listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
@@ -333,9 +333,17 @@ object Meteorology : IWeatherService {
         // Group C: Temperate
         if (tHot > 10 && tCold > 0) {
             val group = KoppenGeigerClimateGroup.Temperate
+            var hasDrySummer = pSDry < 40 && pSDry < pWWet / 3
+            var hasDryWinter = pWDry < pSWet / 10
+
+            if (hasDryWinter && hasDrySummer){
+                hasDrySummer = pSTotal <= pWTotal
+                hasDryWinter = !hasDrySummer
+            }
+
             val seasonalPrecipitationPattern = when {
-                pSDry < 40 && pSDry < pWWet / 3 -> KoppenGeigerSeasonalPrecipitationPattern.DrySummer
-                pWDry < pSWet / 10 -> KoppenGeigerSeasonalPrecipitationPattern.DryWinter
+                hasDrySummer -> KoppenGeigerSeasonalPrecipitationPattern.DrySummer
+                hasDryWinter -> KoppenGeigerSeasonalPrecipitationPattern.DryWinter
                 else -> KoppenGeigerSeasonalPrecipitationPattern.NoDrySeason
             }
             val temperaturePattern = when {
@@ -379,17 +387,10 @@ object Meteorology : IWeatherService {
             else -> KoppenGeigerSeasonalPrecipitationPattern.IceCap
         }
 
-        val temperaturePattern =
-            if (seasonalPrecipitationPattern == KoppenGeigerSeasonalPrecipitationPattern.Tundra && tCold < 0) {
-                KoppenGeigerTemperaturePattern.Cold
-            } else {
-                null
-            }
-
         return KoppenGeigerClimateClassification(
             group,
             seasonalPrecipitationPattern,
-            temperaturePattern
+            null
         )
     }
 

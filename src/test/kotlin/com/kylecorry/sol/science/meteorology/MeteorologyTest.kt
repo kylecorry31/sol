@@ -133,8 +133,177 @@ class MeteorologyTest {
         assertEquals(isLow, ret)
     }
 
+    @Test
+    fun getKoppenGeigerClimateClassification() {
+        val tests = listOf(
+            //  Tropical
+            Triple(
+                "Af",
+                monthlyTemperatures(26f, 26f, 26f, 26f, 26f, 25f, 25f, 26f, 26f, 26f, 26f, 26f),
+                monthlyPrecipitation(240.8f, 230f, 256.2f, 256.2f, 212f, 150.6f, 121.2f, 126.1f, 147.5f, 193.6f, 205.8f, 222.6f)
+            ),
+            Triple(
+                "Am",
+                monthlyTemperatures(27f, 27f, 27f, 27f, 27f, 27f, 27f, 28f, 28f, 28f, 28f, 28f),
+                monthlyPrecipitation(228.5f, 281.8f, 279.5f, 240.6f, 153.9f, 73.6f, 45.8f, 48f, 67.6f, 97.9f, 122.6f, 167.8f)
+            ),
+            Triple(
+                "As",
+                monthlyTemperatures(22f, 23f, 22f, 22f, 21f, 19f, 19f, 21f, 23f, 23f, 22f, 22f),
+                monthlyPrecipitation(203.2f, 178.9f, 168.5f, 82.3f, 20.2f, 6.2f, 3.1f, 9.8f, 34.6f, 103.3f, 185.6f, 220f)
+            ),
+
+            // Dry
+            Triple(
+                "BWh",
+                monthlyTemperatures(12f, 15f, 20f, 25f, 30f, 32f, 32f, 31f, 30f, 24f, 18f, 13f),
+                monthlyPrecipitation(1.8f, 1.8f, 2.4f, 0.7f, 1.5f, 1.7f, 1.2f, 1.2f, 0.9f, 1.9f, 1f, 1.3f)
+            ),
+            Triple(
+                "BSk",
+                monthlyTemperatures(2f, 4f, 9f, 14f, 19f, 24f, 26f, 25f, 21f, 14f, 8f, 2f),
+                monthlyPrecipitation(3.9f, 7.1f, 19.4f, 31.1f, 54.6f, 65.5f, 54f, 56f, 43.7f, 33f, 15.3f, 6.8f, 69.8f, 57.5f, 26.6f, 6.7f, 1.2f, 0f, 0f, 0f, 0f, 5.9f, 26.8f, 59.1f)
+            ),
+
+            // Temperate
+            Triple(
+                "Csa",
+                monthlyTemperatures(10, 10, 11, 15, 19, 24, 26, 26, 22, 18, 14, 11),
+                monthlyPrecipitation(84.8, 80.9, 55.1, 33.7, 15.9, 6.1, 0.8, 1, 10.5, 34.4, 75.2, 97.5)
+            ),
+            Triple(
+                "Csb",
+                monthlyTemperatures(5, 6, 8, 11, 14, 17, 20, 20, 17, 12, 8, 4),
+                monthlyPrecipitation(188.9, 167.6, 145.5, 100.6, 63.3, 41.1, 12.8, 13.6, 44.3, 114.1, 223.2, 221.9, 61.4, 27.5, 0.9, 0, 0, 0, 0, 0, 0, 0.1, 9.1, 51.9)
+            ),
+            Triple(
+                "Cwb",
+                monthlyTemperatures(10, 11, 13, 15, 16, 15, 14, 14, 14, 13, 11, 10),
+                monthlyPrecipitation(7.8, 6.2, 4.6, 8, 31.8, 110.5, 125.6, 121.1, 111.2, 42.5, 7.6, 2.2)
+            ),
+            Triple(
+                "Cfc",
+                monthlyTemperatures(1, 1, 1, 3, 7, 10, 11, 11, 8, 5, 3, 1),
+                monthlyPrecipitation(99, 102, 88, 69, 56, 49, 59, 80, 106, 105, 103, 103, 214, 199, 154, 41, 2, 0, 0, 0, 0, 8, 61, 164)
+            ),
+
+            // Continental
+            Triple(
+                "Dsa",
+                monthlyTemperatures(-1, 0, 5, 10, 15, 21, 25, 25, 20, 13, 6, 1),
+                monthlyPrecipitation(19, 23, 32, 35, 24, 8, 1, 1, 6, 27, 34, 29, 134, 123, 33, 6, 0, 0, 0, 0, 0,2, 28, 71)
+            ),
+            Triple(
+                "Dsb",
+                monthlyTemperatures(-8, -7, -1, 6, 11, 16, 20, 20, 15, 8, 1, -5),
+                monthlyPrecipitation(4, 6, 23, 46, 43, 19, 8, 5, 12, 34, 31, 13, 310, 362, 187, 44, 1, 0, 0, 0, 0, 5, 70, 254)
+            ),
+            Triple(
+                "Dwc",
+                monthlyTemperatures(-23, -19, -9, 1, 9, 16, 18, 15, 8, -1, -12, -19),
+                monthlyPrecipitation(0, 0, 0, 6, 25, 49, 72, 66, 33, 6, 0, 0, 3, 6, 18, 43, 15, 1, 0, 0, 4, 29, 23, 6)
+            ),
+            Triple(
+                "Dfd",
+                monthlyTemperatures(-39, -31, -26, -17, -6, 5, 12, 10, 4, -6, -19, -27),
+                monthlyPrecipitation(0, 0, 0, 0, 10, 38, 56, 53, 43, 13, 1, 0, 136, 131, 75, 168, 178, 46, 0, 0, 32, 134, 138, 83)
+            ),
+
+            // Polar
+            Triple(
+                "ET",
+                monthlyTemperatures(-24, -25, -24, -16, -5, 2, 6, 4, -2, -10, -16, -21),
+                monthlyPrecipitation(0, 0, 0, 0, 3, 17, 38, 43, 16, 3, 1, 1, 23, 22, 17, 33, 34, 19, 2, 17, 82, 148, 78, 42)
+            ),
+            Triple(
+                "EF",
+                monthlyTemperatures(-24, -25, -24, -16, -5, -2, -1, -1, -2, -10, -16, -21),
+                monthlyPrecipitation(0, 0, 0, 0, 3, 17, 38, 43, 16, 3, 1, 1, 23, 22, 17, 33, 34, 19, 2, 17, 82, 148, 78, 42)
+            ),
+        )
+
+        for ((classification, temperatures, precipitation) in tests) {
+            val climate = Meteorology.getKoppenGeigerClimateClassification(
+                temperatures,
+                precipitation
+            )
+            assertEquals(classification, climate.code)
+        }
+    }
 
     companion object {
+
+        fun monthlyTemperatures(
+            jan: Number,
+            feb: Number,
+            mar: Number,
+            apr: Number,
+            may: Number,
+            jun: Number,
+            jul: Number,
+            aug: Number,
+            sep: Number,
+            oct: Number,
+            nov: Number,
+            dec: Number
+       ): Map<Month, Temperature> {
+            return mapOf(
+                Month.JANUARY to Temperature.celsius(jan.toFloat()),
+                Month.FEBRUARY to Temperature.celsius(feb.toFloat()),
+                Month.MARCH to Temperature.celsius(mar.toFloat()),
+                Month.APRIL to Temperature.celsius(apr.toFloat()),
+                Month.MAY to Temperature.celsius(may.toFloat()),
+                Month.JUNE to Temperature.celsius(jun.toFloat()),
+                Month.JULY to Temperature.celsius(jul.toFloat()),
+                Month.AUGUST to Temperature.celsius(aug.toFloat()),
+                Month.SEPTEMBER to Temperature.celsius(sep.toFloat()),
+                Month.OCTOBER to Temperature.celsius(oct.toFloat()),
+                Month.NOVEMBER to Temperature.celsius(nov.toFloat()),
+                Month.DECEMBER to Temperature.celsius(dec.toFloat())
+            )
+        }
+
+        fun monthlyPrecipitation(
+            jan: Number,
+            feb: Number,
+            mar: Number,
+            apr: Number,
+            may: Number,
+            jun: Number,
+            jul: Number,
+            aug: Number,
+            sep: Number,
+            oct: Number,
+            nov: Number,
+            dec: Number,
+            janSnow: Number = 0,
+            febSnow: Number = 0,
+            marSnow: Number = 0,
+            aprSnow: Number = 0,
+            maySnow: Number = 0,
+            junSnow: Number = 0,
+            julSnow: Number = 0,
+            augSnow: Number = 0,
+            sepSnow: Number = 0,
+            octSnow: Number = 0,
+            novSnow: Number = 0,
+            decSnow: Number = 0
+        ): Map<Month, Distance> {
+            return mapOf(
+                Month.JANUARY to Distance(jan.toFloat() + janSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.FEBRUARY to Distance(feb.toFloat() + febSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.MARCH to Distance(mar.toFloat() + marSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.APRIL to Distance(apr.toFloat() + aprSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.MAY to Distance(may.toFloat() + maySnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.JUNE to Distance(jun.toFloat() + junSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.JULY to Distance(jul.toFloat() + julSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.AUGUST to Distance(aug.toFloat() + augSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.SEPTEMBER to Distance(sep.toFloat() + sepSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.OCTOBER to Distance(oct.toFloat() + octSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.NOVEMBER to Distance(nov.toFloat() + novSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.DECEMBER to Distance(dec.toFloat() + decSnow.toFloat() / 10, DistanceUnits.Millimeters)
+            )
+        }
 
         @JvmStatic
         fun provideLowPressures(): Stream<Arguments> {
