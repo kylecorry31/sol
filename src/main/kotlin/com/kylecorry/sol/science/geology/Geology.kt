@@ -10,6 +10,7 @@ import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.*
+import java.time.Instant
 import kotlin.math.*
 
 object Geology : IGeologyService {
@@ -19,18 +20,25 @@ object Geology : IGeologyService {
 
     private val riskClassifier = AvalancheRiskClassifier()
 
+    private val worldMagneticModel = SphericalHarmonics(
+        WorldMagneticModel2025.G_COEFFICIENTS,
+        WorldMagneticModel2025.H_COEFFICIENTS,
+        baseTime = WorldMagneticModel2025.BASE_TIME,
+        deltaGCoefficients = WorldMagneticModel2025.DELTA_G,
+        deltaHCoefficients = WorldMagneticModel2025.DELTA_H
+    )
+
     override fun getGeomagneticDeclination(
         coordinate: Coordinate,
         altitude: Float?,
         time: Long
     ): Float {
-        val geoField = GeomagneticField(
-            coordinate.latitude.toFloat(),
-            coordinate.longitude.toFloat(),
-            altitude ?: 0f,
-            time
+        val geoField = worldMagneticModel.getVector(
+            coordinate,
+            Distance.meters(altitude ?: 0f),
+            Instant.ofEpochMilli(time)
         )
-        return geoField.declination
+        return atan2(geoField.y, geoField.x).toDegrees()
     }
 
     override fun getGeomagneticInclination(
@@ -38,13 +46,12 @@ object Geology : IGeologyService {
         altitude: Float?,
         time: Long
     ): Float {
-        val geoField = GeomagneticField(
-            coordinate.latitude.toFloat(),
-            coordinate.longitude.toFloat(),
-            altitude ?: 0f,
-            time
+        val geoField = worldMagneticModel.getVector(
+            coordinate,
+            Distance.meters(altitude ?: 0f),
+            Instant.ofEpochMilli(time)
         )
-        return geoField.inclination
+        return atan2(geoField.z, hypot(geoField.x, geoField.y)).toDegrees()
     }
 
     override fun getGeomagneticField(
@@ -52,11 +59,10 @@ object Geology : IGeologyService {
         altitude: Float?,
         time: Long
     ): Vector3 {
-        val geoField = GeomagneticField(
-            coordinate.latitude.toFloat(),
-            coordinate.longitude.toFloat(),
-            altitude ?: 0f,
-            time
+        val geoField = worldMagneticModel.getVector(
+            coordinate,
+            Distance.meters(altitude ?: 0f),
+            Instant.ofEpochMilli(time)
         )
         return Vector3(geoField.x * 0.001f, geoField.y * 0.001f, geoField.z * 0.001f)
     }
