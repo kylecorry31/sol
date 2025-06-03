@@ -24,7 +24,7 @@ object Geology : IGeologyService {
         altitude: Float?,
         time: Long
     ): Float {
-        val geoField = GeomagneticField2020(
+        val geoField = GeomagneticField(
             coordinate.latitude.toFloat(),
             coordinate.longitude.toFloat(),
             altitude ?: 0f,
@@ -38,7 +38,7 @@ object Geology : IGeologyService {
         altitude: Float?,
         time: Long
     ): Float {
-        val geoField = GeomagneticField2020(
+        val geoField = GeomagneticField(
             coordinate.latitude.toFloat(),
             coordinate.longitude.toFloat(),
             altitude ?: 0f,
@@ -52,7 +52,7 @@ object Geology : IGeologyService {
         altitude: Float?,
         time: Long
     ): Vector3 {
-        val geoField = GeomagneticField2020(
+        val geoField = GeomagneticField(
             coordinate.latitude.toFloat(),
             coordinate.longitude.toFloat(),
             altitude ?: 0f,

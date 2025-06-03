@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file was modified to support the min Android version of Sol by Kyle Corry in 2021
+ * This file was modified to support the min Android version of Sol by Kyle Corry in 2021 and again in 2025 to update to the 2025 WMM.
  */
 
 package com.kylecorry.sol.science.geology;
@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
  * produce acceptable results for several years after that. Future versions of
  * Android may use a newer version of the model.
  */
-class GeomagneticField2020 {
+class GeomagneticField {
     // The magnetic field at a given point, in nanoteslas in geodetic
     // coordinates.
     private float mX;
@@ -48,64 +48,64 @@ class GeomagneticField2020 {
     static private final float EARTH_SEMI_MINOR_AXIS_KM = 6356.7523142f;
     static private final float EARTH_REFERENCE_RADIUS_KM = 6371.2f;
     // These coefficients and the formulae used below are from:
-    // NOAA Technical Report: The US/UK World Magnetic Model for 2020-2025
+    // NOAA Technical Report: The US/UK World Magnetic Model for 202-2030
     static private final float[][] G_COEFF = new float[][]{
             {0.0f},
-            {-29404.5f, -1450.7f},
-            {-2500.0f, 2982.0f, 1676.8f},
-            {1363.9f, -2381.0f, 1236.2f, 525.7f},
-            {903.1f, 809.4f, 86.2f, -309.4f, 47.9f},
-            {-234.4f, 363.1f, 187.8f, -140.7f, -151.2f, 13.7f},
-            {65.9f, 65.6f, 73.0f, -121.5f, -36.2f, 13.5f, -64.7f},
-            {80.6f, -76.8f, -8.3f, 56.5f, 15.8f, 6.4f, -7.2f, 9.8f},
-            {23.6f, 9.8f, -17.5f, -0.4f, -21.1f, 15.3f, 13.7f, -16.5f, -0.3f},
-            {5.0f, 8.2f, 2.9f, -1.4f, -1.1f, -13.3f, 1.1f, 8.9f, -9.3f, -11.9f},
-            {-1.9f, -6.2f, -0.1f, 1.7f, -0.9f, 0.6f, -0.9f, 1.9f, 1.4f, -2.4f, -3.9f},
-            {3.0f, -1.4f, -2.5f, 2.4f, -0.9f, 0.3f, -0.7f, -0.1f, 1.4f, -0.6f, 0.2f, 3.1f},
-            {-2.0f, -0.1f, 0.5f, 1.3f, -1.2f, 0.7f, 0.3f, 0.5f, -0.2f, -0.5f, 0.1f, -1.1f, -0.3f}};
+            {-29351.8f, -1410.8f},
+            {-2556.6f, 2951.1f, 1649.3f},
+            {1361.0f, -2404.1f, 1243.8f, 453.6f},
+            {895.0f, 799.5f, 55.7f, -281.1f, 12.1f},
+            {-233.2f, 368.9f, 187.2f, -138.7f, -142.0f, 20.9f},
+            {64.4f, 63.8f, 76.9f, -115.7f, -40.9f, 14.9f, -60.7f},
+            {79.5f, -77.0f, -8.8f, 59.3f, 15.8f, 2.5f, -11.1f, 14.2f},
+            {23.2f, 10.8f, -17.5f, 2.0f, -21.7f, 16.9f, 15.0f, -16.8f, 0.9f},
+            {4.6f, 7.8f, 3.0f, -0.2f, -2.5f, -13.1f, 2.4f, 8.6f, -8.7f, -12.9f},
+            {-1.3f, -6.4f, 0.2f, 2.0f, -1.0f, -0.6f, -0.9f, 1.5f, 0.9f, -2.7f, -3.9f},
+            {2.9f, -1.5f, -2.5f, 2.4f, -0.6f, -0.1f, -0.6f, -0.1f, 1.1f, -1.0f, -0.2f, 2.6f},
+            {-2.0f, -0.2f, 0.3f, 1.2f, -1.3f, 0.6f, 0.6f, 0.5f, -0.1f, -0.4f, -0.2f, -1.3f, -0.7f}};
     static private final float[][] H_COEFF = new float[][]{
             {0.0f},
-            {0.0f, 4652.9f},
-            {0.0f, -2991.6f, -734.8f},
-            {0.0f, -82.2f, 241.8f, -542.9f},
-            {0.0f, 282.0f, -158.4f, 199.8f, -350.1f},
-            {0.0f, 47.7f, 208.4f, -121.3f, 32.2f, 99.1f},
-            {0.0f, -19.1f, 25.0f, 52.7f, -64.4f, 9.0f, 68.1f},
-            {0.0f, -51.4f, -16.8f, 2.3f, 23.5f, -2.2f, -27.2f, -1.9f},
-            {0.0f, 8.4f, -15.3f, 12.8f, -11.8f, 14.9f, 3.6f, -6.9f, 2.8f},
-            {0.0f, -23.3f, 11.1f, 9.8f, -5.1f, -6.2f, 7.8f, 0.4f, -1.5f, 9.7f},
-            {0.0f, 3.4f, -0.2f, 3.5f, 4.8f, -8.6f, -0.1f, -4.2f, -3.4f, -0.1f, -8.8f},
-            {0.0f, 0.0f, 2.6f, -0.5f, -0.4f, 0.6f, -0.2f, -1.7f, -1.6f, -3.0f, -2.0f, -2.6f},
-            {0.0f, -1.2f, 0.5f, 1.3f, -1.8f, 0.1f, 0.7f, -0.1f, 0.6f, 0.2f, -0.9f, 0.0f, 0.5f}};
+            {0.0f, 4545.4f},
+            {0.0f, -3133.6f, -815.1f},
+            {0.0f, -56.6f, 237.5f, -549.5f},
+            {0.0f, 278.6f, -133.9f, 212.0f, -375.6f},
+            {0.0f, 45.4f, 220.2f, -122.9f, 43.0f, 106.1f},
+            {0.0f, -18.4f, 16.8f, 48.8f, -59.8f, 10.9f, 72.7f},
+            {0.0f, -48.9f, -14.4f, -1.0f, 23.4f, -7.4f, -25.1f, -2.3f},
+            {0.0f, 7.1f, -12.6f, 11.4f, -9.7f, 12.7f, 0.7f, -5.2f, 3.9f},
+            {0.0f, -24.8f, 12.2f, 8.3f, -3.3f, -5.2f, 7.2f, -0.6f, 0.8f, 10.0f},
+            {0.0f, 3.3f, 0.0f, 2.4f, 5.3f, -9.1f, 0.4f, -4.2f, -3.8f, 0.9f, -9.1f},
+            {0.0f, 0.0f, 2.9f, -0.6f, 0.2f, 0.5f, -0.3f, -1.2f, -1.7f, -2.9f, -1.8f, -2.3f},
+            {0.0f, -1.3f, 0.7f, 1.0f, -1.4f, -0.0f, 0.6f, -0.1f, 0.8f, 0.1f, -1.0f, 0.1f, 0.2f}};
     static private final float[][] DELTA_G = new float[][]{
             {0.0f},
-            {6.7f, 7.7f},
-            {-11.5f, -7.1f, -2.2f},
-            {2.8f, -6.2f, 3.4f, -12.2f},
-            {-1.1f, -1.6f, -6.0f, 5.4f, -5.5f},
-            {-0.3f, 0.6f, -0.7f, 0.1f, 1.2f, 1.0f},
-            {-0.6f, -0.4f, 0.5f, 1.4f, -1.4f, 0.0f, 0.8f},
-            {-0.1f, -0.3f, -0.1f, 0.7f, 0.2f, -0.5f, -0.8f, 1.0f},
-            {-0.1f, 0.1f, -0.1f, 0.5f, -0.1f, 0.4f, 0.5f, 0.0f, 0.4f},
-            {-0.1f, -0.2f, 0.0f, 0.4f, -0.3f, 0.0f, 0.3f, 0.0f, 0.0f, -0.4f},
-            {0.0f, 0.0f, 0.0f, 0.2f, -0.1f, -0.2f, 0.0f, -0.1f, -0.2f, -0.1f, 0.0f},
-            {0.0f, -0.1f, 0.0f, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f, -0.1f, -0.1f, -0.1f, -0.1f},
-            {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -0.1f}};
+            {12.0f, 9.7f},
+            {-11.6f, -5.2f, -8.0f},
+            {-1.3f, -4.2f, 0.4f, -15.6f},
+            {-1.6f, -2.4f, -6.0f, 5.6f, -7.0f},
+            {0.6f, 1.4f, 0.0f, 0.6f, 2.2f, 0.9f},
+            {-0.2f, -0.4f, 0.9f, 1.2f, -0.9f, 0.3f, 0.9f},
+            {-0.0f, -0.1f, -0.1f, 0.5f, -0.1f, -0.8f, -0.8f, 0.8f},
+            {-0.1f, 0.2f, 0.0f, 0.5f, -0.1f, 0.3f, 0.2f, -0.0f, 0.2f},
+            {-0.0f, -0.1f, 0.1f, 0.3f, -0.3f, 0.0f, 0.3f, -0.1f, 0.1f, -0.1f},
+            {0.1f, 0.0f, 0.1f, 0.1f, -0.0f, -0.3f, 0.0f, -0.1f, -0.1f, -0.0f, -0.0f},
+            {0.0f, -0.0f, 0.0f, 0.0f, 0.0f, -0.1f, 0.0f, -0.0f, -0.1f, -0.1f, -0.1f, -0.1f},
+            {0.0f, 0.0f, -0.0f, -0.0f, -0.0f, -0.0f, 0.1f, -0.0f, 0.0f, 0.0f, -0.1f, -0.0f, -0.1f}};
     static private final float[][] DELTA_H = new float[][]{
             {0.0f},
-            {0.0f, -25.1f},
-            {0.0f, -30.2f, -23.9f},
-            {0.0f, 5.7f, -1.0f, 1.1f},
-            {0.0f, 0.2f, 6.9f, 3.7f, -5.6f},
-            {0.0f, 0.1f, 2.5f, -0.9f, 3.0f, 0.5f},
-            {0.0f, 0.1f, -1.8f, -1.4f, 0.9f, 0.1f, 1.0f},
-            {0.0f, 0.5f, 0.6f, -0.7f, -0.2f, -1.2f, 0.2f, 0.3f},
-            {0.0f, -0.3f, 0.7f, -0.2f, 0.5f, -0.3f, -0.5f, 0.4f, 0.1f},
-            {0.0f, -0.3f, 0.2f, -0.4f, 0.4f, 0.1f, 0.0f, -0.2f, 0.5f, 0.2f},
-            {0.0f, 0.0f, 0.1f, -0.3f, 0.1f, -0.2f, 0.1f, 0.0f, -0.1f, 0.2f, 0.0f},
-            {0.0f, 0.0f, 0.1f, 0.0f, 0.2f, 0.0f, 0.0f, 0.1f, 0.0f, -0.1f, 0.0f, 0.0f},
-            {0.0f, 0.0f, 0.0f, -0.1f, 0.1f, 0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 0.0f, -0.1f}};
-    static private final long BASE_TIME = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")).toInstant().toEpochMilli();
+            {0.0f, -21.5f},
+            {0.0f, -27.7f, -12.1f},
+            {0.0f, 4.0f, -0.3f, -4.1f},
+            {0.0f, -1.1f, 4.1f, 1.6f, -4.4f},
+            {0.0f, -0.5f, 2.2f, 0.4f, 1.7f, 1.9f},
+            {0.0f, 0.3f, -1.6f, -0.4f, 0.9f, 0.7f, 0.9f},
+            {0.0f, 0.6f, 0.5f, -0.8f, 0.0f, -1.0f, 0.6f, -0.2f},
+            {0.0f, -0.2f, 0.5f, -0.4f, 0.4f, -0.5f, -0.6f, 0.3f, 0.2f},
+            {0.0f, -0.3f, 0.3f, -0.3f, 0.3f, 0.2f, -0.1f, -0.2f, 0.4f, 0.1f},
+            {0.0f, 0.0f, -0.0f, -0.2f, 0.1f, -0.1f, 0.1f, 0.0f, -0.1f, 0.2f, -0.0f},
+            {0.0f, -0.0f, 0.1f, -0.0f, 0.1f, -0.0f, -0.0f, 0.1f, -0.0f, 0.0f, 0.0f, 0.0f},
+            {0.0f, -0.0f, 0.0f, -0.1f, 0.1f, -0.0f, -0.0f, -0.0f, 0.0f, -0.0f, -0.0f, 0.0f, -0.1f}};
+    static private final long BASE_TIME = ZonedDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")).toInstant().toEpochMilli();
     // The ratio between the Gauss-normalized associated Legendre functions and
     // the Schmid quasi-normalized ones. Compute these once staticly since they
     // don't depend on input variables at all.
@@ -122,7 +122,7 @@ class GeomagneticField2020 {
      *                       since January 1, 1970. (approximate is fine -- the declination
      *                       changes very slowly).
      */
-    public GeomagneticField2020(float gdLatitudeDeg,
+    public GeomagneticField(float gdLatitudeDeg,
                             float gdLongitudeDeg,
                             float altitudeMeters,
                             long timeMillis) {
