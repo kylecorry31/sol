@@ -43,11 +43,85 @@ internal class SphericalHarmonics(
         altitude: Distance = Distance.meters(0f),
         time: Instant = Instant.now(),
     ): Vector3 {
+        return calculate(
+            coordinate,
+            altitude,
+            time
+        ) { yearsSinceBase, legendre, relativeRadiusPower, cosMLon, sinMLon, gdLatitudeRad, mGcLatitudeRad ->
+            val maxN = gCoefficients.size
+            val inverseCosLatitude = 1.0f / cos(mGcLatitudeRad)
+
+            var gcX = 0f
+            var gcY = 0f
+            var gcZ = 0f
+
+            for (n in 1 until maxN) {
+                for (m in 0..n) {
+                    // Adjust for time
+                    val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
+                    val h = hCoefficients[n][m] + yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
+
+                    // Negative derivative with respect to latitude, divided by
+                    // radius.  This looks like the negation of the version in the
+                    // NOAA Technical report because that report used
+                    // P_n^m(sin(theta)) and we use P_n^m(cos(90 - theta)), so the
+                    // derivative with respect to theta is negated.
+                    gcX += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mPDeriv[n][m] * schmidtQuasiNormFactors[n][m]
+                    // Negative derivative with respect to longitude, divided by
+                    // radius.
+                    gcY += relativeRadiusPower[n + 2] * m * (g * sinMLon[m] - h * cosMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m] * inverseCosLatitude
+                    // Negative derivative with respect to radius.
+                    gcZ -= (n + 1) * relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
+                }
+            }
+
+            val latDiffRad = gdLatitudeRad - mGcLatitudeRad
+            val x = (gcX * cos(latDiffRad) + gcZ * sin(latDiffRad))
+            val y = gcY
+            val z = (-gcX * sin(latDiffRad) + gcZ * cos(latDiffRad))
+            Vector3(x, y, z)
+        }
+    }
+
+    fun getScalar(
+        coordinate: Coordinate,
+        altitude: Distance = Distance.meters(0f),
+        time: Instant = Instant.now(),
+    ): Float {
+        return calculate(
+            coordinate,
+            altitude,
+            time
+        ) { yearsSinceBase, legendre, relativeRadiusPower, cosMLon, sinMLon, gdLatitudeRad, mGcLatitudeRad ->
+            val maxN = gCoefficients.size
+            var scalar = 0f
+
+            for (n in 1 until maxN) {
+                for (m in 0..n) {
+                    // Adjust for time
+                    val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
+                    val h = hCoefficients[n][m] + yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
+
+                    scalar += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
+                }
+            }
+
+            scalar
+        }
+    }
+
+    private inline fun <T> calculate(
+        coordinate: Coordinate,
+        altitude: Distance,
+        time: Instant,
+        crossinline calculator: (yearsSinceBase: Float, legendre: LegendreTable, relativeRadiusPower: FloatArray, cosMLon: FloatArray, sinMLon: FloatArray, gdLatitudeRad: Float, mGcLatitudeRad: Float) -> T
+    ): T {
         val timeMillis = time.toEpochMilli()
 
         // Workaround to handle poles
         val gdLongitudeDeg = coordinate.longitude.toFloat()
         val gdLatitudeDeg = coordinate.latitude.toFloat().coerceIn(-90f + 1e-5f, 90f - 1e-5f)
+        val gdLatitudeRad = gdLatitudeDeg.toRadians()
         val altitudeMeters = altitude.meters().distance
         val geocentric = computeGeocentricCoordinates(gdLatitudeDeg, gdLongitudeDeg, altitudeMeters)
         val mGcLongitudeRad = geocentric.x
@@ -77,38 +151,16 @@ internal class SphericalHarmonics(
             cosMLon[m] = cosMLon[m - x] * cosMLon[x] - sinMLon[m - x] * sinMLon[x]
         }
 
-        val inverseCosLatitude = 1.0f / cos(mGcLatitudeRad)
         val yearsSinceBase = (timeMillis - (baseTimeMillis ?: timeMillis)) / (365f * 24 * 60 * 60 * 1000)
-
-        var gcX = 0f
-        var gcY = 0f
-        var gcZ = 0f
-
-        for (n in 1 until maxN) {
-            for (m in 0..n) {
-                // Adjust for time
-                val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
-                val h = hCoefficients[n][m] + yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
-
-                // Negative derivative with respect to latitude, divided by
-                // radius.  This looks like the negation of the version in the
-                // NOAA Technical report because that report used
-                // P_n^m(sin(theta)) and we use P_n^m(cos(90 - theta)), so the
-                // derivative with respect to theta is negated.
-                gcX += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mPDeriv[n][m] * schmidtQuasiNormFactors[n][m]
-                // Negative derivative with respect to longitude, divided by
-                // radius.
-                gcY += relativeRadiusPower[n + 2] * m * (g * sinMLon[m] - h * cosMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m] * inverseCosLatitude
-                // Negative derivative with respect to radius.
-                gcZ -= (n + 1) * relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
-            }
-        }
-
-        val latDiffRad = gdLatitudeDeg.toRadians() - mGcLatitudeRad
-        val x = (gcX * cos(latDiffRad) + gcZ * sin(latDiffRad))
-        val y = gcY
-        val z = (-gcX * sin(latDiffRad) + gcZ * cos(latDiffRad))
-        return Vector3(x, y, z)
+        return calculator(
+            yearsSinceBase,
+            legendre,
+            relativeRadiusPower,
+            cosMLon,
+            sinMLon,
+            gdLatitudeRad,
+            mGcLatitudeRad
+        )
     }
 
 
