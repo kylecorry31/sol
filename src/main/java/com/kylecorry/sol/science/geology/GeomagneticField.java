@@ -29,9 +29,8 @@ import java.time.ZonedDateTime;
  * <p>This uses the World Magnetic Model produced by the United States National
  * Geospatial-Intelligence Agency.  More details about the model can be found at
  * <a href="http://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml">http://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml</a>.
- * This class currently uses WMM-2020 which is valid until 2025, but should
- * produce acceptable results for several years after that. Future versions of
- * Android may use a newer version of the model.
+ * This class currently uses WMM-2025 which is valid until 2030, but should
+ * produce acceptable results for several years after that.
  */
 class GeomagneticField {
     // The magnetic field at a given point, in nanoteslas in geodetic
