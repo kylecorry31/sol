@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.interpolation
 
 import com.kylecorry.sol.math.Vector2
+import kotlin.math.ceil
+import kotlin.math.floor
 
 object Interpolation {
 
@@ -117,6 +119,45 @@ object Interpolation {
             y += p * ys[i]
         }
         return y
+    }
+
+    /**
+     * Interpolates the isoline for a grid of values using the Marching Squares algorithm.
+     * @param grid A 2D grid of point to value pairs. The points should be equidistant. It is recommended to supply 1 extra row and column on each side of the grid to ensure the isoline extends to the edges.
+     * @param threshold The value to use as the isoline threshold.
+     * @param interpolator A function that takes a percentage (0 to 1) and two values (percent from a to b), and returns the interpolated point.
+     * @param executor A function for executing the marching squares algorithm, optionally in parallel.
+     * @return A list of pairs of points representing the isoline segments.
+     */
+    fun <T> getIsoline(
+        grid: List<List<Pair<T, Float>>>,
+        threshold: Float,
+        interpolator: (percent: Float, a: T, b: T) -> T,
+        executor: (List<() -> List<Pair<T, T>>>) -> List<Pair<T, T>> = { it.flatMap { fn -> fn() } }
+    ): List<Pair<T, T>> {
+        return MarchingSquares.getIsoline(
+            grid,
+            threshold,
+            interpolator,
+            executor
+        )
+    }
+
+    /**
+     * Returns a list of multiples of a given number between two values.
+     * @param start The starting value (inclusive).
+     * @param end The ending value (inclusive).
+     * @param multiple The number to find multiples of.
+     * @return A list of multiples of the given number between the start and end values.
+     */
+    fun getMultiplesBetween(
+        start: Float,
+        end: Float,
+        multiple: Float
+    ): List<Float> {
+        val startMultiple = ceil(start / multiple)
+        val endMultiple = floor(end / multiple)
+        return (startMultiple.toInt()..endMultiple.toInt()).map { it * multiple }
     }
 
 }
