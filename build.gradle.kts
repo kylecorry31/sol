@@ -3,7 +3,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 plugins {
     kotlin("jvm") version "2.1.21"
     id("java-library")
-    id("com.vanniktech.maven.publish") version "0.30.0"
+    id("com.vanniktech.maven.publish") version "0.32.0"
 }
 
 val versionName = "11.2.0"
@@ -50,11 +50,11 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.1")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.1")
 }
 
 tasks.test {
