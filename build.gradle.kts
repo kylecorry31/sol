@@ -1,9 +1,7 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     kotlin("jvm") version "2.1.21"
     id("java-library")
-    id("com.vanniktech.maven.publish") version "0.32.0"
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 val versionName = "11.2.0"
@@ -35,7 +33,7 @@ mavenPublishing {
         }
     }
 
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 }
 
