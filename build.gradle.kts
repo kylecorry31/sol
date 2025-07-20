@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.21"
+    kotlin("jvm") version "2.2.0"
     id("java-library")
     id("com.vanniktech.maven.publish") version "0.34.0"
 }
@@ -48,11 +48,11 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.3")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.3")
 }
 
 tasks.test {
