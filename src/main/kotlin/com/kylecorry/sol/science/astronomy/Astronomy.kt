@@ -9,10 +9,7 @@ import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseCalculator
-import com.kylecorry.sol.science.astronomy.locators.MeteorShowerLocator
-import com.kylecorry.sol.science.astronomy.locators.Moon
-import com.kylecorry.sol.science.astronomy.locators.StarLocator
-import com.kylecorry.sol.science.astronomy.locators.Sun
+import com.kylecorry.sol.science.astronomy.locators.*
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShowerPeak
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
@@ -698,6 +695,49 @@ object Astronomy : IAstronomyService {
         approximateLocation: Coordinate?
     ): Coordinate? {
         return StarLocationCalculator().getLocationFromStars(starReadings, approximateLocation)
+    }
+
+    override fun getPlanetPosition(
+        planet: Planet,
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean,
+        withParallax: Boolean
+    ): CelestialPosition {
+        val ut = time.toUniversalTime()
+        val locator = PlanetLocator(planet)
+        val horizonCoordinate = AstroUtils.getLocation(
+            locator,
+            ut,
+            location,
+            withRefraction,
+            withParallax
+        )
+        val distance = locator.getDistance(ut)
+        val diameter = locator.getAngularDiameter(ut)
+        return CelestialPosition(
+            Bearing(horizonCoordinate.azimuth.toFloat()),
+            horizonCoordinate.altitude.toFloat(),
+            diameter.toFloat(),
+            distance
+        )
+    }
+
+    override fun getPlanetEvents(
+        planet: Planet,
+        date: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean,
+        withParallax: Boolean
+    ): RiseSetTransitTimes {
+        return riseSetTransitCalculator.calculate(
+            PlanetLocator(planet),
+            date,
+            location,
+            0.0,
+            withRefraction,
+            withParallax
+        )
     }
 
 }

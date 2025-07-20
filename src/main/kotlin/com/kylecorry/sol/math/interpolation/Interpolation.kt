@@ -151,6 +151,16 @@ object Interpolation {
      * @return A list of multiples of the given number between the start and end values.
      */
     fun getMultiplesBetween(
+        start: Double,
+        end: Double,
+        multiple: Double
+    ): List<Double> {
+        val startMultiple = ceil(start / multiple)
+        val endMultiple = floor(end / multiple)
+        return (startMultiple.toInt()..endMultiple.toInt()).map { it * multiple }
+    }
+
+    fun getMultiplesBetween(
         start: Float,
         end: Float,
         multiple: Float
