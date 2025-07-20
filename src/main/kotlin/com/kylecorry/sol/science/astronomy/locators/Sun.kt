@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.science.astronomy.OrbitalMath
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
@@ -65,7 +66,7 @@ internal class Sun : ICelestialLocator {
     private fun getTrueAnomaly(T: Double): Double {
         val mean = getMeanAnomaly(T)
         val center = equationOfCenter(T)
-        return mean + center
+        return OrbitalMath.getTrueAnomaly(mean, center)
     }
 
     private fun getApparentLongitude(T: Double): Double {

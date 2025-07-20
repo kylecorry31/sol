@@ -1,19 +1,14 @@
 package com.kylecorry.sol.science.astronomy.locators
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.normalizeAngle
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.tanDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
-import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
-import com.kylecorry.sol.science.astronomy.units.UniversalTime
-import com.kylecorry.sol.science.astronomy.units.toJulianDay
+import com.kylecorry.sol.science.astronomy.OrbitalMath
+import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.units.Distance
-import kotlin.math.PI
-import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.log10
 import kotlin.math.sqrt
@@ -136,40 +131,33 @@ internal class PlanetLocator(private val planet: Planet) : ICelestialLocator {
     }
 
     private fun getHeliocentricPosition(planet: Planet, ut: UniversalTime): Pair<EclipticCoordinate, Double> {
-        val daysSinceEpoch = ut.toJulianDay() - 2451545.0
-        val meanAnomaly = normalizeAngle(
-            (360.0 * daysSinceEpoch) / (365.242191 * planet.orbitalPeriod) + planet.eclipticLongitudeEpoch - planet.eclipticLongitudePerihelion
+        val meanAnomaly = OrbitalMath.getMeanAnomaly(
+            ut.toJulianDay() - planet.epoch,
+            OrbitalMath.EARTH_ORBITAL_PERIOD_DAYS * planet.orbitalPeriod,
+            planet.eclipticLongitudeEpoch,
+            planet.eclipticLongitudePerihelion
         )
-        // TODO: Solve kelper's equation
-        val equationOfCenter = 360.0 / PI * planet.eccentricity * sinDegrees(meanAnomaly)
-        // TODO: Solve kelper's equation
-        val trueAnomaly = meanAnomaly + equationOfCenter
-        val heliocentricEclipticLongitude = normalizeAngle(trueAnomaly + planet.eclipticLongitudePerihelion)
-        val heliocentricEclipticLatitude = normalizeAngle(
-            asin(
-                sinDegrees(heliocentricEclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch) * sinDegrees(
-                    planet.inclination
-                )
-            ).toDegrees()
+        val trueAnomaly = OrbitalMath.estimateTrueAnomaly(planet.eccentricity, meanAnomaly)
+        val coordinate = OrbitalMath.getEclipticCoordinate(
+            trueAnomaly,
+            planet.eclipticLongitudePerihelion,
+            planet.eclipticLongitudeAscendingNodeEpoch,
+            planet.inclination
         )
-        val coordinate = EclipticCoordinate(heliocentricEclipticLatitude, heliocentricEclipticLongitude)
-        val radius = planet.semimajorAxis * (1 - SolMath.square(planet.eccentricity)) /
-                (1 + planet.eccentricity * cosDegrees(trueAnomaly))
+        val radius = OrbitalMath.getRadius(trueAnomaly, planet.semimajorAxis, planet.eccentricity)
         return Pair(coordinate, radius)
     }
 }
 
 enum class Planet(
     val order: Int,
+    internal val epoch: Double,
     val orbitalPeriod: Double,
-    val mass: Double,
     val radius: Double,
-    val lengthOfDay: Double,
     internal val eccentricity: Double,
     internal val semimajorAxis: Double,
     internal val angularDiameter: Double,
     internal val visualMagnitude: Double,
-    internal val standardGravitationalParameter: Double,
     internal val inclination: Double,
     internal val eclipticLongitudeEpoch: Double,
     internal val eclipticLongitudePerihelion: Double,
@@ -177,15 +165,13 @@ enum class Planet(
 ) {
     Mercury(
         1,
+        JD_2000,
         0.240847,
-        0.055274,
         2439.7,
-        58.6462,
         0.205636,
         0.3870993,
         toDegrees(0.0, 0.0, 6.74),
         -0.42,
-        22032.0,
         7.004979,
         252.250324,
         77.457796,
@@ -193,15 +179,13 @@ enum class Planet(
     ),
     Venus(
         2,
+        JD_2000,
         0.615197,
-        0.814998,
         6051.8,
-        243.018,
         0.0067767,
         0.723336,
         toDegrees(0.0, 0.0, 16.92),
         -4.40,
-        324860.0,
         3.394676,
         181.979100,
         131.602467,
@@ -209,15 +193,13 @@ enum class Planet(
     ),
     Earth(
         3,
+        JD_2000,
         1.000017,
-        1.0,
         6378.14,
-        1.0,
         0.0167112,
         1.000003,
         0.0,
         0.0,
-        398600.0,
         -0.000015,
         100.464572,
         102.937682,
@@ -225,15 +207,13 @@ enum class Planet(
     ),
     Mars(
         4,
+        JD_2000,
         1.880848,
-        0.107447,
         3389.5,
-        1.025957,
         0.093394,
         1.523710,
         toDegrees(0.0, 0.0, 9.36),
         -1.52,
-        42828.0,
         1.849691,
         -4.553432,
         -23.943630,
@@ -241,15 +221,13 @@ enum class Planet(
     ),
     Jupiter(
         5,
+        JD_2000,
         11.862615,
-        317.828133,
         69911.0,
-        0.41354,
         0.048393,
         5.202887,
         toDegrees(0.0, 0.0, 196.74),
         -9.40,
-        126687000.0,
         1.3043975,
         34.396441,
         14.728480,
@@ -257,15 +235,13 @@ enum class Planet(
     ),
     Saturn(
         6,
+        JD_2000,
         29.447498,
-        95.160904,
         58232.0,
-        0.44401,
         0.053862,
         9.536676,
         toDegrees(0.0, 0.0, 165.60),
         -8.88,
-        37931000.0,
         2.485992,
         49.954244,
         92.598878,
@@ -273,15 +249,13 @@ enum class Planet(
     ),
     Uranus(
         7,
+        JD_2000,
         84.016846,
-        14.535757,
         25362.0,
-        0.71833,
         0.0472574,
         19.189165,
         toDegrees(0.0, 0.0, 65.80),
         -7.19,
-        5794000.0,
         0.772638,
         313.232810,
         170.954276,
@@ -289,15 +263,13 @@ enum class Planet(
     ),
     Neptune(
         8,
+        JD_2000,
         164.79132,
-        17.147813,
         24622.0,
-        0.67125,
         0.008590,
         30.069923,
         toDegrees(0.0, 0.0, 62.20),
         -6.87,
-        6835100.0,
         1.770043,
         -55.120030,
         44.964762,

@@ -517,8 +517,7 @@ class AstronomyTest {
             withParallax = true
         )
 
-        // TODO: Improve this by calculating kepler equations
-        assertEquals(azimuth, actual.azimuth.value, 1f)
+        assertEquals(azimuth, actual.azimuth.value, 0.5f)
         assertEquals(altitude, actual.altitude, 0.4f)
         // TODO: The visual magnitudes in the celestial calculation book do not line up with the ones reported by Stellarium
         if (visualMagnitude != null) {

@@ -13,11 +13,13 @@ import kotlin.math.floor
 
 typealias UniversalTime = LocalDateTime
 
+const val JD_2000 = 2451545.0
+
 /**
  * Julian centuries since 2000
  */
 fun UniversalTime.toJulianCenturies(): Double {
-    return (toJulianDay() - 2451545.0) / 36525.0
+    return (toJulianDay() - JD_2000) / 36525.0
 }
 
 fun UniversalTime.toJulianDay(includeTime: Boolean = true): Double {
