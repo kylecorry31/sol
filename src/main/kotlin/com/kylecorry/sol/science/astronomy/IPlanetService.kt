@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.science.astronomy.locators.Planet
-import com.kylecorry.sol.science.astronomy.units.CelestialPosition
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.units.Coordinate
 import java.time.ZonedDateTime
 
@@ -12,7 +12,7 @@ interface IPlanetService {
         location: Coordinate,
         withRefraction: Boolean = false,
         withParallax: Boolean = false
-    ): CelestialPosition
+    ): CelestialObservation
 
     fun getPlanetEvents(
         planet: Planet,

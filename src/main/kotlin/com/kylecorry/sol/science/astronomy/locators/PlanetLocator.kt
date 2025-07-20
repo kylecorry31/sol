@@ -15,6 +15,7 @@ import com.kylecorry.sol.units.Distance
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.atan2
+import kotlin.math.log10
 import kotlin.math.sqrt
 
 // Equations from Celestial Calculations by J. L. Lawrence chapter 8
@@ -60,17 +61,73 @@ internal class PlanetLocator(private val planet: Planet) : ICelestialLocator {
     }
 
     override fun getDistance(ut: UniversalTime): Distance? {
-        return Distance.kilometers((149597871.0 * getDistanceAU(ut)).toFloat())
+        return Distance.kilometers(
+            (149597871.0 * getDistanceAU(
+                getHeliocentricPosition(planet, ut),
+                getHeliocentricPosition(Planet.Earth, ut)
+            )).toFloat()
+        )
     }
 
     fun getAngularDiameter(ut: UniversalTime): Double {
-        val distance = getDistanceAU(ut)
+        val distance = getDistanceAU(getHeliocentricPosition(planet, ut), getHeliocentricPosition(Planet.Earth, ut))
         return planet.angularDiameter / distance
     }
 
-    private fun getDistanceAU(ut: UniversalTime): Double {
+    fun getMagnitude(ut: UniversalTime): Double {
         val planetPosition = getHeliocentricPosition(planet, ut)
         val earthPosition = getHeliocentricPosition(Planet.Earth, ut)
+        val geocentricPlanetPosition = getGeocentricPosition(planetPosition, earthPosition)
+        val distance = getDistanceAU(planetPosition, earthPosition)
+        val phaseAngle =
+            (1 + cosDegrees(geocentricPlanetPosition.eclipticLongitude - planetPosition.first.eclipticLongitude)) / 2
+        return planet.visualMagnitude + 5 * log10((planetPosition.second * distance) / sqrt(phaseAngle))
+    }
+
+    private fun getGeocentricPosition(
+        planetPosition: Pair<EclipticCoordinate, Double>,
+        earthPosition: Pair<EclipticCoordinate, Double>
+    ): EclipticCoordinate {
+        val longitudeAdjustment = normalizeAngle(
+            planet.eclipticLongitudeAscendingNodeEpoch + atan2(
+                sinDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch) * cosDegrees(
+                    planet.inclination
+                ),
+                cosDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch)
+            ).toDegrees()
+        )
+        val geocentricEclipticLongitude = normalizeAngle(
+            if (planet.order <= Planet.Earth.order) {
+                180 + earthPosition.first.eclipticLongitude + atan2(
+                    planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(earthPosition.first.eclipticLongitude - longitudeAdjustment),
+                    earthPosition.second - planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * cosDegrees(
+                        earthPosition.first.eclipticLongitude - longitudeAdjustment
+                    )
+                ).toDegrees()
+            } else {
+                longitudeAdjustment + atan2(
+                    earthPosition.second * sinDegrees(longitudeAdjustment - earthPosition.first.eclipticLongitude),
+                    planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) - earthPosition.second * cosDegrees(
+                        earthPosition.first.eclipticLongitude - longitudeAdjustment
+                    )
+                ).toDegrees()
+            }
+        )
+        val geocentricEclipticLatitude = normalizeAngle(
+            atan2(
+                planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * tanDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(
+                    geocentricEclipticLongitude - longitudeAdjustment
+                ),
+                earthPosition.second * sinDegrees(longitudeAdjustment - earthPosition.first.eclipticLongitude)
+            ).toDegrees()
+        )
+        return EclipticCoordinate(geocentricEclipticLatitude, geocentricEclipticLongitude)
+    }
+
+    private fun getDistanceAU(
+        planetPosition: Pair<EclipticCoordinate, Double>,
+        earthPosition: Pair<EclipticCoordinate, Double>
+    ): Double {
         return sqrt(
             square(earthPosition.second) + square(planetPosition.second) - 2 * earthPosition.second * planetPosition.second * cosDegrees(
                 planetPosition.first.eclipticLongitude - earthPosition.first.eclipticLongitude
@@ -108,15 +165,15 @@ enum class Planet(
     val mass: Double,
     val radius: Double,
     val lengthOfDay: Double,
-    val eccentricity: Double,
-    val semimajorAxis: Double,
-    val angularDiameter: Double,
-    val visualMagnitude: Double,
-    val standardGravitationalParameter: Double,
-    val inclination: Double,
-    val eclipticLongitudeEpoch: Double,
-    val eclipticLongitudePerihelion: Double,
-    val eclipticLongitudeAscendingNodeEpoch: Double
+    internal val eccentricity: Double,
+    internal val semimajorAxis: Double,
+    internal val angularDiameter: Double,
+    internal val visualMagnitude: Double,
+    internal val standardGravitationalParameter: Double,
+    internal val inclination: Double,
+    internal val eclipticLongitudeEpoch: Double,
+    internal val eclipticLongitudePerihelion: Double,
+    internal val eclipticLongitudeAscendingNodeEpoch: Double
 ) {
     Mercury(
         1,

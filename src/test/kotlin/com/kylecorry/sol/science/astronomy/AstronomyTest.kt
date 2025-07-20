@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
+import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
@@ -487,6 +488,43 @@ class AstronomyTest {
         )
 
         assertEquals(isUp, actual)
+    }
+
+    // Test data from Stellarium
+    @ParameterizedTest
+    @CsvSource(
+        "1, 2025-07-21T03:00:00-04, 18.989444, -33.458333, , 0.62",
+        "2, 2025-07-21T03:00:00-04, 64.500528, 3.46775, -3.92, 1.09",
+        "4, 2025-07-21T03:00:00-04, 335.791861, -40.415833, 1.56, 2.06",
+        "5, 2025-07-21T03:00:00-04, 47.614472, -8.95975, -1.74, 6.10",
+        "6, 2025-07-21T03:00:00-04, 140.054722, 38.865, 0.89, 9.07",
+        "7, 2025-07-21T03:00:00-04, 77.407861, 16.33375, 5.78, 20.03",
+        "8, 2025-07-21T03:00:00-04, 139.64175, 39.828778, 7.85, 29.42",
+    )
+    fun getPlanetPosition(
+        planet: Int,
+        time: String,
+        azimuth: Float,
+        altitude: Float,
+        visualMagnitude: Float?,
+        distance: Float,
+    ) {
+        val actual = Astronomy.getPlanetPosition(
+            Planet.entries.first { it.order == planet },
+            ZonedDateTime.parse(time),
+            Coordinate(41.97640, -71.65340),
+            withRefraction = true,
+            withParallax = true
+        )
+
+        // TODO: Improve this by calculating kepler equations
+        assertEquals(azimuth, actual.azimuth.value, 1f)
+        assertEquals(altitude, actual.altitude, 0.4f)
+        // TODO: The visual magnitudes in the celestial calculation book do not line up with the ones reported by Stellarium
+        if (visualMagnitude != null) {
+            assertEquals(visualMagnitude, actual.visualMagnitude!!, 0.75f)
+        }
+        assertEquals(distance, actual.distance!!.distance / 149597871, 0.01f)
     }
 
     @ParameterizedTest

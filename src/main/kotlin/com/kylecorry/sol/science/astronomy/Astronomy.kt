@@ -703,7 +703,7 @@ object Astronomy : IAstronomyService {
         location: Coordinate,
         withRefraction: Boolean,
         withParallax: Boolean
-    ): CelestialPosition {
+    ): CelestialObservation {
         val ut = time.toUniversalTime()
         val locator = PlanetLocator(planet)
         val horizonCoordinate = AstroUtils.getLocation(
@@ -715,10 +715,12 @@ object Astronomy : IAstronomyService {
         )
         val distance = locator.getDistance(ut)
         val diameter = locator.getAngularDiameter(ut)
-        return CelestialPosition(
+        val magnitude = locator.getMagnitude(ut)
+        return CelestialObservation(
             Bearing(horizonCoordinate.azimuth.toFloat()),
             horizonCoordinate.altitude.toFloat(),
             diameter.toFloat(),
+            magnitude.toFloat(),
             distance
         )
     }
