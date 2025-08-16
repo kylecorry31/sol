@@ -7,8 +7,8 @@ import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
 import com.kylecorry.sol.science.astronomy.stars.Constellation
-import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarReading
+import com.kylecorry.sol.science.astronomy.stars.STAR_CATALOG
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
@@ -756,7 +756,7 @@ class AstronomyTest {
         azimuth: Float,
         altitude: Float
     ) {
-        val star = Star.entries.find { it.name == name } ?: fail("Star not found")
+        val star = STAR_CATALOG.find { it.name == name } ?: fail("Star not found")
         val actualAzimuth = Astronomy.getStarAzimuth(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
         val actualAltitude =
             Astronomy.getStarAltitude(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude), true)
@@ -788,7 +788,7 @@ class AstronomyTest {
     fun canGetLocationFromStarsAltitudeOnly(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
-        val stars = Star.entries.map { star ->
+        val stars = STAR_CATALOG.filter { it.magnitude < 4.0 }.map { star ->
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
@@ -827,7 +827,7 @@ class AstronomyTest {
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
         val altitudeBias = if (numberOfStars > 2) 1f else 0f
         val azimuthBias = if (numberOfStars > 2) 3f else 0f
-        val stars = Star.entries.map { star ->
+        val stars = STAR_CATALOG.filter { it.magnitude < 4.0 }.map { star ->
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance

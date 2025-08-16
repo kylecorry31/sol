@@ -29,7 +29,7 @@ internal class PlateSolver(
         val readingsQuads = getQuads(readings)
 
         // Step 2: Get the quads from the star catalog
-        val catalogQuads = getAllQuads(Star.entries, time, approximateLocation)
+        val catalogQuads = getAllQuads(STAR_CATALOG, time, approximateLocation)
 
         // Step 3: Match the star quads
         val matches = mutableListOf<DetectedStar>()

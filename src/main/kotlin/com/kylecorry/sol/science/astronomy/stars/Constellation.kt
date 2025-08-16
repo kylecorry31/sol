@@ -3,39 +3,43 @@ package com.kylecorry.sol.science.astronomy.stars
 enum class Constellation(val edges: List<Pair<Star, Star>>) {
     BigDipper(
         listOf(
-            Star.Alkaid to Star.Mizar,
-            Star.Mizar to Star.Alioth,
-            Star.Megrez to Star.Dubhe,
-            Star.Dubhe to Star.Merak,
-            Star.Merak to Star.Phecda,
-            Star.Phecda to Star.Megrez
+            star("Alkaid") to star("Mizar"),
+            star("Mizar") to star("Alioth"),
+            star("Megrez") to star("Dubhe"),
+            star("Dubhe") to star("Merak"),
+            star("Merak") to star("Phecda"),
+            star("Phecda") to star("Megrez")
         )
     ),
     SouthernCross(
         listOf(
-            Star.Acrux to Star.Gacrux,
-            Star.Mimosa to Star.Imai
+            star("Acrux") to star("Gacrux"),
+            star("Mimosa") to star("Imai")
         )
     ),
     Orion(
         listOf(
-            Star.Rigel to Star.Mintaka,
-            Star.Mintaka to Star.Alnilam,
-            Star.Alnilam to Star.Alnitak,
-            Star.Alnitak to Star.Saiph,
-            Star.Alnitak to Star.Betelgeuse,
-            Star.Betelgeuse to Star.Bellatrix,
-            Star.Bellatrix to Star.Mintaka,
-            Star.Bellatrix to Star.Meissa,
-            Star.Betelgeuse to Star.Meissa
+            star("Rigel") to star("Mintaka"),
+            star("Mintaka") to star("Alnilam"),
+            star("Alnilam") to star("Alnitak"),
+            star("Alnitak") to star("Saiph"),
+            star("Alnitak") to star("Betelgeuse"),
+            star("Betelgeuse") to star("Bellatrix"),
+            star("Bellatrix") to star("Mintaka"),
+            star("Bellatrix") to star("Meissa"),
+            star("Betelgeuse") to star("Meissa")
         )
     ),
     Cassiopeia(
         listOf(
-            Star.Caph to Star.Schedar,
-            Star.Schedar to Star.GammaCassiopeiae,
-            Star.GammaCassiopeiae to Star.Ruchbah,
-            Star.Ruchbah to Star.Segin
+            star("Caph") to star("Schedar"),
+            star("Schedar") to star("Gamma Cassiopeiae"),
+            star("Gamma Cassiopeiae") to star("Ruchbah"),
+            star("Ruchbah") to star("Segin")
         )
     ),
+}
+
+private fun star(name: String): Star {
+    return STAR_CATALOG.first { it.name == name }
 }
