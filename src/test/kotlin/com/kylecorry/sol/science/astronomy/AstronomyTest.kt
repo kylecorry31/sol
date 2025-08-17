@@ -19,6 +19,7 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -556,6 +557,53 @@ class AstronomyTest {
             assertDate(ZonedDateTime.parse(peak), actual?.peak, Duration.ofHours(1))
         } else {
             assertNull(actual)
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        // No shower
+        "40.7128, -74.0060, 2023-06-01T00:00:00-05, , ,",
+        // Quadrantids
+        "40.7128, -74.0060, 2023-01-04T05:00:00-05, Quadrantids, ,",
+        // 10 days before (still active)
+        "40.7128, -74.0060, 2022-12-26T05:00:00-05, Ursids, Quadrantids,",
+        // 11 days before (not active)
+        "40.7128, -74.0060, 2022-12-25T05:00:00-05, Ursids,",
+        // 10 days after (still active)
+        "40.7128, -74.0060, 2023-01-14T05:00:00-05, Quadrantids,",
+        // 11 days after (not active)
+        "40.7128, -74.0060, 2023-01-15T05:00:00-05, ,",
+        // Lyrids
+        "40.7128, -74.0060, 2023-04-22T05:00:00-04, Lyrids, EtaAquariids",
+        // Eta Aquariids
+        "40.7128, -74.0060, 2023-05-06T04:00:00-04, EtaAquariids,",
+        // Delta Aquariids
+        "40.7128, -74.0060, 2023-07-31T03:00:00-04, DeltaAquariids, Perseids",
+        // Perseids
+        "40.7128, -74.0060, 2023-08-13T04:00:00-04, Perseids,",
+        // Orionids
+        "40.7128, -74.0060, 2023-10-21T05:00:00-04, Orionids,",
+        // Leonids
+        "40.7128, -74.0060, 2023-11-18T06:00:00-05, Leonids,",
+        // Geminids
+        "40.7128, -74.0060, 2023-12-14T01:00:00-05, Geminids,",
+        // Ursids
+        "40.7128, -74.0060, 2023-12-22T05:00:00-05, Geminids, Ursids"
+    )
+    fun getActiveMeteorShowers(
+        latitude: Double,
+        longitude: Double,
+        time: String,
+        shower1: MeteorShower?,
+        shower2: MeteorShower?
+    ) {
+        val actual = Astronomy.getActiveMeteorShowers(Coordinate(latitude, longitude), ZonedDateTime.parse(time))
+        val expected = listOfNotNull(shower1, shower2)
+        println(actual)
+        assertEquals(expected.size, actual.size)
+        for (i in expected.indices) {
+            assertEquals(expected[i], actual[i].shower)
         }
     }
 

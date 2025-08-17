@@ -449,6 +449,47 @@ object Astronomy : IAstronomyService {
         return AstroUtils.getAzimuth(locator, time.toUniversalTime(), location)
     }
 
+    override fun getActiveMeteorShowers(
+        location: Coordinate,
+        date: ZonedDateTime
+    ): List<MeteorShowerPeak> {
+        val active = mutableSetOf<MeteorShowerPeak>()
+        val searchRange = MeteorShower.entries.maxOf { it.activeDays }
+
+        val start = date.minusDays(searchRange.toLong())
+        val end = date.plusDays(searchRange.toLong())
+        var current = start
+        while (current.isBefore(end)) {
+            val peak = getMeteorShower(location, current)
+            if (peak != null && Duration.between(peak.peak, date)
+                    .abs() <= Duration.ofDays(peak.shower.activeDays.toLong() / 2)
+            ) {
+                active.add(peak)
+            }
+            current = current.plusDays(1)
+        }
+
+        return active.toList()
+    }
+
+    override fun getMeteorShowerPosition(
+        shower: MeteorShower,
+        location: Coordinate,
+        time: Instant
+    ): CelestialObservation {
+        val ut = time.toUniversalTime()
+        val locator = MeteorShowerLocator(shower)
+        val horizonCoordinate = AstroUtils.getLocation(
+            locator,
+            ut,
+            location
+        )
+        return CelestialObservation(
+            Bearing(horizonCoordinate.azimuth.toFloat()),
+            horizonCoordinate.altitude.toFloat()
+        )
+    }
+
     private fun getNextMeteorShowerPeak(
         shower: MeteorShower,
         location: Coordinate,
