@@ -41,5 +41,5 @@ enum class Constellation(val edges: List<Pair<Star, Star>>) {
 }
 
 private fun star(name: String): Star {
-    return STAR_CATALOG.first { it.name == name }
+    return STAR_CATALOG_BY_NAME[name]!!
 }
