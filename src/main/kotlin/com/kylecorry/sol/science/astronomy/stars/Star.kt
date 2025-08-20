@@ -336,7 +336,7 @@ val STAR_CATALOG = listOf(
     ),
     Star(
         "Iota Centauri",
-        "Iota Centauri",
+        "Kulou",
         EquatorialCoordinate(-36.712304581225, 200.14922006503957),
         2.7300000190734863f,
         ProperMotion(-2.2828055555555554e-05, -9.43375e-05),
@@ -352,7 +352,7 @@ val STAR_CATALOG = listOf(
     ),
     Star(
         "Zeta Centauri",
-        "Zeta Centauri",
+        "Leepwal",
         EquatorialCoordinate(-47.28837451101241, 208.88494019857197),
         2.549999952316284f,
         ProperMotion(-1.2375e-05, -1.593611111111111e-05),
@@ -520,7 +520,7 @@ val STAR_CATALOG = listOf(
     ),
     Star(
         "Epsilon Corvi",
-        "Minkar",
+        "Epsilon Corvi",
         EquatorialCoordinate(-22.6197672175, 182.53116909374998),
         2.9800000190734863f,
         ProperMotion(2.9547222222222223e-06, -2.000527777777778e-05),
@@ -1056,7 +1056,7 @@ val STAR_CATALOG = listOf(
     ),
     Star(
         "Pi Puppis",
-        "Ahadi",
+        "Pi Puppis",
         EquatorialCoordinate(-37.09747346353528, 109.28565865855),
         2.700000047683716f,
         ProperMotion(1.811111111111111e-06, -3.2116666666666667e-06),
@@ -1120,7 +1120,7 @@ val STAR_CATALOG = listOf(
     ),
     Star(
         "Iota 1 Scorpii",
-        "Apollyon",
+        "Iota 1 Scorpii",
         EquatorialCoordinate(-40.12699736232806, 266.89616445956506),
         2.992000102996826f,
         ProperMotion(-1.498888888888889e-06, 1.388888888888889e-09),
@@ -1392,7 +1392,7 @@ val STAR_CATALOG = listOf(
     ),
     Star(
         "Gamma 2 Velorum",
-        "Regor",
+        "Gamma 2 Velorum",
         EquatorialCoordinate(-47.336586329303486, 122.38312555977059),
         1.8300000429153442f,
         ProperMotion(2.897222222222222e-06, -1.6861111111111112e-06),
