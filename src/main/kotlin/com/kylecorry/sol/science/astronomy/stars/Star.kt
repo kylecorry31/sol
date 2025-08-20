@@ -16,7 +16,7 @@ import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 // https://en.wikipedia.org/wiki/List_of_stars_for_navigation
 
 class Star internal constructor(
-    val latinName: String,
+    val bayerDesignation: String,
     val name: String,
     internal val coordinate: EquatorialCoordinate,
     val magnitude: Float,
