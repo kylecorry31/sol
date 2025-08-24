@@ -6,6 +6,7 @@ import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
+import com.kylecorry.sol.science.astronomy.stars.CONSTELLATIONS
 import com.kylecorry.sol.science.astronomy.stars.Constellation
 import com.kylecorry.sol.science.astronomy.stars.STAR_CATALOG
 import com.kylecorry.sol.science.astronomy.stars.StarReading
@@ -836,7 +837,7 @@ class AstronomyTest {
     fun canGetLocationFromStarsAltitudeOnly(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
-        val stars = STAR_CATALOG.filter { it.magnitude < 4.0 }.map { star ->
+        val stars = STAR_CATALOG.filter { it.magnitude < 2.5 }.map { star ->
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
@@ -903,7 +904,7 @@ class AstronomyTest {
     fun plateSolve() {
         val time = ZonedDateTime.of(2024, 12, 1, 0, 0, 0, 0, ZoneId.of("UTC"))
         val location = Coordinate(42.0, -72.0)
-        val actualStars = Constellation.Orion.edges.flatMap { listOf(it.first, it.second) }.distinct()
+        val actualStars = CONSTELLATIONS.first { it.name == "Orion" }.starEdges.flatMap { listOf(it.first, it.second) }.distinct()
         val readings = actualStars.map {
             AltitudeAzimuth(
                 Astronomy.getStarAltitude(it, time, location, true),
