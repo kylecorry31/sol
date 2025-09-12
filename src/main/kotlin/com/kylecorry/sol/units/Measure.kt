@@ -20,21 +20,6 @@ internal fun <T : Enum<T>> packMeasure(value: Float, unit: T): Measure {
 }
 
 @JvmInline
-value class TemperatureMeasure private constructor(private val measure: Measure) {
-    val value: Float
-        get() = measureValue(measure)
-
-    val unit: TemperatureUnits
-        get() = measureUnit<TemperatureUnits>(measure)
-
-    companion object {
-        fun from(value: Float, unit: TemperatureUnits): TemperatureMeasure {
-            return TemperatureMeasure(packMeasure(value, unit))
-        }
-    }
-}
-
-@JvmInline
 value class VolumeMeasure private constructor(private val measure: Measure) {
     val value: Float
         get() = measureValue(measure)

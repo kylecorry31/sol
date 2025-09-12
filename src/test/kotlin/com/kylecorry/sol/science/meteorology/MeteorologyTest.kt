@@ -111,11 +111,14 @@ class MeteorologyTest {
     fun convertsToSeaLevel(
         pressureHpa: Float,
         altitudeMeters: Float,
-        temperature: Temperature?,
+        temperatureCelsius: Float?,
         expectedPressureHpa: Float
     ) {
         val altitude = Distance.meters(altitudeMeters)
-        val reading = Meteorology.getSeaLevelPressure(Pressure.hpa(pressureHpa), altitude, temperature)
+        val reading = Meteorology.getSeaLevelPressure(
+            Pressure.hpa(pressureHpa),
+            altitude,
+            temperatureCelsius?.let { Temperature.celsius(it) })
         assertEquals(expectedPressureHpa, reading.hpa().value, 0.1f)
     }
 
@@ -570,11 +573,11 @@ class MeteorologyTest {
         fun provideSeaLevelPressure(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(0f, 0f, null, 0f),
-                Arguments.of(0f, 0f, Temperature(0f, TemperatureUnits.C), 0f),
+                Arguments.of(0f, 0f, 0f, 0f),
                 Arguments.of(1000f, -100f, null, 988.2f),
                 Arguments.of(980f, 200f, null, 1003.48f),
-                Arguments.of(980f, 1000f, Temperature(15f, TemperatureUnits.C), 1101.93f),
-                Arguments.of(1000f, -100f, Temperature(28f, TemperatureUnits.C), 988.71f),
+                Arguments.of(980f, 1000f, 15f, 1101.93f),
+                Arguments.of(1000f, -100f, 28f, 988.71f),
             )
         }
 

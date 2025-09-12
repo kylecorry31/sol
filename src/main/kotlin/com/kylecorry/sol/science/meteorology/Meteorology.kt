@@ -26,7 +26,7 @@ object Meteorology : IWeatherService {
     ): Pressure {
         val hpa = pressure.hpa().value
         val meters = altitude.meters().value
-        val celsius = temperature?.celsius()?.temperature
+        val celsius = temperature?.celsius()?.value
         val adjustedPressure = if (celsius != null) {
             hpa * (1 - ((0.0065f * meters) / (celsius + 0.0065f * meters + 273.15f))).pow(
                 -5.257f
@@ -222,11 +222,11 @@ object Meteorology : IWeatherService {
     override fun getTemperatureAtElevation(
         temperature: Temperature, baseElevation: Distance, destElevation: Distance
     ): Temperature {
-        val celsius = temperature.celsius().temperature
+        val celsius = temperature.celsius().value
         val baseMeters = baseElevation.meters().value
         val destMeters = destElevation.meters().value
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
-        return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
+        return Temperature.celsius(temp).convertTo(temperature.units)
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
@@ -253,7 +253,7 @@ object Meteorology : IWeatherService {
         // https://en.wikipedia.org/wiki/K%C3%B6ppen_climate_classification
         // https://open.oregonstate.education/permaculturedesign/back-matter/koppen-geiger-classification-descriptions
 
-        val temps = temperatures.entries.sortedBy { it.key.value }.map { it.value.celsius().temperature }
+        val temps = temperatures.entries.sortedBy { it.key.value }.map { it.value.celsius().value }
         val precip = precipitation.entries.sortedBy { it.key.value }
             .map { it.value.convertTo(DistanceUnits.Millimeters).value }
 
@@ -336,7 +336,7 @@ object Meteorology : IWeatherService {
             var hasDrySummer = pSDry < 40 && pSDry < pWWet / 3
             var hasDryWinter = pWDry < pSWet / 10
 
-            if (hasDryWinter && hasDrySummer){
+            if (hasDryWinter && hasDrySummer) {
                 hasDrySummer = pSTotal <= pWTotal
                 hasDryWinter = !hasDrySummer
             }

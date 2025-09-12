@@ -76,11 +76,11 @@ internal object ForecastHelper {
     private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {
         temperatures ?: return null
 
-        if (temperatures.start.celsius().temperature > 0) {
+        if (temperatures.start.celsius().value > 0) {
             return WeatherCondition.Rain
         }
 
-        if (temperatures.end.celsius().temperature <= 0) {
+        if (temperatures.end.celsius().value <= 0) {
             return WeatherCondition.Snow
         }
 
