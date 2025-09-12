@@ -45,13 +45,13 @@ class MeteorologyTest {
     @ParameterizedTest
     @MethodSource("provideTendencies")
     fun tendency(
-        last: Pressure,
-        current: Pressure,
+        lastHpa: Float,
+        currentHpa: Float,
         duration: Duration,
         threshold: Float,
         expectedTendency: PressureTendency
     ) {
-        val tendency = Meteorology.getTendency(last, current, duration, threshold)
+        val tendency = Meteorology.getTendency(Pressure.hpa(lastHpa), Pressure.hpa(currentHpa), duration, threshold)
         assertEquals(expectedTendency, tendency)
     }
 
@@ -109,28 +109,27 @@ class MeteorologyTest {
     @ParameterizedTest
     @MethodSource("provideSeaLevelPressure")
     fun convertsToSeaLevel(
-        pressure: Pressure,
+        pressureHpa: Float,
         altitudeMeters: Float,
         temperature: Temperature?,
-        expected: Pressure
+        expectedPressureHpa: Float
     ) {
         val altitude = Distance.meters(altitudeMeters)
-        val reading = Meteorology.getSeaLevelPressure(pressure, altitude, temperature)
-        assertEquals(expected.pressure, reading.pressure, 0.1f)
-        assertEquals(expected.units, reading.units)
+        val reading = Meteorology.getSeaLevelPressure(Pressure.hpa(pressureHpa), altitude, temperature)
+        assertEquals(expectedPressureHpa, reading.hpa().pressure, 0.1f)
     }
 
     @ParameterizedTest
     @MethodSource("provideHighPressures")
-    fun isHigh(pressure: Pressure, isHigh: Boolean) {
-        val ret = Meteorology.isHighPressure(pressure)
+    fun isHigh(pressureHpa: Float, isHigh: Boolean) {
+        val ret = Meteorology.isHighPressure(Pressure.hpa(pressureHpa))
         assertEquals(isHigh, ret)
     }
 
     @ParameterizedTest
     @MethodSource("provideLowPressures")
-    fun isLow(pressure: Pressure, isLow: Boolean) {
-        val ret = Meteorology.isLowPressure(pressure)
+    fun isLow(pressureHpa: Float, isLow: Boolean) {
+        val ret = Meteorology.isLowPressure(Pressure.hpa(pressureHpa))
         assertEquals(isLow, ret)
     }
 
@@ -141,17 +140,56 @@ class MeteorologyTest {
             Triple(
                 "Af",
                 monthlyTemperatures(26f, 26f, 26f, 26f, 26f, 25f, 25f, 26f, 26f, 26f, 26f, 26f),
-                monthlyPrecipitation(240.8f, 230f, 256.2f, 256.2f, 212f, 150.6f, 121.2f, 126.1f, 147.5f, 193.6f, 205.8f, 222.6f)
+                monthlyPrecipitation(
+                    240.8f,
+                    230f,
+                    256.2f,
+                    256.2f,
+                    212f,
+                    150.6f,
+                    121.2f,
+                    126.1f,
+                    147.5f,
+                    193.6f,
+                    205.8f,
+                    222.6f
+                )
             ),
             Triple(
                 "Am",
                 monthlyTemperatures(27f, 27f, 27f, 27f, 27f, 27f, 27f, 28f, 28f, 28f, 28f, 28f),
-                monthlyPrecipitation(228.5f, 281.8f, 279.5f, 240.6f, 153.9f, 73.6f, 45.8f, 48f, 67.6f, 97.9f, 122.6f, 167.8f)
+                monthlyPrecipitation(
+                    228.5f,
+                    281.8f,
+                    279.5f,
+                    240.6f,
+                    153.9f,
+                    73.6f,
+                    45.8f,
+                    48f,
+                    67.6f,
+                    97.9f,
+                    122.6f,
+                    167.8f
+                )
             ),
             Triple(
                 "As",
                 monthlyTemperatures(22f, 23f, 22f, 22f, 21f, 19f, 19f, 21f, 23f, 23f, 22f, 22f),
-                monthlyPrecipitation(203.2f, 178.9f, 168.5f, 82.3f, 20.2f, 6.2f, 3.1f, 9.8f, 34.6f, 103.3f, 185.6f, 220f)
+                monthlyPrecipitation(
+                    203.2f,
+                    178.9f,
+                    168.5f,
+                    82.3f,
+                    20.2f,
+                    6.2f,
+                    3.1f,
+                    9.8f,
+                    34.6f,
+                    103.3f,
+                    185.6f,
+                    220f
+                )
             ),
 
             // Dry
@@ -163,7 +201,32 @@ class MeteorologyTest {
             Triple(
                 "BSk",
                 monthlyTemperatures(2f, 4f, 9f, 14f, 19f, 24f, 26f, 25f, 21f, 14f, 8f, 2f),
-                monthlyPrecipitation(3.9f, 7.1f, 19.4f, 31.1f, 54.6f, 65.5f, 54f, 56f, 43.7f, 33f, 15.3f, 6.8f, 69.8f, 57.5f, 26.6f, 6.7f, 1.2f, 0f, 0f, 0f, 0f, 5.9f, 26.8f, 59.1f)
+                monthlyPrecipitation(
+                    3.9f,
+                    7.1f,
+                    19.4f,
+                    31.1f,
+                    54.6f,
+                    65.5f,
+                    54f,
+                    56f,
+                    43.7f,
+                    33f,
+                    15.3f,
+                    6.8f,
+                    69.8f,
+                    57.5f,
+                    26.6f,
+                    6.7f,
+                    1.2f,
+                    0f,
+                    0f,
+                    0f,
+                    0f,
+                    5.9f,
+                    26.8f,
+                    59.1f
+                )
             ),
 
             // Temperate
@@ -175,7 +238,32 @@ class MeteorologyTest {
             Triple(
                 "Csb",
                 monthlyTemperatures(5, 6, 8, 11, 14, 17, 20, 20, 17, 12, 8, 4),
-                monthlyPrecipitation(188.9, 167.6, 145.5, 100.6, 63.3, 41.1, 12.8, 13.6, 44.3, 114.1, 223.2, 221.9, 61.4, 27.5, 0.9, 0, 0, 0, 0, 0, 0, 0.1, 9.1, 51.9)
+                monthlyPrecipitation(
+                    188.9,
+                    167.6,
+                    145.5,
+                    100.6,
+                    63.3,
+                    41.1,
+                    12.8,
+                    13.6,
+                    44.3,
+                    114.1,
+                    223.2,
+                    221.9,
+                    61.4,
+                    27.5,
+                    0.9,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0.1,
+                    9.1,
+                    51.9
+                )
             ),
             Triple(
                 "Cwb",
@@ -185,19 +273,94 @@ class MeteorologyTest {
             Triple(
                 "Cfc",
                 monthlyTemperatures(1, 1, 1, 3, 7, 10, 11, 11, 8, 5, 3, 1),
-                monthlyPrecipitation(99, 102, 88, 69, 56, 49, 59, 80, 106, 105, 103, 103, 214, 199, 154, 41, 2, 0, 0, 0, 0, 8, 61, 164)
+                monthlyPrecipitation(
+                    99,
+                    102,
+                    88,
+                    69,
+                    56,
+                    49,
+                    59,
+                    80,
+                    106,
+                    105,
+                    103,
+                    103,
+                    214,
+                    199,
+                    154,
+                    41,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    8,
+                    61,
+                    164
+                )
             ),
 
             // Continental
             Triple(
                 "Dsa",
                 monthlyTemperatures(-1, 0, 5, 10, 15, 21, 25, 25, 20, 13, 6, 1),
-                monthlyPrecipitation(19, 23, 32, 35, 24, 8, 1, 1, 6, 27, 34, 29, 134, 123, 33, 6, 0, 0, 0, 0, 0,2, 28, 71)
+                monthlyPrecipitation(
+                    19,
+                    23,
+                    32,
+                    35,
+                    24,
+                    8,
+                    1,
+                    1,
+                    6,
+                    27,
+                    34,
+                    29,
+                    134,
+                    123,
+                    33,
+                    6,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    28,
+                    71
+                )
             ),
             Triple(
                 "Dsb",
                 monthlyTemperatures(-8, -7, -1, 6, 11, 16, 20, 20, 15, 8, 1, -5),
-                monthlyPrecipitation(4, 6, 23, 46, 43, 19, 8, 5, 12, 34, 31, 13, 310, 362, 187, 44, 1, 0, 0, 0, 0, 5, 70, 254)
+                monthlyPrecipitation(
+                    4,
+                    6,
+                    23,
+                    46,
+                    43,
+                    19,
+                    8,
+                    5,
+                    12,
+                    34,
+                    31,
+                    13,
+                    310,
+                    362,
+                    187,
+                    44,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    70,
+                    254
+                )
             ),
             Triple(
                 "Dwc",
@@ -207,19 +370,94 @@ class MeteorologyTest {
             Triple(
                 "Dfd",
                 monthlyTemperatures(-39, -31, -26, -17, -6, 5, 12, 10, 4, -6, -19, -27),
-                monthlyPrecipitation(0, 0, 0, 0, 10, 38, 56, 53, 43, 13, 1, 0, 136, 131, 75, 168, 178, 46, 0, 0, 32, 134, 138, 83)
+                monthlyPrecipitation(
+                    0,
+                    0,
+                    0,
+                    0,
+                    10,
+                    38,
+                    56,
+                    53,
+                    43,
+                    13,
+                    1,
+                    0,
+                    136,
+                    131,
+                    75,
+                    168,
+                    178,
+                    46,
+                    0,
+                    0,
+                    32,
+                    134,
+                    138,
+                    83
+                )
             ),
 
             // Polar
             Triple(
                 "ET",
                 monthlyTemperatures(-24, -25, -24, -16, -5, 2, 6, 4, -2, -10, -16, -21),
-                monthlyPrecipitation(0, 0, 0, 0, 3, 17, 38, 43, 16, 3, 1, 1, 23, 22, 17, 33, 34, 19, 2, 17, 82, 148, 78, 42)
+                monthlyPrecipitation(
+                    0,
+                    0,
+                    0,
+                    0,
+                    3,
+                    17,
+                    38,
+                    43,
+                    16,
+                    3,
+                    1,
+                    1,
+                    23,
+                    22,
+                    17,
+                    33,
+                    34,
+                    19,
+                    2,
+                    17,
+                    82,
+                    148,
+                    78,
+                    42
+                )
             ),
             Triple(
                 "EF",
                 monthlyTemperatures(-24, -25, -24, -16, -5, -2, -1, -1, -2, -10, -16, -21),
-                monthlyPrecipitation(0, 0, 0, 0, 3, 17, 38, 43, 16, 3, 1, 1, 23, 22, 17, 33, 34, 19, 2, 17, 82, 148, 78, 42)
+                monthlyPrecipitation(
+                    0,
+                    0,
+                    0,
+                    0,
+                    3,
+                    17,
+                    38,
+                    43,
+                    16,
+                    3,
+                    1,
+                    1,
+                    23,
+                    22,
+                    17,
+                    33,
+                    34,
+                    19,
+                    2,
+                    17,
+                    82,
+                    148,
+                    78,
+                    42
+                )
             ),
         )
 
@@ -247,7 +485,7 @@ class MeteorologyTest {
             oct: Number,
             nov: Number,
             dec: Number
-       ): Map<Month, Temperature> {
+        ): Map<Month, Temperature> {
             return mapOf(
                 Month.JANUARY to Temperature.celsius(jan.toFloat()),
                 Month.FEBRUARY to Temperature.celsius(feb.toFloat()),
@@ -309,64 +547,34 @@ class MeteorologyTest {
         @JvmStatic
         fun provideLowPressures(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Pressure(1000f, PressureUnits.Hpa), true),
-                Arguments.of(Pressure(1009.144f, PressureUnits.Hpa), true),
-                Arguments.of(Pressure(1009.145f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1013f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1030f, PressureUnits.Hpa), false),
+                Arguments.of(1000f, true),
+                Arguments.of(1009.144f, true),
+                Arguments.of(1009.145f, false),
+                Arguments.of(1013f, false),
+                Arguments.of(1030f, false),
             )
         }
 
         @JvmStatic
         fun provideHighPressures(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Pressure(1000f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1013f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1022.688f, PressureUnits.Hpa), false),
-                Arguments.of(Pressure(1022.689f, PressureUnits.Hpa), true),
-                Arguments.of(Pressure(1030f, PressureUnits.Hpa), true),
+                Arguments.of(1000f, false),
+                Arguments.of(1013f, false),
+                Arguments.of(1022.688f, false),
+                Arguments.of(1022.689f, true),
+                Arguments.of(1030f, true),
             )
         }
 
         @JvmStatic
         fun provideSeaLevelPressure(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(
-                    Pressure(0f, PressureUnits.Hpa),
-                    0f,
-                    null,
-                    Pressure(0f, PressureUnits.Hpa)
-                ),
-                Arguments.of(
-                    Pressure(0f, PressureUnits.Hpa),
-                    0f,
-                    Temperature(0f, TemperatureUnits.C),
-                    Pressure(0f, PressureUnits.Hpa)
-                ),
-                Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    -100f,
-                    null,
-                    Pressure(988.2f, PressureUnits.Hpa)
-                ),
-                Arguments.of(
-                    Pressure(980f, PressureUnits.Hpa),
-                    200f,
-                    null,
-                    Pressure(1003.48f, PressureUnits.Hpa)
-                ),
-                Arguments.of(
-                    Pressure(980f, PressureUnits.Hpa),
-                    1000f,
-                    Temperature(15f, TemperatureUnits.C),
-                    Pressure(1101.93f, PressureUnits.Hpa)
-                ),
-                Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    -100f,
-                    Temperature(28f, TemperatureUnits.C),
-                    Pressure(988.71f, PressureUnits.Hpa)
-                ),
+                Arguments.of(0f, 0f, null, 0f),
+                Arguments.of(0f, 0f, Temperature(0f, TemperatureUnits.C), 0f),
+                Arguments.of(1000f, -100f, null, 988.2f),
+                Arguments.of(980f, 200f, null, 1003.48f),
+                Arguments.of(980f, 1000f, Temperature(15f, TemperatureUnits.C), 1101.93f),
+                Arguments.of(1000f, -100f, Temperature(28f, TemperatureUnits.C), 988.71f),
             )
         }
 
@@ -1028,85 +1236,85 @@ class MeteorologyTest {
         fun provideTendencies(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1000f,
+                    1000f,
                     Duration.ofHours(3),
                     2f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1001f, PressureUnits.Hpa),
+                    1000f,
+                    1001f,
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 1 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1004f, PressureUnits.Hpa),
+                    1000f,
+                    1004f,
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1003f, PressureUnits.Hpa),
+                    1000f,
+                    1003f,
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Rising, 1f)
                 ),
                 Arguments.of(
-                    Pressure(1004f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1004f,
+                    1000f,
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1002f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1002f,
+                    1000f,
                     Duration.ofHours(3),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1002f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1002f,
+                    1000f,
                     Duration.ofHours(3),
                     1 / 3f,
                     PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
                 ),
                 Arguments.of(
-                    Pressure(1003f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1003f,
+                    1000f,
                     Duration.ofHours(3),
                     1 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
-                    Pressure(1002f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1002f,
+                    1000f,
                     Duration.ofHours(2),
                     1 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -1f)
                 ),
                 Arguments.of(
-                    Pressure(1008f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1008f,
+                    1000f,
                     Duration.ofHours(4),
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.FallingFast, -2f)
                 ),
                 Arguments.of(
-                    Pressure(1000f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1000f,
+                    1000f,
                     Duration.ZERO,
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)
                 ),
                 Arguments.of(
-                    Pressure(1000.1f, PressureUnits.Hpa),
-                    Pressure(1000f, PressureUnits.Hpa),
+                    1000.1f,
+                    1000f,
                     Duration.ZERO,
                     2 / 3f,
                     PressureTendency(PressureCharacteristic.Steady, 0f)

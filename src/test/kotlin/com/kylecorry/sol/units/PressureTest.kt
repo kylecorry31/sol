@@ -12,7 +12,7 @@ internal class PressureTest {
     @ParameterizedTest
     @MethodSource("providePressures")
     fun convertPressure(pressure: Float, from: PressureUnits, to: PressureUnits, expected: Float) {
-        val p = Pressure(pressure, from).convertTo(to)
+        val p = Pressure.from(pressure, from).convertTo(to)
         assertEquals(expected, p.pressure, 0.01f)
         assertEquals(to, p.units)
     }

@@ -292,10 +292,10 @@ internal class OceanographyServiceTest {
 
     @Test
     fun canCalculateDepth() {
-        val currentPressure = Pressure(2222.516f, PressureUnits.Hpa)
+        val currentPressure = Pressure.hpa(2222.516f)
         val service = OceanographyService()
 
-        val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
+        val depth = service.getDepth(currentPressure, Pressure.hpa(1013f))
 
         val expected = Distance.from(12f, DistanceUnits.Meters)
 
@@ -304,10 +304,10 @@ internal class OceanographyServiceTest {
 
     @Test
     fun depthReturnsZeroWhenAboveWater() {
-        val currentPressure = Pressure(1000f, PressureUnits.Hpa)
+        val currentPressure = Pressure.hpa(1000f)
         val service = OceanographyService()
 
-        val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
+        val depth = service.getDepth(currentPressure, Pressure.hpa(1013f))
 
         val expected = Distance.from(0f, DistanceUnits.Meters)
 

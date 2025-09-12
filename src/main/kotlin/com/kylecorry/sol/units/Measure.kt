@@ -19,22 +19,6 @@ internal fun <T : Enum<T>> packMeasure(value: Float, unit: T): Measure {
     return (value.toBits().toLong() and 0xFFFFFFFF) or ((unit.ordinal.toLong() and 0xFFFFFFFF) shl 32)
 }
 
-
-@JvmInline
-value class PressureMeasure private constructor(private val measure: Measure) {
-    val value: Float
-        get() = measureValue(measure)
-
-    val unit: PressureUnits
-        get() = measureUnit<PressureUnits>(measure)
-
-    companion object {
-        fun from(value: Float, unit: PressureUnits): PressureMeasure {
-            return PressureMeasure(packMeasure(value, unit))
-        }
-    }
-}
-
 @JvmInline
 value class TemperatureMeasure private constructor(private val measure: Measure) {
     val value: Float

@@ -35,7 +35,7 @@ object Meteorology : IWeatherService {
             hpa * (1 - meters / 44330.0).pow(-5.255).toFloat()
         }
 
-        return Pressure(adjustedPressure, PressureUnits.Hpa).convertTo(pressure.units)
+        return Pressure.hpa(adjustedPressure).convertTo(pressure.units)
     }
 
     override fun isHighPressure(pressure: Pressure): Boolean {
