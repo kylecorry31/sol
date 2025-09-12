@@ -30,7 +30,7 @@ class PhysicsTest {
 
     @Test
     fun getTrajectory2D() {
-        val initialVelocity = Speed(2670f, DistanceUnits.Feet, TimeUnits.Seconds).convertTo(
+        val initialVelocity = Speed.from(2670f, DistanceUnits.Feet, TimeUnits.Seconds).convertTo(
             DistanceUnits.Meters,
             TimeUnits.Seconds
         ).speed
@@ -125,7 +125,7 @@ class PhysicsTest {
             )
             assertEquals(
                 expected.third,
-                Speed(actual.velocity.x, DistanceUnits.Meters, TimeUnits.Seconds).convertTo(
+                Speed.from(actual.velocity.x, DistanceUnits.Meters, TimeUnits.Seconds).convertTo(
                     DistanceUnits.Feet,
                     TimeUnits.Seconds
                 ).speed,
@@ -141,7 +141,7 @@ class PhysicsTest {
     @CsvSource("1, 2, 2")
     fun getKineticEnergy(mass: Float, speed: Float, expected: Float) {
         val kilograms = Weight.from(mass, WeightUnits.Kilograms)
-        val metersPerSecond = Speed(speed, DistanceUnits.Meters, TimeUnits.Seconds)
+        val metersPerSecond = Speed.from(speed, DistanceUnits.Meters, TimeUnits.Seconds)
         val joules = Physics.getKineticEnergy(kilograms, metersPerSecond).convertTo(
             EnergyUnits.Joules
         ).value
