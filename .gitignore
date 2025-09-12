@@ -16,3 +16,5 @@
 /science/harmonics.csv
 .kotlin/
 temp/
+.idea/copilot.data.migration.agent.xml
+.idea/copilot.data.migration.edit.xml

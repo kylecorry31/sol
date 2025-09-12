@@ -40,6 +40,6 @@ class AzimuthalEquidistantProjection(
             false
         )
         val distance = centerPixel.distanceTo(pixel) / scale
-        return centerLocation.plus(distance.toDouble(), Bearing(angle))
+        return centerLocation.plus(distance.toDouble(), Bearing.from(angle))
     }
 }

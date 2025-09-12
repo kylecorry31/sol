@@ -25,7 +25,7 @@ object Meteorology : IWeatherService {
         pressure: Pressure, altitude: Distance, temperature: Temperature?
     ): Pressure {
         val hpa = pressure.hpa().pressure
-        val meters = altitude.meters().distance
+        val meters = altitude.meters().value
         val celsius = temperature?.celsius()?.temperature
         val adjustedPressure = if (celsius != null) {
             hpa * (1 - ((0.0065f * meters) / (celsius + 0.0065f * meters + 273.15f))).pow(
@@ -197,7 +197,7 @@ object Meteorology : IWeatherService {
 
     override fun isLightningStrikeDangerous(distance: Distance): Boolean {
         // https://www.weather.gov/media/zhu/ZHU_Training_Page/lightning_stuff/lightning/lightning_facts.pdf
-        return distance.meters().distance <= 10000
+        return distance.meters().value <= 10000
     }
 
     override fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
@@ -223,8 +223,8 @@ object Meteorology : IWeatherService {
         temperature: Temperature, baseElevation: Distance, destElevation: Distance
     ): Temperature {
         val celsius = temperature.celsius().temperature
-        val baseMeters = baseElevation.meters().distance
-        val destMeters = destElevation.meters().distance
+        val baseMeters = baseElevation.meters().value
+        val destMeters = destElevation.meters().value
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
         return Temperature(temp, TemperatureUnits.C).convertTo(temperature.units)
     }
@@ -255,7 +255,7 @@ object Meteorology : IWeatherService {
 
         val temps = temperatures.entries.sortedBy { it.key.value }.map { it.value.celsius().temperature }
         val precip = precipitation.entries.sortedBy { it.key.value }
-            .map { it.value.convertTo(DistanceUnits.Millimeters).distance }
+            .map { it.value.convertTo(DistanceUnits.Millimeters).value }
 
         val months1 = listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
         val months2 = listOf(Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER, Month.JANUARY, Month.FEBRUARY, Month.MARCH)

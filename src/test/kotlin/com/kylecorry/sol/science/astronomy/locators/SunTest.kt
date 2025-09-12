@@ -18,10 +18,10 @@ internal class SunTest {
     @Test
     fun getDistance() {
         val dist = sun.getDistance(UniversalTime.of(2021, 9, 3, 0, 0))
-        assertEquals(150915932.659f, dist.distance, 1000f)
+        assertEquals(150915932.659f, dist.value, 1000f)
 
         val dist2 = sun.getDistance(UniversalTime.of(2015, 2, 15, 0, 0))
-        assertEquals(1.478E08f, dist2.distance, 100000f)
+        assertEquals(1.478E08f, dist2.value, 100000f)
     }
 
     @Test

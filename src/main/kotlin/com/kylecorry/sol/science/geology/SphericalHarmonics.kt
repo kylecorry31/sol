@@ -122,7 +122,7 @@ internal class SphericalHarmonics(
         val gdLongitudeDeg = coordinate.longitude.toFloat()
         val gdLatitudeDeg = coordinate.latitude.toFloat().coerceIn(-90f + 1e-5f, 90f - 1e-5f)
         val gdLatitudeRad = gdLatitudeDeg.toRadians()
-        val altitudeMeters = altitude.meters().distance
+        val altitudeMeters = altitude.meters().value
         val geocentric = computeGeocentricCoordinates(gdLatitudeDeg, gdLongitudeDeg, altitudeMeters)
         val mGcLongitudeRad = geocentric.x
         val mGcLatitudeRad = geocentric.y

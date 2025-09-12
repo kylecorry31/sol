@@ -21,7 +21,7 @@ fun assertk.Assert<Coordinate>.isCloseTo(other: Coordinate, meters: Float) {
 
 fun assertk.Assert<Distance>.isCloseTo(other: Distance, tolerance: Float) {
     prop("units", Distance::units).isEqualTo(other.units)
-    prop("value", Distance::distance).isCloseTo(other.distance, tolerance)
+    prop("value", Distance::value).isCloseTo(other.value, tolerance)
 }
 
 fun <T> parametrized(cases: Collection<T>, test: (case: T) -> Unit) {

@@ -69,8 +69,8 @@ internal class CloudService : ICloudService {
     override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
         if (level == CloudLevel.Low) {
             return Range(
-                Distance(0f, DistanceUnits.Kilometers),
-                Distance(2f, DistanceUnits.Kilometers)
+                Distance.from(0f, DistanceUnits.Kilometers),
+                Distance.from(2f, DistanceUnits.Kilometers)
             )
         }
 
@@ -89,12 +89,12 @@ internal class CloudService : ICloudService {
 
         return when (level) {
             CloudLevel.Mid -> Range(
-                Distance(2f, DistanceUnits.Kilometers),
-                Distance(highStart, DistanceUnits.Kilometers)
+                Distance.from(2f, DistanceUnits.Kilometers),
+                Distance.from(highStart, DistanceUnits.Kilometers)
             )
             else -> Range(
-                Distance(highStart, DistanceUnits.Kilometers),
-                Distance(highEnd, DistanceUnits.Kilometers)
+                Distance.from(highStart, DistanceUnits.Kilometers),
+                Distance.from(highEnd, DistanceUnits.Kilometers)
             )
         }
     }

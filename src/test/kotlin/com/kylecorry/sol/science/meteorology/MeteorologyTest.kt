@@ -85,8 +85,8 @@ class MeteorologyTest {
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikeDistances")
-    fun lightningStrikeDanger(distance: Distance, expected: Boolean) {
-        val danger = Meteorology.isLightningStrikeDangerous(distance)
+    fun lightningStrikeDanger(distanceMeters: Float, expected: Boolean) {
+        val danger = Meteorology.isLightningStrikeDangerous(Distance.meters(distanceMeters))
         assertEquals(expected, danger)
     }
 
@@ -110,10 +110,11 @@ class MeteorologyTest {
     @MethodSource("provideSeaLevelPressure")
     fun convertsToSeaLevel(
         pressure: Pressure,
-        altitude: Distance,
+        altitudeMeters: Float,
         temperature: Temperature?,
         expected: Pressure
     ) {
+        val altitude = Distance.meters(altitudeMeters)
         val reading = Meteorology.getSeaLevelPressure(pressure, altitude, temperature)
         assertEquals(expected.pressure, reading.pressure, 0.1f)
         assertEquals(expected.units, reading.units)
@@ -290,18 +291,18 @@ class MeteorologyTest {
             decSnow: Number = 0
         ): Map<Month, Distance> {
             return mapOf(
-                Month.JANUARY to Distance(jan.toFloat() + janSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.FEBRUARY to Distance(feb.toFloat() + febSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.MARCH to Distance(mar.toFloat() + marSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.APRIL to Distance(apr.toFloat() + aprSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.MAY to Distance(may.toFloat() + maySnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.JUNE to Distance(jun.toFloat() + junSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.JULY to Distance(jul.toFloat() + julSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.AUGUST to Distance(aug.toFloat() + augSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.SEPTEMBER to Distance(sep.toFloat() + sepSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.OCTOBER to Distance(oct.toFloat() + octSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.NOVEMBER to Distance(nov.toFloat() + novSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.DECEMBER to Distance(dec.toFloat() + decSnow.toFloat() / 10, DistanceUnits.Millimeters)
+                Month.JANUARY to Distance.from(jan.toFloat() + janSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.FEBRUARY to Distance.from(feb.toFloat() + febSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.MARCH to Distance.from(mar.toFloat() + marSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.APRIL to Distance.from(apr.toFloat() + aprSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.MAY to Distance.from(may.toFloat() + maySnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.JUNE to Distance.from(jun.toFloat() + junSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.JULY to Distance.from(jul.toFloat() + julSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.AUGUST to Distance.from(aug.toFloat() + augSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.SEPTEMBER to Distance.from(sep.toFloat() + sepSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.OCTOBER to Distance.from(oct.toFloat() + octSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.NOVEMBER to Distance.from(nov.toFloat() + novSnow.toFloat() / 10, DistanceUnits.Millimeters),
+                Month.DECEMBER to Distance.from(dec.toFloat() + decSnow.toFloat() / 10, DistanceUnits.Millimeters)
             )
         }
 
@@ -332,37 +333,37 @@ class MeteorologyTest {
             return Stream.of(
                 Arguments.of(
                     Pressure(0f, PressureUnits.Hpa),
-                    Distance.meters(0f),
+                    0f,
                     null,
                     Pressure(0f, PressureUnits.Hpa)
                 ),
                 Arguments.of(
                     Pressure(0f, PressureUnits.Hpa),
-                    Distance.meters(0f),
+                    0f,
                     Temperature(0f, TemperatureUnits.C),
                     Pressure(0f, PressureUnits.Hpa)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
-                    Distance.meters(-100f),
+                    -100f,
                     null,
                     Pressure(988.2f, PressureUnits.Hpa)
                 ),
                 Arguments.of(
                     Pressure(980f, PressureUnits.Hpa),
-                    Distance.meters(200f),
+                    200f,
                     null,
                     Pressure(1003.48f, PressureUnits.Hpa)
                 ),
                 Arguments.of(
                     Pressure(980f, PressureUnits.Hpa),
-                    Distance.meters(1000f),
+                    1000f,
                     Temperature(15f, TemperatureUnits.C),
                     Pressure(1101.93f, PressureUnits.Hpa)
                 ),
                 Arguments.of(
                     Pressure(1000f, PressureUnits.Hpa),
-                    Distance.meters(-100f),
+                    -100f,
                     Temperature(28f, TemperatureUnits.C),
                     Pressure(988.71f, PressureUnits.Hpa)
                 ),
@@ -1172,10 +1173,10 @@ class MeteorologyTest {
         @JvmStatic
         fun provideLightningStrikeDistances(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Distance.kilometers(10f), true),
-                Arguments.of(Distance.kilometers(10.1f), false),
-                Arguments.of(Distance.meters(10000f), true),
-                Arguments.of(Distance.meters(100f), true),
+                Arguments.of(Distance.kilometers(10f).meters().value, true),
+                Arguments.of(Distance.kilometers(10.1f).meters().value, false),
+                Arguments.of(10000f, true),
+                Arguments.of(100f, true),
             )
         }
 

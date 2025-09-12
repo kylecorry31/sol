@@ -17,7 +17,7 @@ object Optics {
      * @return The angular size in degrees
      */
     fun getAngularSize(diameter: Distance, distance: Distance): Float {
-        return getAngularSize(diameter.meters().distance, distance.meters().distance)
+        return getAngularSize(diameter.meters().value, distance.meters().value)
     }
 
     /**
@@ -174,12 +174,12 @@ object Optics {
     }
 
     fun luxToCandela(lux: Float, distance: Distance): Float {
-        val meters = distance.meters().distance
+        val meters = distance.meters().value
         return lux * meters * meters
     }
 
     fun luxAtDistance(candela: Float, distance: Distance): Float {
-        val meters = distance.meters().distance
+        val meters = distance.meters().value
         return candela / (meters * meters)
     }
 

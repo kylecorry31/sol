@@ -43,9 +43,9 @@ internal class GeologyTest {
     @Test
     fun triangulateSelf() {
         val pointA = Coordinate(40.0, 10.0)
-        val bearingA = Bearing(220f)
+        val bearingA = Bearing.from(220f)
         val pointB = Coordinate(40.5, 9.5)
-        val bearingB = Bearing(295f)
+        val bearingB = Bearing.from(295f)
 
         val expected = Coordinate(40.229722, 10.252778)
         val actual = Geology.triangulateSelf(pointA, bearingA, pointB, bearingB)
@@ -76,9 +76,9 @@ internal class GeologyTest {
         lonExpected: Double?,
     ) {
         val pointA = Coordinate(latA, lonA)
-        val bearingA = Bearing(degA)
+        val bearingA = Bearing.from(degA)
         val pointB = Coordinate(latB, lonB)
-        val bearingB = Bearing(degB)
+        val bearingB = Bearing.from(degB)
         val expected = if (latExpected == null || lonExpected == null) null else Coordinate(latExpected, lonExpected)
 
         val actual = Geology.triangulateDestination(pointA, bearingA, pointB, bearingB)
@@ -93,7 +93,7 @@ internal class GeologyTest {
     @Test
     fun deadReckon() {
         val start = Coordinate(40.0, 10.0)
-        val bearing = Bearing(280f)
+        val bearing = Bearing.from(280f)
         val distance = 10000f
 
         val expected = Coordinate(39.984444, 10.115556)
@@ -109,7 +109,7 @@ internal class GeologyTest {
 
         val vector = Geology.navigate(start, end, 0f, true)
 
-        assertThat(vector.direction.value).isCloseTo(Bearing(-41.7683f).value, 0.005f)
+        assertThat(vector.direction.value).isCloseTo(Bearing.from(-41.7683f).value, 0.005f)
         assertThat(vector.distance).isCloseTo(1488793.6f, 0.005f)
     }
 
@@ -172,11 +172,11 @@ internal class GeologyTest {
 
     @Test
     fun getMapDistanceVerbal() {
-        val measurement = Distance(1f, DistanceUnits.Inches)
-        val scaleFrom = Distance(2f, DistanceUnits.Centimeters)
-        val scaleTo = Distance(0.5f, DistanceUnits.Kilometers)
+        val measurement = Distance.from(1f, DistanceUnits.Inches)
+        val scaleFrom = Distance.from(2f, DistanceUnits.Centimeters)
+        val scaleTo = Distance.from(0.5f, DistanceUnits.Kilometers)
 
-        val expected = Distance(0.635f, DistanceUnits.Kilometers)
+        val expected = Distance.from(0.635f, DistanceUnits.Kilometers)
 
         val actual = Geology.getMapDistance(measurement, scaleFrom, scaleTo)
 
@@ -185,11 +185,11 @@ internal class GeologyTest {
 
     @Test
     fun getMapDistanceRatio() {
-        val measurement = Distance(1f, DistanceUnits.Inches)
+        val measurement = Distance.from(1f, DistanceUnits.Inches)
         val ratioFrom = 0.5f
         val ratioTo = 1.25f
 
-        val expected = Distance(2.5f, DistanceUnits.Inches)
+        val expected = Distance.from(2.5f, DistanceUnits.Inches)
 
         val actual = Geology.getMapDistance(measurement, ratioFrom, ratioTo)
 
@@ -221,14 +221,14 @@ internal class GeologyTest {
     @MethodSource("provideHeights")
     fun calculateHeights(distance: Float, upAngle: Float, downAngle: Float, expected: Float) {
         val height = Geology.getHeightFromInclination(Distance.meters(distance), downAngle, upAngle)
-        assertEquals(expected, height.distance, 0.01f)
+        assertEquals(expected, height.value, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideDistances")
     fun calculateDistance(height: Float, upAngle: Float, downAngle: Float, expected: Float) {
         val d = Geology.getDistanceFromInclination(Distance.meters(height), downAngle, upAngle)
-        assertEquals(expected, d.distance, 0.01f)
+        assertEquals(expected, d.value, 0.01f)
     }
 
     @ParameterizedTest
@@ -247,7 +247,9 @@ internal class GeologyTest {
 
     @ParameterizedTest
     @MethodSource("provideGradeDistance")
-    fun getSlopeGradeFromDistance(vertical: Distance, horizontal: Distance, expected: Float) {
+    fun getSlopeGradeFromDistance(verticalMeters: Float, horizontalMeters: Float, expected: Float) {
+        val vertical = Distance.meters(verticalMeters)
+        val horizontal = Distance.meters(horizontalMeters)
         val grade = Geology.getSlopeGrade(vertical, horizontal)
         assertEquals(expected, grade, 0.01f)
     }
@@ -366,15 +368,15 @@ internal class GeologyTest {
         @JvmStatic
         fun provideGradeDistance(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Distance.meters(1f), Distance.meters(1f), 100f),
-                Arguments.of(Distance.feet(20f), Distance.feet(1f), 5f),
-                Arguments.of(Distance.feet(20f), Distance.feet(1f).meters(), 5f),
-                Arguments.of(Distance.feet(0f), Distance.feet(10f), Float.POSITIVE_INFINITY),
-                Arguments.of(Distance.feet(0f), Distance.feet(0f), 0f),
-                Arguments.of(Distance.feet(0f), Distance.feet(-10f), Float.NEGATIVE_INFINITY),
-                Arguments.of(Distance.feet(20f), Distance.feet(-1f).meters(), -5f),
-                Arguments.of(Distance.feet(20f), Distance.feet(-1f), -5f),
-                Arguments.of(Distance.meters(1f), Distance.meters(-1f), -100f),
+                Arguments.of(1f, 1f, 100f),
+                Arguments.of(20f, 1f, 5f),
+                Arguments.of(20f, 1f, 5f),
+                Arguments.of(0f, 10f, Float.POSITIVE_INFINITY),
+                Arguments.of(0f, 0f, 0f),
+                Arguments.of(0f, -10f, Float.NEGATIVE_INFINITY),
+                Arguments.of(20f, -1f, -5f),
+                Arguments.of(20f, -1f, -5f),
+                Arguments.of(1f, -1f, -100f),
             )
         }
 
@@ -447,31 +449,31 @@ internal class GeologyTest {
                     Coordinate(53.2611, -0.7972),
                     Coordinate(53.3206, -1.7297),
                     Coordinate(53.1887, 0.1334),
-                    Distance.kilometers(62.333f).meters().distance
+                    Distance.kilometers(62.333f).meters().value
                 ),
                 Arguments.of(
                     Coordinate(1.0, 1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(1.11198e5f).distance
+                    Distance.meters(1.11198e5f).value
                 ),
                 Arguments.of(
                     Coordinate(-1.0, 1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(1.11198e5f).distance
+                    Distance.meters(1.11198e5f).value
                 ),
                 Arguments.of(
                     Coordinate(-1.0, -1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(-1.11198e5f).distance
+                    Distance.meters(-1.11198e5f).value
                 ),
                 Arguments.of(
                     Coordinate(1.0, -1.0),
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
-                    Distance.meters(-1.11198e5f).distance
+                    Distance.meters(-1.11198e5f).value
                 )
             )
         }

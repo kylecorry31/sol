@@ -57,7 +57,7 @@ internal object AstroUtils {
             false,
             if (withParallax) locator.getDistance(ut) else null
         ).azimuth.toFloat()
-        return Bearing(azimuth)
+        return Bearing.from(azimuth)
     }
 
     fun getAzimuth(
@@ -67,7 +67,7 @@ internal object AstroUtils {
         distanceToBody: Distance? = null
     ): Bearing {
         val azimuth = getLocation(coordinate, ut, location, false, distanceToBody).azimuth.toFloat()
-        return Bearing(azimuth)
+        return Bearing.from(azimuth)
     }
 
     fun getLocation(

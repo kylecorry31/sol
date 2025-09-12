@@ -50,7 +50,7 @@ internal class Sun : ICelestialLocator {
     }
 
     fun getAngularDiameter(ut: UniversalTime): Double {
-        val au = getDistance(ut).meters().distance / 149597870700.0
+        val au = getDistance(ut).meters().value / 149597870700.0
         return 2 * 959.63 / (3600 * au)
     }
 

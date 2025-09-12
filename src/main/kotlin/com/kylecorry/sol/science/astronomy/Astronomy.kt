@@ -333,7 +333,7 @@ object Astronomy : IAstronomyService {
             return false
         }
         val distance = getMoonDistance(time)
-        return distance.convertTo(DistanceUnits.Kilometers).distance <= 360000f
+        return distance.convertTo(DistanceUnits.Kilometers).value <= 360000f
     }
 
     override fun getMoonAboveHorizonTimes(
@@ -485,7 +485,7 @@ object Astronomy : IAstronomyService {
             location
         )
         return CelestialObservation(
-            Bearing(horizonCoordinate.azimuth.toFloat()),
+            Bearing.from(horizonCoordinate.azimuth.toFloat()),
             horizonCoordinate.altitude.toFloat()
         )
     }
@@ -758,7 +758,7 @@ object Astronomy : IAstronomyService {
         val diameter = locator.getAngularDiameter(ut)
         val magnitude = locator.getMagnitude(ut)
         return CelestialObservation(
-            Bearing(horizonCoordinate.azimuth.toFloat()),
+            Bearing.from(horizonCoordinate.azimuth.toFloat()),
             horizonCoordinate.altitude.toFloat(),
             diameter.toFloat(),
             magnitude.toFloat(),

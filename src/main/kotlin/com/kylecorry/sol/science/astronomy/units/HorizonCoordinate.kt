@@ -2,7 +2,6 @@ package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.normalizeAngle
 import com.kylecorry.sol.math.SolMath.power
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.tanDegrees
@@ -156,7 +155,7 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
             latitude: Double,
             distanceToBody: Distance
         ): HorizonCoordinate {
-            val sinPi = 6378.14 / distanceToBody.convertTo(DistanceUnits.Kilometers).distance
+            val sinPi = 6378.14 / distanceToBody.convertTo(DistanceUnits.Kilometers).value
             val hourAngle = equatorial.getHourAngle(siderealTime) * 15
 
             val u = atan(0.99664719 * tanDegrees(latitude))

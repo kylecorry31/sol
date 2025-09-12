@@ -15,10 +15,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center)
         assertVector(Vector2.zero, projection.toPixels(center), 0.001f)
-        assertVector(Vector2(0f, 100f), projection.toPixels(center.plus(100.0, Bearing(0f))), 1f)
-        assertVector(Vector2(0f, -100f), projection.toPixels(center.plus(100.0, Bearing(180f))), 1f)
-        assertVector(Vector2(100f, 0f), projection.toPixels(center.plus(100.0, Bearing(90f))), 1f)
-        assertVector(Vector2(-100f, 0f), projection.toPixels(center.plus(100.0, Bearing(270f))), 1f)
+        assertVector(Vector2(0f, 100f), projection.toPixels(center.plus(100.0, Bearing.from(0f))), 1f)
+        assertVector(Vector2(0f, -100f), projection.toPixels(center.plus(100.0, Bearing.from(180f))), 1f)
+        assertVector(Vector2(100f, 0f), projection.toPixels(center.plus(100.0, Bearing.from(90f))), 1f)
+        assertVector(Vector2(-100f, 0f), projection.toPixels(center.plus(100.0, Bearing.from(270f))), 1f)
     }
 
     @Test
@@ -26,10 +26,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, scale = 2f)
         assertVector(Vector2.zero, projection.toPixels(center), 0.001f)
-        assertVector(Vector2(0f, 200f), projection.toPixels(center.plus(100.0, Bearing(0f))), 2f)
-        assertVector(Vector2(0f, -200f), projection.toPixels(center.plus(100.0, Bearing(180f))), 2f)
-        assertVector(Vector2(200f, 0f), projection.toPixels(center.plus(100.0, Bearing(90f))), 2f)
-        assertVector(Vector2(-200f, 0f), projection.toPixels(center.plus(100.0, Bearing(270f))), 2f)
+        assertVector(Vector2(0f, 200f), projection.toPixels(center.plus(100.0, Bearing.from(0f))), 2f)
+        assertVector(Vector2(0f, -200f), projection.toPixels(center.plus(100.0, Bearing.from(180f))), 2f)
+        assertVector(Vector2(200f, 0f), projection.toPixels(center.plus(100.0, Bearing.from(90f))), 2f)
+        assertVector(Vector2(-200f, 0f), projection.toPixels(center.plus(100.0, Bearing.from(270f))), 2f)
     }
 
     @Test
@@ -37,10 +37,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, isYFlipped = true)
         assertVector(Vector2.zero, projection.toPixels(center), 0.001f)
-        assertVector(Vector2(0f, -100f), projection.toPixels(center.plus(100.0, Bearing(0f))), 1f)
-        assertVector(Vector2(0f, 100f), projection.toPixels(center.plus(100.0, Bearing(180f))), 1f)
-        assertVector(Vector2(100f, 0f), projection.toPixels(center.plus(100.0, Bearing(90f))), 1f)
-        assertVector(Vector2(-100f, 0f), projection.toPixels(center.plus(100.0, Bearing(270f))), 1f)
+        assertVector(Vector2(0f, -100f), projection.toPixels(center.plus(100.0, Bearing.from(0f))), 1f)
+        assertVector(Vector2(0f, 100f), projection.toPixels(center.plus(100.0, Bearing.from(180f))), 1f)
+        assertVector(Vector2(100f, 0f), projection.toPixels(center.plus(100.0, Bearing.from(90f))), 1f)
+        assertVector(Vector2(-100f, 0f), projection.toPixels(center.plus(100.0, Bearing.from(270f))), 1f)
     }
 
     @Test
@@ -48,10 +48,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, centerPixel = Vector2(10f, 10f))
         assertVector(Vector2(10f, 10f), projection.toPixels(center), 0.001f)
-        assertVector(Vector2(10f, 110f), projection.toPixels(center.plus(100.0, Bearing(0f))), 1f)
-        assertVector(Vector2(10f, -90f), projection.toPixels(center.plus(100.0, Bearing(180f))), 1f)
-        assertVector(Vector2(110f, 10f), projection.toPixels(center.plus(100.0, Bearing(90f))), 1f)
-        assertVector(Vector2(-90f, 10f), projection.toPixels(center.plus(100.0, Bearing(270f))), 1f)
+        assertVector(Vector2(10f, 110f), projection.toPixels(center.plus(100.0, Bearing.from(0f))), 1f)
+        assertVector(Vector2(10f, -90f), projection.toPixels(center.plus(100.0, Bearing.from(180f))), 1f)
+        assertVector(Vector2(110f, 10f), projection.toPixels(center.plus(100.0, Bearing.from(90f))), 1f)
+        assertVector(Vector2(-90f, 10f), projection.toPixels(center.plus(100.0, Bearing.from(270f))), 1f)
     }
 
     @Test
@@ -59,10 +59,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center)
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2.zero), 1f)
-        assertThat(center.plus(100.0, Bearing(0f))).isCloseTo(projection.toCoordinate(Vector2(0f, 100f)), 1f)
-        assertThat(center.plus(100.0, Bearing(180f))).isCloseTo(projection.toCoordinate(Vector2(0f, -100f)), 1f)
-        assertThat(center.plus(100.0, Bearing(90f))).isCloseTo(projection.toCoordinate(Vector2(100f, 0f)), 1f)
-        assertThat(center.plus(100.0, Bearing(270f))).isCloseTo(projection.toCoordinate(Vector2(-100f, 0f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(0f))).isCloseTo(projection.toCoordinate(Vector2(0f, 100f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(180f))).isCloseTo(projection.toCoordinate(Vector2(0f, -100f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(90f))).isCloseTo(projection.toCoordinate(Vector2(100f, 0f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(270f))).isCloseTo(projection.toCoordinate(Vector2(-100f, 0f)), 1f)
     }
 
     @Test
@@ -70,10 +70,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, scale = 2f)
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2.zero), 1f)
-        assertThat(center.plus(100.0, Bearing(0f))).isCloseTo(projection.toCoordinate(Vector2(0f, 200f)), 1f)
-        assertThat(center.plus(100.0, Bearing(180f))).isCloseTo(projection.toCoordinate(Vector2(0f, -200f)), 1f)
-        assertThat(center.plus(100.0, Bearing(90f))).isCloseTo(projection.toCoordinate(Vector2(200f, 0f)), 1f)
-        assertThat(center.plus(100.0, Bearing(270f))).isCloseTo(projection.toCoordinate(Vector2(-200f, 0f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(0f))).isCloseTo(projection.toCoordinate(Vector2(0f, 200f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(180f))).isCloseTo(projection.toCoordinate(Vector2(0f, -200f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(90f))).isCloseTo(projection.toCoordinate(Vector2(200f, 0f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(270f))).isCloseTo(projection.toCoordinate(Vector2(-200f, 0f)), 1f)
     }
 
     @Test
@@ -81,10 +81,10 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, isYFlipped = true)
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2.zero), 1f)
-        assertThat(center.plus(100.0, Bearing(0f))).isCloseTo(projection.toCoordinate(Vector2(0f, -100f)), 1f)
-        assertThat(center.plus(100.0, Bearing(180f))).isCloseTo(projection.toCoordinate(Vector2(0f, 100f)), 1f)
-        assertThat(center.plus(100.0, Bearing(90f))).isCloseTo(projection.toCoordinate(Vector2(100f, 0f)), 1f)
-        assertThat(center.plus(100.0, Bearing(270f))).isCloseTo(projection.toCoordinate(Vector2(-100f, 0f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(0f))).isCloseTo(projection.toCoordinate(Vector2(0f, -100f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(180f))).isCloseTo(projection.toCoordinate(Vector2(0f, 100f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(90f))).isCloseTo(projection.toCoordinate(Vector2(100f, 0f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(270f))).isCloseTo(projection.toCoordinate(Vector2(-100f, 0f)), 1f)
     }
 
     @Test
@@ -92,9 +92,9 @@ class AzimuthalEquidistantProjectionTest {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, centerPixel = Vector2(10f, 10f))
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2(10f, 10f)), 1f)
-        assertThat(center.plus(100.0, Bearing(0f))).isCloseTo(projection.toCoordinate(Vector2(10f, 110f)), 1f)
-        assertThat(center.plus(100.0, Bearing(180f))).isCloseTo(projection.toCoordinate(Vector2(10f, -90f)), 1f)
-        assertThat(center.plus(100.0, Bearing(90f))).isCloseTo(projection.toCoordinate(Vector2(110f, 10f)), 1f)
-        assertThat(center.plus(100.0, Bearing(270f))).isCloseTo(projection.toCoordinate(Vector2(-90f, 10f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(0f))).isCloseTo(projection.toCoordinate(Vector2(10f, 110f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(180f))).isCloseTo(projection.toCoordinate(Vector2(10f, -90f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(90f))).isCloseTo(projection.toCoordinate(Vector2(110f, 10f)), 1f)
+        assertThat(center.plus(100.0, Bearing.from(270f))).isCloseTo(projection.toCoordinate(Vector2(-90f, 10f)), 1f)
     }
 }

@@ -1,15 +1,10 @@
 package com.kylecorry.sol.science.oceanography
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.roundPlaces
-import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.optimization.GoldenSearchExtremaFinder
 import com.kylecorry.sol.math.statistics.Statistics
-import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.oceanography.waterlevel.*
 import com.kylecorry.sol.time.Time
-import com.kylecorry.sol.time.Time.atEndOfDay
-import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.time.Time.roundNearestMinute
 import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,7 +15,6 @@ import java.io.File
 import java.net.http.HttpClient
 import java.time.*
 import java.util.stream.Stream
-import kotlin.math.acos
 
 internal class OceanographyServiceTest {
     @Test
@@ -303,9 +297,9 @@ internal class OceanographyServiceTest {
 
         val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
 
-        val expected = Distance(12f, DistanceUnits.Meters)
+        val expected = Distance.from(12f, DistanceUnits.Meters)
 
-        assertEquals(expected.distance, depth.distance, 0.1f)
+        assertEquals(expected.value, depth.value, 0.1f)
     }
 
     @Test
@@ -315,7 +309,7 @@ internal class OceanographyServiceTest {
 
         val depth = service.getDepth(currentPressure, Pressure(1013f, PressureUnits.Hpa))
 
-        val expected = Distance(0f, DistanceUnits.Meters)
+        val expected = Distance.from(0f, DistanceUnits.Meters)
 
         assertEquals(expected, depth)
     }

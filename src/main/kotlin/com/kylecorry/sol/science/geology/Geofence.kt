@@ -6,6 +6,6 @@ import com.kylecorry.sol.units.Distance
 data class Geofence(val center: Coordinate, val radius: Distance): IGeoArea {
     override fun contains(location: Coordinate): Boolean {
         val distanceToCenter = location.distanceTo(center)
-        return distanceToCenter <= radius.meters().distance
+        return distanceToCenter <= radius.meters().value
     }
 }

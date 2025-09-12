@@ -28,7 +28,7 @@ class CoordinateTest {
     @Test
     fun canAddDistance() {
         val start = Coordinate(40.0, 10.0)
-        val bearing = Bearing(100f)
+        val bearing = Bearing.from(100f)
         val distance = 10000.0
 
         val expected = Coordinate(39.984444, 10.115556)

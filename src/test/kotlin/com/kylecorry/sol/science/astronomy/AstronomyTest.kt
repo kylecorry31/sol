@@ -7,7 +7,6 @@ import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
 import com.kylecorry.sol.science.astronomy.stars.CONSTELLATIONS
-import com.kylecorry.sol.science.astronomy.stars.Constellation
 import com.kylecorry.sol.science.astronomy.stars.STAR_CATALOG
 import com.kylecorry.sol.science.astronomy.stars.StarReading
 import com.kylecorry.sol.science.shared.Season
@@ -54,7 +53,7 @@ class AstronomyTest {
     fun canGetMoonDistance(time: String, expected: Float) {
         val date = ZonedDateTime.parse(time)
         val distance = Astronomy.getMoonDistance(date)
-        assertEquals(expected, distance.distance, 1f)
+        assertEquals(expected, distance.value, 1f)
     }
 
     @ParameterizedTest
@@ -525,7 +524,7 @@ class AstronomyTest {
         if (visualMagnitude != null) {
             assertEquals(visualMagnitude, actual.visualMagnitude!!, 0.75f)
         }
-        assertEquals(distance, actual.distance!!.distance / 149597871, 0.01f)
+        assertEquals(distance, actual.distance!!.value / 149597871, 0.01f)
     }
 
     @ParameterizedTest
@@ -819,7 +818,7 @@ class AstronomyTest {
         "67.92, 1324.8"
     )
     fun canGetZenithDistance(altitude: Float, expected: Float) {
-        val actual = Astronomy.getZenithDistance(altitude).convertTo(DistanceUnits.NauticalMiles).distance
+        val actual = Astronomy.getZenithDistance(altitude).convertTo(DistanceUnits.NauticalMiles).value
         assertEquals(expected, actual, 0.1f)
     }
 
@@ -841,7 +840,7 @@ class AstronomyTest {
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
-        }.sortedBy { it.second.distance }
+        }.sortedBy { it.second.value }
             .map { it.first }
             .take(numberOfStars)
 
@@ -854,7 +853,7 @@ class AstronomyTest {
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(20f).distance)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(20f).value)
         } else {
             assertNull(actual)
         }
@@ -880,7 +879,7 @@ class AstronomyTest {
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
-        }.sortedBy { it.second.distance }
+        }.sortedBy { it.second.value }
             .map { it.first }
             .take(numberOfStars)
 
@@ -894,7 +893,7 @@ class AstronomyTest {
 
         if (hasFix) {
             assertNotNull(actual)
-            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(10f).distance)
+            assertEquals(0f, actual!!.distanceTo(location), Distance.meters(10f).value)
         } else {
             assertNull(actual)
         }

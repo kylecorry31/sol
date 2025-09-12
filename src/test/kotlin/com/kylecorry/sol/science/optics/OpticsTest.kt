@@ -140,7 +140,7 @@ class OpticsTest {
     )
     fun beamDistance(candela: Float, distanceMeters: Float) {
         val beamDistance = Optics.lightBeamDistance(candela)
-        assertEquals(distanceMeters, beamDistance.distance, 0.5f)
+        assertEquals(distanceMeters, beamDistance.value, 0.5f)
         assertEquals(DistanceUnits.Meters, beamDistance.units)
     }
 

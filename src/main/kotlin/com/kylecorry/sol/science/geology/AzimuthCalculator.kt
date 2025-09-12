@@ -33,7 +33,7 @@ internal object AzimuthCalculator {
             return null
         }
 
-        return Bearing(azimuth.toDegrees())
+        return Bearing.from(azimuth.toDegrees())
     }
 
 

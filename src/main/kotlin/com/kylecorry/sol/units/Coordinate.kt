@@ -33,7 +33,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
     }
 
     fun plus(distance: Distance, bearing: Bearing): Coordinate {
-        return plus(distance.meters().distance.toDouble(), bearing)
+        return plus(distance.meters().value.toDouble(), bearing)
     }
 
     fun plus(meters: Double, bearing: Bearing): Coordinate {
@@ -59,9 +59,9 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
      */
     fun bearingTo(other: Coordinate, highAccuracy: Boolean = true): Bearing {
         return if (highAccuracy) {
-            Bearing(DistanceCalculator.vincenty(this, other)[1])
+            Bearing.from(DistanceCalculator.vincenty(this, other)[1])
         } else {
-            Bearing(DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[1])
+            Bearing.from(DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[1])
         }
     }
 

@@ -1,36 +1,30 @@
 package com.kylecorry.sol.units
 
 import com.kylecorry.sol.math.SolMath.normalizeAngle
-import kotlin.math.roundToInt
 
-class Bearing(_value: Float){
-    val value: Float = if (_value.isNaN() || !_value.isFinite()) 0f else normalizeAngle(_value)
-
+@JvmInline
+value class Bearing private constructor(val value: Float) {
     val direction: CompassDirection
-            get(){
-                val directions = CompassDirection.values()
-                val a = ((value / 45f).roundToInt() * 45f) % 360
-                directions.forEach {
-                    if (a == it.azimuth){
-                        return it
-                    }
-                }
-                return CompassDirection.North
-            }
+        get() = CompassDirection.nearest(value)
 
-    val mils: Float = value * 17.7777778f
+    val mils: Float
+        get() = value * 17.77778f
 
     fun withDeclination(declination: Float): Bearing {
-        return Bearing(value + declination)
+        return from(value + declination)
     }
 
     fun inverse(): Bearing {
-        return Bearing(value + 180)
+        return from(value + 180)
     }
 
     companion object {
         fun from(direction: CompassDirection): Bearing {
-            return Bearing(direction.azimuth)
+            return from(direction.azimuth)
+        }
+
+        fun from(value: Float): Bearing {
+            return Bearing(if (value.isNaN() || !value.isFinite()) 0f else normalizeAngle(value))
         }
 
         fun getBearing(degrees: Float): Float {

@@ -12,7 +12,7 @@ internal class BearingTest {
     @ParameterizedTest
     @MethodSource("provideDirection")
     fun getDirection(azimuth: Float, expected: CompassDirection) {
-        val bearing = Bearing(azimuth)
+        val bearing = Bearing.from(azimuth)
         assertEquals(expected, bearing.direction)
     }
 
@@ -27,20 +27,20 @@ internal class BearingTest {
     @ParameterizedTest
     @MethodSource("provideAzimuth")
     fun value(azimuth: Float, expected: Float){
-        val bearing = Bearing(azimuth)
+        val bearing = Bearing.from(azimuth)
         assertEquals(expected, bearing.value, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideInverse")
     fun inverse(azimuth: Float, expected: Float){
-        val bearing = Bearing(azimuth)
+        val bearing = Bearing.from(azimuth)
         assertEquals(expected, bearing.inverse().value, 0.01f)
     }
 
     @Test
     fun withDeclination() {
-        val bearing = Bearing(45f)
+        val bearing = Bearing.from(45f)
         val dec = bearing.withDeclination(-10f)
         assertEquals(35f, dec.value, 0.01f)
     }

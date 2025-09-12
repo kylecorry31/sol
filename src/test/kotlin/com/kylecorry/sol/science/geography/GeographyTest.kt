@@ -48,7 +48,7 @@ class GeographyTest {
         val coordinate = Geography.getLocationFromECEF(Vector3(x, y, z))
         assertEquals(expectedLatitude, coordinate.coordinate.latitude, 0.1)
         assertEquals(expectedLongitude, coordinate.coordinate.longitude, 0.1)
-        assertEquals(expectedElevation, coordinate.elevation.meters().distance, 0.1f)
+        assertEquals(expectedElevation, coordinate.elevation.meters().value, 0.1f)
     }
 
     @Test

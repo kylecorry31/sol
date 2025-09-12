@@ -108,10 +108,10 @@ object Geology : IGeologyService {
         val down = getSlopeGrade(bottomInclination) / 100f
 
         if (up.isInfinite() || down.isInfinite()) {
-            return Distance(Float.POSITIVE_INFINITY, distance.units)
+            return Distance.from(Float.POSITIVE_INFINITY, distance.units)
         }
 
-        return Distance(((up - down) * distance.distance).absoluteValue, distance.units)
+        return Distance.from(((up - down) * distance.value).absoluteValue, distance.units)
     }
 
     override fun getDistanceFromInclination(
@@ -123,9 +123,9 @@ object Geology : IGeologyService {
         val down = getSlopeGrade(bottomInclination) / 100f
 
         if (up.isInfinite() || down.isInfinite()) {
-            return Distance(0f, height.units)
+            return Distance.from(0f, height.units)
         }
-        return Distance((height.distance / (up - down)).absoluteValue, height.units)
+        return Distance.from((height.value / (up - down)).absoluteValue, height.units)
     }
 
     override fun getInclination(angle: Float): Float {
@@ -137,8 +137,8 @@ object Geology : IGeologyService {
     }
 
     override fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float {
-        val y = vertical.meters().distance
-        val x = horizontal.meters().distance
+        val y = vertical.meters().value
+        val x = horizontal.meters().value
 
         if (SolMath.isZero(x) && y > 0f) {
             return Float.POSITIVE_INFINITY
@@ -163,7 +163,7 @@ object Geology : IGeologyService {
     ): Float {
         return getSlopeGrade(
             Distance.meters(start.distanceTo(end)),
-            Distance.meters(endElevation.meters().distance - startElevation.meters().distance)
+            Distance.meters(endElevation.meters().value - startElevation.meters().value)
         )
     }
 
@@ -172,7 +172,7 @@ object Geology : IGeologyService {
     }
 
     override fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing {
-        return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing(0f)
+        return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing.from(0f)
     }
 
     override fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance {
@@ -197,14 +197,14 @@ object Geology : IGeologyService {
         scaleTo: Distance
     ): Distance {
         val scaledMeasurement = measurement.convertTo(scaleFrom.units)
-        return Distance(
-            scaleTo.distance * scaledMeasurement.distance / scaleFrom.distance,
+        return Distance.from(
+            scaleTo.value * scaledMeasurement.value / scaleFrom.value,
             scaleTo.units
         )
     }
 
     override fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
-        return Distance(ratioTo * measurement.distance / ratioFrom, measurement.units)
+        return Distance.from(ratioTo * measurement.value / ratioFrom, measurement.units)
     }
 
     override fun getBounds(points: List<Coordinate>): CoordinateBounds {
@@ -317,7 +317,7 @@ object Geology : IGeologyService {
         }
 
         return NavigationVector(
-            Bearing(results[1]).withDeclination(declinationAdjustment),
+            Bearing.from(results[1]).withDeclination(declinationAdjustment),
             results[0]
         )
     }
@@ -382,12 +382,12 @@ object Geology : IGeologyService {
     ): Coordinate {
         val alongTrack = getAlongTrackDistance(point, start, end)
 
-        if (alongTrack.distance < 0) {
+        if (alongTrack.value < 0) {
             return start
         }
 
         val lineDistance = start.distanceTo(end)
-        if (alongTrack.distance > lineDistance) {
+        if (alongTrack.value > lineDistance) {
             return end
         }
 
@@ -421,8 +421,8 @@ object Geology : IGeologyService {
         }
 
         for (i in 1..<elevations.size) {
-            val current = elevations[i].meters().distance
-            val last = elevations[i - 1].meters().distance
+            val current = elevations[i].meters().value
+            val last = elevations[i - 1].meters().value
             val change = current - last
             if (change > 0) {
                 sum += change
@@ -439,8 +439,8 @@ object Geology : IGeologyService {
         }
 
         for (i in 1..<elevations.size) {
-            val current = elevations[i].meters().distance
-            val last = elevations[i - 1].meters().distance
+            val current = elevations[i].meters().value
+            val last = elevations[i - 1].meters().value
             val change = current - last
             if (change < 0) {
                 sum += change

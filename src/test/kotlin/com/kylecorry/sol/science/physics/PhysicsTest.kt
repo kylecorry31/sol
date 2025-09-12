@@ -17,9 +17,9 @@ class PhysicsTest {
 
     @ParameterizedTest
     @MethodSource("provideFallHeights")
-    fun fallHeight(time: Duration, height: Distance) {
+    fun fallHeight(time: Duration, heightMeters: Float) {
         val actualHeight = Physics.fallHeight(time)
-        assertEquals(actualHeight, height)
+        assertEquals(heightMeters, actualHeight.meters().value, 0.0001f)
     }
 
     @ParameterizedTest
@@ -35,9 +35,9 @@ class PhysicsTest {
             TimeUnits.Seconds
         ).speed
 
-        val sightIn = Distance(100f, DistanceUnits.Yards).meters().distance
+        val sightIn = Distance.from(100f, DistanceUnits.Yards).meters().value
 
-        val scopeHeight = Distance(1.5f, DistanceUnits.Inches).meters().distance
+        val scopeHeight = Distance.from(1.5f, DistanceUnits.Inches).meters().value
 
         val initialVelocityVector = Physics.getVelocityVectorForImpact(
             Vector2(sightIn, 0f),
@@ -113,13 +113,13 @@ class PhysicsTest {
             // These values are so high because drag is not accounted for yet
             assertEquals(
                 expected.second.x,
-                Distance.meters(actual.position.x).convertTo(DistanceUnits.Yards).distance,
+                Distance.meters(actual.position.x).convertTo(DistanceUnits.Yards).value,
                 40f,
                 "Position X did not match for $expected"
             )
             assertEquals(
                 expected.second.y,
-                Distance.meters(actual.position.y).convertTo(DistanceUnits.Inches).distance,
+                Distance.meters(actual.position.y).convertTo(DistanceUnits.Inches).value,
                 2f,
                 "Position Y did not match for $expected"
             )
@@ -162,9 +162,9 @@ class PhysicsTest {
         @JvmStatic
         fun provideFallHeights(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Duration.ZERO, Distance(0f, DistanceUnits.Meters)),
-                Arguments.of(Duration.ofSeconds(1), Distance(4.905f, DistanceUnits.Meters)),
-                Arguments.of(Duration.ofSeconds(2), Distance(19.62f, DistanceUnits.Meters)),
+                Arguments.of(Duration.ZERO, 0f),
+                Arguments.of(Duration.ofSeconds(1), 4.905f),
+                Arguments.of(Duration.ofSeconds(2), 19.62f),
             )
         }
     }

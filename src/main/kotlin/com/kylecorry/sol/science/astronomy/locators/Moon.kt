@@ -117,7 +117,7 @@ internal class Moon : ICelestialLocator {
     }
 
     fun getAngularDiameter(ut: UniversalTime, location: Coordinate = Coordinate.zero): Double {
-        val distance = getDistance(ut).convertTo(DistanceUnits.Kilometers).distance
+        val distance = getDistance(ut).convertTo(DistanceUnits.Kilometers).value
         val s = 358743400 / distance
         val sinPi = 6378.14 / distance
         val h = AstroUtils.getAltitude(this, ut, location, true).toDouble()

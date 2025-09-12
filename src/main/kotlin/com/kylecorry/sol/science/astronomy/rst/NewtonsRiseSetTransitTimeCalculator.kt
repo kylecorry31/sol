@@ -312,11 +312,11 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
     ): Distance {
         val distance = SolMath.interpolate(
             value,
-            first.distance.toDouble(),
-            second.distance.toDouble(),
-            third.distance.toDouble()
+            first.value.toDouble(),
+            second.value.toDouble(),
+            third.value.toDouble()
         )
-        return Distance(distance.toFloat(), first.units)
+        return Distance.from(distance.toFloat(), first.units)
     }
 
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {

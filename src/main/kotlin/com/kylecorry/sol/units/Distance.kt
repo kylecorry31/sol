@@ -1,57 +1,67 @@
 package com.kylecorry.sol.units
 
-data class Distance(val distance: Float, val units: DistanceUnits) : Comparable<Distance> {
+@JvmInline
+value class Distance private constructor(private val measure: Measure) : Comparable<Distance> {
+    val value: Float
+        get() = measureValue(measure)
+
+    val units: DistanceUnits
+        get() = measureUnit<DistanceUnits>(measure)
+
 
     fun convertTo(newUnits: DistanceUnits): Distance {
-        val m = distance * units.meters
+        val m = value * units.meters
         val newDistance = m / newUnits.meters
-        return Distance(newDistance, newUnits)
+        return from(newDistance, newUnits)
     }
 
     fun meters(): Distance {
         return convertTo(DistanceUnits.Meters)
     }
 
-    operator fun times(value: Float): Distance {
-        return Distance(distance * value, units)
+    operator fun times(multiplier: Float): Distance {
+        return from(multiplier * multiplier, units)
     }
 
     companion object {
 
         fun meters(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.Meters)
+            return from(distance, DistanceUnits.Meters)
         }
 
         fun feet(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.Feet)
+            return from(distance, DistanceUnits.Feet)
         }
 
         fun centimeters(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.Centimeters)
+            return from(distance, DistanceUnits.Centimeters)
         }
 
         fun kilometers(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.Kilometers)
+            return from(distance, DistanceUnits.Kilometers)
         }
 
         fun miles(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.Miles)
+            return from(distance, DistanceUnits.Miles)
         }
 
         fun nauticalMiles(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.NauticalMiles)
+            return from(distance, DistanceUnits.NauticalMiles)
         }
 
         fun yards(distance: Float): Distance {
-            return Distance(distance, DistanceUnits.Yards)
+            return from(distance, DistanceUnits.Yards)
+        }
+
+        fun from(value: Float, unit: DistanceUnits): Distance {
+            return Distance(packMeasure(value, unit))
         }
 
     }
 
     override fun compareTo(other: Distance): Int {
-        val meters = meters().distance
-        val otherMeters = other.meters().distance
+        val meters = meters().value
+        val otherMeters = other.meters().value
         return meters.compareTo(otherMeters)
     }
-
 }
