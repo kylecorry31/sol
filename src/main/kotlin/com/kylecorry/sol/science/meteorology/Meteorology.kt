@@ -24,7 +24,7 @@ object Meteorology : IWeatherService {
     override fun getSeaLevelPressure(
         pressure: Pressure, altitude: Distance, temperature: Temperature?
     ): Pressure {
-        val hpa = pressure.hpa().pressure
+        val hpa = pressure.hpa().value
         val meters = altitude.meters().value
         val celsius = temperature?.celsius()?.temperature
         val adjustedPressure = if (celsius != null) {
@@ -39,17 +39,17 @@ object Meteorology : IWeatherService {
     }
 
     override fun isHighPressure(pressure: Pressure): Boolean {
-        return pressure.hpa().pressure >= 1022.689
+        return pressure.hpa().value >= 1022.689
     }
 
     override fun isLowPressure(pressure: Pressure): Boolean {
-        return pressure.hpa().pressure <= 1009.144
+        return pressure.hpa().value <= 1009.144
     }
 
     override fun getTendency(
         last: Pressure, current: Pressure, duration: Duration, changeThreshold: Float
     ): PressureTendency {
-        val diff = current.hpa().pressure - last.hpa().pressure
+        val diff = current.hpa().value - last.hpa().value
         val dt = duration.seconds
 
         if (dt == 0L) {

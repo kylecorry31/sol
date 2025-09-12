@@ -59,9 +59,9 @@ class OceanographyService : IOceanographyService {
 
         val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
         val pressureDiff =
-            pressure.convertTo(PressureUnits.Hpa).pressure - seaLevelPressure.convertTo(
+            pressure.convertTo(PressureUnits.Hpa).value - seaLevelPressure.convertTo(
                 PressureUnits.Hpa
-            ).pressure
+            ).value
 
         return Distance.from(
             pressureDiff * 100 / (Geology.GRAVITY * waterDensity),

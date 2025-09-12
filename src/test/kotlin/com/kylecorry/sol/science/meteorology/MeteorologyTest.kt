@@ -116,7 +116,7 @@ class MeteorologyTest {
     ) {
         val altitude = Distance.meters(altitudeMeters)
         val reading = Meteorology.getSeaLevelPressure(Pressure.hpa(pressureHpa), altitude, temperature)
-        assertEquals(expectedPressureHpa, reading.hpa().pressure, 0.1f)
+        assertEquals(expectedPressureHpa, reading.hpa().value, 0.1f)
     }
 
     @ParameterizedTest

@@ -121,7 +121,7 @@ internal object ZambrettiForecaster : Forecaster {
         changeThreshold: Float
     ): List<WeatherForecast> {
 
-        val hpa = pressure.hpa().pressure
+        val hpa = pressure.hpa().value
 
         // TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)
 
