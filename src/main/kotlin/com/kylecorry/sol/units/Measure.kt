@@ -18,18 +18,3 @@ internal inline fun <reified T : Enum<T>> measureUnit(bytes: Measure): T {
 internal fun <T : Enum<T>> packMeasure(value: Float, unit: T): Measure {
     return (value.toBits().toLong() and 0xFFFFFFFF) or ((unit.ordinal.toLong() and 0xFFFFFFFF) shl 32)
 }
-
-@JvmInline
-value class EnergyMeasure private constructor(private val measure: Measure) {
-    val value: Float
-        get() = measureValue(measure)
-
-    val unit: EnergyUnits
-        get() = measureUnit<EnergyUnits>(measure)
-
-    companion object {
-        fun from(value: Float, unit: EnergyUnits): EnergyMeasure {
-            return EnergyMeasure(packMeasure(value, unit))
-        }
-    }
-}

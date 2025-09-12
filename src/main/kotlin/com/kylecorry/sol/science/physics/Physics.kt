@@ -116,7 +116,7 @@ object Physics : IPhysicsService {
         val massKg = mass.convertTo(WeightUnits.Kilograms).value
         val speedMps = speed.convertTo(DistanceUnits.Meters, TimeUnits.Seconds).speed
         val joules = 0.5f * massKg * speedMps * speedMps
-        return Energy(joules, EnergyUnits.Joules)
+        return Energy.from(joules, EnergyUnits.Joules)
     }
 
 }
