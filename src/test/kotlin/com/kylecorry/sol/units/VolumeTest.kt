@@ -1,6 +1,6 @@
 package com.kylecorry.sol.units
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -9,10 +9,10 @@ import java.util.stream.Stream
 internal class VolumeTest {
     @ParameterizedTest
     @MethodSource("provideConversions")
-    fun convertTo(volume: Volume, expected: Volume) {
-        val converted = volume.convertTo(expected.units)
-        assertEquals(expected.units, converted.units)
-        assertEquals(expected.volume, converted.volume, 0.0001f)
+    fun convertTo(volume: Float, units: VolumeUnits, expectedVolume: Float, expectedUnits: VolumeUnits) {
+        val converted = Volume.from(volume, units).convertTo(expectedUnits)
+        assertEquals(expectedUnits, converted.units)
+        assertEquals(expectedVolume, converted.value, 0.0001f)
     }
 
     companion object {
@@ -21,41 +21,41 @@ internal class VolumeTest {
         fun provideConversions(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Volume(2f, VolumeUnits.Liters),
-                    Volume(0.528344f, VolumeUnits.USGallons)
+                    2f, VolumeUnits.Liters,
+                    0.528344f, VolumeUnits.USGallons
                 ),
                 Arguments.of(
-                    Volume(3f, VolumeUnits.USGallons),
-                    Volume(11.3562f, VolumeUnits.Liters)
+                    3f, VolumeUnits.USGallons,
+                    11.3562f, VolumeUnits.Liters
                 ),
                 Arguments.of(
-                    Volume(3f, VolumeUnits.ImperialGallons),
-                    Volume(461.16525f, VolumeUnits.USOunces)
+                    3f, VolumeUnits.ImperialGallons,
+                    461.16525f, VolumeUnits.USOunces
                 ),
                 Arguments.of(
-                    Volume(4f, VolumeUnits.Milliliter),
-                    Volume(0.014078f, VolumeUnits.ImperialCups)
+                    4f, VolumeUnits.Milliliter,
+                    0.014078f, VolumeUnits.ImperialCups
                 ),
-                Arguments.of(Volume(4f, VolumeUnits.USPints), Volume(2f, VolumeUnits.USQuarts)),
+                Arguments.of(4f, VolumeUnits.USPints, 2f, VolumeUnits.USQuarts),
                 Arguments.of(
-                    Volume(4f, VolumeUnits.USCups),
-                    Volume(3.3307f, VolumeUnits.ImperialCups)
-                ),
-                Arguments.of(
-                    Volume(4f, VolumeUnits.ImperialOunces),
-                    Volume(0.2f, VolumeUnits.ImperialPints)
+                    4f, VolumeUnits.USCups,
+                    3.3307f, VolumeUnits.ImperialCups
                 ),
                 Arguments.of(
-                    Volume(1f, VolumeUnits.ImperialQuarts),
-                    Volume(1136.52f, VolumeUnits.Milliliter)
+                    4f, VolumeUnits.ImperialOunces,
+                    0.2f, VolumeUnits.ImperialPints
                 ),
                 Arguments.of(
-                    Volume(1f, VolumeUnits.USTablespoons),
-                    Volume(3f, VolumeUnits.USTeaspoons)
+                    1f, VolumeUnits.ImperialQuarts,
+                    1136.52f, VolumeUnits.Milliliter
                 ),
                 Arguments.of(
-                    Volume(1f, VolumeUnits.ImperialTablespoons),
-                    Volume(3f, VolumeUnits.ImperialTeaspoons)
+                    1f, VolumeUnits.USTablespoons,
+                    3f, VolumeUnits.USTeaspoons
+                ),
+                Arguments.of(
+                    1f, VolumeUnits.ImperialTablespoons,
+                    3f, VolumeUnits.ImperialTeaspoons
                 )
             )
         }

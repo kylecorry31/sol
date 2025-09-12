@@ -1,11 +1,24 @@
 package com.kylecorry.sol.units
 
-data class Volume(val volume: Float, val units: VolumeUnits) {
+@JvmInline
+value class Volume private constructor(private val measure: Measure) {
+    val value: Float
+        get() = measureValue(measure)
+
+    val units: VolumeUnits
+        get() = measureUnit<VolumeUnits>(measure)
+
     fun convertTo(newUnits: VolumeUnits): Volume {
         if (units == newUnits) {
             return this
         }
-        val l = volume * units.liters
-        return Volume(l / newUnits.liters, newUnits)
+        val l = value * units.liters
+        return from(l / newUnits.liters, newUnits)
+    }
+
+    companion object {
+        fun from(value: Float, unit: VolumeUnits): Volume {
+            return Volume(packMeasure(value, unit))
+        }
     }
 }
