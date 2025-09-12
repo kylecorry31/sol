@@ -140,7 +140,7 @@ class PhysicsTest {
     @CsvSource("2, 1, 1")
     @CsvSource("1, 2, 2")
     fun getKineticEnergy(mass: Float, speed: Float, expected: Float) {
-        val kilograms = Weight(mass, WeightUnits.Kilograms)
+        val kilograms = Weight.from(mass, WeightUnits.Kilograms)
         val metersPerSecond = Speed(speed, DistanceUnits.Meters, TimeUnits.Seconds)
         val joules = Physics.getKineticEnergy(kilograms, metersPerSecond).convertTo(
             EnergyUnits.Joules

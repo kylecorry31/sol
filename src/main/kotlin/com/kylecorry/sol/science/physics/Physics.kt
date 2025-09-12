@@ -113,7 +113,7 @@ object Physics : IPhysicsService {
     }
 
     override fun getKineticEnergy(mass: Weight, speed: Speed): Energy {
-        val massKg = mass.convertTo(WeightUnits.Kilograms).weight
+        val massKg = mass.convertTo(WeightUnits.Kilograms).value
         val speedMps = speed.convertTo(DistanceUnits.Meters, TimeUnits.Seconds).speed
         val joules = 0.5f * massKg * speedMps * speedMps
         return Energy(joules, EnergyUnits.Joules)

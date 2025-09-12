@@ -20,21 +20,6 @@ internal fun <T : Enum<T>> packMeasure(value: Float, unit: T): Measure {
 }
 
 @JvmInline
-value class WeightMeasure private constructor(private val measure: Measure) {
-    val value: Float
-        get() = measureValue(measure)
-
-    val unit: WeightUnits
-        get() = measureUnit<WeightUnits>(measure)
-
-    companion object {
-        fun from(value: Float, unit: WeightUnits): WeightMeasure {
-            return WeightMeasure(packMeasure(value, unit))
-        }
-    }
-}
-
-@JvmInline
 value class EnergyMeasure private constructor(private val measure: Measure) {
     val value: Float
         get() = measureValue(measure)
