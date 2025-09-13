@@ -85,6 +85,14 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
         return containsLatitude && containsLongitude
     }
 
+    fun contains(other: CoordinateBounds): Boolean {
+        return contains(other.northEast) &&
+                contains(other.northWest) &&
+                contains(other.southEast) &&
+                contains(other.southWest) &&
+                contains(other.center)
+    }
+
     fun intersects(other: CoordinateBounds): Boolean {
         if (south > other.north || other.south > north) {
             return false
