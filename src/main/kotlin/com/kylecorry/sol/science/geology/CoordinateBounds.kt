@@ -9,7 +9,7 @@ import com.kylecorry.sol.units.Distance
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) :
+data class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) :
     IGeoArea {
 
     val northWest = Coordinate(north, west)
@@ -76,7 +76,21 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
                 other.southWest
             )
 
-        return inOther || otherIn
+        if (inOther || otherIn){
+            return true
+        }
+
+        if (south > other.north || other.south > north) {
+            return false
+        }
+
+        val selfWraps = east < west
+        val otherWraps = other.east < other.west
+
+        if (selfWraps && otherWraps) return true
+        if (selfWraps) return other.west <= east || other.east >= west
+        if (otherWraps) return west <= other.east || east >= other.west
+        return west <= other.east && east >= other.west
     }
 
     companion object {
