@@ -23,6 +23,10 @@ value class Distance private constructor(private val measure: Measure) : Compara
         return from(multiplier * multiplier, units)
     }
 
+    operator fun plus(other: Distance): Distance {
+        return from(value + other.convertTo(units).value, units)
+    }
+
     companion object {
 
         fun meters(distance: Float): Distance {

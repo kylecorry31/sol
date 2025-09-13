@@ -32,8 +32,8 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
         }
     }
 
-    fun plus(distance: Distance, bearing: Bearing): Coordinate {
-        return plus(distance.meters().value.toDouble(), bearing)
+    fun plus(distance: Distance, bearing: Angle): Coordinate {
+        return plus(distance.meters().value.toDouble(), Bearing.from(bearing.degrees().value))
     }
 
     fun plus(meters: Double, bearing: Bearing): Coordinate {
@@ -57,11 +57,11 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
     /**
      * Get the bearing to the other coordinate (using True North)
      */
-    fun bearingTo(other: Coordinate, highAccuracy: Boolean = true): Bearing {
+    fun bearingTo(other: Coordinate, highAccuracy: Boolean = true): Angle {
         return if (highAccuracy) {
-            Bearing.from(DistanceCalculator.vincenty(this, other)[1])
+            Angle.degrees(DistanceCalculator.vincenty(this, other)[1], true)
         } else {
-            Bearing.from(DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[1])
+            Angle.degrees(DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[1], true)
         }
     }
 

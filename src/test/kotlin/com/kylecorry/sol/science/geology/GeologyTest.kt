@@ -43,9 +43,9 @@ internal class GeologyTest {
     @Test
     fun triangulateSelf() {
         val pointA = Coordinate(40.0, 10.0)
-        val bearingA = Bearing.from(220f)
+        val bearingA = Angle.degrees(220f)
         val pointB = Coordinate(40.5, 9.5)
-        val bearingB = Bearing.from(295f)
+        val bearingB = Angle.degrees(295f)
 
         val expected = Coordinate(40.229722, 10.252778)
         val actual = Geology.triangulateSelf(pointA, bearingA, pointB, bearingB)
@@ -76,9 +76,9 @@ internal class GeologyTest {
         lonExpected: Double?,
     ) {
         val pointA = Coordinate(latA, lonA)
-        val bearingA = Bearing.from(degA)
+        val bearingA = Angle.degrees(degA)
         val pointB = Coordinate(latB, lonB)
-        val bearingB = Bearing.from(degB)
+        val bearingB = Angle.degrees(degB)
         val expected = if (latExpected == null || lonExpected == null) null else Coordinate(latExpected, lonExpected)
 
         val actual = Geology.triangulateDestination(pointA, bearingA, pointB, bearingB)
@@ -93,8 +93,8 @@ internal class GeologyTest {
     @Test
     fun deadReckon() {
         val start = Coordinate(40.0, 10.0)
-        val bearing = Bearing.from(280f)
-        val distance = 10000f
+        val bearing = Angle.degrees(280f)
+        val distance = Distance.meters(10000f)
 
         val expected = Coordinate(39.984444, 10.115556)
         val actual = Geology.deadReckon(start, distance, bearing)
@@ -107,10 +107,10 @@ internal class GeologyTest {
         val start = Coordinate(0.0, 1.0)
         val end = Coordinate(10.0, -8.0)
 
-        val vector = Geology.navigate(start, end, 0f, true)
+        val vector = Geology.navigate(start, end, Angle.degrees(0f), true)
 
         assertThat(vector.direction.value).isCloseTo(Bearing.from(-41.7683f).value, 0.005f)
-        assertThat(vector.distance).isCloseTo(1488793.6f, 0.005f)
+        assertThat(vector.distance.value).isCloseTo(1488793.6f, 0.005f)
     }
 
     @ParameterizedTest
@@ -132,10 +132,10 @@ internal class GeologyTest {
         val location = Coordinate(lat, lon)
         val actual = Geology.getGeomagneticDeclination(
             location,
-            altitude,
-            LocalDate.parse(dateStr).atStartOfDay().toUTC().toInstant().toEpochMilli()
+            Distance.meters(altitude),
+            LocalDate.parse(dateStr).atStartOfDay().toUTC().toInstant()
         )
-        assertEquals(expected, actual, 0.01f)
+        assertEquals(expected, actual.degrees().value, 0.01f)
     }
 
     @ParameterizedTest
@@ -157,16 +157,16 @@ internal class GeologyTest {
         val location = Coordinate(lat, lon)
         val actual = Geology.getGeomagneticInclination(
             location,
-            altitude,
-            LocalDate.parse(dateStr).atStartOfDay().toUTC().toInstant().toEpochMilli()
+            Distance.meters(altitude),
+            LocalDate.parse(dateStr).atStartOfDay().toUTC().toInstant()
         )
-        assertEquals(expected, actual, 0.01f)
+        assertEquals(expected, actual.degrees().value, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideAvalancheRisk")
     fun getAvalancheRisk(angle: Float, expected: AvalancheRisk) {
-        val risk = Geology.getAvalancheRisk(angle)
+        val risk = Geology.getAvalancheRisk(Angle.degrees(angle))
         assertEquals(expected, risk)
     }
 
@@ -220,28 +220,36 @@ internal class GeologyTest {
     @ParameterizedTest
     @MethodSource("provideHeights")
     fun calculateHeights(distance: Float, upAngle: Float, downAngle: Float, expected: Float) {
-        val height = Geology.getHeightFromInclination(Distance.meters(distance), downAngle, upAngle)
+        val height = Geology.getHeightFromInclination(
+            Distance.meters(distance),
+            Angle.degrees(downAngle),
+            Angle.degrees(upAngle)
+        )
         assertEquals(expected, height.value, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideDistances")
     fun calculateDistance(height: Float, upAngle: Float, downAngle: Float, expected: Float) {
-        val d = Geology.getDistanceFromInclination(Distance.meters(height), downAngle, upAngle)
+        val d = Geology.getDistanceFromInclination(
+            Distance.meters(height),
+            Angle.degrees(downAngle),
+            Angle.degrees(upAngle)
+        )
         assertEquals(expected, d.value, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideInclination")
     fun getInclination(angle: Float, expected: Float) {
-        val inclination = Geology.getInclination(angle)
-        assertEquals(expected, inclination, 0.01f)
+        val inclination = Geology.getInclination(Angle.degrees(angle))
+        assertEquals(expected, inclination.value, 0.01f)
     }
 
     @ParameterizedTest
     @MethodSource("provideGrade")
     fun getSlopeGrade(angle: Float, expected: Float) {
-        val grade = Geology.getSlopeGrade(angle)
+        val grade = Geology.getSlopeGrade(Angle.degrees(angle))
         assertEquals(expected, grade, 0.01f)
     }
 

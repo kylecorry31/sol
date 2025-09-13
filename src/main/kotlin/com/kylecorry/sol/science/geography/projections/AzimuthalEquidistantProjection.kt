@@ -21,7 +21,7 @@ class AzimuthalEquidistantProjection(
     override fun toPixels(location: Coordinate): Vector2 {
         val navigation = Geology.navigate(centerLocation, location)
         val angle = Trigonometry.toUnitAngle(navigation.direction.value, 90f, false)
-        val pixelDistance = navigation.distance * scale
+        val pixelDistance = navigation.distance.value * scale
         val xDiff = cosDegrees(angle) * pixelDistance
         val yDiff = sinDegrees(angle) * pixelDistance
         return Vector2(centerPixel.x + xDiff, centerPixel.y + if (isYFlipped) -1 * yDiff else yDiff)

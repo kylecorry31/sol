@@ -15,7 +15,7 @@ class Location(val coordinate: Coordinate, val elevation: Distance) {
         return hypot(horizontal, vertical)
     }
 
-    fun inclinationTo(other: Location): Float {
+    fun inclinationTo(other: Location): Angle {
         val distance = distanceTo(other)
         val vertical = verticalDistanceTo(other)
         return Geology.getInclination(Distance.meters(distance), Distance.meters(vertical))
@@ -29,7 +29,7 @@ class Location(val coordinate: Coordinate, val elevation: Distance) {
         return elevation.meters().value - other.elevation.meters().value
     }
 
-    fun bearingTo(other: Location, highAccuracy: Boolean = true): Bearing {
+    fun bearingTo(other: Location, highAccuracy: Boolean = true): Angle {
         return coordinate.bearingTo(other.coordinate, highAccuracy)
     }
 }

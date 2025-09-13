@@ -25,31 +25,32 @@ object Geography {
         reference: Location,
         destination: Location
     ): Vector3 {
-        val bearing = reference.coordinate.bearingTo(destination.coordinate).value
-        val distance = reference.horizontalDistanceTo(destination)
+        val bearing = reference.coordinate.bearingTo(destination.coordinate)
+        val distance = Distance.meters(reference.horizontalDistanceTo(destination))
         val elevationAngle = reference.inclinationTo(destination)
         return toENU(bearing, elevationAngle, distance)
     }
 
     /**
      * Converts a spherical coordinate to a cartesian coordinate in the East-North-Up (ENU) coordinate system.
-     * @param bearing The azimuth in degrees (positive is clockwise from north)
-     * @param elevation The elevation in degrees (positive is up)
-     * @param distance The distance in meters
+     * @param bearing The azimuth (positive is clockwise from north)
+     * @param elevation The elevation angle (positive is up)
+     * @param distance The distance
      * @return The ENU coordinate
      */
     fun toENU(
-        bearing: Float,
-        elevation: Float,
-        distance: Float
+        bearing: Angle,
+        elevation: Angle,
+        distance: Distance
     ): Vector3 {
-        val elevationRad = elevation.toRadians()
-        val bearingRad = bearing.toRadians()
+        val elevationRad = elevation.radians().value
+        val bearingRad = bearing.radians().value
+        val distanceMeters = distance.meters().value
 
         val cosElevation = cos(elevationRad)
-        val x = distance * cosElevation * sin(bearingRad) // East
-        val y = distance * cosElevation * cos(bearingRad) // North
-        val z = distance * sin(elevationRad) // Up
+        val x = distanceMeters * cosElevation * sin(bearingRad) // East
+        val y = distanceMeters * cosElevation * cos(bearingRad) // North
+        val z = distanceMeters * sin(elevationRad) // Up
         return Vector3(x, y, z)
     }
 
@@ -58,8 +59,8 @@ object Geography {
      * @param enu The ENU coordinate
      * @return The bearing (positive is clockwise from north)
      */
-    fun getBearingFromENU(enu: Vector3): Bearing {
-        return Bearing.from(atan2(enu.x, enu.y).toDegrees().real(0f))
+    fun getBearingFromENU(enu: Vector3): Angle {
+        return Angle.radians(atan2(enu.x, enu.y).real(0f), true)
     }
 
     /**
@@ -67,8 +68,8 @@ object Geography {
      * @param enu The ENU coordinate
      * @return The elevation in degrees (positive is up)
      */
-    fun getElevationFromENU(enu: Vector3): Float {
-        return asin(enu.z / enu.magnitude()).toDegrees().real(0f)
+    fun getElevationFromENU(enu: Vector3): Angle {
+        return Angle.radians(asin(enu.z / enu.magnitude()).real(0f))
     }
 
     /**
@@ -76,8 +77,8 @@ object Geography {
      * @param enu The ENU coordinate
      * @return The distance in the units of the ENU coordinate
      */
-    fun getDistanceFromENU(enu: Vector3): Float {
-        return enu.magnitude()
+    fun getDistanceFromENU(enu: Vector3): Distance {
+        return Distance.meters(enu.magnitude())
     }
 
     /**

@@ -20,7 +20,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     val center: Coordinate
         get() {
             val lat = (north + south) / 2
-            val lon = if (west <= east){
+            val lon = if (west <= east) {
                 (west + east) / 2
             } else {
                 (west + east + 360) / 2
@@ -54,7 +54,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
     override fun contains(location: Coordinate): Boolean {
         val containsLatitude = location.latitude in south..north
 
-        val containsLongitude = if (isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)){
+        val containsLongitude = if (isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)) {
             true
         } else if (east < 0 && west > 0) {
             location.longitude >= west || location.longitude <= east
@@ -86,13 +86,13 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
 
         fun from(geofence: Geofence): CoordinateBounds {
             val north =
-                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.North)).latitude
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.North).toAngle()).latitude
             val south =
-                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.South)).latitude
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.South).toAngle()).latitude
             val east =
-                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.East)).longitude
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.East).toAngle()).longitude
             val west =
-                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.West)).longitude
+                geofence.center.plus(geofence.radius, Bearing.from(CompassDirection.West).toAngle()).longitude
 
             return CoordinateBounds(north, east, south, west)
         }
@@ -107,7 +107,7 @@ class CoordinateBounds(val north: Double, val east: Double, val south: Double, v
             val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
 
             // This is to support the case where the whole map is shown
-            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)){
+            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)) {
                 return CoordinateBounds(north, maxLongitude!!, south, minLongitude!!)
             }
 
