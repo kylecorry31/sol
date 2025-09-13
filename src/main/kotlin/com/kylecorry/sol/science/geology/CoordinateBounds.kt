@@ -20,7 +20,7 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
     val center: Coordinate
         get() {
             val lat = (north + south) / 2
-            val lon = if (west <= east){
+            val lon = if (west <= east) {
                 (west + east) / 2
             } else {
                 (west + east + 360) / 2
@@ -38,6 +38,22 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
         )
     }
 
+    fun heightDegrees(): Double {
+        return (north - south).absoluteValue
+    }
+
+    fun widthDegrees(): Double {
+        if (containsAllLongitudes()) {
+            return 360.0
+        }
+
+        return (if (east >= west) {
+            east - west
+        } else {
+            (180 - west) + (east + 180)
+        }).absoluteValue
+    }
+
     fun width(): Distance {
         if (0.0 in south..north) {
             return Distance.meters(Coordinate(0.0, west).distanceTo(Coordinate(0.0, east)))
@@ -51,10 +67,14 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
         )
     }
 
+    private fun containsAllLongitudes(): Boolean {
+        return isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)
+    }
+
     override fun contains(location: Coordinate): Boolean {
         val containsLatitude = location.latitude in south..north
 
-        val containsLongitude = if (isCloseTo(west, world.west, 0.0001) && isCloseTo(east, world.east, 0.0001)){
+        val containsLongitude = if (containsAllLongitudes()) {
             true
         } else if (east < 0 && west > 0) {
             location.longitude >= west || location.longitude <= east
@@ -66,31 +86,17 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
     }
 
     fun intersects(other: CoordinateBounds): Boolean {
-        val inOther =
-            other.contains(northEast) || other.contains(northWest) || other.contains(southEast) || other.contains(
-                southWest
-            )
-
-        val otherIn =
-            contains(other.northEast) || contains(other.northWest) || contains(other.southEast) || contains(
-                other.southWest
-            )
-
-        if (inOther || otherIn){
-            return true
-        }
-
         if (south > other.north || other.south > north) {
             return false
         }
 
-        val selfWraps = east < west
-        val otherWraps = other.east < other.west
-
-        if (selfWraps && otherWraps) return true
-        if (selfWraps) return other.west <= east || other.east >= west
-        if (otherWraps) return west <= other.east || east >= other.west
-        return west <= other.east && east >= other.west
+        val union = from(
+            listOf(
+                northEast, northWest, southEast, southWest,
+                other.northEast, other.northWest, other.southEast, other.southWest
+            )
+        )
+        return union.widthDegrees() <= (widthDegrees() + other.widthDegrees())
     }
 
     companion object {
@@ -121,7 +127,7 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
             val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
 
             // This is to support the case where the whole map is shown
-            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)){
+            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)) {
                 return CoordinateBounds(north, maxLongitude!!, south, minLongitude!!)
             }
 
