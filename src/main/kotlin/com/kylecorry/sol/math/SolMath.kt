@@ -7,6 +7,7 @@ import kotlin.math.*
 object SolMath {
 
     val EPSILON_FLOAT = 1e-5f
+    val EPSILON_DOUBLE = 1e-10
 
     fun wrap(value: Float, min: Float, max: Float): Float {
         return wrap(value.toDouble(), min.toDouble(), max.toDouble()).toFloat()

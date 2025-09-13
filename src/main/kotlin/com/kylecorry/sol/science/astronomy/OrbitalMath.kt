@@ -7,6 +7,7 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.tanDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.optimization.Optimization
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import kotlin.math.*
 
@@ -84,17 +85,10 @@ internal object OrbitalMath {
     ): Double {
         val toleranceRadians = toleranceDegrees.toRadians()
         val meanAnomalyRadians = meanAnomaly.toRadians()
-        var eccentricityAnomaly = meanAnomalyRadians
-        var delta: Double
-        do {
-            val lastEccentricityAnomaly = eccentricityAnomaly
-            eccentricityAnomaly =
-                eccentricityAnomaly - (eccentricityAnomaly - eccentricity * sin(eccentricityAnomaly) - meanAnomalyRadians) / (1 - eccentricity * cos(
-                    eccentricityAnomaly
-                ))
-            delta = eccentricityAnomaly - lastEccentricityAnomaly
-        } while (delta.absoluteValue > toleranceRadians)
-        return eccentricityAnomaly.toDegrees()
+
+        return Optimization.newtonRaphsonIteration(meanAnomalyRadians, tolerance = toleranceRadians) {
+            it - (it - eccentricity * sin(it) - meanAnomalyRadians) / (1 - eccentricity * cos(it))
+        }.toDegrees()
     }
 
 }
