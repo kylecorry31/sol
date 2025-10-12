@@ -21,8 +21,15 @@ class DerivativePredictor(
         return smoothFn(values)
     }
 
+    private fun calculateLastStep(): Float? {
+        if (cachedSamples.size < 2) {
+            return null
+        }
+        return cachedSamples[cachedSamples.size - 1].x - cachedSamples[cachedSamples.size - 2].x
+    }
+
     fun predictNext(n: Int, step: Float? = null): List<Vector2> {
-        val actualStep = step ?: 1f
+        val actualStep = step ?: calculateLastStep() ?: 1f
         val values = mutableListOf(cachedSamples)
         for (i in 1..order) {
             val lastValues = values.last()
