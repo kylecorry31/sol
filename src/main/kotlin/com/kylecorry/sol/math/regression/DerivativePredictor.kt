@@ -40,14 +40,17 @@ class DerivativePredictor(
             val coefs = values.map { it.last() }
             val nextCoefs = mutableListOf<Vector2>()
             for (i in coefs.indices) {
-                var nextValue = coefs[i]
+                var nextValue = coefs[i].y
                 for (j in i + 1 until coefs.size) {
                     val factorial = Arithmetic.factorial(j - i)
                     if (factorial != 0L) {
-                        nextValue += coefs[j] * (1f / factorial) * SolMath.power(actualStep, (j - i))
+                        nextValue += coefs[j].y * (1f / factorial) * SolMath.power(
+                            actualStep,
+                            (j - i)
+                        )
                     }
                 }
-                nextCoefs.add(nextValue)
+                nextCoefs.add(Vector2(coefs[i].x + actualStep, nextValue))
             }
             // Apply damping and limits
             configs.forEach { (index, config) ->
@@ -76,7 +79,7 @@ class DerivativePredictor(
 
     class DerivativePredictorConfig(
         val limit: Range<Float>? = null,
+        val dampingFactor: Float? = null,
         val smoothFunction: ((List<Vector2>) -> List<Vector2>)? = null,
-        val dampingFactor: Float? = null
     )
 }
