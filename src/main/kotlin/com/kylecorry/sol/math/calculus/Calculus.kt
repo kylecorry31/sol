@@ -1,5 +1,7 @@
 package com.kylecorry.sol.math.calculus
 
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.algebra.QuadraticEquation
 import com.kylecorry.sol.shared.Guards
@@ -15,6 +17,26 @@ object Calculus {
 
     fun derivative(equation: LinearEquation): Float {
         return equation.m
+    }
+
+    /**
+     * Get the derivative of samples.
+     * This assumes values is sorted by x (increasing).
+     * The resulting derivative will have one value less (first x value dropped)
+     */
+    fun derivative(values: List<Vector2>): List<Vector2> {
+        val derivative = mutableListOf<Vector2>()
+        for (j in 0 until values.size - 1) {
+            val x = values[j + 1].x
+            val dx = values[j + 1].x - values[j].x
+            if (SolMath.isZero(dx)) {
+                derivative.add(Vector2(x, 0f))
+            }
+
+            val dy = (values[j + 1].y - values[j].y) / dx
+            derivative.add(Vector2(x, dy))
+        }
+        return derivative
     }
 
     fun derivative(
