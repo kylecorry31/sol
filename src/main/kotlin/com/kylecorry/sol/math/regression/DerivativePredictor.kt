@@ -7,33 +7,28 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.calculus.Calculus
 
 class DerivativePredictor(
-    private val samples: List<Vector2>,
     private val order: Int = 2,
     private val configs: Map<Int, DerivativePredictorConfig> = emptyMap()
-) {
-
-    private val cachedSamples by lazy {
-        withSmoothing(0, samples.sortedBy { it.x }).toMutableList()
+) : ITimeSeriesPredictor {
+    private fun withMapping(order: Int, values: List<Vector2>): List<Vector2> {
+        val mapFn = configs[order]?.map ?: return values
+        return mapFn(values)
     }
 
-    private fun withSmoothing(order: Int, values: List<Vector2>): List<Vector2> {
-        val smoothFn = configs[order]?.smoothFunction ?: return values
-        return smoothFn(values)
-    }
-
-    private fun calculateLastStep(): Float? {
-        if (cachedSamples.size < 2) {
+    private fun calculateLastStep(samples: List<Vector2>): Float? {
+        if (samples.size < 2) {
             return null
         }
-        return cachedSamples[cachedSamples.size - 1].x - cachedSamples[cachedSamples.size - 2].x
+        return samples[samples.size - 1].x - samples[samples.size - 2].x
     }
 
-    fun predictNext(n: Int, step: Float? = null): List<Vector2> {
-        val actualStep = step ?: calculateLastStep() ?: 1f
-        val values = mutableListOf(cachedSamples)
+    override fun predictNext(samples: List<Vector2>, n: Int, step: Float?): List<Vector2> {
+        val mappedSamples = withMapping(0, samples.sortedBy { it.x }).toMutableList()
+        val actualStep = step ?: calculateLastStep(mappedSamples) ?: 1f
+        val values = mutableListOf(mappedSamples)
         for (i in 1..order) {
             val lastValues = values.last()
-            values.add(withSmoothing(i, Calculus.derivative(lastValues)).toMutableList())
+            values.add(withMapping(i, Calculus.derivative(lastValues)).toMutableList())
         }
         val predictions = mutableListOf<Vector2>()
         for (stepIndex in 0 until n) {
@@ -80,6 +75,6 @@ class DerivativePredictor(
     class DerivativePredictorConfig(
         val limit: Range<Float>? = null,
         val dampingFactor: Float? = null,
-        val smoothFunction: ((List<Vector2>) -> List<Vector2>)? = null,
+        val map: ((List<Vector2>) -> List<Vector2>)? = null,
     )
 }
