@@ -9,7 +9,7 @@ import com.kylecorry.sol.science.meteorology.*
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
-import java.time.Duration
+import kotlin.time.Duration
 
 internal object ForecastHelper {
     fun addSecondaryConditions(

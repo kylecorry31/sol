@@ -8,7 +8,7 @@ import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.science.oceanography.Tide
 import com.kylecorry.sol.time.Time.hoursBetween
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 
 class RuleOfTwelfthsWaterLevelCalculator(
     private val first: Tide,

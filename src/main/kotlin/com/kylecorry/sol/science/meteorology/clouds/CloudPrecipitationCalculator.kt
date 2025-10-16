@@ -6,8 +6,8 @@ import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Reading
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
 
 internal class CloudPrecipitationCalculator {
 

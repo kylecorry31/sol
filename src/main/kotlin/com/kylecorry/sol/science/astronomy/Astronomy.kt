@@ -175,10 +175,12 @@ object Astronomy : IAstronomyService {
         } else if (sunset != null && sunrise == null) {
             // Sun sets but doesn't rise
             return sunset.instant - startOfDay.instant
-        } else {
+        } else if (sunset != null && sunrise != null) {
             // Sun sets in morning, rises at night
             return (sunset.instant - startOfDay.instant) +
                 (startOfDay.plusDays(1).instant - sunrise.instant)
+        } else {
+            return Duration.ZERO
         }
     }
 
@@ -463,8 +465,8 @@ object Astronomy : IAstronomyService {
         var current = start
         while (current.isBefore(end)) {
             val peak = getMeteorShower(location, current)
-            if (peak != null && Duration.between(peak.peak, date)
-                    .abs() <= (peak.shower.activeDays.toLong().days / 2)
+            if (peak != null && (peak.peak.instant - date.instant).absoluteValue
+                    <= (peak.shower.activeDays.toLong().days / 2)
             ) {
                 active.add(peak)
             }
@@ -580,8 +582,8 @@ object Astronomy : IAstronomyService {
         val lastNight = Range(yesterday.set, today.rise)
         val tonight = Range(today.set, tomorrow.rise)
 
-        val timeUntilLastNight = Duration.between(time, lastNight.end).abs()
-        val timeUntilTonight = Duration.between(time, tonight.start).abs()
+        val timeUntilLastNight = (lastNight.end.instant - time.instant).absoluteValue
+        val timeUntilTonight = (tonight.start.instant - time.instant).absoluteValue
 
 
         return if (timeUntilLastNight < timeUntilTonight) {
@@ -675,7 +677,7 @@ object Astronomy : IAstronomyService {
             return Range(lastRise ?: time.atStartOfDay(), nextSet ?: time.atEndOfDay())
         }
 
-        if (nextRise == null || Duration.between(time, nextRise) > nextRiseOffset) {
+        if (nextRise == null || (nextRise.instant - time.instant) > nextRiseOffset) {
             if (lastRise == null && lastSet == null) {
                 return null
             }

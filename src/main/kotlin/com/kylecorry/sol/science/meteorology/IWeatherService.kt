@@ -7,9 +7,9 @@ import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.science.shared.ISeasonService
 import com.kylecorry.sol.units.*
-import java.time.Duration
-import java.time.Instant
-import java.time.Month
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
+import kotlinx.datetime.Month
 
 interface IWeatherService : ICloudService, ISeasonService {
 

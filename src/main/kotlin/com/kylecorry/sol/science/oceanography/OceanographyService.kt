@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.oceanography
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.optimization.IExtremaFinder
@@ -8,8 +12,8 @@ import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.*
-import java.time.Duration
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import com.kylecorry.sol.time.ZonedDateTime
 
 class OceanographyService : IOceanographyService {
 

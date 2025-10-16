@@ -10,8 +10,8 @@ import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.oceanography.Tide
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
-import java.time.Duration
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import com.kylecorry.sol.time.ZonedDateTime
 
 class LunitidalWaterLevelCalculator(
     private val lunitidalInterval: Duration,

@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.time.Time.toUTC
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 object WorldMagneticModel2025 {
     val BASE_TIME = LocalDate.of(2025, 1, 1).atStartOfDay().toUTC().toInstant()

@@ -10,7 +10,7 @@ import com.kylecorry.sol.math.analysis.Waveform
 import com.kylecorry.sol.science.oceanography.Tide
 import com.kylecorry.sol.science.oceanography.TideConstituent
 import com.kylecorry.sol.time.Time.hoursBetween
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 
 class TideClockWaterLevelCalculator(
     private val reference: Tide,

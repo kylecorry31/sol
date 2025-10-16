@@ -6,7 +6,7 @@ import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.units.*
-import java.time.Duration
+import kotlin.time.Duration
 
 object Physics : IPhysicsService {
 

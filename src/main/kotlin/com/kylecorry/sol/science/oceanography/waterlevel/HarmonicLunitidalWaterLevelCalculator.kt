@@ -1,11 +1,15 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.science.oceanography.TidalHarmonic
 import com.kylecorry.sol.science.oceanography.TideConstituent
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
-import java.time.Duration
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import com.kylecorry.sol.time.ZonedDateTime
 
 class HarmonicLunitidalWaterLevelCalculator(
     lunitidalInterval: Duration,

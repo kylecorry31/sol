@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.oceanography
 
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 
 data class Tide(
     val time: ZonedDateTime,

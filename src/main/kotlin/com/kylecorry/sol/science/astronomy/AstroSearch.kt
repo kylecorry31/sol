@@ -2,8 +2,8 @@ package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.time.Time.middle
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
 
 internal object AstroSearch {
 

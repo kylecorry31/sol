@@ -9,7 +9,7 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.Energy
 import com.kylecorry.sol.units.Speed
 import com.kylecorry.sol.units.Weight
-import java.time.Duration
+import kotlin.time.Duration
 
 interface IPhysicsService {
     // Kinematics

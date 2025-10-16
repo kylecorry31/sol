@@ -7,10 +7,10 @@ import kotlin.time.Duration.Companion.seconds
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.science.oceanography.TidalHarmonic
 import com.kylecorry.sol.science.oceanography.TideConstituent
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import com.kylecorry.sol.time.ZonedDateTime
 
 class HarmonicWaterLevelCalculator(private val harmonics: List<TidalHarmonic>) :
     IWaterLevelCalculator {

@@ -5,7 +5,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.time.Time
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 internal class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0) {
 

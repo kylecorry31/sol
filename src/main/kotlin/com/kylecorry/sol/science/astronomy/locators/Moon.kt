@@ -16,7 +16,7 @@ import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import java.time.Duration
+import kotlin.time.Duration
 import kotlin.math.*
 
 internal class Moon : ICelestialLocator {

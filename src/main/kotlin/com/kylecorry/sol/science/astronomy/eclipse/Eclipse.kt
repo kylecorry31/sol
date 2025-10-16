@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy.eclipse
 
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
 
 data class Eclipse(
     val start: Instant,

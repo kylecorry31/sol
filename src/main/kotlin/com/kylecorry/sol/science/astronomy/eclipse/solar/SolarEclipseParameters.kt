@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
-import java.time.Instant
+import kotlinx.datetime.Instant
 
 internal data class SolarEclipseParameters(
     val maximum: Instant,

@@ -10,7 +10,7 @@ import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.SolMath.wrap
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.*
-import java.time.Instant
+import kotlinx.datetime.Instant
 import kotlin.math.*
 
 object Geology : IGeologyService {

@@ -3,7 +3,7 @@ package com.kylecorry.sol.science.meteorology.observation
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Speed
-import java.time.Instant
+import kotlinx.datetime.Instant
 
 sealed class WeatherObservation<T>(
     val time: Instant,

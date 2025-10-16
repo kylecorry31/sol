@@ -16,8 +16,8 @@ import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.units.Coordinate
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos

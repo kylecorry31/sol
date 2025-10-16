@@ -5,7 +5,7 @@ import com.kylecorry.sol.science.meteorology.WeatherForecast
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Temperature
-import java.time.Instant
+import kotlinx.datetime.Instant
 
 internal interface Forecaster {
 

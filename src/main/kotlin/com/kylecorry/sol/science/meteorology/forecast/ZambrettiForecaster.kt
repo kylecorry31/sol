@@ -15,9 +15,9 @@ import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Temperature
-import java.time.Duration
-import java.time.Instant
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
+import com.kylecorry.sol.time.ZonedDateTime
 
 internal object ZambrettiForecaster : Forecaster {
 
