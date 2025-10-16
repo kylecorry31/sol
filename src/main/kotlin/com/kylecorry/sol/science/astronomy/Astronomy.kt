@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.deltaAngle
@@ -154,7 +158,7 @@ object Astronomy : IAstronomyService {
 
         if (sunrise != null && sunset != null && sunset > sunrise) {
             // Rise in morning, set at night
-            return Duration.between(sunrise, sunset)
+            return sunset.instant - sunrise.instant
         } else if (sunrise == null && sunset == null) {
             // Sun doesn't rise or set
             return if (isSunUp(
@@ -163,20 +167,18 @@ object Astronomy : IAstronomyService {
                     withRefraction,
                     withParallax
                 )
-            ) Duration.between(
-                startOfDay,
-                startOfDay.plusDays(1)
-            ) else Duration.ZERO
+            ) startOfDay.plusDays(1).instant - startOfDay.instant
+            else Duration.ZERO
         } else if (sunrise != null && sunset == null) {
             // Sun rises but doesn't set
-            return Duration.between(sunrise, startOfDay.plusDays(1))
+            return startOfDay.plusDays(1).instant - sunrise.instant
         } else if (sunset != null && sunrise == null) {
             // Sun sets but doesn't rise
-            return Duration.between(startOfDay, sunset)
+            return sunset.instant - startOfDay.instant
         } else {
             // Sun sets in morning, rises at night
-            return Duration.between(startOfDay, sunset)
-                .plus(Duration.between(sunrise, startOfDay.plusDays(1)))
+            return (sunset.instant - startOfDay.instant) +
+                (startOfDay.plusDays(1).instant - sunrise.instant)
         }
     }
 
@@ -346,7 +348,7 @@ object Astronomy : IAstronomyService {
         return getAboveHorizonTimes(
             location,
             time,
-            Duration.ofHours(6),
+            (6).hours,
             { loc, t -> isMoonUp(t, loc, withRefraction, withParallax) },
             { loc, t -> getMoonEvents(t, loc, withRefraction, withParallax) }
         )
@@ -406,7 +408,7 @@ object Astronomy : IAstronomyService {
     }
 
     override fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {
-        val startOfDay = ZonedDateTime.of(date.toLocalDate(), LocalTime.MIN, date.zone)
+        val startOfDay = ZonedDateTime.of(date.toLocalDate(), LocalTime(0, 0), date.zone)
 
         val solarLongitude = getSolarLongitude(date)
 
@@ -462,7 +464,7 @@ object Astronomy : IAstronomyService {
         while (current.isBefore(end)) {
             val peak = getMeteorShower(location, current)
             if (peak != null && Duration.between(peak.peak, date)
-                    .abs() <= Duration.ofDays(peak.shower.activeDays.toLong() / 2)
+                    .abs() <= (peak.shower.activeDays.toLong().days / 2)
             ) {
                 active.add(peak)
             }

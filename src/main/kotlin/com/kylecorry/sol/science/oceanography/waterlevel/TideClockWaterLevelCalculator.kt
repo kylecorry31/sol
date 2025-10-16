@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.analysis.CosineWave

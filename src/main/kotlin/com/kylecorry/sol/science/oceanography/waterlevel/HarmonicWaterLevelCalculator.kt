@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.science.oceanography.TidalHarmonic
@@ -27,7 +31,7 @@ class HarmonicWaterLevelCalculator(private val harmonics: List<TidalHarmonic>) :
 
         private val startDate = ZonedDateTime.of(
             LocalDateTime.of(2025, 1, 1, 0, 0),
-            ZoneId.of("UTC")
+            TimeZone.of("UTC")
         )
 
         private val corrections2025 = mutableMapOf(

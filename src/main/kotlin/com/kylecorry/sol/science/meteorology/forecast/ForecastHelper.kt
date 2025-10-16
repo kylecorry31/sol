@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.meteorology.forecast
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.*
@@ -54,7 +58,7 @@ internal object ForecastHelper {
 
         val pressure = pressures.last()
 
-        val targetTime = pressure.time.minus(Duration.ofHours(3))
+        val targetTime = pressure.time.minus((3).hours)
         val lastPressure = pressures.minBy {
             if (it == pressure) {
                 Long.MAX_VALUE

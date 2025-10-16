@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.meteorology.forecast
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.*
@@ -54,7 +58,7 @@ internal object SolForecaster : Forecaster {
         time: Instant
     ): WeatherCondition? {
         val last = clouds.lastOrNull() ?: return null
-        if (Duration.between(last.time, time).abs() > Duration.ofHours(3)) {
+        if (Duration.between(last.time, time).abs() > (3).hours) {
             return null
         }
         if (last.value == null) {
@@ -182,8 +186,8 @@ internal object SolForecaster : Forecaster {
         pressureChangeThreshold: Float = 1.5f,
         pressureStormChangeThreshold: Float = 2f
     ): List<WeatherForecast> {
-        val history = Duration.ofHours(48)
-        val cloudsUpToDateDuration = Duration.ofHours(24)
+        val history = (48).hours
+        val cloudsUpToDateDuration = (24).hours
         val oldest = time.minus(history)
         val cloudsUpToDateTime = time.minus(cloudsUpToDateDuration)
         val filteredPressures =
@@ -312,5 +316,5 @@ internal object SolForecaster : Forecaster {
         return cloudIndicatedArrivalRange?.middle()
     }
 
-    private val noChangeMaxHistory = Duration.ofHours(8)
+    private val noChangeMaxHistory = (8).hours
 }

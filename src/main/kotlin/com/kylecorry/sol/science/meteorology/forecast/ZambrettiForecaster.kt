@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.meteorology.forecast
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.astronomy.Astronomy
@@ -95,7 +99,7 @@ internal object ZambrettiForecaster : Forecaster {
         val tendency = ForecastHelper.getTendency(pressures, pressureChangeThreshold)
         val windDirection = observations
             .filterIsInstance<WeatherObservation.WindDirection>()
-            .filter { it.time >= time.minus(Duration.ofHours(3)) }
+            .filter { it.time >= time.minus((3).hours) }
             .map { it.value }
             .lastOrNull()
 

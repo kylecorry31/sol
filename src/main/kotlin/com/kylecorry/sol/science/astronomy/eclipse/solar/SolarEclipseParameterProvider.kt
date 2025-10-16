@@ -19,7 +19,7 @@ internal class SolarEclipseParameterProvider {
     private val moon = Moon()
 
     fun getNextSolarEclipseParameters(after: Instant): SolarEclipseParameters {
-        val ut = ZonedDateTime.ofInstant(after, ZoneId.of("UTC")).toLocalDateTime()
+        val ut = ZonedDateTime.ofInstant(after, TimeZone.of("UTC")).toLocalDateTime()
         return getNextSolarEclipse(ut)
     }
 
@@ -99,7 +99,7 @@ internal class SolarEclipseParameterProvider {
             ) - 0.0005 * cosDegrees(M + MPrime)
 
 
-        val datetime = ZonedDateTime.of(fromJulianDay(correctedJD), ZoneId.of("UTC"))
+        val datetime = ZonedDateTime.of(fromJulianDay(correctedJD), TimeZone.of("UTC"))
 
         return SolarEclipseParameters(
             datetime.toInstant().minusSeconds(TerrestrialTime.getDeltaT(datetime.year).toLong()),

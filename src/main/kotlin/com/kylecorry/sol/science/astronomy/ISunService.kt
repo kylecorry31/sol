@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Bearing
@@ -99,7 +103,7 @@ interface ISunService {
     fun getSunAboveHorizonTimes(
         location: Coordinate,
         time: ZonedDateTime,
-        nextRiseOffset: Duration = Duration.ofHours(6),
+        nextRiseOffset: Duration = (6).hours,
         mode: SunTimesMode = SunTimesMode.Actual,
         withRefraction: Boolean = false,
         withParallax: Boolean = false

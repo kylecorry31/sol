@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
@@ -15,7 +19,7 @@ import kotlin.math.absoluteValue
 
 internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
-        return getNextEclipseHelper(after.minus(Duration.ofDays(20)), after, location, 100)
+        return getNextEclipseHelper(after.minus((20).days), after, location, 100)
     }
 
     protected abstract fun getMagnitudeThreshold(): Double
@@ -43,7 +47,7 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
 
         if (magnitude < getMagnitudeThreshold()) {
             return getNextEclipseHelper(
-                parameters.maximum.plus(Duration.ofDays(10)),
+                parameters.maximum.plus((10).days),
                 atLeastInstant,
                 location,
                 iterationsRemaining - 1
@@ -61,15 +65,15 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         val isAfterInstant = time.end.isAfter(atLeastInstant)
         if (!isAfterInstant) {
             return getNextEclipseHelper(
-                parameters.maximum.plus(Duration.ofDays(10)),
+                parameters.maximum.plus((10).days),
                 atLeastInstant,
                 location,
                 iterationsRemaining - 1
             )
         }
 
-        val upAtStart = Astronomy.isMoonUp(time.start.atZone(ZoneId.of("UTC")), location)
-        val upAtEnd = Astronomy.isMoonUp(time.end.atZone(ZoneId.of("UTC")), location)
+        val upAtStart = Astronomy.isMoonUp(time.start, location)
+        val upAtEnd = Astronomy.isMoonUp(time.end, location)
 
         if (upAtStart || upAtEnd) {
             val circle1 = Circle(Vector2.zero, moonRadiusInEarthRadii.toFloat())
@@ -79,7 +83,7 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         }
 
         return getNextEclipseHelper(
-            parameters.maximum.plus(Duration.ofDays(10)),
+            parameters.maximum.plus((10).days),
             atLeastInstant,
             location,
             iterationsRemaining - 1

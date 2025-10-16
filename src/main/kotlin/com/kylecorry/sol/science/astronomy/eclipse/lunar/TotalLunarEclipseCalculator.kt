@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.SolMath.power
 import kotlin.time.Duration
@@ -14,6 +18,6 @@ internal class TotalLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculato
         val t = 0.4678 - parameters.umbralConeRadius
         val minutes =
             (60 / parameters.n) * sqrt(power(t, 2) - power(parameters.minDistanceFromCenter, 2))
-        return Duration.ofSeconds((minutes * 60).toLong())
+        return ((minutes * 60).seconds.toLong())
     }
 }

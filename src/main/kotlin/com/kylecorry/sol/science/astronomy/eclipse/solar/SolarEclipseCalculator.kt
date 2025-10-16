@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath.square
@@ -26,7 +30,7 @@ import kotlin.math.sqrt
  * @param maxDuration Maximum duration to search for a solar eclipse, default is 5 years.
  */
 internal class SolarEclipseCalculator(
-    private val precision: Duration = Duration.ofMinutes(1),
+    private val precision: Duration = (1).minutes,
     maxDuration: Duration? = null
 ) : EclipseCalculator {
 
@@ -36,8 +40,8 @@ internal class SolarEclipseCalculator(
 
     private val shouldLog = false
 
-    private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
-    private val _minEclipseDuration = Duration.ofMinutes(1)
+    private val _maxDuration = maxDuration ?: (365 * 5).days
+    private val _minEclipseDuration = (1).minutes
 
     override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
         // Calculate the approximate time of the next eclipse
@@ -45,7 +49,7 @@ internal class SolarEclipseCalculator(
 
         // Now that we have the approximate time, we can search for the exact time
 
-        val maxSearch = Duration.ofHours(6)
+        val maxSearch = (6).hours
         val minTime = nextEclipseTime.minus(maxSearch)
         val maxTime = nextEclipseTime.plus(maxSearch)
 
@@ -112,7 +116,7 @@ internal class SolarEclipseCalculator(
         var timeFromStart = Duration.ZERO
 
         // If the eclipse is less than 15 minutes, then it may be missed
-        val precision = Duration.ofMinutes(15)
+        val precision = (15).minutes
 
         // The formula to get the next eclipse does not work well when too close to an eclipse,
         // so start 10 days prior, and filter results to be only be after the given time
@@ -126,7 +130,7 @@ internal class SolarEclipseCalculator(
             // TODO: Check to see if the eclipse will even be visible on earth
 
             // Search around the maximum time of the eclipse to see if it is visible
-            val searchAmount = Duration.ofHours(3)
+            val searchAmount = (3).hours
             val minimum = nextEclipse.maximum.minus(searchAmount).coerceIn(after, maxSearch)
             val maximum = nextEclipse.maximum.plus(searchAmount).coerceIn(after, maxSearch)
             val start = nextEclipse.maximum.coerceIn(after, maxSearch)

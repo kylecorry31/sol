@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.meteorology.clouds
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Reading
@@ -68,13 +72,13 @@ internal class CloudPrecipitationCalculator {
 
     private fun getCloudPrecipitationTimeRange(cloud: CloudGenus?): Range<Duration>? {
         return when (cloud) {
-            CloudGenus.Cirrus -> Range(Duration.ofHours(12), Duration.ofHours(24))
-            CloudGenus.Cirrocumulus -> Range(Duration.ofHours(8), Duration.ofHours(12))
-            CloudGenus.Cirrostratus -> Range(Duration.ofHours(10), Duration.ofHours(15))
-            CloudGenus.Altocumulus -> Range(Duration.ZERO, Duration.ofHours(12))
-            CloudGenus.Altostratus -> Range(Duration.ZERO, Duration.ofHours(8))
+            CloudGenus.Cirrus -> Range((12).hours, (24).hours)
+            CloudGenus.Cirrocumulus -> Range((8).hours, (12).hours)
+            CloudGenus.Cirrostratus -> Range((10).hours, (15).hours)
+            CloudGenus.Altocumulus -> Range(Duration.ZERO, (12).hours)
+            CloudGenus.Altostratus -> Range(Duration.ZERO, (8).hours)
             CloudGenus.Nimbostratus, CloudGenus.Cumulonimbus -> Range(Duration.ZERO, Duration.ZERO)
-            CloudGenus.Stratus, CloudGenus.Cumulus -> Range(Duration.ZERO, Duration.ofHours(3))
+            CloudGenus.Stratus, CloudGenus.Cumulus -> Range(Duration.ZERO, (3).hours)
             CloudGenus.Stratocumulus, null -> null
         }
     }

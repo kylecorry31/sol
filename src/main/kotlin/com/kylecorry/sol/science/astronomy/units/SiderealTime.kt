@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy.units
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.SolMath.wrap
 

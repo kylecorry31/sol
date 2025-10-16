@@ -78,8 +78,8 @@ class OceanographyService : IOceanographyService {
         // Step 2: Calculate the time between the moon transit and the high tide
         var duration = Duration.between(lastTransit, highTideTime)
 
-        while (duration > Duration.ofHours(12)) {
-            duration -= Duration.ofHours(12)
+        while (duration > (12).hours) {
+            duration -= (12).hours
         }
 
         return duration
@@ -96,13 +96,13 @@ class OceanographyService : IOceanographyService {
         }
 
         var averageDuration = Duration.ZERO
-        val needsCorrection = intervals.any { it > Duration.ofHours(8) } && intervals.any { it < Duration.ofHours(4) }
+        val needsCorrection = intervals.any { it > (8).hours } && intervals.any { it < (4).hours }
 
         for (i in intervals.indices) {
             var interval = intervals[i]
             if (needsCorrection) {
-                if (interval < Duration.ofHours(4)) {
-                    interval += Duration.ofHours(12)
+                if (interval < (4).hours) {
+                    interval += (12).hours
                 }
             }
             averageDuration = averageDuration.plus(interval)
@@ -110,8 +110,8 @@ class OceanographyService : IOceanographyService {
 
         averageDuration = averageDuration.dividedBy(intervals.size.toLong())
 
-        while (averageDuration > Duration.ofHours(12)) {
-            averageDuration -= Duration.ofHours(12)
+        while (averageDuration > (12).hours) {
+            averageDuration -= (12).hours
         }
 
         return averageDuration

@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.RingBuffer
@@ -153,7 +157,7 @@ class LunitidalWaterLevelCalculator(
     }
 
     private fun getTideTimes(time: ZonedDateTime, interval: Duration): List<ZonedDateTime> {
-        val shortCircuitDuration = Duration.ofHours(14)
+        val shortCircuitDuration = (14).hours
         val tides = moonTransits.toList().map { it.plus(interval) }.toMutableList()
 
         var before =

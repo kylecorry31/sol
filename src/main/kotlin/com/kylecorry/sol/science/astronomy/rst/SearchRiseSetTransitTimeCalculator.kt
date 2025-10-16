@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy.rst
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.astronomy.AstroSearch
@@ -75,7 +79,7 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         }
 
         // Narrow down the times to within 1 minute
-        val precision = Duration.ofMinutes(1)
+        val precision = (1).minutes
 
         val rise = riseTimeRange?.let {
             AstroSearch.findStart(

@@ -1,4 +1,8 @@
 package com.kylecorry.sol.science.astronomy
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Bearing
@@ -69,7 +73,7 @@ interface IMoonService {
     fun getMoonAboveHorizonTimes(
         location: Coordinate,
         time: ZonedDateTime,
-        nextRiseOffset: Duration = Duration.ofHours(6),
+        nextRiseOffset: Duration = (6).hours,
         withRefraction: Boolean = false,
         withParallax: Boolean = false
     ): Range<ZonedDateTime>?
