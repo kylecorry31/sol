@@ -53,7 +53,7 @@ open class LatLon {
         return LatLon(lat, lon)
     }
 
-    open fun add(that: Position): LatLon? {
+    open fun add(that: Position): LatLon {
 
         val lat = Angle.normalizedLatitude(this.latitude.add(that.latitude))
         val lon = Angle.normalizedLongitude(this.longitude.add(that.longitude))
@@ -61,7 +61,7 @@ open class LatLon {
         return LatLon(lat, lon)
     }
 
-    open fun subtract(that: Position): LatLon? {
+    open fun subtract(that: Position): LatLon {
 
         val lat = Angle.normalizedLatitude(this.latitude.subtract(that.latitude))
         val lon = Angle.normalizedLongitude(this.longitude.subtract(that.longitude))
@@ -77,12 +77,9 @@ open class LatLon {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-
-        val latLon = other as LatLon
-
-        if (latitude != latLon.latitude) return false
-        if (longitude != latLon.longitude) return false
+        if (other !is LatLon) return false
+        if (latitude != other.latitude) return false
+        if (longitude != other.longitude) return false
 
         return true
     }

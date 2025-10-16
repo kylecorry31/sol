@@ -29,12 +29,10 @@ class Position(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
+        if (other !is Position) return false
         if (!super.equals(other)) return false
 
-        val position = other as Position
-
-        return position.altitude == this.altitude
+        return other.altitude == this.altitude
     }
 
     override fun hashCode(): Int {

@@ -37,13 +37,11 @@ class UTMCoord
      * @param hemisphere      the hemisphere, either [AVKey.NORTH] or [                        ][AVKey.SOUTH].
      * @param easting         the easting distance in meters
      * @param northing        the northing distance in meters.
-     * @param centralMeridian the cntral meridian `Angle`.
+     * @param centralMeridian the central meridian `Angle`.
      *
      * @throws IllegalArgumentException if `latitude` or `longitude` is null.
      */
     init {
-        require(!(latitude == null || longitude == null)) { "Latitude Or Longitude Is Null" }
-
         this.latitude = latitude
         this.longitude = longitude
         this.hemisphere = hemisphere
@@ -75,7 +73,6 @@ class UTMCoord
          * UTM coordinates fails.
          */
         fun fromLatLon(latitude: Angle, longitude: Angle): UTMCoord {
-            require(!(latitude == null || longitude == null)) { "Latitude Or Longitude Is Null" }
 
             val converter = UTMCoordConverter()
             val err = converter.convertGeodeticToUTM(latitude.radians, longitude.radians)

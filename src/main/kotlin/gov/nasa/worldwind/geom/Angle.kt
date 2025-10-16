@@ -117,9 +117,8 @@ class Angle : Comparable<Angle?> {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-
-        val angle = other as Angle
+        if (other !is Angle) return false
+        val angle = other
 
         return angle.degrees == this.degrees
     }
@@ -159,7 +158,7 @@ class Angle : Comparable<Angle?> {
             return Angle(RADIANS_TO_DEGREES * radians, radians)
         }
 
-        private const val HALF_PI = Math.PI / 2
+        private const val HALF_PI = PI / 2
 
         fun fromDegreesLatitude(degrees: Double): Angle {
             var degrees = degrees
@@ -174,7 +173,7 @@ class Angle : Comparable<Angle?> {
             var degrees = degrees
             degrees = if (degrees < -180) -180.0 else if (degrees > 180) 180.0 else degrees
             var radians: Double = DEGREES_TO_RADIANS * degrees
-            radians = if (radians < -Math.PI) -Math.PI else if (radians > Math.PI) Math.PI else radians
+            radians = if (radians < -PI) -PI else if (radians > PI) PI else radians
 
             return Angle(degrees, radians)
         }

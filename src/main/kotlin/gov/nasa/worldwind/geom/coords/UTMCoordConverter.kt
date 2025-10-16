@@ -112,74 +112,74 @@ internal class UTMCoordConverter {
      *
      * @return error code
      */
-    fun convertGeodeticToUTM(Latitude: Double, Longitude: Double): Long {
-        var Longitude = Longitude
-        val Lat_Degrees: Long
-        val Long_Degrees: Long
-        var temp_zone: Long
-        var Error_Code = UTM_NO_ERROR.toLong()
-        val Origin_Latitude = 0.0
-        val False_Easting = 500000.0
-        var False_Northing = 0.0
-        val Scale = 0.9996
+    fun convertGeodeticToUTM(latitude: Double, longitude: Double): Long {
+        var lon = longitude
+        val latDegrees: Long
+        val longDegrees: Long
+        var tempZone: Long
+        var errorCode = UTM_NO_ERROR.toLong()
+        val originLatitude = 0.0
+        val falseEasting = 500000.0
+        var falseNorthing = 0.0
+        val scale = 0.9996
 
-        if ((Latitude < MIN_LAT) || (Latitude > MAX_LAT)) { /* Latitude out of range */
-            Error_Code = Error_Code or UTM_LAT_ERROR.toLong()
+        if ((latitude < MIN_LAT) || (latitude > MAX_LAT)) { /* Latitude out of range */
+            errorCode = errorCode or UTM_LAT_ERROR.toLong()
         }
-        if ((Longitude < -PI) || (Longitude > (2 * PI))) { /* Longitude out of range */
-            Error_Code = Error_Code or UTM_LON_ERROR.toLong()
+        if ((lon < -PI) || (lon > (2 * PI))) { /* Longitude out of range */
+            errorCode = errorCode or UTM_LON_ERROR.toLong()
         }
-        if (Error_Code == UTM_NO_ERROR.toLong()) { /* no errors */
-            if (Longitude < 0) Longitude += (2 * PI) + 1.0e-10
-            Lat_Degrees = (Latitude * 180.0 / PI).toLong()
-            Long_Degrees = (Longitude * 180.0 / PI).toLong()
+        if (errorCode == UTM_NO_ERROR.toLong()) { /* no errors */
+            if (lon < 0) lon += (2 * PI) + 1.0e-10
+            latDegrees = (latitude * 180.0 / PI).toLong()
+            longDegrees = (lon * 180.0 / PI).toLong()
 
-            if (Longitude < PI) temp_zone = (31 + ((Longitude * 180.0 / PI) / 6.0)).toLong()
-            else temp_zone = (((Longitude * 180.0 / PI) / 6.0) - 29).toLong()
-            if (temp_zone > 60) temp_zone = 1
+            tempZone = if (lon < PI) (31 + ((lon * 180.0 / PI) / 6.0)).toLong()
+            else (((lon * 180.0 / PI) / 6.0) - 29).toLong()
+            if (tempZone > 60) tempZone = 1
             /* UTM special cases */
-            if ((Lat_Degrees > 55) && (Lat_Degrees < 64) && (Long_Degrees > -1) && (Long_Degrees < 3)) temp_zone = 31
-            if ((Lat_Degrees > 55) && (Lat_Degrees < 64) && (Long_Degrees > 2) && (Long_Degrees < 12)) temp_zone = 32
-            if ((Lat_Degrees > 71) && (Long_Degrees > -1) && (Long_Degrees < 9)) temp_zone = 31
-            if ((Lat_Degrees > 71) && (Long_Degrees > 8) && (Long_Degrees < 21)) temp_zone = 33
-            if ((Lat_Degrees > 71) && (Long_Degrees > 20) && (Long_Degrees < 33)) temp_zone = 35
-            if ((Lat_Degrees > 71) && (Long_Degrees > 32) && (Long_Degrees < 42)) temp_zone = 37
+            if ((latDegrees > 55) && (latDegrees < 64) && (longDegrees > -1) && (longDegrees < 3)) tempZone = 31
+            if ((latDegrees > 55) && (latDegrees < 64) && (longDegrees > 2) && (longDegrees < 12)) tempZone = 32
+            if ((latDegrees > 71) && (longDegrees > -1) && (longDegrees < 9)) tempZone = 31
+            if ((latDegrees > 71) && (longDegrees > 8) && (longDegrees < 21)) tempZone = 33
+            if ((latDegrees > 71) && (longDegrees > 20) && (longDegrees < 33)) tempZone = 35
+            if ((latDegrees > 71) && (longDegrees > 32) && (longDegrees < 42)) tempZone = 37
 
             if (UTM_Override != 0L) {
-                if ((temp_zone == 1L) && (UTM_Override == 60L)) temp_zone = UTM_Override
-                else if ((temp_zone == 60L) && (UTM_Override == 1L)) temp_zone = UTM_Override
-                else if (((temp_zone - 1) <= UTM_Override) && (UTM_Override <= (temp_zone + 1))) temp_zone =
+                if ((tempZone == 1L) && (UTM_Override == 60L)) tempZone = UTM_Override
+                else if ((tempZone == 60L) && (UTM_Override == 1L)) tempZone = UTM_Override
+                else if (((tempZone - 1) <= UTM_Override) && (UTM_Override <= (tempZone + 1))) tempZone =
                     UTM_Override
-                else Error_Code = UTM_ZONE_OVERRIDE_ERROR.toLong()
+                else errorCode = UTM_ZONE_OVERRIDE_ERROR.toLong()
             }
-            if (Error_Code == UTM_NO_ERROR.toLong()) {
-                if (temp_zone >= 31) this.centralMeridian = (6 * temp_zone - 183) * PI / 180.0
-                else this.centralMeridian = (6 * temp_zone + 177) * PI / 180.0
-                this.zone = temp_zone.toInt()
-                if (Latitude < 0) {
-                    False_Northing = 10000000.0
+            if (errorCode == UTM_NO_ERROR.toLong()) {
+                if (tempZone >= 31) this.centralMeridian = (6 * tempZone - 183) * PI / 180.0
+                else this.centralMeridian = (6 * tempZone + 177) * PI / 180.0
+                this.zone = tempZone.toInt()
+                if (latitude < 0) {
+                    falseNorthing = 10000000.0
                     this.hemisphere = AVKey.SOUTH
                 } else this.hemisphere = AVKey.NORTH
 
                 try {
                     val TM = fromLatLon(
-                        Angle.fromRadians(Latitude), Angle.fromRadians(Longitude),
-                        this.UTM_a, this.UTM_f, Angle.fromRadians(Origin_Latitude),
-                        Angle.fromRadians(this.centralMeridian), False_Easting, False_Northing, Scale
+                        Angle.fromRadians(latitude), Angle.fromRadians(lon),
+                        this.UTM_a, this.UTM_f, Angle.fromRadians(originLatitude),
+                        Angle.fromRadians(this.centralMeridian), falseEasting, falseNorthing, scale
                     )
                     this.easting = TM.easting
                     this.northing = TM.northing
 
-                    if ((this.easting < MIN_EASTING) || (this.easting > MAX_EASTING)) Error_Code =
+                    if ((this.easting < MIN_EASTING) || (this.easting > MAX_EASTING)) errorCode =
                         UTM_EASTING_ERROR.toLong()
-                    if ((this.northing < MIN_NORTHING) || (this.northing > MAX_NORTHING)) Error_Code =
-                        Error_Code or UTM_NORTHING_ERROR.toLong()
+                    if ((this.northing < MIN_NORTHING) || (this.northing > MAX_NORTHING)) errorCode =
+                        errorCode or UTM_NORTHING_ERROR.toLong()
                 } catch (e: Exception) {
-                    Error_Code = UTM_TM_ERROR.toLong()
+                    errorCode = UTM_TM_ERROR.toLong()
                 }
             }
         }
-        return (Error_Code)
+        return (errorCode)
     }
 
     /**
