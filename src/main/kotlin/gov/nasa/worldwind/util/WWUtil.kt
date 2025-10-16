@@ -12,7 +12,6 @@ object WWUtil {
      *
      * @return true if the reference is null or is a zero-length [String].
      */
-    @JvmStatic
     fun isEmpty(s: Any?): Boolean {
         return s == null || (s is String && s.isEmpty())
     }

@@ -22,18 +22,14 @@ class TMCoord
     falseEasting: Double, falseNorthing: Double,
     scale: Double
 ) {
-    @JvmField
     val latitude: Angle
-    @JvmField
     val longitude: Angle
     private val originLatitude: Angle
     private val centralMeridian: Angle
     private val falseEasting: Double
     private val falseNorthing: Double
     val scale: Double
-    @JvmField
     val easting: Double
-    @JvmField
     val northing: Double
 
     /**
@@ -85,7 +81,6 @@ class TMCoord
          * or the conversion to TM coordinates fails. If the globe is null conversion will default
          * to using WGS84.
          */
-        @JvmStatic
         fun fromLatLon(
             latitude: Angle, longitude: Angle, a: Double?, f: Double?,
             originLatitude: Angle, centralMeridian: Angle,
@@ -133,7 +128,6 @@ class TMCoord
          * is null, or the conversion to geodetic coordinates fails. If the globe is null conversion will default
          * to using WGS84.
          */
-        @JvmStatic
         fun fromTM(
             easting: Double, northing: Double,
             originLatitude: Angle, centralMeridian: Angle,
