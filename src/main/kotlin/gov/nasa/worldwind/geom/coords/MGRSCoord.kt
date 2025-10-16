@@ -6,7 +6,6 @@
 package gov.nasa.worldwind.geom.coords
 
 import gov.nasa.worldwind.geom.Angle
-import java.util.*
 
 /**
  * This class holds an immutable MGRS coordinate string along with
@@ -84,7 +83,7 @@ class MGRSCoord
             var upperString = MGRSString
             require(upperString.isNotEmpty()) { "String Is Null" }
 
-            upperString = upperString.uppercase(Locale.getDefault()).replace(" ".toRegex(), "")
+            upperString = upperString.uppercase().replace(" ".toRegex(), "")
 
             val converter = MGRSCoordConverter()
             val err = converter.convertMGRSToGeodetic(upperString)
