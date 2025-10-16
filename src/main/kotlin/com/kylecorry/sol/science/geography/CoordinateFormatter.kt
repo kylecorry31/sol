@@ -104,8 +104,8 @@ object CoordinateFormatter {
                 Constants.NATIONALGRID_LON0
             )
             val ng = NationalGrid.toNationalGrid(en)
-            if (ng.isPresent) {
-                return ng.get()
+            if (ng != null) {
+                return ng
             }
         } catch (e: Exception) {
             return "?"
