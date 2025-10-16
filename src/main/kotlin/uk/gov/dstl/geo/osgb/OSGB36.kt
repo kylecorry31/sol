@@ -1,6 +1,8 @@
 /*
  * Crown Copyright (C) 2019 Dstl
  *
+ * Converted to Kotlin by Kyle Corry (Automated) in 2025
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +25,7 @@ import kotlin.math.*
  * <p>Values taken from
  * https://www.ordnancesurvey.co.uk/documents/resources/guide-coordinate-systems-great-britain.pdf
  */
-object OSGB36 {
+internal object OSGB36 {
     private const val tX = -446.448
     private const val tY = 125.157
     private const val tZ = -542.060
