@@ -3,9 +3,7 @@
  * National Aeronautics and Space Administration.
  * All Rights Reserved.
  */
-
-/********************************************************************/
-/* RSC IDENTIFIER: UPS
+/** */ /* RSC IDENTIFIER: UPS
  *
  *
  * ABSTRACT
@@ -82,10 +80,9 @@
  *
  *
  */
+package gov.nasa.worldwind.geom.coords
 
-package gov.nasa.worldwind.geom.coords;
-
-import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.avlist.AVKey
 
 /**
  * Ported to Java from the NGA GeoTrans ups.c and ups.h code - Feb 12, 2007 4:52:59 PM
@@ -93,77 +90,48 @@ import gov.nasa.worldwind.avlist.AVKey;
  * @author Garrett Headley, Patrick Murris
  * @version $Id$
  */
-public class UPSCoordConverter
-{
-    public static final int UPS_NO_ERROR = 0x0000;
-    private static final int UPS_LAT_ERROR = 0x0001;
-    private static final int UPS_LON_ERROR = 0x0002;
-    public static final int UPS_HEMISPHERE_ERROR = 0x0004;
-    public static final int UPS_EASTING_ERROR = 0x0008;
-    public static final int UPS_NORTHING_ERROR = 0x0010;
-    private static final int UPS_A_ERROR = 0x0020;
-    private static final int UPS_INV_F_ERROR = 0x0040;
-
-    private static final double PI = 3.14159265358979323;
-    private static final double MAX_LAT = (PI * 90) / 180.0;             // 90 degrees in radians
-    // Min and max latitude values accepted
-    private static final double MIN_NORTH_LAT = 72 * PI / 180.0;       // 83.5
-    private static final double MIN_SOUTH_LAT = -72 * PI / 180.0;      // -79.5
-
-    private static final double MAX_ORIGIN_LAT = (81.114528 * PI) / 180.0;
-    private static final double MIN_EAST_NORTH = 0;
-    private static final double MAX_EAST_NORTH = 4000000;
-
-    private double UPS_Origin_Latitude = MAX_ORIGIN_LAT;  /*set default = North Hemisphere */
-    private double UPS_Origin_Longitude = 0.0;
+class UPSCoordConverter
+internal constructor() {
+    private var UPS_Origin_Latitude: Double = MAX_ORIGIN_LAT /*set default = North Hemisphere */
+    private val UPS_Origin_Longitude = 0.0
 
     /* Ellipsoid Parameters, default to WGS 84  */
-    private double UPS_a = 6378137.0;          /* Semi-major axis of ellipsoid in meters   */
-    private double UPS_f = 1 / 298.257223563;  /* Flattening of ellipsoid  */
-    private double UPS_False_Easting = 2000000.0;
-    private double UPS_False_Northing = 2000000.0;
-    private double false_easting = 0.0;
-    private double false_northing = 0.0;
-    private double UPS_Easting = 0.0;
-    private double UPS_Northing = 0.0;
+    private val UPS_a = 6378137.0 /* Semi-major axis of ellipsoid in meters   */
+    private val UPS_f = 1 / 298.257223563 /* Flattening of ellipsoid  */
+    private val UPS_False_Easting = 2000000.0
+    private val UPS_False_Northing = 2000000.0
+    private val false_easting = 0.0
+    private val false_northing = 0.0
+    private var UPS_Easting = 0.0
+    private var UPS_Northing = 0.0
 
-    private double Easting = 0.0;
-    private double Northing = 0.0;
-    private String Hemisphere = AVKey.NORTH;
-    private double Latitude = 0.0;
-    private double Longitude = 0.0;
+    /** @return Easting/X in meters
+     */
+    var easting: Double = 0.0
+        private set
 
-    private PolarCoordConverter polarConverter = new PolarCoordConverter();
-
-    UPSCoordConverter(){}
+    /** @return Northing/Y in meters
+     */
+    var northing: Double = 0.0
+        private set
 
     /**
-     * The function SetUPSParameters receives the ellipsoid parameters and sets the corresponding state variables. If
-     * any errors occur, the error code(s) are returned by the function, otherwise UPS_NO_ERROR is returned.
-     *
-     * @param a Semi-major axis of ellipsoid in meters
-     * @param f Flattening of ellipsoid
-     *
-     * @return error code
+     * @return Hemisphere, either [AVKey.NORTH] or [         ][AVKey.SOUTH].
      */
-    public long setUPSParameters(double a, double f)
-    {
-        double inv_f = 1 / f;
+    var hemisphere: String = AVKey.NORTH
+        private set
 
-        if (a <= 0.0)
-        { /* Semi-major axis must be greater than zero */
-            return UPS_A_ERROR;
-        }
-        if ((inv_f < 250) || (inv_f > 350))
-        { /* Inverse flattening must be between 250 and 350 */
-            return UPS_INV_F_ERROR;
-        }
+    /** @return Latitude in radians.
+     */
+    var latitude: Double = 0.0
+        private set
 
-        UPS_a = a;
-        UPS_f = f;
+    /** @return Longitude in radians.
+     */
+    var longitude: Double = 0.0
+        private set
 
-        return (UPS_NO_ERROR);
-    }
+    private val polarConverter = PolarCoordConverter()
 
     /**
      * The function convertGeodeticToUPS converts geodetic (latitude and longitude) coordinates to UPS (hemisphere,
@@ -175,69 +143,41 @@ public class UPSCoordConverter
      *
      * @return error code
      */
-    public long convertGeodeticToUPS(double latitude, double longitude)
-    {
-        if ((latitude < -MAX_LAT) || (latitude > MAX_LAT))
-        {   /* latitude out of range */
-            return UPS_LAT_ERROR;
+    fun convertGeodeticToUPS(latitude: Double, longitude: Double): Long {
+        if ((latitude < -MAX_LAT) || (latitude > MAX_LAT)) {   /* latitude out of range */
+            return UPS_LAT_ERROR.toLong()
         }
-        if ((latitude < 0) && (latitude > MIN_SOUTH_LAT))
-            return UPS_LAT_ERROR;
-        if ((latitude >= 0) && (latitude < MIN_NORTH_LAT))
-            return UPS_LAT_ERROR;
+        if ((latitude < 0) && (latitude > MIN_SOUTH_LAT)) return UPS_LAT_ERROR.toLong()
+        if ((latitude >= 0) && (latitude < MIN_NORTH_LAT)) return UPS_LAT_ERROR.toLong()
 
-        if ((longitude < -PI) || (longitude > (2 * PI)))
-        {  /* slam out of range */
-            return UPS_LON_ERROR;
+        if ((longitude < -PI) || (longitude > (2 * PI))) {  /* slam out of range */
+            return UPS_LON_ERROR.toLong()
         }
 
-        if (latitude < 0)
-        {
-            UPS_Origin_Latitude = -MAX_ORIGIN_LAT;
-            Hemisphere = AVKey.SOUTH;
-        }
-        else
-        {
-            UPS_Origin_Latitude = MAX_ORIGIN_LAT;
-            Hemisphere = AVKey.NORTH;
+        if (latitude < 0) {
+            UPS_Origin_Latitude = -MAX_ORIGIN_LAT
+            this.hemisphere = AVKey.SOUTH
+        } else {
+            UPS_Origin_Latitude = MAX_ORIGIN_LAT
+            this.hemisphere = AVKey.NORTH
         }
 
-        polarConverter.setPolarStereographicParameters(UPS_a, UPS_f,
+        polarConverter.setPolarStereographicParameters(
+            UPS_a, UPS_f,
             UPS_Origin_Latitude, UPS_Origin_Longitude,
-            false_easting, false_northing);
+            false_easting, false_northing
+        )
 
-        polarConverter.convertGeodeticToPolarStereographic(latitude, longitude);
+        polarConverter.convertGeodeticToPolarStereographic(latitude, longitude)
 
-        UPS_Easting = UPS_False_Easting + polarConverter.getEasting();
-        UPS_Northing = UPS_False_Northing + polarConverter.getNorthing();
-        if (AVKey.SOUTH.equals(Hemisphere))
-            UPS_Northing = UPS_False_Northing - polarConverter.getNorthing();
+        UPS_Easting = UPS_False_Easting + polarConverter.easting
+        UPS_Northing = UPS_False_Northing + polarConverter.northing
+        if (AVKey.SOUTH == this.hemisphere) UPS_Northing = UPS_False_Northing - polarConverter.northing
 
-        Easting = UPS_Easting;
-        Northing = UPS_Northing;
+        this.easting = UPS_Easting
+        this.northing = UPS_Northing
 
-        return UPS_NO_ERROR;
-    }
-
-    /** @return Easting/X in meters */
-    public double getEasting()
-    {
-        return Easting;
-    }
-
-    /** @return Northing/Y in meters */
-    public double getNorthing()
-    {
-        return Northing;
-    }
-
-    /**
-     * @return Hemisphere, either {@link gov.nasa.worldwind.avlist.AVKey#NORTH} or {@link
-     *         gov.nasa.worldwind.avlist.AVKey#SOUTH}.
-     */
-    public String getHemisphere()
-    {
-        return Hemisphere;
+        return UPS_NO_ERROR.toLong()
     }
 
     /**
@@ -245,60 +185,65 @@ public class UPSCoordConverter
      * (latitude and longitude) coordinates according to the current ellipsoid parameters.  If any errors occur, the
      * error code(s) are returned by the function, otherwise UPS_NO_ERROR is returned.
      *
-     * @param Hemisphere Hemisphere, either {@link gov.nasa.worldwind.avlist.AVKey#NORTH} or {@link
-     *                   gov.nasa.worldwind.avlist.AVKey#SOUTH}.
+     * @param Hemisphere Hemisphere, either [AVKey.NORTH] or [                   ][AVKey.SOUTH].
      * @param Easting    Easting/X in meters
      * @param Northing   Northing/Y in meters
      *
      * @return error code
      */
-    public long convertUPSToGeodetic(String Hemisphere, double Easting, double Northing)
-    {
-        long Error_Code = UPS_NO_ERROR;
+    fun convertUPSToGeodetic(Hemisphere: String?, Easting: Double, Northing: Double): Long {
+        var Error_Code = UPS_NO_ERROR.toLong()
 
-        if (!AVKey.NORTH.equals(Hemisphere) && !AVKey.SOUTH.equals(Hemisphere))
-            Error_Code |= UPS_HEMISPHERE_ERROR;
-        if ((Easting < MIN_EAST_NORTH) || (Easting > MAX_EAST_NORTH))
-            Error_Code |= UPS_EASTING_ERROR;
-        if ((Northing < MIN_EAST_NORTH) || (Northing > MAX_EAST_NORTH))
-            Error_Code |= UPS_NORTHING_ERROR;
+        if (AVKey.NORTH != Hemisphere && AVKey.SOUTH != Hemisphere) Error_Code =
+            Error_Code or UPS_HEMISPHERE_ERROR.toLong()
+        if ((Easting < MIN_EAST_NORTH) || (Easting > MAX_EAST_NORTH)) Error_Code =
+            Error_Code or UPS_EASTING_ERROR.toLong()
+        if ((Northing < MIN_EAST_NORTH) || (Northing > MAX_EAST_NORTH)) Error_Code =
+            Error_Code or UPS_NORTHING_ERROR.toLong()
 
-        if (AVKey.NORTH.equals(Hemisphere))
-            UPS_Origin_Latitude = MAX_ORIGIN_LAT;
-        if (AVKey.SOUTH.equals(Hemisphere))
-            UPS_Origin_Latitude = -MAX_ORIGIN_LAT;
+        if (AVKey.NORTH == Hemisphere) UPS_Origin_Latitude = MAX_ORIGIN_LAT
+        if (AVKey.SOUTH == Hemisphere) UPS_Origin_Latitude = -MAX_ORIGIN_LAT
 
-        if (Error_Code == UPS_NO_ERROR)
-        {   /*  no errors   */
-            polarConverter.setPolarStereographicParameters(UPS_a,
+        if (Error_Code == UPS_NO_ERROR.toLong()) {   /*  no errors   */
+            polarConverter.setPolarStereographicParameters(
+                UPS_a,
                 UPS_f,
                 UPS_Origin_Latitude,
                 UPS_Origin_Longitude,
                 UPS_False_Easting,
-                UPS_False_Northing);
+                UPS_False_Northing
+            )
 
-            polarConverter.convertPolarStereographicToGeodetic(Easting, Northing);
-            Latitude = polarConverter.getLatitude();
-            Longitude = polarConverter.getLongitude();
+            polarConverter.convertPolarStereographicToGeodetic(Easting, Northing)
+            this.latitude = polarConverter.latitude
+            this.longitude = polarConverter.longitude
 
-            if ((Latitude < 0) && (Latitude > MIN_SOUTH_LAT))
-                Error_Code |= UPS_LAT_ERROR;
-            if ((Latitude >= 0) && (Latitude < MIN_NORTH_LAT))
-                Error_Code |= UPS_LAT_ERROR;
+            if ((this.latitude < 0) && (this.latitude > MIN_SOUTH_LAT)) Error_Code =
+                Error_Code or UPS_LAT_ERROR.toLong()
+            if ((this.latitude >= 0) && (this.latitude < MIN_NORTH_LAT)) Error_Code =
+                Error_Code or UPS_LAT_ERROR.toLong()
         }
-        return Error_Code;
+        return Error_Code
     }
 
-    /** @return Latitude in radians. */
-    public double getLatitude()
-    {
-        return Latitude;
-    }
+    companion object {
+        const val UPS_NO_ERROR: Int = 0x0000
+        private const val UPS_LAT_ERROR = 0x0001
+        private const val UPS_LON_ERROR = 0x0002
+        const val UPS_HEMISPHERE_ERROR: Int = 0x0004
+        const val UPS_EASTING_ERROR: Int = 0x0008
+        const val UPS_NORTHING_ERROR: Int = 0x0010
 
-    /** @return Longitude in radians. */
-    public double getLongitude()
-    {
-        return Longitude;
+        private const val PI = 3.14159265358979323
+        private val MAX_LAT: Double = (PI * 90) / 180.0 // 90 degrees in radians
+
+        // Min and max latitude values accepted
+        private val MIN_NORTH_LAT: Double = 72 * PI / 180.0 // 83.5
+        private val MIN_SOUTH_LAT: Double = -72 * PI / 180.0 // -79.5
+
+        private val MAX_ORIGIN_LAT: Double = (81.114528 * PI) / 180.0
+        private const val MIN_EAST_NORTH = 0.0
+        private const val MAX_EAST_NORTH = 4000000.0
     }
 }
 

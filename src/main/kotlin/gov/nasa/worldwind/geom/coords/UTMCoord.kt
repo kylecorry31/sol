@@ -3,11 +3,11 @@
  * National Aeronautics and Space Administration.
  * All Rights Reserved.
  */
-package gov.nasa.worldwind.geom.coords;
+package gov.nasa.worldwind.geom.coords
 
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.geom.*;
-import gov.nasa.worldwind.util.*;
+import gov.nasa.worldwind.avlist.AVKey
+import gov.nasa.worldwind.geom.Angle
+import gov.nasa.worldwind.geom.LatLon
 
 /**
  * This immutable class holds a set of UTM coordinates along with it's corresponding latitude and longitude.
@@ -15,217 +15,117 @@ import gov.nasa.worldwind.util.*;
  * @author Patrick Murris
  * @version $Id$
  */
-
-public class UTMCoord
-{
-    private final Angle latitude;
-    private final Angle longitude;
-    private final String hemisphere;
-    private final int zone;
-    private final double easting;
-    private final double northing;
-    private Angle centralMeridian;
-
-    /**
-     * Create a set of UTM coordinates from a pair of latitude and longitude for the given <code>Globe</code>.
-     *
-     * @param latitude  the latitude <code>Angle</code>.
-     * @param longitude the longitude <code>Angle</code>.
-     * @param globe     the <code>Globe</code> - can be null (will use WGS84).
-     *
-     * @return the corresponding <code>UTMCoord</code>.
-     *
-     * @throws IllegalArgumentException if <code>latitude</code> or <code>longitude</code> is null, or the conversion to
-     *                                  UTM coordinates fails.
-     */
-    public static UTMCoord fromLatLon(Angle latitude, Angle longitude)
-    {
-        if (latitude == null || longitude == null)
-        {
-            throw new IllegalArgumentException("Latitude Or Longitude Is Null");
-        }
-
-        final UTMCoordConverter converter = new UTMCoordConverter();
-        long err = converter.convertGeodeticToUTM(latitude.radians, longitude.radians);
-
-        if (err != UTMCoordConverter.UTM_NO_ERROR)
-        {
-            throw new IllegalArgumentException("UTM Conversion Error");
-        }
-
-        return new UTMCoord(latitude, longitude, converter.getZone(), converter.getHemisphere(),
-            converter.getEasting(), converter.getNorthing(), Angle.fromRadians(converter.getCentralMeridian()));
-    }
-
-    public static UTMCoord fromLatLon(Angle latitude, Angle longitude, String datum)
-    {
-        if (latitude == null || longitude == null)
-        {
-            throw new IllegalArgumentException("Latitude Or Longitude Is Null");
-        }
-
-        UTMCoordConverter converter;
-        if (!WWUtil.isEmpty(datum) && datum.equals("NAD27"))
-        {
-            converter = new UTMCoordConverter(UTMCoordConverter.CLARKE_A, UTMCoordConverter.CLARKE_F);
-            LatLon llNAD27 = UTMCoordConverter.convertWGS84ToNAD27(latitude, longitude);
-            latitude = llNAD27.getLatitude();
-            longitude = llNAD27.getLongitude();
-        }
-        else
-        {
-            converter = new UTMCoordConverter(UTMCoordConverter.WGS84_A, UTMCoordConverter.WGS84_F);
-        }
-
-        long err = converter.convertGeodeticToUTM(latitude.radians, longitude.radians);
-
-        if (err != UTMCoordConverter.UTM_NO_ERROR)
-        {
-            throw new IllegalArgumentException("UTM Conversion Error");
-        }
-
-        return new UTMCoord(latitude, longitude, converter.getZone(), converter.getHemisphere(),
-            converter.getEasting(), converter.getNorthing(), Angle.fromRadians(converter.getCentralMeridian()));
-    }
-
-    /**
-     * Create a set of UTM coordinates for the given <code>Globe</code>.
-     *
-     * @param zone       the UTM zone - 1 to 60.
-     * @param hemisphere the hemisphere, either {@link gov.nasa.worldwind.avlist.AVKey#NORTH} or {@link
-     *                   gov.nasa.worldwind.avlist.AVKey#SOUTH}.
-     * @param easting    the easting distance in meters
-     * @param northing   the northing distance in meters.
-     * @param globe      the <code>Globe</code> - can be null (will use WGS84).
-     *
-     * @return the corresponding <code>UTMCoord</code>.
-     *
-     * @throws IllegalArgumentException if the conversion to UTM coordinates fails.
-     */
-    public static UTMCoord fromUTM(int zone, String hemisphere, double easting, double northing)
-    {
-        final UTMCoordConverter converter = new UTMCoordConverter();
-        long err = converter.convertUTMToGeodetic(zone, hemisphere, easting, northing);
-
-        if (err != UTMCoordConverter.UTM_NO_ERROR)
-        {
-            throw new IllegalArgumentException("UTM Conversion Error");
-        }
-
-        return new UTMCoord(Angle.fromRadians(converter.getLatitude()),
-            Angle.fromRadians(converter.getLongitude()),
-            zone, hemisphere, easting, northing, Angle.fromRadians(converter.getCentralMeridian()));
-    }
-
-    /**
-     * Convenience method for converting a UTM coordinate to a geographic location.
-     *
-     * @param zone       the UTM zone: 1 to 60.
-     * @param hemisphere the hemisphere, either {@link gov.nasa.worldwind.avlist.AVKey#NORTH} or {@link
-     *                   gov.nasa.worldwind.avlist.AVKey#SOUTH}.
-     * @param easting    the easting distance in meters
-     * @param northing   the northing distance in meters.
-     * @param globe      the <code>Globe</code>. Can be null (will use WGS84).
-     *
-     * @return the geographic location corresponding to the specified UTM coordinate.
-     */
-    public static LatLon locationFromUTMCoord(int zone, String hemisphere, double easting, double northing)
-    {
-        UTMCoord coord = UTMCoord.fromUTM(zone, hemisphere, easting, northing);
-        return new LatLon(coord.getLatitude(), coord.getLongitude());
-    }
+class UTMCoord
+    (
+    latitude: Angle, longitude: Angle, zone: Int, hemisphere: String?, easting: Double, northing: Double,
+    centralMeridian: Angle?
+) {
+    val latitude: Angle
+    val longitude: Angle
+    private val hemisphere: String?
+    val zone: Int
+    val easting: Double
+    val northing: Double
+    val centralMeridian: Angle?
 
     /**
      * Create an arbitrary set of UTM coordinates with the given values.
      *
-     * @param latitude   the latitude <code>Angle</code>.
-     * @param longitude  the longitude <code>Angle</code>.
-     * @param zone       the UTM zone - 1 to 60.
-     * @param hemisphere the hemisphere, either {@link gov.nasa.worldwind.avlist.AVKey#NORTH} or {@link
-     *                   gov.nasa.worldwind.avlist.AVKey#SOUTH}.
-     * @param easting    the easting distance in meters
-     * @param northing   the northing distance in meters.
-     *
-     * @throws IllegalArgumentException if <code>latitude</code> or <code>longitude</code> is null.
-     */
-    public UTMCoord(Angle latitude, Angle longitude, int zone, String hemisphere, double easting, double northing)
-    {
-        this(latitude, longitude, zone, hemisphere, easting, northing, Angle.fromDegreesLongitude(0.0));
-    }
-
-    /**
-     * Create an arbitrary set of UTM coordinates with the given values.
-     *
-     * @param latitude        the latitude <code>Angle</code>.
-     * @param longitude       the longitude <code>Angle</code>.
+     * @param latitude        the latitude `Angle`.
+     * @param longitude       the longitude `Angle`.
      * @param zone            the UTM zone - 1 to 60.
-     * @param hemisphere      the hemisphere, either {@link gov.nasa.worldwind.avlist.AVKey#NORTH} or {@link
-     *                        gov.nasa.worldwind.avlist.AVKey#SOUTH}.
+     * @param hemisphere      the hemisphere, either [AVKey.NORTH] or [                        ][AVKey.SOUTH].
      * @param easting         the easting distance in meters
      * @param northing        the northing distance in meters.
-     * @param centralMeridian the cntral meridian <code>Angle</code>.
+     * @param centralMeridian the cntral meridian `Angle`.
      *
-     * @throws IllegalArgumentException if <code>latitude</code> or <code>longitude</code> is null.
+     * @throws IllegalArgumentException if `latitude` or `longitude` is null.
      */
-    public UTMCoord(Angle latitude, Angle longitude, int zone, String hemisphere, double easting, double northing,
-        Angle centralMeridian)
-    {
-        if (latitude == null || longitude == null)
-        {
-            throw new IllegalArgumentException("Latitude Or Longitude Is Null");
+    init {
+        require(!(latitude == null || longitude == null)) { "Latitude Or Longitude Is Null" }
+
+        this.latitude = latitude
+        this.longitude = longitude
+        this.hemisphere = hemisphere
+        this.zone = zone
+        this.easting = easting
+        this.northing = northing
+        this.centralMeridian = centralMeridian
+    }
+
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append(zone)
+        sb.append(" ").append(if (AVKey.NORTH == hemisphere) "N" else "S")
+        sb.append(" ").append(easting).append("E")
+        sb.append(" ").append(northing).append("N")
+        return sb.toString()
+    }
+
+    companion object {
+        /**
+         * Create a set of UTM coordinates from a pair of latitude and longitude for the given `Globe`.
+         *
+         * @param latitude  the latitude `Angle`.
+         * @param longitude the longitude `Angle`.
+         *
+         * @return the corresponding `UTMCoord`.
+         *
+         * @throws IllegalArgumentException if `latitude` or `longitude` is null, or the conversion to
+         * UTM coordinates fails.
+         */
+        fun fromLatLon(latitude: Angle, longitude: Angle): UTMCoord {
+            require(!(latitude == null || longitude == null)) { "Latitude Or Longitude Is Null" }
+
+            val converter = UTMCoordConverter()
+            val err = converter.convertGeodeticToUTM(latitude.radians, longitude.radians)
+
+            require(err == UTMCoordConverter.UTM_NO_ERROR.toLong()) { "UTM Conversion Error" }
+
+            return UTMCoord(
+                latitude, longitude, converter.zone, converter.hemisphere,
+                converter.easting, converter.northing, Angle.fromRadians(converter.centralMeridian)
+            )
         }
 
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.hemisphere = hemisphere;
-        this.zone = zone;
-        this.easting = easting;
-        this.northing = northing;
-        this.centralMeridian = centralMeridian;
-    }
+        /**
+         * Create a set of UTM coordinates for the given `Globe`.
+         *
+         * @param zone       the UTM zone - 1 to 60.
+         * @param hemisphere the hemisphere, either [AVKey.NORTH] or [                   ][AVKey.SOUTH].
+         * @param easting    the easting distance in meters
+         * @param northing   the northing distance in meters.
+         *
+         * @return the corresponding `UTMCoord`.
+         *
+         * @throws IllegalArgumentException if the conversion to UTM coordinates fails.
+         */
+        fun fromUTM(zone: Int, hemisphere: String, easting: Double, northing: Double): UTMCoord {
+            val converter = UTMCoordConverter()
+            val err = converter.convertUTMToGeodetic(zone.toLong(), hemisphere, easting, northing)
 
-    public Angle getCentralMeridian()
-    {
-        return this.centralMeridian;
-    }
+            require(err == UTMCoordConverter.UTM_NO_ERROR.toLong()) { "UTM Conversion Error" }
 
-    public Angle getLatitude()
-    {
-        return this.latitude;
-    }
+            return UTMCoord(
+                Angle.fromRadians(converter.latitude),
+                Angle.fromRadians(converter.longitude),
+                zone, hemisphere, easting, northing, Angle.fromRadians(converter.centralMeridian)
+            )
+        }
 
-    public Angle getLongitude()
-    {
-        return this.longitude;
-    }
-
-    public int getZone()
-    {
-        return this.zone;
-    }
-
-    public String getHemisphere()
-    {
-        return this.hemisphere;
-    }
-
-    public double getEasting()
-    {
-        return this.easting;
-    }
-
-    public double getNorthing()
-    {
-        return this.northing;
-    }
-
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(zone);
-        sb.append(" ").append(AVKey.NORTH.equals(hemisphere) ? "N" : "S");
-        sb.append(" ").append(easting).append("E");
-        sb.append(" ").append(northing).append("N");
-        return sb.toString();
+        /**
+         * Convenience method for converting a UTM coordinate to a geographic location.
+         *
+         * @param zone       the UTM zone: 1 to 60.
+         * @param hemisphere the hemisphere, either [AVKey.NORTH] or [                   ][AVKey.SOUTH].
+         * @param easting    the easting distance in meters
+         * @param northing   the northing distance in meters.
+         *
+         * @return the geographic location corresponding to the specified UTM coordinate.
+         */
+        fun locationFromUTMCoord(zone: Int, hemisphere: String, easting: Double, northing: Double): LatLon {
+            val coord: UTMCoord = fromUTM(zone, hemisphere, easting, northing)
+            return LatLon(coord.latitude, coord.longitude)
+        }
     }
 }
