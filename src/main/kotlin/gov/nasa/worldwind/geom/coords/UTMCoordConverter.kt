@@ -7,8 +7,6 @@ package gov.nasa.worldwind.geom.coords
 
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
-import gov.nasa.worldwind.geom.coords.TMCoord.Companion.fromLatLon
-import gov.nasa.worldwind.geom.coords.TMCoord.Companion.fromTM
 
 /**
  * Converter used to translate UTM coordinates to and from geodetic latitude and longitude.
@@ -162,7 +160,7 @@ internal class UTMCoordConverter {
                 } else this.hemisphere = AVKey.NORTH
 
                 try {
-                    val TM = fromLatLon(
+                    val TM = TMCoord.fromLatLon(
                         Angle.fromRadians(latitude), Angle.fromRadians(lon),
                         this.UTM_a, this.UTM_f, Angle.fromRadians(originLatitude),
                         Angle.fromRadians(this.centralMeridian), falseEasting, falseNorthing, scale
@@ -215,7 +213,7 @@ internal class UTMCoordConverter {
             else this.centralMeridian = ((6 * Zone + 177) * PI / 180.0 /*+ 0.00000005*/)
             if (Hemisphere == AVKey.SOUTH) False_Northing = 10000000.0
             try {
-                val TM = fromTM(
+                val TM = TMCoord.fromTM(
                     Easting, Northing,
                     Angle.fromRadians(Origin_Latitude), Angle.fromRadians(this.centralMeridian),
                     False_Easting, False_Northing, Scale

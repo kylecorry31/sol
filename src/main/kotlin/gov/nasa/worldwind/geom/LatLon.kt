@@ -53,22 +53,6 @@ open class LatLon {
         return LatLon(lat, lon)
     }
 
-    open fun add(that: Position): LatLon {
-
-        val lat = Angle.normalizedLatitude(this.latitude.add(that.latitude))
-        val lon = Angle.normalizedLongitude(this.longitude.add(that.longitude))
-
-        return LatLon(lat, lon)
-    }
-
-    open fun subtract(that: Position): LatLon {
-
-        val lat = Angle.normalizedLatitude(this.latitude.subtract(that.latitude))
-        val lon = Angle.normalizedLongitude(this.longitude.subtract(that.longitude))
-
-        return LatLon(lat, lon)
-    }
-
     override fun toString(): String {
         val las = String.format("Lat %7.4f\u00B0", this.latitude.degrees)
         val los = String.format("Lon %7.4f\u00B0", this.longitude.degrees)

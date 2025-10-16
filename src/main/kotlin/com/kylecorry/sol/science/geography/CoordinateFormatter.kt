@@ -7,7 +7,7 @@ import com.kylecorry.sol.shared.toDoubleCompat
 import com.kylecorry.sol.units.Coordinate
 import gov.nasa.worldwind.avlist.AVKey
 import gov.nasa.worldwind.geom.Angle
-import gov.nasa.worldwind.geom.coords.MGRSCoord
+import gov.nasa.worldwind.geom.coords.MGRSCoordinateFormat
 import gov.nasa.worldwind.geom.coords.UPSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import uk.gov.dstl.geo.osgb.Constants
@@ -57,11 +57,8 @@ object CoordinateFormatter {
 
     fun Coordinate.toMGRS(precision: Int = 5): String {
         return try {
-            val lat = Angle.fromDegreesLatitude(latitude)
-            val lng = Angle.fromDegreesLongitude(longitude)
-            val mgrs = MGRSCoord.fromLatLon(lat, lng, precision)
-            mgrs.toString().trim()
-        } catch (e: Exception) {
+            MGRSCoordinateFormat.getString(latitude, longitude, precision)
+        } catch (_: Exception) {
             "?"
         }
     }
@@ -188,8 +185,7 @@ object CoordinateFormatter {
 
     private fun fromMGRS(location: String): Coordinate? {
         return try {
-            val mgrs = MGRSCoord.fromString(location)
-            Coordinate(mgrs.latitude.degrees, mgrs.longitude.degrees)
+            return MGRSCoordinateFormat.fromString(location)
         } catch (e: Exception) {
             null
         }

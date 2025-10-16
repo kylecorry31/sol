@@ -15,7 +15,7 @@ import kotlin.math.pow
  *
  * @author Patrick Murris
  * @version $Id$
- * @see MGRSCoord
+ * @see MGRSCoordinateFormat
  */
 /**
  * Ported to Java from the NGA GeoTrans mgrs.c and mgrs.h code. Contains routines to convert from Geodetic to MGRS and
