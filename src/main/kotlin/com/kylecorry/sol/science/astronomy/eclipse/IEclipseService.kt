@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.astronomy.eclipse
 
 import com.kylecorry.sol.units.Coordinate
-import java.time.Duration
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import com.kylecorry.sol.time.ZonedDateTime
 
 interface IEclipseService {
     fun getNextEclipse(

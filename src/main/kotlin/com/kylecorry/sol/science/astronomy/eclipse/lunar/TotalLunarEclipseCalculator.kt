@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
 import com.kylecorry.sol.math.SolMath.power
-import java.time.Duration
+import kotlin.time.Duration
 import kotlin.math.sqrt
 
 internal class TotalLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculator() {

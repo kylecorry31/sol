@@ -30,10 +30,10 @@ import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalTime
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalTime
+import com.kylecorry.sol.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 object Astronomy : IAstronomyService {

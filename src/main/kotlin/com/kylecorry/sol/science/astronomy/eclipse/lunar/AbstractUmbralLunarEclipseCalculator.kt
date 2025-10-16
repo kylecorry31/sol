@@ -8,9 +8,9 @@ import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseCalculator
 import com.kylecorry.sol.units.Coordinate
-import java.time.Duration
-import java.time.Instant
-import java.time.ZoneId
+import kotlin.time.Duration
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import kotlin.math.absoluteValue
 
 internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {

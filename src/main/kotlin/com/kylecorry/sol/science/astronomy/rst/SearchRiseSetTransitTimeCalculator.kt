@@ -12,7 +12,6 @@ import com.kylecorry.sol.time.Time.plusMillis
 import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Coordinate
-import java.time.*
 
 internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
     override fun calculate(

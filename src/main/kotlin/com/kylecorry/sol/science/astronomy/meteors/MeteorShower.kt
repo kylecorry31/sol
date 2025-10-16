@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.meteors
 
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 
 enum class MeteorShower(val solarLongitude: Float, val rate: Int, val activeDays: Int) {
     Quadrantids(283.3f, 120, 20),

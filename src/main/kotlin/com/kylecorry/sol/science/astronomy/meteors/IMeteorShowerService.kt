@@ -3,8 +3,8 @@ package com.kylecorry.sol.science.astronomy.meteors
 import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
-import java.time.Instant
-import java.time.ZonedDateTime
+import kotlinx.datetime.Instant
+import com.kylecorry.sol.time.ZonedDateTime
 
 interface IMeteorShowerService {
     fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak?

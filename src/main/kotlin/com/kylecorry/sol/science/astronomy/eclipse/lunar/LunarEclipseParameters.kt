@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
-import java.time.Instant
+import kotlinx.datetime.Instant
 
 internal data class LunarEclipseParameters(
     val maximum: Instant,

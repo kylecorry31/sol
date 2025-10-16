@@ -3,7 +3,7 @@ package com.kylecorry.sol.science.astronomy
 import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.units.Coordinate
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 
 interface IPlanetService {
     fun getPlanetPosition(

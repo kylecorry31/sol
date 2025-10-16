@@ -5,7 +5,7 @@ import com.kylecorry.sol.science.astronomy.stars.DetectedStar
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 
 interface IStarService {
     fun getStarAltitude(

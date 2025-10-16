@@ -4,8 +4,8 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import java.time.Duration
-import java.time.ZonedDateTime
+import kotlin.time.Duration
+import com.kylecorry.sol.time.ZonedDateTime
 
 interface ISunService {
 

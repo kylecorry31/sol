@@ -4,7 +4,7 @@ import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 import kotlin.math.absoluteValue
 import kotlin.math.max
 

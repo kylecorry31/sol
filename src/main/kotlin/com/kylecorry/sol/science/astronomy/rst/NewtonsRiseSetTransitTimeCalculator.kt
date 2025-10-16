@@ -14,7 +14,7 @@ import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
 import com.kylecorry.sol.time.Time.plusHours
 import com.kylecorry.sol.units.Distance
-import java.time.ZonedDateTime
+import com.kylecorry.sol.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.acos
 

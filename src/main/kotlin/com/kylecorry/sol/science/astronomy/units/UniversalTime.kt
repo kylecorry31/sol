@@ -7,9 +7,11 @@ import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.time.Time.utc
-import java.time.*
+import com.kylecorry.sol.time.ZonedDateTime
+import kotlinx.datetime.*
 import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.time.Duration
 
 typealias UniversalTime = LocalDateTime
 
@@ -24,9 +26,9 @@ fun UniversalTime.toJulianCenturies(): Double {
 
 fun UniversalTime.toJulianDay(includeTime: Boolean = true): Double {
     var Y = year.toDouble()
-    var M = month.value.toDouble()
+    var M = monthNumber.toDouble()
     val D =
-        dayOfMonth.toDouble() + if (includeTime) toLocalTime().toDecimalHours() / 24.0 else 0.0
+        dayOfMonth.toDouble() + if (includeTime) time.toDecimalHours() / 24.0 else 0.0
 
     if (M <= 2) {
         Y--
@@ -61,7 +63,7 @@ internal fun UniversalTime.toSiderealTime(apparent: Boolean = false): GreenwichS
 
     val t0 = 0.0657098 * days - b
 
-    val ut = toLocalTime().toDecimalHours()
+    val ut = time.toDecimalHours()
 
     val gst = t0 + 1.002738 * ut
 
@@ -80,7 +82,7 @@ fun ZonedDateTime.toUniversalTime(): UniversalTime {
 }
 
 fun UniversalTime.atZeroHour(): UniversalTime {
-    return toLocalDate().atStartOfDay()
+    return LocalDateTime(date, LocalTime(0, 0))
 }
 
 fun Instant.toUniversalTime(): UniversalTime {
@@ -122,15 +124,15 @@ fun fromJulianDay(jd: Double): UniversalTime {
         c - 4715
     }.toInt()
 
-    return LocalDateTime.of(year, month, dayOfMonth, hour, minute, seconds)
+    return LocalDateTime(year, month, dayOfMonth, hour, minute, seconds)
 }
 
-fun UniversalTime.toLocal(zone: ZoneId): ZonedDateTime {
-    return atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
+fun UniversalTime.toLocal(zone: TimeZone): ZonedDateTime {
+    return ZonedDateTime(this.toInstant(TimeZone.UTC), TimeZone.UTC).copy(zone = zone)
 }
 
 fun UniversalTime.toInstant(): Instant {
-    return atZone(ZoneId.of("UTC")).toInstant()
+    return this.toInstant(TimeZone.UTC)
 }
 
 fun ut0hOnDate(date: ZonedDateTime): UniversalTime {
@@ -148,27 +150,27 @@ fun ut0hOnDate(date: ZonedDateTime): UniversalTime {
 }
 
 fun LocalTime.toDuration(): Duration {
-    return Duration.ofHours(hour.toLong()).plusMinutes(minute.toLong())
-        .plusSeconds(second.toLong()).plusNanos(nano.toLong())
+    return Duration.parse("PT${hour}H${minute}M${second}S")
 }
 
 fun LocalTime.toDecimalHours(): Double {
     val hours = hour.toDouble()
     val minutes = minute.toDouble() / 60.0
     val seconds = second.toDouble() / 3600.0
-    val nanos = nano.toDouble() / 3600.0 / 1_000_000_000.0
+    val nanos = nanosecond.toDouble() / 3600.0 / 1_000_000_000.0
     return hours + minutes + seconds + nanos
 }
 
 fun Duration.toLocalTime(): LocalTime {
-    return LocalTime.MIN.plus(this)
+    val totalSeconds = inWholeSeconds
+    val hours = (totalSeconds / 3600).toInt()
+    val minutes = ((totalSeconds % 3600) / 60).toInt()
+    val seconds = (totalSeconds % 60).toInt()
+    return LocalTime(hours % 24, minutes, seconds)
 }
 
 fun Duration.toDecimal(): Double {
-    val millis = toMillis()
-    val seconds = millis / 1000.0
-    val minutes = seconds / 60.0
-    return minutes / 60.0
+    return inWholeMilliseconds / 1000.0 / 60.0 / 60.0
 }
 
 fun Duration.toDegrees(): Double {

@@ -9,9 +9,9 @@ import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.fromJulianDay
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import com.kylecorry.sol.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 internal class LunarEclipseParameterProvider {
