@@ -95,7 +95,8 @@ object Interpolation {
 
     /**
      * Use Lagrange interpolation to interpolate a value. You need at least order + 1 control points.
-     * If multiple points are to be interpolated, use [NewtonInterpolator] since it caches the coefficients.
+     * For automatic point selection from a larger dataset, use [NewtonInterpolator.interpolate].
+     * If multiple points are to be interpolated with the same control points, use [NewtonInterpolator.interpolateWithPoints] since it caches the coefficients.
      * @param x: The x value to interpolate
      * @param xs: The x values of the control points
      * @param ys: The y values of the control points
