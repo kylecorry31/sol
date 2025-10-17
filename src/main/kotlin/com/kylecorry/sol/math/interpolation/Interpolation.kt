@@ -6,6 +6,16 @@ import kotlin.math.floor
 
 object Interpolation {
 
+    fun resample(
+        interpolator: Interpolator,
+        startX: Float,
+        endX: Float,
+        interval: Float
+    ): List<Vector2> {
+        val xs = getMultiplesBetween(startX, endX, interval)
+        return xs.map { Vector2(it, interpolator.interpolate(it)) }
+    }
+
     /**
      * Calculates a linear interpolation
      * @param x: The x value to interpolate
@@ -95,7 +105,7 @@ object Interpolation {
 
     /**
      * Use Lagrange interpolation to interpolate a value. You need at least order + 1 control points.
-     * If multiple points are to be interpolated, use [NewtonInterpolator] since it caches the coefficients.
+     * If multiple points are to be interpolated, use [NewtonInterpolator] or [LocalNewtonInterpolator] since it caches the coefficients.
      * @param x: The x value to interpolate
      * @param xs: The x values of the control points
      * @param ys: The y values of the control points

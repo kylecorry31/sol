@@ -1,34 +1,29 @@
 package com.kylecorry.sol.math.interpolation
 
-class LinearInterpolator {
+import com.kylecorry.sol.math.Vector2
 
-    fun interpolate(
-        x: Float,
-        xs: List<Float>,
-        ys: List<Float>
-    ): Float {
-        val beforeIndex = xs.indexOfLast { it <= x }
-        val afterIndex = xs.indexOfFirst { it >= x }
-
-        if (beforeIndex == -1) {
-            return ys.first()
+class LinearInterpolator(points: List<Vector2>) : Interpolator {
+    private val sortedPoints = points.sortedBy { it.x }
+    override fun interpolate(x: Float): Float {
+        if (sortedPoints.isEmpty()) {
+            return 0f
         }
 
-        if (afterIndex == -1) {
-            return ys.last()
+        var startIndex = sortedPoints.indexOfLast { it.x <= x }
+        var endIndex = startIndex + 1
+
+        if (startIndex < 0) {
+            startIndex = 0
+            endIndex = 1
         }
 
-        if (beforeIndex == afterIndex) {
-            return ys[beforeIndex]
+        if (endIndex >= sortedPoints.size) {
+            endIndex = sortedPoints.size - 1
+            startIndex = endIndex - 1
         }
 
-        val before = xs[beforeIndex]
-        val after = xs[afterIndex]
-
-        val beforeY = ys[beforeIndex]
-        val afterY = ys[afterIndex]
-
-        return Interpolation.linear(x, before, beforeY, after, afterY)
+        val startPoint = sortedPoints[startIndex]
+        val endPoint = sortedPoints[endIndex]
+        return Interpolation.linear(x, startPoint.x, startPoint.y, endPoint.x, endPoint.y)
     }
-
 }
