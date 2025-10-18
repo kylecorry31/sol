@@ -46,8 +46,7 @@ class PhysicsTest {
             timeStep = 0.01f,
             maxTime = 1f,
             minAngle = 0f,
-            maxAngle = 1f,
-            angleStep = 0.001f
+            maxAngle = 1f
         )
 
         val launchAngle = initialVelocityVector.angle()

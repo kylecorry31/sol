@@ -1,12 +1,12 @@
 package com.kylecorry.sol.science.physics
 
-import com.kylecorry.sol.math.Quaternion
-import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.*
+import com.kylecorry.sol.math.interpolation.Interpolator
+import com.kylecorry.sol.math.optimization.IOptimizer
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.units.*
 import java.time.Duration
+import kotlin.math.absoluteValue
 
 object Physics : IPhysicsService {
 
@@ -82,34 +82,36 @@ object Physics : IPhysicsService {
         maxTime: Float,
         minAngle: Float,
         maxAngle: Float,
-        angleStep: Float,
-        tolerance: Float,
+        optimizer: IOptimizer,
+        getInterpolator: (points: List<Vector2>) -> Interpolator
     ): Vector2 {
-        var currentAngle = minAngle
-        var bestAngle = minAngle
-        var bestError = Float.MAX_VALUE
-        var bestVelocity = Vector2.zero
-
-        while (currentAngle <= maxAngle) {
+        val bestAngle = optimizer.optimize(
+            Range(minAngle.toDouble(), maxAngle.toDouble()),
+            maximize = false
+        ) { angle, _ ->
             val initialVelocity =
-                Vector2(velocity * SolMath.cosDegrees(currentAngle), velocity * SolMath.sinDegrees(currentAngle))
-            val trajectory = getTrajectory2D(initialPosition, initialVelocity, dragModel, timeStep, maxTime)
-
-            for (point in trajectory) {
-                val error = (point.position - targetPosition).magnitude()
-                if (error < bestError) {
-                    bestError = error
-                    bestAngle = currentAngle
-                    bestVelocity = initialVelocity
-                }
-                if (error < tolerance) {
-                    return initialVelocity
-                }
-            }
-            currentAngle += angleStep
+                Vector2(
+                    velocity * SolMath.cosDegrees(angle.toFloat()),
+                    velocity * SolMath.sinDegrees(angle.toFloat())
+                )
+            val trajectory =
+                getTrajectory2D(
+                    initialPosition,
+                    initialVelocity,
+                    dragModel,
+                    timeStep,
+                    maxTime
+                )
+            val interpolated =
+                getInterpolator(trajectory.map { it.position }).interpolate(
+                    targetPosition.x
+                )
+            (interpolated - targetPosition.y).absoluteValue.toDouble()
         }
-
-        return bestVelocity
+        return Vector2(
+            velocity * SolMath.cosDegrees(bestAngle.first.toFloat()),
+            velocity * SolMath.sinDegrees(bestAngle.first.toFloat())
+        )
     }
 
     override fun getKineticEnergy(mass: Weight, speed: Speed): Energy {

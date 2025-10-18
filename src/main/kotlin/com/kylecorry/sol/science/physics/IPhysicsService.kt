@@ -3,12 +3,12 @@ package com.kylecorry.sol.science.physics
 import com.kylecorry.sol.math.Quaternion
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.interpolation.Interpolator
+import com.kylecorry.sol.math.interpolation.LinearInterpolator
+import com.kylecorry.sol.math.optimization.HillClimbingOptimizer
+import com.kylecorry.sol.math.optimization.IOptimizer
 import com.kylecorry.sol.science.geology.Geology
-import com.kylecorry.sol.units.Bearing
-import com.kylecorry.sol.units.Distance
-import com.kylecorry.sol.units.Energy
-import com.kylecorry.sol.units.Speed
-import com.kylecorry.sol.units.Weight
+import com.kylecorry.sol.units.*
 import java.time.Duration
 
 interface IPhysicsService {
@@ -58,8 +58,10 @@ interface IPhysicsService {
         maxTime: Float = 10f,
         minAngle: Float = 0f,
         maxAngle: Float = 90f,
-        angleStep: Float = 1f,
-        tolerance: Float = 0.01f,
+        optimizer: IOptimizer = HillClimbingOptimizer(0.001, initialValue = 0.0 to 0.0),
+        getInterpolator: (points: List<Vector2>) -> Interpolator = { points ->
+            LinearInterpolator(points)
+        }
     ): Vector2
 
     /**
