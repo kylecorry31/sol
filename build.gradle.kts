@@ -4,7 +4,7 @@ plugins {
     id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
-val versionName = "14.0.0"
+val versionName = "14.1.0"
 
 mavenPublishing {
     coordinates("com.kylecorry", "sol", versionName)

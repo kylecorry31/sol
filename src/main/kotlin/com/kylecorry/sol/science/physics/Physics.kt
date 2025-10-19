@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.physics
 
 import com.kylecorry.sol.math.*
+import com.kylecorry.sol.math.calculus.RungeKutta4thOrderSolver
 import com.kylecorry.sol.math.interpolation.Interpolator
 import com.kylecorry.sol.math.optimization.IOptimizer
 import com.kylecorry.sol.science.geology.Geology
@@ -50,24 +51,27 @@ object Physics : IPhysicsService {
     ): List<TrajectoryPoint2D> {
         val trajectory = mutableListOf<TrajectoryPoint2D>()
 
-        var x = initialPosition.x
-        var y = initialPosition.y
-        var vx = initialVelocity.x
-        var vy = initialVelocity.y
-        var t = 0f
-        var g = Geology.GRAVITY
+        val solver = RungeKutta4thOrderSolver()
+        val results = solver.solve(
+            Range(0f, maxTime),
+            timeStep,
+            Vector.from(
+                initialPosition.x,
+                initialPosition.y,
+                initialVelocity.x,
+                initialVelocity.y
+            ),
+        ) { _, v ->
+            val velocity = Vector2(v[2], v[3])
+            val drag = dragModel.getDragAcceleration(velocity)
+            Vector.from(velocity.x, velocity.y, drag.x, drag.y - Geology.GRAVITY)
+        }
 
-        trajectory.add(TrajectoryPoint2D(t, Vector2(x, y), Vector2(vx, vy)))
-
-        while (t < maxTime) {
-            val drag = dragModel.getDragAcceleration(Vector2(vx, vy))
-            vx += drag.x * timeStep
-            vy += (drag.y - g) * timeStep
-            x += vx * timeStep
-            y += vy * timeStep
-            t += timeStep
-
-            trajectory.add(TrajectoryPoint2D(t, Vector2(x, y), Vector2(vx, vy)))
+        for (result in results) {
+            val time = result.first
+            val position = Vector2(result.second[0], result.second[1])
+            val velocity = Vector2(result.second[2], result.second[3])
+            trajectory.add(TrajectoryPoint2D(time, position, velocity))
         }
 
         return trajectory

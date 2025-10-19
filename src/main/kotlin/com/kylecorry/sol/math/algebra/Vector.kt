@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.algebra
 
 import kotlin.math.sqrt
 
+// TODO: Remove this in favor of the com.kylecorry.sol.math.Vector inline class
 typealias Vector = Array<Float>
 
 fun Vector.toColumnMatrix(): Matrix {
