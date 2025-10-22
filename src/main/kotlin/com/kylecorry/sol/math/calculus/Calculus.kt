@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math.calculus
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.algebra.Polynomial
 import com.kylecorry.sol.math.algebra.QuadraticEquation
 import com.kylecorry.sol.shared.Guards
 import kotlin.math.abs
@@ -10,6 +10,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 object Calculus {
+
+    fun derivative(polynomial: Polynomial): Polynomial {
+        return polynomial.derivative()
+    }
 
     fun derivative(equation: QuadraticEquation): LinearEquation {
         return LinearEquation(equation.a * 2, equation.b)
@@ -22,23 +26,15 @@ object Calculus {
     /**
      * Get the derivative of samples.
      * This assumes values is sorted by x (increasing).
-     * The resulting derivative will have one value less (first x value dropped)
+     * @param values The samples to differentiate
+     * @param finiteDifferenceOrder The order of the finite difference to use (1, 2, or 3). Default is 1.
+     * @return The derivative samples
      */
-    fun derivative(values: List<Vector2>): List<Vector2> {
-        val derivative = mutableListOf<Vector2>()
-        for (j in 0 until values.size - 1) {
-            val x = values[j + 1].x
-            val dx = values[j + 1].x - values[j].x
-            if (SolMath.isZero(dx)) {
-                derivative.add(Vector2(x, 0f))
-            }
-
-            val dy = (values[j + 1].y - values[j].y) / dx
-            derivative.add(Vector2(x, dy))
-        }
-        return derivative
+    fun derivative(values: List<Vector2>, finiteDifferenceOrder: Int = 1): List<Vector2> {
+        return NumericDifferentiation.finiteDifference(values, finiteDifferenceOrder)
     }
 
+    // TODO: Use central difference
     fun derivative(
         x: Double,
         step: Double = 0.0001,
@@ -48,6 +44,7 @@ object Calculus {
         return (fn(x + step) - current) / step
     }
 
+    // TODO: Use central difference
     fun derivative(
         x: Double,
         y: Double,
@@ -60,6 +57,7 @@ object Calculus {
         return xGrad to yGrad
     }
 
+    // TODO: RK4 solver?
     fun integral(
         startX: Double,
         endX: Double,
@@ -101,6 +99,10 @@ object Calculus {
         return multiplier * total
     }
 
+    fun integral(polynomial: Polynomial, c: Float = 0f): Polynomial {
+        return polynomial.integral(c)
+    }
+
     /**
      * Calculate the root of the provided function using Newton's Method
      */
@@ -119,6 +121,5 @@ object Calculus {
         }
         return x
     }
-
 
 }

@@ -2,28 +2,31 @@ package com.kylecorry.sol.math.calculus
 
 import com.kylecorry.sol.math.SolMath.cube
 import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.algebra.Polynomial
 import com.kylecorry.sol.math.algebra.QuadraticEquation
-import org.junit.jupiter.api.Assertions.*
-
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 internal class CalculusTest {
 
     @Test
-    fun derivativeLinear(){
+    fun derivativeLinear() {
         val eq = LinearEquation(2f, 5f)
         assertEquals(2f, Calculus.derivative(eq))
     }
 
     @Test
-    fun derivativeQuadratic(){
+    fun derivativeQuadratic() {
         val eq = QuadraticEquation(1f, 4f, 5f)
         val d = Calculus.derivative(eq)
         assertEquals(d.m, 2f)
         assertEquals(d.b, 4f)
     }
-    
+
     @Test
     fun derivative1Var() {
         val fn1 = { x: Double -> x * x }
@@ -75,8 +78,36 @@ internal class CalculusTest {
         )
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "1",
+        "2",
+        "3"
+    )
+    fun derivativeSamples(finiteDifferenceOrder: Int) {
+        // y = x^2
+        val polynomial = Polynomial.of("x^2")
+        val derivativePolynomial = polynomial.derivative()
+
+        val samples = (1..1000).map {
+            val x = it / 100f
+            Vector2(x, polynomial.evaluate(x))
+        }
+
+        val derivative = Calculus.derivative(samples, finiteDifferenceOrder)
+
+        val expected = samples.map {
+            Vector2(it.x, derivativePolynomial.evaluate(it.x))
+        }
+
+        for (i in derivative.indices) {
+            assertEquals(expected[i].x, derivative[i].x, 0.01f, "X at index $i")
+            assertEquals(expected[i].y, derivative[i].y, 0.01f, "Y at index $i")
+        }
+    }
+
     @Test
-    fun integral1Var(){
+    fun integral1Var() {
         val fn1 = { x: Double -> square(x) }
         val integralFn1 = { x: Double -> cube(x) / 3 }
 
@@ -88,7 +119,7 @@ internal class CalculusTest {
     }
 
     @Test
-    fun root(){
+    fun root() {
         val fn = { x: Double -> square(x) - 9 }
         val root1 = Calculus.root(fn, guess = 0.1, maxIterations = 15)
         val root2 = Calculus.root(fn, guess = -0.1, maxIterations = 15)
