@@ -6,7 +6,11 @@ import com.kylecorry.sol.math.sumOfFloat
 data class PolynomialTerm(
     val coefficient: Float,
     val exponent: Int
-)
+) {
+    operator fun times(other: PolynomialTerm): PolynomialTerm {
+        return PolynomialTerm(this.coefficient * other.coefficient, this.exponent + other.exponent)
+    }
+}
 
 class Polynomial(terms: List<PolynomialTerm>) {
 
@@ -42,6 +46,27 @@ class Polynomial(terms: List<PolynomialTerm>) {
             )
         }
         return Polynomial(integratedTerms + listOf(PolynomialTerm(c, 0)))
+    }
+
+    operator fun plus(other: Polynomial): Polynomial {
+        return Polynomial(this.terms + other.terms)
+    }
+
+    operator fun minus(other: Polynomial): Polynomial {
+        val negatedTerms = other.terms.map {
+            PolynomialTerm(-it.coefficient, it.exponent)
+        }
+        return Polynomial(this.terms + negatedTerms)
+    }
+
+    operator fun times(other: Polynomial): Polynomial {
+        val productTerms = mutableListOf<PolynomialTerm>()
+        for (term1 in this.terms) {
+            for (term2 in other.terms) {
+                productTerms.add(term1 * term2)
+            }
+        }
+        return Polynomial(productTerms)
     }
 
     override fun equals(other: Any?): Boolean {
