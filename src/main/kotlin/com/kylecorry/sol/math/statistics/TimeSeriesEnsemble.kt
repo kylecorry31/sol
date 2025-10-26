@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.statistics
 
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.ensemble.Ensemble
 import com.kylecorry.sol.math.regression.ITimeSeriesPredictor
 
 class TimeSeriesEnsemble(
@@ -16,10 +17,15 @@ class TimeSeriesEnsemble(
             if (values.isEmpty()) {
                 continue
             }
-            val median = Statistics.median(values)
-            val lower = Statistics.quantile(values, 1f - confidenceIntervalSize)
-            val upper = Statistics.quantile(values, confidenceIntervalSize)
-            result.add(ConfidenceInterval(Vector2(x, median), Vector2(x, upper), Vector2(x, lower)))
+            val interval = Ensemble.continuous(values, confidenceIntervalSize)
+            result.add(
+                ConfidenceInterval(
+                    Vector2(x, interval.value),
+                    Vector2(x, interval.lower),
+                    Vector2(x, interval.upper),
+                    interval.confidence
+                )
+            )
         }
         return result
     }
