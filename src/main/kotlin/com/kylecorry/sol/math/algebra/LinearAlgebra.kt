@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.algebra
 
 import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.Vector
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -285,12 +286,12 @@ object LinearAlgebra {
         return m.norm()
     }
 
-    fun solveLinear(a: Matrix, b: FloatArray): FloatArray {
+    fun solveLinear(a: Matrix, b: Vector): Vector {
         require(a.rows() == a.columns()) { "Matrix must be square" }
-        require(a.rows() == b.size) { "Matrix rows must be the same size as the vector" }
+        require(a.rows() == b.n) { "Matrix rows must be the same size as the vector" }
 
         val n = a.columns()
-        val ab = a.appendColumn(b)
+        val ab = a.appendColumn(b.data)
 
         // Convert to row echelon form
         for (i in 0 until n) {
@@ -312,7 +313,7 @@ object LinearAlgebra {
         }
 
         // Back substitution
-        val x = FloatArray(n)
+        val x = Vector.create(n)
         for (i in n - 1 downTo 0) {
             x[i] = ab[i, n] / ab[i, i]
             for (j in i - 1 downTo 0) {
@@ -323,10 +324,10 @@ object LinearAlgebra {
         return x
     }
 
-    fun leastNorm(a: Matrix, b: Array<Float>): FloatArray {
+    fun leastNorm(a: Matrix, b: Vector): Vector {
         val (q, r) = qr(a.transpose())
-        val y = q.dot(r.inverse().transpose()).dot(Matrix.create(b.size, 1) { i, _ -> b[i] })
-        return y.getColumn(0)
+        val y = q.dot(r.inverse().transpose()).dot(b.toColumnMatrix())
+        return Vector(y.getColumn(0))
     }
 
     /**
@@ -339,13 +340,13 @@ object LinearAlgebra {
     fun leastSquares(a: Matrix, b: Vector): Vector {
         val isUnderdetermined = a.rows() < a.columns()
         if (isUnderdetermined) {
-            return leastNorm(a, b).toTypedArray()
+            return leastNorm(a, b)
         }
 
         val jt = a.transpose()
         val jtj = jt.dot(a)
         val jtr = jt.dot(b.toColumnMatrix())
-        return solveLinear(jtj, jtr.getColumn(0)).toTypedArray()
+        return solveLinear(jtj, Vector(jtr.getColumn(0)))
     }
 
     fun appendColumn(m: Matrix, col: FloatArray): Matrix {

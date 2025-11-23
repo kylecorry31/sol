@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.algebra
 
+import com.kylecorry.sol.math.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -304,7 +305,7 @@ class LinearAlgebraTest {
         expected[2, 0] = 10f
         expected[2, 1] = 12f
 
-        val result = LinearAlgebra.map(m1){ it * 2 }
+        val result = LinearAlgebra.map(m1) { it * 2 }
 
         assertEquals(expected, result)
     }
@@ -430,8 +431,8 @@ class LinearAlgebraTest {
         val expected = Matrix.create(2, 2, 0f)
         expected[0, 0] = -2f
         expected[0, 1] = 1f
-        expected[1, 0] = 3/2f
-        expected[1, 1] = -1/2f
+        expected[1, 0] = 3 / 2f
+        expected[1, 1] = -1 / 2f
 
         val actual = LinearAlgebra.inverse(m1)
 
@@ -503,14 +504,14 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun solveLinear(){
+    fun solveLinear() {
         val a1 = Matrix.create(2, 2, 0f)
         a1[0, 0] = 2f
         a1[0, 1] = 1f
         a1[1, 0] = 1f
         a1[1, 1] = -1f
-        val b1 = floatArrayOf(-4f, -2f)
-        val expected1 = floatArrayOf(-2f, 0f)
+        val b1 = Vector.from(-4f, -2f)
+        val expected1 = Vector.from(-2f, 0f)
         val actual1 = LinearAlgebra.solveLinear(a1, b1)
         assertEquals(expected1, actual1, 0.00001f)
 
@@ -524,22 +525,22 @@ class LinearAlgebraTest {
         a2[2, 0] = 1f
         a2[2, 1] = 3f
         a2[2, 2] = 2f
-        val b2 = floatArrayOf(8f, 7f, -3f)
-        val expected2 = floatArrayOf(6f, -1f, -3f)
+        val b2 = Vector.from(8f, 7f, -3f)
+        val expected2 = Vector.from(6f, -1f, -3f)
         val actual2 = LinearAlgebra.solveLinear(a2, b2)
         assertEquals(expected2, actual2, 0.00001f)
     }
 
     @Test
-    fun leastSquares(){
+    fun leastSquares() {
         // Well conditioned
         val a1 = Matrix.create(2, 2, 0f)
         a1[0, 0] = 2f
         a1[0, 1] = 1f
         a1[1, 0] = 1f
         a1[1, 1] = -1f
-        val b1 = arrayOf(7f, -1f)
-        val expected1 = arrayOf(2f, 3f)
+        val b1 = Vector.from(7f, -1f)
+        val expected1 = Vector.from(2f, 3f)
         val actual1 = LinearAlgebra.leastSquares(a1, b1)
         assertEquals(expected1, actual1, 0.00001f)
 
@@ -551,8 +552,8 @@ class LinearAlgebraTest {
         a2[1, 1] = -1f
         a2[2, 0] = 1f
         a2[2, 1] = 0f
-        val b2 = arrayOf(3f, 1f, 2f)
-        val expected2 = arrayOf(2f, 1f)
+        val b2 = Vector.from(3f, 1f, 2f)
+        val expected2 = Vector.from(2f, 1f)
         val actual2 = LinearAlgebra.leastSquares(a2, b2)
         assertEquals(expected2, actual2, 0.00001f)
 
@@ -564,8 +565,8 @@ class LinearAlgebraTest {
         a3[1, 0] = 0f
         a3[1, 1] = 1f
         a3[1, 2] = 2f
-        val b3 = arrayOf(6f, 5f)
-        val expected3 = arrayOf(2.5f, 2f, 1.5f)
+        val b3 = Vector.from(6f, 5f)
+        val expected3 = Vector.from(2.5f, 2f, 1.5f)
         val actual3 = LinearAlgebra.leastSquares(a3, b3)
         assertEquals(expected3, actual3, 0.00001f)
     }
@@ -581,18 +582,10 @@ class LinearAlgebraTest {
         }
     }
 
-    private fun assertEquals(m1: Array<Float>, m2: Array<Float>, tolerance: Float = 0f) {
+    private fun assertEquals(m1: Vector, m2: Vector, tolerance: Float = 0f) {
         assertEquals(m1.size, m2.size)
 
-        for (i in m1.indices) {
-            assertEquals(m1[i], m2[i], tolerance)
-        }
-    }
-
-    private fun assertEquals(m1: FloatArray, m2: FloatArray, tolerance: Float = 0f) {
-        assertEquals(m1.size, m2.size)
-
-        for (i in m1.indices) {
+        for (i in m1.data.indices) {
             assertEquals(m1[i], m2[i], tolerance)
         }
     }

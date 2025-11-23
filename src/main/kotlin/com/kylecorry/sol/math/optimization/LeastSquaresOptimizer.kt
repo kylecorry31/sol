@@ -1,9 +1,8 @@
 package com.kylecorry.sol.math.optimization
 
+import com.kylecorry.sol.math.Vector
 import com.kylecorry.sol.math.algebra.LinearAlgebra
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.algebra.norm
-import com.kylecorry.sol.math.algebra.toColumnMatrix
 import com.kylecorry.sol.math.geometry.Geometry
 import kotlin.math.abs
 
@@ -38,9 +37,9 @@ class LeastSquaresOptimizer {
 
         for (i in 0 until maxIterations) {
 
-            val f = points.mapIndexed { i, point ->
+            val f = Vector(points.mapIndexed { i, point ->
                 (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])
-            }.toTypedArray()
+            }.toFloatArray())
 
             val jacobian = Matrix.create(points.mapIndexed { i, point ->
                 jacobianFn(i, point, guess).toTypedArray()
@@ -48,9 +47,9 @@ class LeastSquaresOptimizer {
 
             val step = LinearAlgebra.leastSquares(jacobian, f)
 
-            if ((step.maxOfOrNull { abs(it) } ?: 0f) > maxAllowedStep) {
-                val maxStep = step.maxOfOrNull { abs(it) } ?: 0f
-                step.forEachIndexed { index, it ->
+            if ((step.data.maxOfOrNull { abs(it) } ?: 0f) > maxAllowedStep) {
+                val maxStep = step.data.maxOfOrNull { abs(it) } ?: 0f
+                step.data.forEachIndexed { index, it ->
                     step[index] = it / maxStep * maxAllowedStep
                 }
             }
