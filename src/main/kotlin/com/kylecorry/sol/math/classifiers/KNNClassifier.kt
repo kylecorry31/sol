@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.classifiers
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.algebra.Matrix
+import com.kylecorry.sol.math.algebra.mapRows
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.sqrt
 
@@ -14,10 +15,12 @@ class KNNClassifier(
 
     override fun classify(x: List<Float>): List<Float> {
         val xArr = x.toTypedArray()
-        val neighbors = input
-            .mapIndexed { index, values -> labels[index] to distance(xArr, values) }
-            .sortedBy { it.second }
-            .take(k)
+
+        val tempNeighbors = mutableListOf<Pair<Array<Int>, Float>>()
+        for (row in 0 until input.rows()){
+            tempNeighbors.add(labels[row] to distance(xArr, input.getRow(row).toTypedArray()))
+        }
+        val neighbors = tempNeighbors.sortedBy { it.second }.take(k)
 
         val inverseSum =
             neighbors.sumOf { 1 / it.second.toDouble().coerceAtLeast(0.000001) }

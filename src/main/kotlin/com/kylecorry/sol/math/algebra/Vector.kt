@@ -6,13 +6,13 @@ import kotlin.math.sqrt
 typealias Vector = Array<Float>
 
 fun Vector.toColumnMatrix(): Matrix {
-    return createMatrix(size, 1) { row, _ ->
+    return Matrix.create(size, 1) { row, _ ->
         this[row]
     }
 }
 
 fun Vector.toRowMatrix(): Matrix {
-    return createMatrix(1, size) { _, col ->
+    return Matrix.create(1, size) { _, col ->
         this[col]
     }
 }

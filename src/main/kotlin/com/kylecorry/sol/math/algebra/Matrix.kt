@@ -1,38 +1,176 @@
 package com.kylecorry.sol.math.algebra
 
-typealias Matrix = Array<Array<Float>>
+import kotlin.math.sqrt
 
-fun Matrix.rows(): Int {
-    return size
-}
+@JvmInline
+value class Matrix internal constructor(private val rawData: FloatArray) {
 
-fun Matrix.columns(): Int {
-    if (rows() == 0) {
-        return 0
+    operator fun get(row: Int, column: Int): Float {
+        return rawData[getIndex(row, column)]
     }
 
-    return get(0).size
-}
+    operator fun set(row: Int, column: Int, value: Float) {
+        rawData[getIndex(row, column)] = value
+    }
 
-operator fun Matrix.get(row: Int, column: Int): Float {
-    return this[row][column]
-}
+    fun sum(): Float {
+        var sum = 0.0f
+        for (i in 2..rawData.lastIndex) {
+            sum += rawData[i]
+        }
+        return sum
+    }
 
-operator fun Matrix.set(row: Int, column: Int, value: Float) {
-    this[row][column] = value
-}
+    fun max(): Float {
+        if (rawData.size <= 2) {
+            return 0f
+        }
+        var max = rawData[2]
+        for (i in 3..rawData.lastIndex) {
+            max = maxOf(max, rawData[i])
+        }
+        return max
+    }
 
-fun createMatrix(rows: Int, columns: Int, init: (row: Int, col: Int) -> Float): Matrix {
-    return Array(rows) { row ->
-        Array(columns) { col ->
-            init(row, col)
+    fun norm(): Float {
+        return sqrt(rawData.sumOf { it * it.toDouble() }).toFloat()
+    }
+
+    fun rows(): Int {
+        return rawData[0].toRawBits()
+    }
+
+    fun columns(): Int {
+        return rawData[1].toRawBits()
+    }
+
+    fun clone(): Matrix {
+        return Matrix(rawData.clone())
+    }
+
+    fun setRow(row: Int, rowData: FloatArray) {
+        if (rowData.size != columns()) {
+            throw IllegalArgumentException("Expected row to be of length ${columns()} but got ${rowData.size}")
+        }
+        val startIndex = getIndex(row, 0)
+        rowData.copyInto(rawData, startIndex)
+    }
+
+    fun getRow(row: Int, destination: FloatArray = FloatArray(columns())): FloatArray {
+        if (destination.size != columns()) {
+            throw IllegalArgumentException("Expected destination to be of length ${columns()} but got ${destination.size}")
+        }
+        val startIndex = getIndex(row, 0)
+        rawData.copyInto(destination, startIndex = startIndex, endIndex = startIndex + columns())
+        return destination
+    }
+
+    fun setColumn(column: Int, columnData: FloatArray) {
+        if (columnData.size != rows()) {
+            throw IllegalArgumentException("Expected column to be of length ${rows()} but got ${columnData.size}")
+        }
+        for (row in 0 until rows()) {
+            set(row, column, columnData[row])
+        }
+    }
+
+    fun getColumn(column: Int, destination: FloatArray = FloatArray(rows())): FloatArray {
+        if (destination.size != rows()) {
+            throw IllegalArgumentException("Expected destination to be of length ${rows()} but got ${destination.size}")
+        }
+        for (row in 0 until rows()) {
+            destination[row] = get(row, column)
+        }
+        return destination
+    }
+
+    fun swapRows(row1: Int, row2: Int) {
+        val temp = getRow(row1)
+        setRow(row1, getRow(row2))
+        setRow(row2, temp)
+    }
+
+    private fun getIndex(row: Int, column: Int): Int {
+        if (row >= rows() || row < 0) {
+            throw IllegalArgumentException("Expected row to be between 0 and ${rows()} but got $row")
+        }
+        if (column >= columns() || column < 0) {
+            throw IllegalArgumentException("Expected column to be between 0 and ${columns()} but got $column")
+        }
+        return 2 + columns() * row + column
+    }
+
+    companion object {
+        fun zeros(rows: Int, columns: Int): Matrix {
+            val data = FloatArray(rows * columns + 2)
+            data[0] = Float.fromBits(rows)
+            data[1] = Float.fromBits(columns)
+            return Matrix(data)
+        }
+
+        fun create(rows: Int, columns: Int, value: Float = 0f): Matrix {
+            val data = FloatArray(rows * columns + 2) { value }
+            data[0] = Float.fromBits(rows)
+            data[1] = Float.fromBits(columns)
+            return Matrix(data)
+        }
+
+        fun createFromRawData(data: FloatArray): Matrix {
+            return Matrix(data)
+        }
+
+        fun create(rows: Int, columns: Int, data: FloatArray): Matrix {
+            if (data.size != rows * columns) {
+                throw IllegalArgumentException("Expected data to be of length ${rows * columns} but got ${data.size}")
+            }
+            val newData = FloatArray(2 + data.size)
+            newData[0] = Float.fromBits(rows)
+            newData[1] = Float.fromBits(columns)
+            data.copyInto(newData, 2)
+            return Matrix(newData)
+        }
+
+        fun identity(size: Int): Matrix {
+            return diagonal(values = FloatArray(size) { 1f })
+        }
+
+        fun diagonal(vararg values: Float): Matrix {
+            return create(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
+        }
+
+        fun column(vararg values: Float): Matrix {
+            return create(values.size, 1) { r, _ -> values[r] }
+        }
+
+        fun row(vararg values: Float): Matrix {
+            return create(1, values.size) { _, c -> values[c] }
+        }
+
+        fun create(oldMatrix: Array<Array<Float>>): Matrix {
+            return create(oldMatrix.size, oldMatrix[0].size) { r, c ->
+                oldMatrix[r][c]
+            }
+        }
+
+        inline fun create(
+            rows: Int,
+            columns: Int,
+            crossinline initialize: (row: Int, column: Int) -> Float
+        ): Matrix {
+            val newData = FloatArray(2 + rows * columns)
+            newData[0] = Float.fromBits(rows)
+            newData[1] = Float.fromBits(columns)
+            for (i in 2 until newData.size) {
+                val index = i - 2
+                val row = index / columns
+                val column = index % columns
+                newData[i] = initialize(row, column)
+            }
+            return createFromRawData(newData)
         }
     }
 }
 
-fun createMatrix(rows: Int, columns: Int, init: Float): Matrix {
-    return createMatrix(rows, columns) { _, _ -> init }
-}
 
 fun Matrix.dot(other: Matrix): Matrix {
     return LinearAlgebra.dot(this, other)
@@ -78,20 +216,12 @@ fun Matrix.mapColumns(fn: (FloatArray) -> FloatArray): Matrix {
     return LinearAlgebra.mapColumns(this, fn)
 }
 
-fun Matrix.sum(): Float {
-    return LinearAlgebra.sum(this)
-}
-
 fun Matrix.sumRows(): Matrix {
     return LinearAlgebra.sumRows(this)
 }
 
 fun Matrix.sumColumns(): Matrix {
     return LinearAlgebra.sumColumns(this)
-}
-
-fun Matrix.max(): Float {
-    return LinearAlgebra.max(this)
 }
 
 fun Matrix.maxRows(): Matrix {
@@ -118,10 +248,6 @@ fun Matrix.cofactor(r: Int, c: Int): Matrix {
     return LinearAlgebra.cofactor(this, r, c)
 }
 
-fun Matrix.norm(): Float {
-    return LinearAlgebra.norm(this)
-}
-
 fun Matrix.appendColumn(col: FloatArray): Matrix {
     return LinearAlgebra.appendColumn(this, col)
 }
@@ -136,40 +262,4 @@ fun Matrix.appendRow(row: FloatArray): Matrix {
 
 fun Matrix.appendRow(value: Float): Matrix {
     return LinearAlgebra.appendRow(this, value)
-}
-
-fun Matrix.column(index: Int): Matrix {
-    return arrayOf(transpose()[index])
-}
-
-fun Matrix.setColumn(index: Int, column: Array<Float>): Matrix {
-    for (i in column.indices) {
-        this[i][index] = column[i]
-    }
-    return this
-}
-
-/**
- * Creates an identity matrix
- */
-fun identityMatrix(size: Int): Matrix {
-    return diagonalMatrix(values = FloatArray(size) { 1f })
-}
-
-fun diagonalMatrix(vararg values: Float): Matrix {
-    return createMatrix(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
-}
-
-/**
- * Creates a column matrix
- */
-fun columnMatrix(vararg values: Float): Matrix {
-    return createMatrix(values.size, 1) { r, _ -> values[r] }
-}
-
-/**
- * Creates a row matrix
- */
-fun rowMatrix(vararg values: Float): Matrix {
-    return createMatrix(1, values.size) { _, c -> values[c] }
 }

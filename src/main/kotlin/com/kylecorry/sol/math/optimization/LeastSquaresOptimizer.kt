@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.algebra.LinearAlgebra
+import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.norm
 import com.kylecorry.sol.math.algebra.toColumnMatrix
 import com.kylecorry.sol.math.geometry.Geometry
@@ -41,9 +42,9 @@ class LeastSquaresOptimizer {
                 (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])
             }.toTypedArray()
 
-            val jacobian = points.mapIndexed { i, point ->
+            val jacobian = Matrix.create(points.mapIndexed { i, point ->
                 jacobianFn(i, point, guess).toTypedArray()
-            }.toTypedArray()
+            }.toTypedArray())
 
             val step = LinearAlgebra.leastSquares(jacobian, f)
 

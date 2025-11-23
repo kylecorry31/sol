@@ -2,7 +2,6 @@ package com.kylecorry.sol.math.classifiers
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.algebra.createMatrix
 
 interface IClassifier {
 
@@ -21,10 +20,10 @@ fun IClassifier.confusion(
     x: List<List<Float>>,
     y: List<Int>
 ): Matrix {
-    val matrix = createMatrix(classes, classes, 0f)
+    val matrix = Matrix.zeros(classes, classes)
     x.zip(y).forEach {
         val prediction = SolMath.argmax(this.classify(it.first))
-        matrix[prediction][it.second]++
+        matrix[prediction, it.second]++
     }
     return matrix
 }

@@ -6,12 +6,12 @@ import com.kylecorry.sol.math.SolMath.lerp
 import com.kylecorry.sol.math.SolMath.round
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
-import com.kylecorry.sol.math.algebra.*
+import com.kylecorry.sol.math.algebra.Matrix
+import com.kylecorry.sol.math.algebra.multiply
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.exp
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object Statistics {
@@ -200,7 +200,7 @@ object Statistics {
      */
     fun accuracy(confusion: Matrix): Float {
         val total = confusion.sum()
-        val correct = confusion.multiply(identityMatrix(confusion.rows())).sum()
+        val correct = confusion.multiply(Matrix.identity(confusion.rows())).sum()
         return correct / total
     }
 
@@ -211,10 +211,13 @@ object Statistics {
     fun f1Score(confusion: Matrix, weighted: Boolean = false): Float {
         val all = confusion.sum()
         val weight = 1 / confusion.rows().toFloat()
-        return confusion.mapIndexed { index, _ ->
-            val total = confusion.transpose()[index].sum()
-            f1Score(confusion, index) * if (weighted) total / all else weight
-        }.sum()
+
+        var total = 0.0
+        for (row in 0 until confusion.rows()) {
+            val subtotal = confusion.getColumn(row).sum()
+            total += f1Score(confusion, row) * if (weighted) subtotal / all else weight
+        }
+        return total.toFloat()
     }
 
     /**
@@ -234,8 +237,8 @@ object Statistics {
      * Calculates the recall for a single class given a confusion matrix (rows = predicted, columns = actual)
      */
     fun recall(confusion: Matrix, classIdx: Int): Float {
-        val actual = confusion.transpose()[classIdx]
-        val tp = confusion[classIdx][classIdx]
+        val actual = confusion.getColumn(classIdx)
+        val tp = confusion[classIdx, classIdx]
         val fn = actual.sum() - tp
         if (SolMath.isZero(tp + fn)) {
             return 0f
@@ -247,8 +250,8 @@ object Statistics {
      * Calculates the precision for a single class given a confusion matrix (rows = predicted, columns = actual)
      */
     fun precision(confusion: Matrix, classIdx: Int): Float {
-        val predicted = confusion[classIdx]
-        val tp = confusion[classIdx][classIdx]
+        val predicted = confusion.getRow(classIdx)
+        val tp = confusion[classIdx, classIdx]
         val fp = predicted.sum() - tp
         if (SolMath.isZero(tp + fp)) {
             return 0f

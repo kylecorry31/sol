@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.classifiers
 
+import com.kylecorry.sol.math.algebra.Matrix
 import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
@@ -19,7 +20,7 @@ internal class LogisticRegressionClassifierTest {
             5.1f, 3.5f, 1.4f, 0.2f
         )
 
-        val clf = LogisticRegressionClassifier.fromWeights(weights)
+        val clf = LogisticRegressionClassifier.fromWeights(Matrix.create(weights))
         val y = clf.classify(x)
 
         assertEquals(0.906505470f, y[0], 0.0001f)
