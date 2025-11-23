@@ -1,7 +1,6 @@
 package com.kylecorry.sol.math.algebra
 
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.shared.ArrayUtils.swap
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -117,8 +116,8 @@ object LinearAlgebra {
 
     fun mapRows(mat: Matrix, fn: (row: FloatArray) -> FloatArray): Matrix {
         val copy = mat.clone()
-        val temp = FloatArray(mat.columns)
-        for (row in 0 until mat.rows) {
+        val temp = FloatArray(mat.columns())
+        for (row in 0 until mat.rows()) {
             mat.getRow(row, temp)
             copy.setRow(row, fn(temp))
         }
@@ -130,7 +129,7 @@ object LinearAlgebra {
     }
 
     fun sum(mat: Matrix): Float {
-        return mat.data.sum()
+        return mat.sum()
     }
 
     fun sumColumns(mat: Matrix): Matrix {
@@ -138,7 +137,7 @@ object LinearAlgebra {
     }
 
     fun sumRows(mat: Matrix): Matrix {
-        val temp = FloatArray(mat.columns)
+        val temp = FloatArray(mat.columns())
         return Matrix.create(mat.rows(), 1) { row, _ ->
             mat.getRow(row, temp)
             temp.sum()
@@ -146,7 +145,7 @@ object LinearAlgebra {
     }
 
     fun max(mat: Matrix): Float {
-        return mat.data.max()
+        return mat.max()
     }
 
     fun maxColumns(mat: Matrix): Matrix {
@@ -154,7 +153,7 @@ object LinearAlgebra {
     }
 
     fun maxRows(mat: Matrix): Matrix {
-        val temp = FloatArray(mat.columns)
+        val temp = FloatArray(mat.columns())
         return Matrix.create(mat.rows(), 1) { row, _ ->
             mat.getRow(row, temp)
             temp.max()
@@ -283,7 +282,7 @@ object LinearAlgebra {
     }
 
     fun norm(m: Matrix): Float {
-        return sqrt(m.data.sumOf { it * it.toDouble() }).toFloat()
+        return m.norm()
     }
 
     fun solveLinear(a: Matrix, b: FloatArray): FloatArray {

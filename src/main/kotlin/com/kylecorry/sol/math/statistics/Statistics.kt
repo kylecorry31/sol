@@ -8,7 +8,6 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.multiply
-import com.kylecorry.sol.math.algebra.sum
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.exp
