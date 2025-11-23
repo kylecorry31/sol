@@ -4,10 +4,7 @@ import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.statistics.Statistics
-import kotlin.math.ceil
 import kotlin.math.ln
-import kotlin.math.log
-import kotlin.math.min
 
 /**
  * A logistic regression classifier
@@ -85,15 +82,15 @@ class LogisticRegressionClassifier(
         val randomized = input.zip(output).shuffled()
         val batches = randomized.batch(batchSize)
         for (epoch in 0 until epochs) {
-//            for (n in batches.indices) {
-//                totalError = 0f
-//                val batch = batches[n].unzip()
-//                val inputRow = batch.first.map { it[0] }.toTypedArray()
-//                val outputRow = batch.second.map { it[0] }.toTypedArray()
-//                val gradient = crossEntropyGradient(inputRow, outputRow)
-//                weights = weights.subtract(gradient.multiply(learningRate))
-//                totalError += crossEntropy(inputRow, outputRow)
-//            }
+            for (n in batches.indices) {
+                totalError = 0f
+                val batch = batches[n].unzip()
+                val inputRow = Matrix.create(batch.first.map { it.getRow(0).toTypedArray() }.toTypedArray())
+                val outputRow = Matrix.create(batch.second.map { it.getRow(0).toTypedArray() }.toTypedArray())
+                val gradient = crossEntropyGradient(inputRow, outputRow)
+                weights = weights.subtract(gradient.multiply(learningRate))
+                totalError += crossEntropy(inputRow, outputRow)
+            }
             onEpochCompleteFn(totalError, epoch)
         }
 

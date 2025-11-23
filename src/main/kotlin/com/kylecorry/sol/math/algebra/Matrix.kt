@@ -5,9 +5,6 @@ import kotlin.math.sqrt
 @JvmInline
 value class Matrix internal constructor(private val rawData: FloatArray) {
 
-    val data: FloatArray
-        get() = rawData.copyOfRange(2, rawData.size)
-
     operator fun get(row: Int, column: Int): Float {
         return rawData[getIndex(row, column)]
     }
