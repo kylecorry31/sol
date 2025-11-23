@@ -5,7 +5,9 @@ import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.*
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.pow
 
 class NeuralNetwork(
     private val layers: List<Layer>,
@@ -22,8 +24,8 @@ class NeuralNetwork(
     }
 
     fun predict(x: List<Float>): List<Float> {
-        val input = columnMatrix(values = x.toFloatArray())
-        return predict(input).transpose()[0].toList()
+        val input = Matrix.column(values = x.toFloatArray())
+        return predict(input).getColumn(0).toList()
     }
 
     override fun classify(x: List<Float>): List<Float> {
@@ -50,9 +52,9 @@ class NeuralNetwork(
         batchSize: Int = input.size,
         onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
-        val x = input.map { rowMatrix(values = it.toFloatArray()) }
+        val x = input.map { Matrix.row(values = it.toFloatArray()) }
         val y = output.map {
-            rowMatrix(
+            Matrix.row(
                 values = SolMath.oneHot(it, layers.last().outputSize, 1f, 0f).toFloatArray()
             )
         }
@@ -102,17 +104,18 @@ class NeuralNetwork(
             for (n in batches.indices) {
                 totalError = 0f
                 val batch = batches[n].unzip()
-                val inputRow = batch.first.map { it[0] }.toTypedArray().transpose()
-                val outputRow = batch.second.map { it[0] }.toTypedArray().transpose()
+                val inputRow = Matrix.create(batch.first.map { it.getRow(0).toTypedArray() }.toTypedArray()).transpose()
+                val outputRow =
+                    Matrix.create(batch.second.map { it.getRow(0).toTypedArray() }.toTypedArray()).transpose()
                 val predicted = predict(inputRow)
                 val samples = inputRow.columns()
-                val ones = columnMatrix(values = FloatArray(samples) { 1f })
+                val ones = Matrix.column(values = FloatArray(samples) { 1f })
 
                 val previousLayerOutputs =
                     listOf(inputRow.transpose()) + layers.map { it.output.transpose() }
                         .take(layers.size - 1)
 
-                var previousDelta: Matrix = createMatrix(0, 0, 0f)
+                var previousDelta: Matrix = Matrix.zeros(0, 0)
                 for (l in layers.indices.reversed()) {
                     previousDelta = if (l == layers.lastIndex) {
                         outputRow.subtract(predicted)
@@ -164,8 +167,14 @@ class NeuralNetwork(
 
     class LayerWeights(val weights: Matrix, val bias: Matrix) {
         fun format(): String {
-            return weights.zip(bias)
-                .joinToString("\n") { it.first.joinToString(",") + "," + it.second.joinToString(",") }
+            val builder = StringBuilder()
+            for (row in 0 until weights.rows()) {
+                val weightRow = weights.getRow(row)
+                val biasRow = bias.getRow(row)
+                builder.appendLine(weightRow.joinToString(",") + "," + biasRow.joinToString(","))
+            }
+
+            return builder.toString().trim()
         }
 
         companion object {
@@ -174,8 +183,8 @@ class NeuralNetwork(
                     val row = it.split(",").mapNotNull { it.toFloatOrNull() }
                     row.take(row.size - 1).toTypedArray() to row.takeLast(1).toTypedArray()
                 }
-                val weights = parsed.map { it.first }.toTypedArray()
-                val bias = parsed.map { it.second }.toTypedArray()
+                val weights = Matrix.create(parsed.map { it.first }.toTypedArray())
+                val bias = Matrix.create(parsed.map { it.second }.toTypedArray())
                 return LayerWeights(weights, bias)
             }
         }
@@ -196,9 +205,9 @@ class NeuralNetwork(
 
         init {
             weights = randomMatrix(outputSize, inputSize)
-            bias = createMatrix(outputSize, 1, 0.1f)
-            output = createMatrix(outputSize, 1, 0f)
-            input = createMatrix(inputSize, 1, 0f)
+            bias = Matrix.create(outputSize, 1, 0.1f)
+            output = Matrix.zeros(outputSize, 1)
+            input = Matrix.zeros(inputSize, 1)
         }
 
         internal fun activate(input: Matrix): Matrix {
@@ -212,7 +221,7 @@ class NeuralNetwork(
         }
 
         private fun randomMatrix(rows: Int, columns: Int): Matrix {
-            return createMatrix(rows, columns) { _, _ -> Math.random().toFloat() }
+            return Matrix.create(rows, columns) { _, _ -> Math.random().toFloat() }
         }
 
         companion object {
@@ -235,11 +244,11 @@ class NeuralNetwork(
             fun softmax(input: Int, output: Int): Layer {
                 val grad = { x: FloatArray ->
                     val softmax = Statistics.softmax(x.toList()).toFloatArray()
-                    val diag = diagonalMatrix(values = softmax)
-                    val col = arrayOf(softmax.toTypedArray())
+                    val diag = Matrix.diagonal(values = softmax)
+                    val col = Matrix.column(values = softmax)
                     // This should be diag - col*colT but for some reason that cause error to increase
                     val grad = diag.add(col.dot(col.transpose()))
-                    grad.sumColumns()[0].toFloatArray()
+                    grad.sumColumns().getRow(0)
                 }
                 return Layer(
                     input,
@@ -283,7 +292,8 @@ class NeuralNetwork(
             }
 
             fun sigmoid(input: Int, output: Int): Layer {
-                return functionalLayer(input,
+                return functionalLayer(
+                    input,
                     output,
                     { 1f / (1 + exp(-it)) },
                     {
@@ -293,14 +303,16 @@ class NeuralNetwork(
             }
 
             fun softplus(input: Int, output: Int): Layer {
-                return functionalLayer(input,
+                return functionalLayer(
+                    input,
                     output,
                     { ln(1f + exp(it)) },
                     { 1f / (1 + exp(-it)) })
             }
 
             fun tanh(input: Int, output: Int): Layer {
-                return functionalLayer(input,
+                return functionalLayer(
+                    input,
                     output,
                     { kotlin.math.tanh(it) },
                     { 1 - kotlin.math.tanh(it).pow(2) })

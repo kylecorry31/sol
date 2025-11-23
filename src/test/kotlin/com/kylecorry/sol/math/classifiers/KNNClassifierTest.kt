@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.classifiers
 
+import com.kylecorry.sol.math.algebra.Matrix
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -8,7 +9,7 @@ internal class KNNClassifierTest {
     @Test
     fun classify() {
         val knn = KNNClassifier(
-            3, arrayOf(
+            3, Matrix.create(arrayOf(
                 arrayOf(22f),
                 arrayOf(23f),
                 arrayOf(21f),
@@ -19,7 +20,7 @@ internal class KNNClassifierTest {
                 arrayOf(29f),
                 arrayOf(31f),
                 arrayOf(45f),
-            ),
+            )),
             arrayOf(
                 arrayOf(0, 1),
                 arrayOf(0, 1),

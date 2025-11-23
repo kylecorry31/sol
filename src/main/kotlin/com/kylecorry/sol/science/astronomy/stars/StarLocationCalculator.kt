@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.SolMath.deltaAngle
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.algebra.LinearAlgebra
+import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.norm
 import com.kylecorry.sol.math.optimization.ConvergenceOptimizer
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
@@ -114,7 +115,7 @@ internal class StarLocationCalculator {
 
             // Solve using least squares
             val ls = LinearAlgebra.leastSquares(
-                linesOfPosition.map { it.first }.toTypedArray(),
+                Matrix.create(linesOfPosition.map { it.first }.toTypedArray()),
                 linesOfPosition.map { it.second }.toTypedArray()
             )
 

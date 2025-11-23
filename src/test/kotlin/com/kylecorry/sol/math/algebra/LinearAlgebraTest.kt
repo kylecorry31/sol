@@ -7,7 +7,7 @@ class LinearAlgebraTest {
 
     @Test
     fun dot() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -15,7 +15,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val m2 = createMatrix(2, 3, 0f)
+        val m2 = Matrix.create(2, 3, 0f)
         m2[0, 0] = 1f
         m2[0, 1] = 2f
         m2[0, 2] = 3f
@@ -23,7 +23,7 @@ class LinearAlgebraTest {
         m2[1, 1] = 5f
         m2[1, 2] = 6f
 
-        val expected = createMatrix(3, 3, 0f)
+        val expected = Matrix.create(3, 3, 0f)
         expected[0, 0] = 9f
         expected[0, 1] = 12f
         expected[0, 2] = 15f
@@ -41,7 +41,7 @@ class LinearAlgebraTest {
 
     @Test
     fun subtract() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -49,7 +49,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val m2 = createMatrix(3, 2, 0f)
+        val m2 = Matrix.create(3, 2, 0f)
         m2[0, 0] = 2f
         m2[0, 1] = 1f
         m2[1, 0] = 5f
@@ -57,7 +57,7 @@ class LinearAlgebraTest {
         m2[2, 0] = 1f
         m2[2, 1] = 5f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = -1f
         expected[0, 1] = 1f
         expected[1, 0] = -2f
@@ -72,7 +72,7 @@ class LinearAlgebraTest {
 
     @Test
     fun subtractScalar() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -80,7 +80,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = -1f
         expected[0, 1] = 0f
         expected[1, 0] = 1f
@@ -97,7 +97,7 @@ class LinearAlgebraTest {
 
     @Test
     fun add() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -105,7 +105,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val m2 = createMatrix(3, 2, 0f)
+        val m2 = Matrix.create(3, 2, 0f)
         m2[0, 0] = 2f
         m2[0, 1] = 1f
         m2[1, 0] = 5f
@@ -113,7 +113,7 @@ class LinearAlgebraTest {
         m2[2, 0] = 1f
         m2[2, 1] = 5f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 3f
         expected[0, 1] = 3f
         expected[1, 0] = 8f
@@ -128,7 +128,7 @@ class LinearAlgebraTest {
 
     @Test
     fun addScalar() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -136,7 +136,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 3f
         expected[0, 1] = 4f
         expected[1, 0] = 5f
@@ -153,7 +153,7 @@ class LinearAlgebraTest {
 
     @Test
     fun multiply() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -161,7 +161,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val m2 = createMatrix(3, 2, 0f)
+        val m2 = Matrix.create(3, 2, 0f)
         m2[0, 0] = 2f
         m2[0, 1] = 1f
         m2[1, 0] = 5f
@@ -169,7 +169,7 @@ class LinearAlgebraTest {
         m2[2, 0] = 1f
         m2[2, 1] = 5f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 2f
         expected[0, 1] = 2f
         expected[1, 0] = 15f
@@ -184,7 +184,7 @@ class LinearAlgebraTest {
 
     @Test
     fun multiplyScalar() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -192,7 +192,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 2f
         expected[0, 1] = 4f
         expected[1, 0] = 6f
@@ -209,7 +209,7 @@ class LinearAlgebraTest {
 
     @Test
     fun divide() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -217,7 +217,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val m2 = createMatrix(3, 2, 0f)
+        val m2 = Matrix.create(3, 2, 0f)
         m2[0, 0] = 2f
         m2[0, 1] = 1f
         m2[1, 0] = 5f
@@ -225,7 +225,7 @@ class LinearAlgebraTest {
         m2[2, 0] = 1f
         m2[2, 1] = 5f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 0.5f
         expected[0, 1] = 2f
         expected[1, 0] = 0.6f
@@ -240,7 +240,7 @@ class LinearAlgebraTest {
 
     @Test
     fun divideScalar() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -248,7 +248,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 0.5f
         expected[0, 1] = 1f
         expected[1, 0] = 1.5f
@@ -265,7 +265,7 @@ class LinearAlgebraTest {
 
     @Test
     fun transpose() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -273,7 +273,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(2, 3, 0f)
+        val expected = Matrix.create(2, 3, 0f)
         expected[0, 0] = 1f
         expected[0, 1] = 3f
         expected[0, 2] = 5f
@@ -288,7 +288,7 @@ class LinearAlgebraTest {
 
     @Test
     fun map() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -296,7 +296,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 2, 0f)
+        val expected = Matrix.create(3, 2, 0f)
         expected[0, 0] = 2f
         expected[0, 1] = 4f
         expected[1, 0] = 6f
@@ -313,7 +313,7 @@ class LinearAlgebraTest {
 
     @Test
     fun sum() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -328,7 +328,7 @@ class LinearAlgebraTest {
 
     @Test
     fun sumRows() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -336,7 +336,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 1, 0f)
+        val expected = Matrix.create(3, 1, 0f)
         expected[0, 0] = 3f
         expected[1, 0] = 7f
         expected[2, 0] = 11f
@@ -348,7 +348,7 @@ class LinearAlgebraTest {
 
     @Test
     fun sumColumns() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -356,7 +356,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(1, 2, 0f)
+        val expected = Matrix.create(1, 2, 0f)
         expected[0, 0] = 9f
         expected[0, 1] = 12f
 
@@ -367,7 +367,7 @@ class LinearAlgebraTest {
 
     @Test
     fun max() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -382,7 +382,7 @@ class LinearAlgebraTest {
 
     @Test
     fun maxRows() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -390,7 +390,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(3, 1, 0f)
+        val expected = Matrix.create(3, 1, 0f)
         expected[0, 0] = 2f
         expected[1, 0] = 4f
         expected[2, 0] = 6f
@@ -402,7 +402,7 @@ class LinearAlgebraTest {
 
     @Test
     fun maxColumns() {
-        val m1 = createMatrix(3, 2, 0f)
+        val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -410,7 +410,7 @@ class LinearAlgebraTest {
         m1[2, 0] = 5f
         m1[2, 1] = 6f
 
-        val expected = createMatrix(1, 2, 0f)
+        val expected = Matrix.create(1, 2, 0f)
         expected[0, 0] = 5f
         expected[0, 1] = 6f
 
@@ -421,13 +421,13 @@ class LinearAlgebraTest {
 
     @Test
     fun inverse2x2() {
-        val m1 = createMatrix(2, 2, 0f)
+        val m1 = Matrix.create(2, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
         m1[1, 1] = 4f
 
-        val expected = createMatrix(2, 2, 0f)
+        val expected = Matrix.create(2, 2, 0f)
         expected[0, 0] = -2f
         expected[0, 1] = 1f
         expected[1, 0] = 3/2f
@@ -440,7 +440,7 @@ class LinearAlgebraTest {
 
     @Test
     fun inverse3x3() {
-        val m1 = createMatrix(3, 3, 0f)
+        val m1 = Matrix.create(3, 3, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[0, 2] = 3f
@@ -451,7 +451,7 @@ class LinearAlgebraTest {
         m1[2, 1] = 6f
         m1[2, 2] = 0f
 
-        val expected = createMatrix(3, 3, 0f)
+        val expected = Matrix.create(3, 3, 0f)
         expected[0, 0] = -24f
         expected[0, 1] = 18f
         expected[0, 2] = 5f
@@ -469,7 +469,7 @@ class LinearAlgebraTest {
 
     @Test
     fun determinant3x3() {
-        val m1 = createMatrix(3, 3, 0f)
+        val m1 = Matrix.create(3, 3, 0f)
         m1[0, 0] = 2f
         m1[0, 1] = -3f
         m1[0, 2] = 1f
@@ -489,7 +489,7 @@ class LinearAlgebraTest {
 
     @Test
     fun determinant2x2() {
-        val m1 = createMatrix(2, 2, 0f)
+        val m1 = Matrix.create(2, 2, 0f)
         m1[0, 0] = 1f
         m1[0, 1] = 2f
         m1[1, 0] = 3f
@@ -504,17 +504,17 @@ class LinearAlgebraTest {
 
     @Test
     fun solveLinear(){
-        val a1 = createMatrix(2, 2, 0f)
+        val a1 = Matrix.create(2, 2, 0f)
         a1[0, 0] = 2f
         a1[0, 1] = 1f
         a1[1, 0] = 1f
         a1[1, 1] = -1f
-        val b1 = arrayOf(-4f, -2f)
-        val expected1 = arrayOf(-2f, 0f)
+        val b1 = floatArrayOf(-4f, -2f)
+        val expected1 = floatArrayOf(-2f, 0f)
         val actual1 = LinearAlgebra.solveLinear(a1, b1)
         assertEquals(expected1, actual1, 0.00001f)
 
-        val a2 = createMatrix(3, 3, 0f)
+        val a2 = Matrix.create(3, 3, 0f)
         a2[0, 0] = 2f
         a2[0, 1] = -5f
         a2[0, 2] = 3f
@@ -524,8 +524,8 @@ class LinearAlgebraTest {
         a2[2, 0] = 1f
         a2[2, 1] = 3f
         a2[2, 2] = 2f
-        val b2 = arrayOf(8f, 7f, -3f)
-        val expected2 = arrayOf(6f, -1f, -3f)
+        val b2 = floatArrayOf(8f, 7f, -3f)
+        val expected2 = floatArrayOf(6f, -1f, -3f)
         val actual2 = LinearAlgebra.solveLinear(a2, b2)
         assertEquals(expected2, actual2, 0.00001f)
     }
@@ -533,7 +533,7 @@ class LinearAlgebraTest {
     @Test
     fun leastSquares(){
         // Well conditioned
-        val a1 = createMatrix(2, 2, 0f)
+        val a1 = Matrix.create(2, 2, 0f)
         a1[0, 0] = 2f
         a1[0, 1] = 1f
         a1[1, 0] = 1f
@@ -544,7 +544,7 @@ class LinearAlgebraTest {
         assertEquals(expected1, actual1, 0.00001f)
 
         // Overdetermined
-        val a2 = createMatrix(3, 2, 0f)
+        val a2 = Matrix.create(3, 2, 0f)
         a2[0, 0] = 1f
         a2[0, 1] = 1f
         a2[1, 0] = 1f
@@ -557,7 +557,7 @@ class LinearAlgebraTest {
         assertEquals(expected2, actual2, 0.00001f)
 
         // Underdetermined
-        val a3 = createMatrix(2, 3, 0f)
+        val a3 = Matrix.create(2, 3, 0f)
         a3[0, 0] = 1f
         a3[0, 1] = 1f
         a3[0, 2] = 1f
@@ -582,6 +582,14 @@ class LinearAlgebraTest {
     }
 
     private fun assertEquals(m1: Array<Float>, m2: Array<Float>, tolerance: Float = 0f) {
+        assertEquals(m1.size, m2.size)
+
+        for (i in m1.indices) {
+            assertEquals(m1[i], m2[i], tolerance)
+        }
+    }
+
+    private fun assertEquals(m1: FloatArray, m2: FloatArray, tolerance: Float = 0f) {
         assertEquals(m1.size, m2.size)
 
         for (i in m1.indices) {

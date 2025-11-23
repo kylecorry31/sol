@@ -2,8 +2,6 @@ package com.kylecorry.sol.math.statistics
 
 import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.algebra.columns
-import com.kylecorry.sol.math.algebra.rows
 import kotlin.math.*
 
 object Texture {
@@ -24,7 +22,7 @@ object Texture {
         // Texture measures and mean
         for (i in 0..<glcm.rows()) {
             for (j in 0..<glcm.columns()) {
-                val p = glcm[i][j]
+                val p = glcm[i, j]
                 val ijSquare = square((i - j).toFloat())
                 angularSecondMoment += square(p)
                 if (p > 0) {
@@ -42,7 +40,7 @@ object Texture {
         // Variance calculation
         for (i in 0..<glcm.rows()) {
             for (j in 0..<glcm.columns()) {
-                val p = glcm[i][j]
+                val p = glcm[i, j]
                 varianceI += p * square(i - meanI)
                 varianceJ += p * square(j - meanJ)
                 correlation += p * (i - meanI) * (j - meanJ)

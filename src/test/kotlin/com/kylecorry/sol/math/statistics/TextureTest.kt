@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.statistics
 
+import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.tests.performanceTest
 import org.junit.jupiter.api.Test
 
@@ -15,7 +16,7 @@ class TextureTest {
             arrayOf(0.0833f, 0.0833f, 0f, 0f),
             arrayOf(0f, 0.0833f, 0f, 0f)
         )
-        val features = Texture.features(glcm4x4)
+        val features = Texture.features(Matrix.create(glcm4x4))
         assertEquals(2.02f, features.entropy, 0.1f)
         assertEquals(0.41f, features.energy, 0.1f)
         assertEquals(1.66f, features.contrast, 0.1f)

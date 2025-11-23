@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.algebra.rowMatrix
+import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.statistics.Statistics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -72,12 +72,12 @@ internal class NeuralNetworkTest {
             )
         )
 
-        val x = (0..100).map { rowMatrix(it / 100f, it / 50f) }
+        val x = (0..100).map { Matrix.row(it / 100f, it / 50f) }
 
         val y = (0..100).map {
             val res = sin(it / 100f) * sin(it / 50f)
             val classification = if (res < 0f) 0f else 1f
-            rowMatrix(classification, 1 - classification)
+            Matrix.row(classification, 1 - classification)
         }
 
         val before = (0..100).map {

@@ -1,38 +1,127 @@
 package com.kylecorry.sol.math.algebra
 
-typealias Matrix = Array<Array<Float>>
+class Matrix private constructor(val rows: Int, val columns: Int, internal val data: FloatArray) {
 
-fun Matrix.rows(): Int {
-    return size
-}
-
-fun Matrix.columns(): Int {
-    if (rows() == 0) {
-        return 0
+    operator fun get(row: Int, column: Int): Float {
+        return data[getIndex(row, column)]
     }
 
-    return get(0).size
-}
+    operator fun set(row: Int, column: Int, value: Float) {
+        data[getIndex(row, column)] = value
+    }
 
-operator fun Matrix.get(row: Int, column: Int): Float {
-    return this[row][column]
-}
+    fun rows(): Int {
+        return rows
+    }
 
-operator fun Matrix.set(row: Int, column: Int, value: Float) {
-    this[row][column] = value
-}
+    fun columns(): Int {
+        return columns
+    }
 
-fun createMatrix(rows: Int, columns: Int, init: (row: Int, col: Int) -> Float): Matrix {
-    return Array(rows) { row ->
-        Array(columns) { col ->
-            init(row, col)
+    fun clone(): Matrix {
+        return create(rows, columns, data.clone())
+    }
+
+    fun setRow(row: Int, rowData: FloatArray) {
+        if (rowData.size != columns()) {
+            throw IllegalArgumentException("Expected row to be of length ${columns()} but got ${rowData.size}")
+        }
+        val startIndex = getIndex(row, 0)
+        rowData.copyInto(data, startIndex)
+    }
+
+    fun getRow(row: Int, destination: FloatArray = FloatArray(columns())): FloatArray {
+        if (destination.size != columns()) {
+            throw IllegalArgumentException("Expected destination to be of length ${columns()} but got ${destination.size}")
+        }
+        val startIndex = getIndex(row, 0)
+        data.copyInto(destination, startIndex = startIndex, endIndex = startIndex + columns())
+        return destination
+    }
+
+    fun setColumn(column: Int, columnData: FloatArray) {
+        if (columnData.size != rows()) {
+            throw IllegalArgumentException("Expected column to be of length ${rows()} but got ${columnData.size}")
+        }
+        for (row in 0 until rows()) {
+            set(row, column, columnData[row])
+        }
+    }
+
+    fun getColumn(column: Int, destination: FloatArray = FloatArray(rows())): FloatArray {
+        if (destination.size != rows()) {
+            throw IllegalArgumentException("Expected destination to be of length ${rows()} but got ${destination.size}")
+        }
+        for (row in 0 until rows()) {
+            destination[row] = get(row, column)
+        }
+        return destination
+    }
+
+    fun swapRows(row1: Int, row2: Int) {
+        val temp = getRow(row1)
+        setRow(row1, getRow(row2))
+        setRow(row2, temp)
+    }
+
+    private fun getIndex(row: Int, column: Int): Int {
+        if (row >= rows() || row < 0) {
+            throw IllegalArgumentException("Expected row to be between 0 and ${rows()} but got $row")
+        }
+        if (column >= columns() || columns < 0) {
+            throw IllegalArgumentException("Expected column to be between 0 and ${columns()} but got $column")
+        }
+        return columns * row + column
+    }
+
+    companion object {
+        fun zeros(rows: Int, columns: Int): Matrix {
+            return create(rows, columns, FloatArray(rows * columns))
+        }
+
+        fun create(rows: Int, columns: Int, value: Float = 0f): Matrix {
+            return create(rows, columns, FloatArray(rows * columns) { value })
+        }
+
+        fun create(rows: Int, columns: Int, data: FloatArray): Matrix {
+            if (data.size != rows * columns) {
+                throw IllegalArgumentException("Expected data to be of length ${rows * columns} but got ${data.size}")
+            }
+            return Matrix(rows, columns, data)
+        }
+
+        fun identity(size: Int): Matrix {
+            return diagonal(values = FloatArray(size) { 1f })
+        }
+
+        fun diagonal(vararg values: Float): Matrix {
+            return create(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
+        }
+
+        fun column(vararg values: Float): Matrix {
+            return create(values.size, 1) { r, _ -> values[r] }
+        }
+
+        fun row(vararg values: Float): Matrix {
+            return create(1, values.size) { _, c -> values[c] }
+        }
+
+        fun create(oldMatrix: Array<Array<Float>>): Matrix {
+            return create(oldMatrix.size, oldMatrix[0].size) { r, c ->
+                oldMatrix[r][c]
+            }
+        }
+
+        inline fun create(rows: Int, columns: Int, crossinline initialize: (row: Int, column: Int) -> Float): Matrix {
+            return create(rows, columns, FloatArray(rows * columns) { i ->
+                val row = i / columns
+                val column = i % columns
+                initialize(row, column)
+            })
         }
     }
 }
 
-fun createMatrix(rows: Int, columns: Int, init: Float): Matrix {
-    return createMatrix(rows, columns) { _, _ -> init }
-}
 
 fun Matrix.dot(other: Matrix): Matrix {
     return LinearAlgebra.dot(this, other)
@@ -136,40 +225,4 @@ fun Matrix.appendRow(row: FloatArray): Matrix {
 
 fun Matrix.appendRow(value: Float): Matrix {
     return LinearAlgebra.appendRow(this, value)
-}
-
-fun Matrix.column(index: Int): Matrix {
-    return arrayOf(transpose()[index])
-}
-
-fun Matrix.setColumn(index: Int, column: Array<Float>): Matrix {
-    for (i in column.indices) {
-        this[i][index] = column[i]
-    }
-    return this
-}
-
-/**
- * Creates an identity matrix
- */
-fun identityMatrix(size: Int): Matrix {
-    return diagonalMatrix(values = FloatArray(size) { 1f })
-}
-
-fun diagonalMatrix(vararg values: Float): Matrix {
-    return createMatrix(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
-}
-
-/**
- * Creates a column matrix
- */
-fun columnMatrix(vararg values: Float): Matrix {
-    return createMatrix(values.size, 1) { r, _ -> values[r] }
-}
-
-/**
- * Creates a row matrix
- */
-fun rowMatrix(vararg values: Float): Matrix {
-    return createMatrix(1, values.size) { _, c -> values[c] }
 }

@@ -16,12 +16,12 @@ import kotlin.math.min
 class LogisticRegressionClassifier(
     private val input: Int,
     private val output: Int,
-    private var weights: Matrix = createMatrix(input, output) { _, _ -> Math.random().toFloat() }
+    private var weights: Matrix = Matrix.create(input, output) { _, _ -> Math.random().toFloat() }
 ) : IClassifier {
 
     override fun classify(x: List<Float>): List<Float> {
-        val input = createMatrix(1, x.size) { _, c -> x[c] }
-        return classify(input)[0].toList()
+        val input = Matrix.create(1, x.size) { _, c -> x[c] }
+        return classify(input).getRow(0).toList()
     }
 
     private fun classify(x: Matrix): Matrix {
@@ -37,9 +37,9 @@ class LogisticRegressionClassifier(
         batchSize: Int = input.size,
         onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
-        val x = input.map { rowMatrix(values = it.toFloatArray()) }
+        val x = input.map { Matrix.row(values = it.toFloatArray()) }
         val y = output.map {
-            rowMatrix(
+            Matrix.row(
                 values = SolMath.oneHot(it, this.output, 1f, 0f).toFloatArray()
             )
         }
@@ -85,15 +85,15 @@ class LogisticRegressionClassifier(
         val randomized = input.zip(output).shuffled()
         val batches = randomized.batch(batchSize)
         for (epoch in 0 until epochs) {
-            for (n in batches.indices) {
-                totalError = 0f
-                val batch = batches[n].unzip()
-                val inputRow = batch.first.map { it[0] }.toTypedArray()
-                val outputRow = batch.second.map { it[0] }.toTypedArray()
-                val gradient = crossEntropyGradient(inputRow, outputRow)
-                weights = weights.subtract(gradient.multiply(learningRate))
-                totalError += crossEntropy(inputRow, outputRow)
-            }
+//            for (n in batches.indices) {
+//                totalError = 0f
+//                val batch = batches[n].unzip()
+//                val inputRow = batch.first.map { it[0] }.toTypedArray()
+//                val outputRow = batch.second.map { it[0] }.toTypedArray()
+//                val gradient = crossEntropyGradient(inputRow, outputRow)
+//                weights = weights.subtract(gradient.multiply(learningRate))
+//                totalError += crossEntropy(inputRow, outputRow)
+//            }
             onEpochCompleteFn(totalError, epoch)
         }
 
