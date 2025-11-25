@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.2.10"
+    kotlin("jvm") version "2.2.21"
     id("java-library")
     id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
-val versionName = "14.1.0"
+val versionName = "15.0.0"
 
 mavenPublishing {
     coordinates("com.kylecorry", "sol", versionName)
