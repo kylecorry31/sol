@@ -5,12 +5,8 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
-import kotlin.math.absoluteValue
-import kotlin.math.acos
-import kotlin.math.asin
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
+import com.kylecorry.sol.science.geography.formatting.*
+import kotlin.math.*
 
 
 data class Coordinate(val latitude: Double, val longitude: Double) {
@@ -95,6 +91,23 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
 
         fun constrained(latitude: Double, longitude: Double): Coordinate {
             return Coordinate(latitude.coerceIn(-90.0, 90.0), toLongitude(longitude))
+        }
+
+        private val defaultFormats = listOf(
+            DecimalDegreesCoordinateFormat(),
+            DegreesDecimalMinutesCoordinateFormat(),
+            DegreesMinutesSecondsCoordinateFormat(),
+            UTMCoordinateFormat(),
+            MGRSCoordinateFormat(),
+            USNGCoordinateFormat(),
+            OSGBCoordinateFormat()
+        )
+
+        fun parse(
+            location: String,
+            formats: List<CoordinateFormat> = defaultFormats
+        ): Coordinate? {
+            return formats.firstNotNullOfOrNull { it.parse(location) }
         }
 
         internal fun isValidLongitude(longitude: Double): Boolean {

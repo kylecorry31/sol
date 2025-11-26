@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.geography
 
-import com.kylecorry.sol.science.geography.CoordinateFormatter.parse
 import com.kylecorry.sol.science.geography.formatting.*
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
