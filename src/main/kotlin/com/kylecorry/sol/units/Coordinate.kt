@@ -97,5 +97,13 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
             return Coordinate(latitude.coerceIn(-90.0, 90.0), toLongitude(longitude))
         }
 
+        internal fun isValidLongitude(longitude: Double): Boolean {
+            return longitude.absoluteValue <= 180
+        }
+
+        internal fun isValidLatitude(latitude: Double): Boolean {
+            return latitude.absoluteValue <= 90
+        }
+
     }
 }

@@ -1,13 +1,7 @@
 package com.kylecorry.sol.science.geography
 
 import com.kylecorry.sol.science.geography.CoordinateFormatter.parse
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toDecimalDegrees
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toDegreeDecimalMinutes
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toDegreeMinutesSeconds
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toMGRS
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toOSGB
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toUSNG
-import com.kylecorry.sol.science.geography.CoordinateFormatter.toUTM
+import com.kylecorry.sol.science.geography.formatting.*
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import org.junit.jupiter.api.Assertions.*
@@ -21,40 +15,41 @@ class CoordinateFormatterTest {
 
     @Test
     fun toUTM() {
-        assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM())
-        assertEquals("14T 0328056E 5290773N", Coordinate(47.7474, -101.2939).toUTM())
-        assertEquals("13R 0393008E 3051634N", Coordinate(27.5844, -106.0840).toUTM())
-        assertEquals("21L 0359923E 9098523N", Coordinate(-8.1534, -58.2715).toUTM())
-        assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
-        assertEquals("34H 0674432E 6430470N", Coordinate(-32.2489, 22.8516).toUTM())
-        assertEquals("34D 0528288E 2071725N", Coordinate(-71.4545, 21.7969).toUTM())
-        assertEquals("40X 0545559E 9051365N", Coordinate(81.5113, 59.7656).toUTM())
-        assertEquals("17M 0784692E 9999203N", Coordinate(-0.0072, -78.4424).toUTM())
-        assertEquals("09E 0353004E 3573063N", Coordinate(-57.9598, -131.4844).toUTM())
+        val format = UTMCoordinateFormat()
+        assertEquals("19T 0282888E 4674752N", format.toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("14T 0328056E 5290773N", format.toString(Coordinate(47.7474, -101.2939)))
+        assertEquals("13R 0393008E 3051634N", format.toString(Coordinate(27.5844, -106.0840)))
+        assertEquals("21L 0359923E 9098523N", format.toString(Coordinate(-8.1534, -58.2715)))
+        assertEquals("34H 0674432E 6430470N", format.toString(Coordinate(-32.2489, 22.8516)))
+        assertEquals("34H 0674432E 6430470N", format.toString(Coordinate(-32.2489, 22.8516)))
+        assertEquals("34D 0528288E 2071725N", format.toString(Coordinate(-71.4545, 21.7969)))
+        assertEquals("40X 0545559E 9051365N", format.toString(Coordinate(81.5113, 59.7656)))
+        assertEquals("17M 0784692E 9999203N", format.toString(Coordinate(-0.0072, -78.4424)))
+        assertEquals("09E 0353004E 3573063N", format.toString(Coordinate(-57.9598, -131.4844)))
 
         // Different precisions
-        assertEquals("19T 0282888E 4674752N", Coordinate(42.1948, -71.6295).toUTM(7))
-        assertEquals("19T 0282880E 4674750N", Coordinate(42.1948, -71.6295).toUTM(6))
-        assertEquals("19T 0282800E 4674700N", Coordinate(42.1948, -71.6295).toUTM(5))
-        assertEquals("19T 0282000E 4674000N", Coordinate(42.1948, -71.6295).toUTM(4))
-        assertEquals("19T 0280000E 4670000N", Coordinate(42.1948, -71.6295).toUTM(3))
-        assertEquals("19T 0200000E 4600000N", Coordinate(42.1948, -71.6295).toUTM(2))
-        assertEquals("19T 0000000E 4000000N", Coordinate(42.1948, -71.6295).toUTM(1))
+        assertEquals("19T 0282888E 4674752N", UTMCoordinateFormat(7).toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("19T 0282880E 4674750N", UTMCoordinateFormat(6).toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("19T 0282800E 4674700N", UTMCoordinateFormat(5).toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("19T 0282000E 4674000N", UTMCoordinateFormat(4).toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("19T 0280000E 4670000N", UTMCoordinateFormat(3).toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("19T 0200000E 4600000N", UTMCoordinateFormat(2).toString(Coordinate(42.1948, -71.6295)))
+        assertEquals("19T 0000000E 4000000N", UTMCoordinateFormat(1).toString(Coordinate(42.1948, -71.6295)))
 
         // Polar zones
-        assertEquals("A 1998062E 1888990N", Coordinate(-89.0, -179.0).toUTM())
-        assertEquals("A 1998062E 2111009N", Coordinate(-89.0, -1.0).toUTM())
-        assertEquals("B 2019279E 2109339N", Coordinate(-89.0, 10.0).toUTM())
-        assertEquals("B 2000000E 2111026N", Coordinate(-89.0, 0.0).toUTM())
-        assertEquals("B 2000000E 2000000N", Coordinate(-90.0, 0.0).toUTM())
-        assertEquals("B 2000000E 2000000N", Coordinate(-90.0, -80.0).toUTM())
+        assertEquals("A 1998062E 1888990N", format.toString(Coordinate(-89.0, -179.0)))
+        assertEquals("A 1998062E 2111009N", format.toString(Coordinate(-89.0, -1.0)))
+        assertEquals("B 2019279E 2109339N", format.toString(Coordinate(-89.0, 10.0)))
+        assertEquals("B 2000000E 2111026N", format.toString(Coordinate(-89.0, 0.0)))
+        assertEquals("B 2000000E 2000000N", format.toString(Coordinate(-90.0, 0.0)))
+        assertEquals("B 2000000E 2000000N", format.toString(Coordinate(-90.0, -80.0)))
 
-        assertEquals("Y 1998062E 2111009N", Coordinate(89.0, -179.0).toUTM())
-        assertEquals("Y 1998062E 1888990N", Coordinate(89.0, -1.0).toUTM())
-        assertEquals("Z 2019279E 1890660N", Coordinate(89.0, 10.0).toUTM())
-        assertEquals("Z 2000000E 1888973N", Coordinate(89.0, 0.0).toUTM())
-        assertEquals("Z 2000000E 2000000N", Coordinate(90.0, 0.0).toUTM())
-        assertEquals("Z 2000000E 2000000N", Coordinate(90.0, -80.0).toUTM())
+        assertEquals("Y 1998062E 2111009N", format.toString(Coordinate(89.0, -179.0)))
+        assertEquals("Y 1998062E 1888990N", format.toString(Coordinate(89.0, -1.0)))
+        assertEquals("Z 2019279E 1890660N", format.toString(Coordinate(89.0, 10.0)))
+        assertEquals("Z 2000000E 1888973N", format.toString(Coordinate(89.0, 0.0)))
+        assertEquals("Z 2000000E 2000000N", format.toString(Coordinate(90.0, 0.0)))
+        assertEquals("Z 2000000E 2000000N", format.toString(Coordinate(90.0, -80.0)))
     }
 
     @Test
@@ -72,37 +67,37 @@ class CoordinateFormatterTest {
     @ParameterizedTest
     @MethodSource("provideDDM")
     fun toDDM(expected: String, coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, coordinate.toDegreeDecimalMinutes(precision))
+        assertEquals(expected, DegreesDecimalMinutesCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideDMS")
     fun toDMS(expected: String, coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, coordinate.toDegreeMinutesSeconds(precision))
+        assertEquals(expected, DegreesMinutesSecondsCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideDD")
     fun toDD(expected: String, coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, coordinate.toDecimalDegrees(precision))
+        assertEquals(expected, DecimalDegreesCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideMGRS")
     fun toMGRS(expected: String, coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, coordinate.toMGRS(precision))
+        assertEquals(expected, MGRSCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideUSNG")
     fun toUSNG(expected: String, coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, coordinate.toUSNG(precision))
+        assertEquals(expected, USNGCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideOSGB")
     fun toOSGB(expected: String, coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, coordinate.toOSGB(precision))
+        assertEquals(expected, OSGBCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
