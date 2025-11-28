@@ -1,17 +1,20 @@
 package com.kylecorry.sol.math.interpolation
 
 import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.shared.Executor
+import com.kylecorry.sol.shared.SequentialExecutor
 import kotlin.math.max
 import kotlin.math.min
 
 internal object MarchingSquares {
 
-    fun <T> getIsolineCalculators(
+    fun <T> getIsoline(
         grid: List<List<Pair<T, Float>>>,
         threshold: Float,
+        executor: Executor = SequentialExecutor(),
         interpolator: (percent: Float, a: T, b: T) -> T
-    ): List<() -> List<IsolineSegment<T>>> {
-        val squares = mutableListOf<List<Pair<T, Float>>>()
+    ): List<IsolineSegment<T>> {
+        val calculators = mutableListOf<() -> List<IsolineSegment<T>>>()
         for (i in 0 until grid.size - 1) {
             for (j in 0 until grid[i].size - 1) {
                 val square = listOf(
@@ -20,24 +23,13 @@ internal object MarchingSquares {
                     grid[i + 1][j + 1],
                     grid[i + 1][j]
                 )
-                squares.add(square)
+                calculators.add {
+                    marchingSquares(square, threshold, interpolator)
+                }
             }
         }
 
-        return squares.map { square ->
-            {
-                marchingSquares(square, threshold, interpolator)
-            }
-        }
-    }
-
-    fun <T> getIsoline(
-        grid: List<List<Pair<T, Float>>>,
-        threshold: Float,
-        interpolator: (percent: Float, a: T, b: T) -> T
-    ): List<IsolineSegment<T>> {
-        val calculators = getIsolineCalculators(grid, threshold, interpolator)
-        return calculators.flatMap { it() }
+        return executor.map(calculators).flatten()
     }
 
     private fun <T> marchingSquares(

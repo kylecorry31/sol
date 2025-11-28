@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.interpolation
 
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.shared.Executor
+import com.kylecorry.sol.shared.SequentialExecutor
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -135,36 +137,20 @@ object Interpolation {
      * Interpolates the isoline for a grid of values using the Marching Squares algorithm.
      * @param grid A 2D grid of point to value pairs. The points should be equidistant. It is recommended to supply 1 extra row and column on each side of the grid to ensure the isoline extends to the edges.
      * @param threshold The value to use as the isoline threshold.
+     * @param executor The executor of the isoline calculations to optionally process in parallel. Defaults to sequential processing.
      * @param interpolator A function that takes a percentage (0 to 1) and two values (percent from a to b), and returns the interpolated point.
      * @return A list of isoline segments.
      */
     fun <T> getIsoline(
         grid: List<List<Pair<T, Float>>>,
         threshold: Float,
+        executor: Executor = SequentialExecutor(),
         interpolator: (percent: Float, a: T, b: T) -> T
     ): List<IsolineSegment<T>> {
         return MarchingSquares.getIsoline(
             grid,
             threshold,
-            interpolator
-        )
-    }
-
-    /**
-     * Interpolates the isoline for a grid of values using the Marching Squares algorithm. This function returns the calculators so it can be calculated in parallel.
-     * @param grid A 2D grid of point to value pairs. The points should be equidistant. It is recommended to supply 1 extra row and column on each side of the grid to ensure the isoline extends to the edges.
-     * @param threshold The value to use as the isoline threshold.
-     * @param interpolator A function that takes a percentage (0 to 1) and two values (percent from a to b), and returns the interpolated point.
-     * @return A list of isoline segment calculators.
-     */
-    fun <T> getIsolineCalculators(
-        grid: List<List<Pair<T, Float>>>,
-        threshold: Float,
-        interpolator: (percent: Float, a: T, b: T) -> T
-    ): List<() -> List<IsolineSegment<T>>> {
-        return MarchingSquares.getIsolineCalculators(
-            grid,
-            threshold,
+            executor,
             interpolator
         )
     }
