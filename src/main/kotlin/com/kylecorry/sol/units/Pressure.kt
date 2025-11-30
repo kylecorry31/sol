@@ -14,11 +14,15 @@ value class Pressure private constructor(private val measure: Measure) : Compara
         }
         val hpa = value * units.hpa
         val newPressure = hpa / toUnits.hpa
-        return from(newPressure, toUnits)
+        return from(newPressure.toFloat(), toUnits)
     }
 
     fun hpa(): Pressure {
         return convertTo(PressureUnits.Hpa)
+    }
+
+    override fun toString(): String {
+        return "$value $units"
     }
 
     override fun compareTo(other: Pressure): Int {

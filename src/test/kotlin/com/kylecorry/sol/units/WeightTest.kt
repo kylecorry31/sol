@@ -12,7 +12,7 @@ internal class WeightTest {
     fun convertTo(weight: Float, weightUnits: WeightUnits, expected: Float, expectedUnits: WeightUnits) {
         val converted = Weight.from(weight, weightUnits).convertTo(expectedUnits)
         assertEquals(expectedUnits, converted.units)
-        assertEquals(expected, converted.value, 0.0001f)
+        assertEquals(expected, converted.value, 0.00001f)
     }
 
     @ParameterizedTest
@@ -26,7 +26,7 @@ internal class WeightTest {
     ) {
         val multiplied = Weight.from(weight, units) * amount
         assertEquals(expectedUnits, multiplied.units)
-        assertEquals(expected, multiplied.value, 0.0001f)
+        assertEquals(expected, multiplied.value, 0.00001f)
     }
 
     @ParameterizedTest
@@ -41,7 +41,7 @@ internal class WeightTest {
     ) {
         val added = Weight.from(weight, units) + Weight.from(other, otherUnits)
         assertEquals(expectedUnits, added.units)
-        assertEquals(expected, added.value, 0.0001f)
+        assertEquals(expected, added.value, 0.00001f)
     }
 
     companion object {
@@ -55,6 +55,7 @@ internal class WeightTest {
                 Arguments.of(4f, WeightUnits.Grams, 0.141096f, WeightUnits.Ounces),
                 Arguments.of(4f, WeightUnits.Milligrams, 0.004f, WeightUnits.Grams),
                 Arguments.of(1f, WeightUnits.Grains, 64.79891f, WeightUnits.Milligrams),
+                Arguments.of(1f, WeightUnits.Grams, 1000f, WeightUnits.Milligrams),
             )
         }
 

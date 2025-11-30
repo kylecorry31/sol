@@ -13,7 +13,11 @@ value class Energy private constructor(private val measure: Measure) {
             return this
         }
         val joules = value * units.joules
-        return from(joules / newUnits.joules, newUnits)
+        return from((joules / newUnits.joules).toFloat(), newUnits)
+    }
+
+    override fun toString(): String {
+        return "$value $units"
     }
 
     fun joules(): Energy {

@@ -12,7 +12,11 @@ value class Speed private constructor(private val measure: Measure) {
     fun convertTo(newDistanceUnits: DistanceUnits, newTimeUnits: TimeUnits): Speed {
         val distance = Distance.from(speed, distanceUnits).convertTo(newDistanceUnits).value
         val newSpeed = (distance / timeUnits.seconds) * newTimeUnits.seconds
-        return from(newSpeed, newDistanceUnits, newTimeUnits)
+        return from(newSpeed.toFloat(), newDistanceUnits, newTimeUnits)
+    }
+
+    override fun toString(): String {
+        return "$speed $distanceUnits / $timeUnits"
     }
 
     companion object {

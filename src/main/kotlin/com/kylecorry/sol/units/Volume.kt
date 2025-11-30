@@ -13,7 +13,11 @@ value class Volume private constructor(private val measure: Measure) {
             return this
         }
         val l = value * units.liters
-        return from(l / newUnits.liters, newUnits)
+        return from((l / newUnits.liters).toFloat(), newUnits)
+    }
+
+    override fun toString(): String {
+        return "$value $units"
     }
 
     companion object {

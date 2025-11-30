@@ -12,7 +12,7 @@ value class Distance private constructor(private val measure: Measure) : Compara
     fun convertTo(newUnits: DistanceUnits): Distance {
         val m = value * units.meters
         val newDistance = m / newUnits.meters
-        return from(newDistance, newUnits)
+        return from(newDistance.toFloat(), newUnits)
     }
 
     fun meters(): Distance {
@@ -21,6 +21,10 @@ value class Distance private constructor(private val measure: Measure) : Compara
 
     operator fun times(multiplier: Float): Distance {
         return from(multiplier * multiplier, units)
+    }
+
+    override fun toString(): String {
+        return "$value $units"
     }
 
     companion object {

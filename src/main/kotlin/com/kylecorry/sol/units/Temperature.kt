@@ -14,20 +14,24 @@ value class Temperature private constructor(private val measure: Measure) : Comp
         }
 
         val c = when (units) {
-            TemperatureUnits.C -> value
-            TemperatureUnits.F -> (value - 32) * 5 / 9
+            TemperatureUnits.Celsius -> value.toDouble()
+            TemperatureUnits.Fahrenheit -> (value - 32) * 5 / 9.0
         }
 
         val newTemp = when (toUnits) {
-            TemperatureUnits.C -> c
-            TemperatureUnits.F -> (c * 9 / 5) + 32
+            TemperatureUnits.Celsius -> c
+            TemperatureUnits.Fahrenheit -> (c * 9 / 5.0) + 32
         }
 
-        return from(newTemp, toUnits)
+        return from(newTemp.toFloat(), toUnits)
     }
 
     fun celsius(): Temperature {
-        return convertTo(TemperatureUnits.C)
+        return convertTo(TemperatureUnits.Celsius)
+    }
+
+    override fun toString(): String {
+        return "$value $units"
     }
 
     override fun compareTo(other: Temperature): Int {
@@ -42,11 +46,11 @@ value class Temperature private constructor(private val measure: Measure) : Comp
         }
 
         fun celsius(temperature: Float): Temperature {
-            return from(temperature, TemperatureUnits.C)
+            return from(temperature, TemperatureUnits.Celsius)
         }
 
         fun fahrenheit(temperature: Float): Temperature {
-            return from(temperature, TemperatureUnits.F)
+            return from(temperature, TemperatureUnits.Fahrenheit)
         }
     }
 }

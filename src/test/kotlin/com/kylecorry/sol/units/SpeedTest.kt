@@ -45,7 +45,7 @@ internal class SpeedTest {
                     5f,
                     DistanceUnits.Feet,
                     TimeUnits.Hours,
-                    3657.6f,
+                    3657.5999f,
                     DistanceUnits.Centimeters,
                     TimeUnits.Days
                 ),

@@ -1,5 +1,6 @@
 package com.kylecorry.sol.units
 
 enum class TemperatureUnits(val id: Int) {
-    F(1), C(2)
+    Fahrenheit(1),
+    Celsius(2)
 }

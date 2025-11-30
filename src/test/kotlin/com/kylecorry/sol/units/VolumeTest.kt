@@ -26,7 +26,7 @@ internal class VolumeTest {
                 ),
                 Arguments.of(
                     3f, VolumeUnits.USGallons,
-                    11.3562f, VolumeUnits.Liters
+                    11.35623f, VolumeUnits.Liters
                 ),
                 Arguments.of(
                     3f, VolumeUnits.ImperialGallons,

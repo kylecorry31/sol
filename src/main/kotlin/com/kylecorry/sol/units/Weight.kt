@@ -15,7 +15,7 @@ value class Weight private constructor(private val measure: Measure) {
             return this
         }
         val grams = value * units.grams
-        return from(grams / newUnits.grams, newUnits)
+        return from((grams / newUnits.grams).toFloat(), newUnits)
     }
 
     operator fun plus(other: Weight): Weight {
@@ -25,6 +25,10 @@ value class Weight private constructor(private val measure: Measure) {
 
     operator fun times(amount: Number): Weight {
         return from(value * amount.toFloat().absoluteValue, units)
+    }
+
+    override fun toString(): String {
+        return "$value $units"
     }
 
     companion object {
