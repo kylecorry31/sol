@@ -82,3 +82,4 @@ temp/
 # Custom
 .idea/markdown.xml
 .idea/AndroidProjectSystem.xml
+/.vscode/tasks.json

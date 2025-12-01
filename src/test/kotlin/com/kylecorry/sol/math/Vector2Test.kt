@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
@@ -12,7 +12,12 @@ internal class Vector2Test {
 
     @ParameterizedTest
     @MethodSource("provideRotation")
-    fun rotate(vector: Vector2, angle: Float, origin: Vector2, expected: Vector2) {
+    fun rotate(
+        @ConvertWith(Vector2LongConverter::class) vector: Vector2,
+        angle: Float,
+        @ConvertWith(Vector2LongConverter::class) origin: Vector2,
+        @ConvertWith(Vector2LongConverter::class) expected: Vector2
+    ) {
         val rotated = vector.rotate(angle, origin)
 
         assertEquals(expected.x, rotated.x, 0.0001f)

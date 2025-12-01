@@ -1,8 +1,10 @@
 package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.Vector2LongConverter
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -22,10 +24,10 @@ internal class IntersectionMathTest {
     @ParameterizedTest
     @MethodSource("providePointsRectIntersection")
     fun getIntersectionPointsRect(
-        a: Vector2,
-        b: Vector2,
+        @ConvertWith(Vector2LongConverter::class) a: Vector2,
+        @ConvertWith(Vector2LongConverter::class) b: Vector2,
         rect: Rectangle,
-        expected: List<Vector2>
+        @ConvertWith(Vector2LongConverter::class) expected: List<Vector2>
     ) {
         val intersection = IntersectionMath.getIntersection(a, b, rect)
         assertEquals(expected.size, intersection.size)

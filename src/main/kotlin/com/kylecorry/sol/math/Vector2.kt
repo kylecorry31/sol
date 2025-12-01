@@ -7,7 +7,16 @@ import com.kylecorry.sol.math.SolMath.toDegrees
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
-data class Vector2(val x: Float, val y: Float) {
+@JvmInline
+value class Vector2 internal constructor(internal val packed: Long) {
+
+    constructor(x: Float, y: Float) : this(packXY(x, y))
+
+    val x: Float
+        get() = Float.fromBits(((packed ushr 32) and 0xFFFFFFFFL).toInt())
+
+    val y: Float
+        get() = Float.fromBits((packed and 0xFFFFFFFFL).toInt())
 
     operator fun minus(other: Vector2): Vector2 {
         return Vector2(x - other.x, y - other.y)
@@ -66,8 +75,25 @@ data class Vector2(val x: Float, val y: Float) {
         )
     }
 
-    companion object {
-        val zero = Vector2(0f, 0f)
+    fun copy(x: Float = this.x, y: Float = this.y): Vector2 {
+        return Vector2(x, y)
     }
 
+    override fun toString(): String {
+        return "Vector2(x=$x, y=$y)"
+    }
+
+    companion object {
+        val zero = from(0f, 0f)
+
+        fun from(x: Float, y: Float): Vector2 {
+            return Vector2(packXY(x, y))
+        }
+    }
+}
+
+private fun packXY(x: Float, y: Float): Long {
+    val xb = x.toBits()
+    val yb = y.toBits()
+    return ((xb.toLong() and 0xFFFFFFFFL) shl 32) or (yb.toLong() and 0xFFFFFFFFL)
 }
