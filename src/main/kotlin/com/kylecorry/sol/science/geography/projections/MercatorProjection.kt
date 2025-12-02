@@ -23,7 +23,8 @@ class MercatorProjection(private val scale: Float = 1f) : IMapProjection {
 
     override fun toPixels(location: Coordinate): Vector2 {
         val x = scale * location.longitude.toRadians()
-        val y = 0.5 * ln((1 + sinDegrees(location.latitude)) / (1 - sinDegrees(location.latitude)))
+        val sinLat = sinDegrees(location.latitude)
+        val y = 0.5 * ln((1 + sinLat) / (1 - sinLat))
         return Vector2(x.toFloat(), y.toFloat())
     }
 
