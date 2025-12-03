@@ -6,12 +6,29 @@ import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.science.geography.formatting.*
+import com.kylecorry.sol.shared.FixedPoint32
 import kotlin.math.*
 
 
-data class Coordinate(val latitude: Double, val longitude: Double) {
+@JvmInline
+value class Coordinate internal constructor(internal val bits: Long) {
+    constructor (latitude: Double, longitude: Double) : this(
+        (
+                (FixedPoint32(
+                    latitude.coerceIn(-90.0, 90.0),
+                    7
+                ).bits.toLong() shl 32) or (FixedPoint32(toLongitude(longitude), 7).bits.toLong() and 0xFFFFFFFFL)
+        )
+    )
 
-    val isNorthernHemisphere = latitude >= 0
+    val latitude: Double
+        get() = FixedPoint32((bits ushr 32).toInt()).toDouble(7)
+
+    val longitude: Double
+        get() = FixedPoint32((bits and 0xFFFFFFFFL).toInt()).toDouble(7)
+
+    val isNorthernHemisphere: Boolean
+        get() = latitude >= 0
 
     val antipode: Coordinate
         get() = Coordinate(-latitude, toLongitude(longitude + 180))

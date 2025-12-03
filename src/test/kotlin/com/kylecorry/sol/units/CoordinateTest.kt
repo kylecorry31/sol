@@ -4,6 +4,8 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class CoordinateTest {
 
@@ -35,6 +37,24 @@ class CoordinateTest {
         val actual = start.plus(distance, bearing)
         assertEquals(expected.latitude, actual.latitude, 0.01)
         assertEquals(expected.longitude, actual.longitude, 0.01)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 0.0, 0.0, 0.0",
+        "1.0, 1.0, 1.0, 1.0",
+        "90.0, 180.0, 90.0, 180.0",
+        "-90.0, -180.0, -90.0, -180.0",
+        "89.9999999, 179.9999999, 89.9999999, 179.9999999",
+        "-89.9999999, -179.9999999, -89.9999999, -179.9999999",
+        "89.5555555, 179.5555555, 89.5555555, 179.5555555",
+        "-89.5555555, -179.5555555, -89.5555555, -179.5555555",
+        "1.23456789, 0.12345671, 1.2345679, 0.1234567",
+    )
+    fun properlyPacksIntoALong(inputLatitude: Double, inputLongitude: Double, outputLatitude: Double, outputLongitude: Double) {
+        val coordinate = Coordinate(inputLatitude, inputLongitude)
+        assertEquals(outputLatitude, coordinate.latitude)
+        assertEquals(outputLongitude, coordinate.longitude)
     }
 
 }

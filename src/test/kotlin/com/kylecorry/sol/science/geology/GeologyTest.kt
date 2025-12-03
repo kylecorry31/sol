@@ -11,6 +11,7 @@ import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
@@ -198,7 +199,12 @@ internal class GeologyTest {
 
     @ParameterizedTest
     @MethodSource("provideCrossTrack")
-    fun crossTrackDistance(point: Coordinate, start: Coordinate, end: Coordinate, expected: Float) {
+    fun crossTrackDistance(
+        @ConvertWith(CoordinateLongConverter::class) point: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) start: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) end: Coordinate,
+        expected: Float
+    ) {
         val actual = Geology.getCrossTrackDistance(point, start, end)
 
         assertThat(actual).isCloseTo(Distance.meters(expected), 1f)
@@ -257,9 +263,9 @@ internal class GeologyTest {
     @ParameterizedTest
     @MethodSource("provideAlongTrack")
     fun getAlongTrackDistance(
-        point: Coordinate,
-        start: Coordinate,
-        end: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) point: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) start: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) end: Coordinate,
         expected: Float
     ) {
         val actual = Geology.getAlongTrackDistance(point, start, end)
@@ -269,10 +275,10 @@ internal class GeologyTest {
     @ParameterizedTest
     @MethodSource("provideNearestPoint")
     fun getNearestPoint(
-        point: Coordinate,
-        start: Coordinate,
-        end: Coordinate,
-        expected: Coordinate
+        @ConvertWith(CoordinateLongConverter::class) point: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) start: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) end: Coordinate,
+        @ConvertWith(CoordinateLongConverter::class) expected: Coordinate
     ) {
         val actual = Geology.getNearestPoint(point, start, end)
         assertThat(actual).isCloseTo(expected, 1f)

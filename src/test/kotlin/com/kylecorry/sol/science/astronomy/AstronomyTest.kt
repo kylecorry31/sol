@@ -15,6 +15,7 @@ import com.kylecorry.sol.tests.assertDuration
 import com.kylecorry.sol.tests.parametrized
 import com.kylecorry.sol.time.Time.duration
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.CoordinateLongConverter
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import org.junit.jupiter.api.Assertions.*
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
@@ -671,7 +673,11 @@ class AstronomyTest {
 
     @ParameterizedTest
     @MethodSource("provideDayLengths")
-    fun getDaylightLength(date: ZonedDateTime, location: Coordinate, expected: Duration) {
+    fun getDaylightLength(
+        date: ZonedDateTime,
+        @ConvertWith(CoordinateLongConverter::class) location: Coordinate,
+        expected: Duration
+    ) {
         val length = Astronomy.getDaylightLength(date, location)
         assertDuration(expected, length, Duration.ofMinutes(1))
     }
@@ -903,7 +909,8 @@ class AstronomyTest {
     fun plateSolve() {
         val time = ZonedDateTime.of(2024, 12, 1, 0, 0, 0, 0, ZoneId.of("UTC"))
         val location = Coordinate(42.0, -72.0)
-        val actualStars = CONSTELLATIONS.first { it.name == "Orion" }.starEdges.flatMap { listOf(it.first, it.second) }.distinct()
+        val actualStars =
+            CONSTELLATIONS.first { it.name == "Orion" }.starEdges.flatMap { listOf(it.first, it.second) }.distinct()
         val readings = actualStars.map {
             AltitudeAzimuth(
                 Astronomy.getStarAltitude(it, time, location, true),

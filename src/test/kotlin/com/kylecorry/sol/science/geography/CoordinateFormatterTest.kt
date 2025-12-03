@@ -3,9 +3,11 @@ package com.kylecorry.sol.science.geography
 import com.kylecorry.sol.science.geography.formatting.*
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.CoordinateLongConverter
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -65,43 +67,43 @@ class CoordinateFormatterTest {
 
     @ParameterizedTest
     @MethodSource("provideDDM")
-    fun toDDM(expected: String, coordinate: Coordinate, precision: Int) {
+    fun toDDM(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
         assertEquals(expected, DegreesDecimalMinutesCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideDMS")
-    fun toDMS(expected: String, coordinate: Coordinate, precision: Int) {
+    fun toDMS(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
         assertEquals(expected, DegreesMinutesSecondsCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideDD")
-    fun toDD(expected: String, coordinate: Coordinate, precision: Int) {
+    fun toDD(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
         assertEquals(expected, DecimalDegreesCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideMGRS")
-    fun toMGRS(expected: String, coordinate: Coordinate, precision: Int) {
+    fun toMGRS(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
         assertEquals(expected, MGRSCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideUSNG")
-    fun toUSNG(expected: String, coordinate: Coordinate, precision: Int) {
+    fun toUSNG(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
         assertEquals(expected, USNGCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideOSGB")
-    fun toOSGB(expected: String, coordinate: Coordinate, precision: Int) {
+    fun toOSGB(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
         assertEquals(expected, OSGBCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideLocationStrings")
-    fun parse(locationString: String, expected: Coordinate?) {
+    fun parse(locationString: String, @ConvertWith(CoordinateLongConverter::class) expected: Coordinate?) {
         assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.001)
     }
 

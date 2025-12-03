@@ -4,8 +4,10 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.CoordinateLongConverter
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -14,13 +16,13 @@ internal class CoordinateBoundsTest {
 
     @ParameterizedTest
     @MethodSource("provideContains")
-    fun contains(bounds: CoordinateBounds, coordinate: Coordinate, expected: Boolean) {
+    fun contains(bounds: CoordinateBounds, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, expected: Boolean) {
         assertThat(bounds.contains(coordinate)).isEqualTo(expected)
     }
 
     @ParameterizedTest
     @MethodSource("provideCenter")
-    fun center(bounds: CoordinateBounds, expected: Coordinate) {
+    fun center(bounds: CoordinateBounds, @ConvertWith(CoordinateLongConverter::class) expected: Coordinate) {
         assertThat(bounds.center).isCloseTo(expected, 1f)
     }
 
