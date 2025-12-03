@@ -27,6 +27,10 @@ class AzimuthalEquidistantProjection(
         return Vector2(centerPixel.x + xDiff, centerPixel.y + if (isYFlipped) -1 * yDiff else yDiff)
     }
 
+    override fun toPixels(latitude: Double, longitude: Double): Vector2 {
+        return toPixels(Coordinate(latitude, longitude))
+    }
+
     override fun toCoordinate(pixel: Vector2): Coordinate {
         val angle = Trigonometry.toUnitAngle(
             atan2(

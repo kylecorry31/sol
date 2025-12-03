@@ -19,8 +19,12 @@ class CylindricalEquidistantProjection(private val scale: Float = 1f) : IMapProj
     }
 
     override fun toPixels(location: Coordinate): Vector2 {
-        val x = location.longitude.toRadians() * scale
-        val y = location.latitude.toRadians()
+        return toPixels(location.latitude, location.longitude)
+    }
+
+    override fun toPixels(latitude: Double, longitude: Double): Vector2 {
+        val x = longitude.toRadians() * scale
+        val y = latitude.toRadians()
         return Vector2(x.toFloat(), y.toFloat())
     }
 
