@@ -107,6 +107,28 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
         return union.widthDegrees() <= (widthDegrees() + other.widthDegrees())
     }
 
+    fun grow(percent: Float): CoordinateBounds {
+        val latDelta = heightDegrees() * percent
+        val lonDelta = widthDegrees() * percent
+
+        val newNorth = (north + latDelta).coerceAtMost(90.0)
+        val newSouth = (south - latDelta).coerceAtLeast(-90.0)
+
+        val newWest = if (containsAllLongitudes()) {
+            world.west
+        } else {
+            Coordinate.toLongitude(west - lonDelta)
+        }
+
+        val newEast = if (containsAllLongitudes()) {
+            world.east
+        } else {
+            Coordinate.toLongitude(east + lonDelta)
+        }
+
+        return CoordinateBounds(newNorth, newEast, newSouth, newWest)
+    }
+
     companion object {
 
         val empty = CoordinateBounds(0.0, 0.0, 0.0, 0.0)
@@ -125,7 +147,7 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
             return CoordinateBounds(north, east, south, west)
         }
 
-        fun from(points: List<Coordinate>): CoordinateBounds {
+        fun from(points: List<Coordinate>, checkForFullWorld: Boolean = true): CoordinateBounds {
             val west = getWestLongitudeBound(points) ?: return empty
             val east = getEastLongitudeBound(points) ?: return empty
             val north = getNorthLatitudeBound(points) ?: return empty
@@ -135,7 +157,12 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
             val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
 
             // This is to support the case where the whole map is shown
-            if (isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(maxLongitude ?: 0.0, 180.0, 0.001)) {
+            if (checkForFullWorld && isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(
+                    maxLongitude ?: 0.0,
+                    180.0,
+                    0.001
+                )
+            ) {
                 return CoordinateBounds(north, maxLongitude!!, south, minLongitude!!)
             }
 

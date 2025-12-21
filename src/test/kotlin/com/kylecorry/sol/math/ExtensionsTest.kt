@@ -3,6 +3,7 @@ package com.kylecorry.sol.math
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -26,6 +27,70 @@ class ExtensionsTest {
     fun split(values: List<Int>, percent: Float, expected: Pair<List<Int>, List<Int>>) {
         val split = values.split(percent)
         assertEquals(expected, split)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 0",
+        "1.0, 1",
+        "1.2, 1",
+        "1.999, 1",
+        "-0.0, 0",
+        "-1.0, -1",
+        "-1.2, -2",
+        "-1.001, -2",
+    )
+    fun floatFloorToInt(value: Float, expected: Int) {
+        val actual = value.floorToInt()
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 0",
+        "1.0, 1",
+        "1.2, 2",
+        "1.001, 2",
+        "-0.0, 0",
+        "-1.0, -1",
+        "-1.2, -1",
+        "-1.999, -1",
+    )
+    fun floatCeilToInt(value: Float, expected: Int) {
+        val actual = value.ceilToInt()
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 0",
+        "1.0, 1",
+        "1.2, 1",
+        "1.999, 1",
+        "-0.0, 0",
+        "-1.0, -1",
+        "-1.2, -2",
+        "-1.001, -2",
+    )
+    fun doubleFloorToInt(value: Double, expected: Int) {
+        val actual = value.floorToInt()
+        assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 0",
+        "1.0, 1",
+        "1.2, 2",
+        "1.001, 2",
+        "-0.0, 0",
+        "-1.0, -1",
+        "-1.2, -1",
+        "-1.999, -1",
+    )
+    fun doubleCeilToInt(value: Double, expected: Int) {
+        val actual = value.ceilToInt()
+        assertEquals(expected, actual)
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.geology
 
 import assertk.assertThat
+import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.Coordinate
@@ -33,6 +34,31 @@ internal class CoordinateBoundsTest {
     ) {
         assertThat(bounds1.intersects(bounds2), name = "intersects(b1=$bounds1, b2=$bounds2)").isEqualTo(expected)
         assertThat(bounds2.intersects(bounds1), name = "intersects(b1=$bounds2, b2=$bounds1)").isEqualTo(expected)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideFrom")
+    fun from(
+        points: List<Coordinate>,
+        checkForFullWorld: Boolean,
+        expected: CoordinateBounds
+    ) {
+        val bounds = CoordinateBounds.from(points, checkForFullWorld)
+        assertThat(bounds.north, name = "north").isCloseTo(expected.north, 0.00001)
+        assertThat(bounds.south, name = "south").isCloseTo(expected.south, 0.00001)
+        assertThat(bounds.east, name = "east").isCloseTo(expected.east, 0.00001)
+        assertThat(bounds.west, name = "west").isCloseTo(expected.west, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideGrow")
+    fun grow(bounds: CoordinateBounds, percent: Float, expected: CoordinateBounds) {
+        val grown = bounds.grow(percent)
+        assertThat(grown.north, name = "north").isCloseTo(expected.north, 0.00001)
+        assertThat(grown.south, name = "south").isCloseTo(expected.south, 0.00001)
+        // Longitudes may wrap; compare width and center longitude for robustness
+        assertThat(grown.widthDegrees(), name = "widthDegrees").isCloseTo(expected.widthDegrees(), 0.00001)
+        assertThat(grown.center.longitude, name = "centerLongitude").isCloseTo(expected.center.longitude, 0.00001)
     }
 
     companion object {
@@ -224,6 +250,151 @@ internal class CoordinateBoundsTest {
                     CoordinateBounds(5.0, 180.0, -5.0, 179.99997),
                     true
                 )
+            )
+        }
+
+        @JvmStatic
+        fun provideGrow(): Stream<Arguments> {
+            return Stream.of(
+                // Non-wrap rectangle, 10x10 -> grow 10% => lat +/-1, lon +/-1
+                Arguments.of(
+                    CoordinateBounds(10.0, 10.0, 0.0, 0.0),
+                    0.1f,
+                    CoordinateBounds(11.0, 11.0, -1.0, -1.0)
+                ),
+
+                // Zero width rectangle, widthDegrees = 0 -> no horizontal change
+                Arguments.of(
+                    CoordinateBounds(10.0, 0.0, 0.0, 0.0),
+                    0.5f,
+                    CoordinateBounds(15.0, 0.0, -5.0, 0.0)
+                ),
+
+                // Zero height rectangle, heightDegrees = 0 -> no vertical change
+                Arguments.of(
+                    CoordinateBounds(0.0, 10.0, 0.0, 0.0),
+                    0.5f,
+                    CoordinateBounds(0.0, 15.0, 0.0, -5.0)
+                ),
+
+                // Wrap across antimeridian: west=170, east=-170, width=20 -> 50% grow => lon +/-10
+                Arguments.of(
+                    CoordinateBounds(10.0, -170.0, 0.0, 170.0),
+                    0.5f,
+                    CoordinateBounds(15.0, -160.0, -5.0, 160.0)
+                ),
+
+                // Near poles: clamp lat to +/-90
+                Arguments.of(
+                    CoordinateBounds(89.0, 10.0, 80.0, 0.0),
+                    0.5f, // height=9 -> latDelta=4.5 => north would be 93.5 -> clamp to 90
+                    CoordinateBounds(90.0, 15.0, 75.5, -5.0)
+                ),
+
+                // World bounds remain world after grow
+                Arguments.of(
+                    CoordinateBounds.world,
+                    0.25f,
+                    CoordinateBounds.world
+                ),
+
+                // Percent = 0 -> no change
+                Arguments.of(
+                    CoordinateBounds(10.0, 10.0, 0.0, 0.0),
+                    0.0f,
+                    CoordinateBounds(10.0, 10.0, 0.0, 0.0)
+                ),
+
+                // East touches antimeridian, growth crosses it
+                Arguments.of(
+                    CoordinateBounds(10.0, 180.0, 0.0, 179.0),
+                    0.5f, // width=1 -> lonDelta=0.5; height=10 -> latDelta=5
+                    CoordinateBounds(15.0, -179.5, -5.0, 178.5)
+                ),
+
+                // West touches antimeridian, growth crosses it
+                Arguments.of(
+                    CoordinateBounds(10.0, -179.0, 0.0, -180.0),
+                    0.5f,
+                    CoordinateBounds(15.0, -178.5, -5.0, 179.5)
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun provideFrom(): Stream<Arguments> {
+            return Stream.of(
+                // Full world exact extremes with check enabled
+                Arguments.of(
+                    listOf(
+                        Coordinate(10.0, -180.0),
+                        Coordinate(10.0, 180.0),
+                        Coordinate(-10.0, -180.0),
+                        Coordinate(-10.0, 180.0)
+                    ),
+                    true,
+                    CoordinateBounds(10.0, 180.0, -10.0, -180.0)
+                ),
+
+                // Approximate extremes with check enabled: use provided min/max longitudes
+                Arguments.of(
+                    listOf(
+                        Coordinate(5.0, -180.0),
+                        Coordinate(5.0, 179.9995),
+                        Coordinate(-5.0, -180.0),
+                        Coordinate(-5.0, 179.9995)
+                    ),
+                    true,
+                    CoordinateBounds(5.0, 179.9995, -5.0, -180.0)
+                ),
+
+                // Approximate extremes with check disabled: minimal wrap across antimeridian
+                Arguments.of(
+                    listOf(
+                        Coordinate(5.0, -180.0),
+                        Coordinate(5.0, 179.9995),
+                        Coordinate(-5.0, -180.0),
+                        Coordinate(-5.0, 179.9995)
+                    ),
+                    false,
+                    CoordinateBounds(5.0, -180.0, -5.0, 179.9995)
+                ),
+
+                // Exact extremes with check disabled: zero width, center at -180
+                Arguments.of(
+                    listOf(
+                        Coordinate(10.0, -180.0),
+                        Coordinate(10.0, 180.0),
+                        Coordinate(-10.0, -180.0),
+                        Coordinate(-10.0, 180.0)
+                    ),
+                    false,
+                    CoordinateBounds(10.0, -180.0, -10.0, -180.0)
+                ),
+
+                // Non-wrap mid-longitudes: west=-20, east=30
+                Arguments.of(
+                    listOf(
+                        Coordinate(10.0, -20.0),
+                        Coordinate(10.0, 30.0),
+                        Coordinate(-10.0, -20.0),
+                        Coordinate(-10.0, 30.0)
+                    ),
+                    false,
+                    CoordinateBounds(10.0, 30.0, -10.0, -20.0)
+                ),
+
+                // Wrap across antimeridian: west=170, east=-170
+                Arguments.of(
+                    listOf(
+                        Coordinate(10.0, 170.0),
+                        Coordinate(10.0, -170.0),
+                        Coordinate(-10.0, 170.0),
+                        Coordinate(-10.0, -170.0)
+                    ),
+                    false,
+                    CoordinateBounds(10.0, -170.0, -10.0, 170.0)
+                ),
             )
         }
 

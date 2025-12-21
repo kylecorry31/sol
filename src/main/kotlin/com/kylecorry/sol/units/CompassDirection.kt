@@ -14,7 +14,7 @@ enum class CompassDirection(val azimuth: Float) {
 
     companion object {
         fun nearest(bearing: Float): CompassDirection {
-            val directions = CompassDirection.entries.toTypedArray()
+            val directions = CompassDirection.entries
             val rounded = bearing.roundNearest(45f) % 360
             return directions.firstOrNull { rounded == it.azimuth } ?: North
         }

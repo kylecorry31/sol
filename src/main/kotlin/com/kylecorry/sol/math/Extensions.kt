@@ -41,6 +41,14 @@ fun Float.ceilToInt(): Int {
     return ceil(this).toInt()
 }
 
+fun Double.floorToInt(): Int {
+    return floor(this).toInt()
+}
+
+fun Double.ceilToInt(): Int {
+    return ceil(this).toInt()
+}
+
 fun Float.safeRoundToInt(default: Int = 0): Int {
     return try {
         if (isNaN() || isInfinite()) {
