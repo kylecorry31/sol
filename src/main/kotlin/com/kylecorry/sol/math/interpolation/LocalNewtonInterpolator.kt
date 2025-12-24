@@ -17,8 +17,11 @@ class LocalNewtonInterpolator(points: List<Vector2>, private val order: Int) : I
             return 0f
         }
 
+        val requiredPoints = order + 1
+        val beforePoints = requiredPoints / 2
+
         val lastBeforeIndex = sortedPoints.indexOfLast { it.x <= x }
-        var startIndex = lastBeforeIndex - order + 1
+        var startIndex = lastBeforeIndex - beforePoints + 1
         var endIndex = startIndex + order
 
         if (startIndex < 0) {

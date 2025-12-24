@@ -47,7 +47,7 @@ class LocalNewtonInterpolatorTest {
         assertEquals(64f, interpolator.interpolate(4f))
         assertEquals(119f, interpolator.interpolate(5f))
         assertEquals(-0.25f, interpolator.interpolate(0.5f))
-        assertEquals(3.75f, interpolator.interpolate(1.5f))
+        assertEquals(3f, interpolator.interpolate(1.5f))
     }
 
     @Test
