@@ -72,17 +72,21 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
     }
 
     override fun contains(location: Coordinate): Boolean {
-        val containsLatitude = location.latitude in south..north
+        return containsLatitude(location.latitude) && containsLongitude(location.longitude)
+    }
 
-        val containsLongitude = if (containsAllLongitudes()) {
+    fun containsLatitude(latitude: Double): Boolean {
+        return latitude in south..north
+    }
+
+    fun containsLongitude(longitude: Double): Boolean {
+        return if (containsAllLongitudes()) {
             true
         } else if (east < 0 && west > 0) {
-            location.longitude >= west || location.longitude <= east
+            longitude >= west || longitude <= east
         } else {
-            location.longitude in west..east
+            longitude in west..east
         }
-
-        return containsLatitude && containsLongitude
     }
 
     fun contains(other: CoordinateBounds): Boolean {
@@ -92,7 +96,7 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
                 contains(other.southWest) &&
                 contains(other.center)
     }
-
+    
     fun intersects(other: CoordinateBounds): Boolean {
         if (south > other.north || other.south > north) {
             return false
