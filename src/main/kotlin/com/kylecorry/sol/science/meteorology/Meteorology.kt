@@ -226,7 +226,9 @@ object Meteorology : IWeatherService {
         val baseMeters = baseElevation.meters().value
         val destMeters = destElevation.meters().value
         val temp = celsius - 0.0065f * (destMeters - baseMeters)
-        return Temperature.celsius(temp).convertTo(temperature.units)
+        return Temperature
+            .celsius(temp.coerceAtLeast(Temperature.ABSOLUTE_ZERO.celsius().value))
+            .convertTo(temperature.units)
     }
 
     override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
@@ -98,6 +99,30 @@ class MeteorologyTest {
             ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault())
         )
         assertEquals(expected, season)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "20.0, 0.0, 0.0, 20.0",  // Same elevation - no change
+        "20.0, 0.0, 1000.0, 13.5",       // Higher elevation - should be colder
+        "0.0, 1000.0, 0.0, 6.5",         // Lower elevation - should be warmer
+        "-10.0, 0.0, 1000.0, -16.5",     // Higher elevation with negative base temp
+        "25.0, 100.0, 200.0, 24.35",     // Small elevation change
+        "15.0, 0.0, 5000.0, -17.5",      // Large elevation change
+        "0.0, 0.0, 50000.0, -273.15"     // Extreme elevation - clamped to absolute zero
+    )
+    fun temperatureAtElevation(
+        temperatureCelsius: Float,
+        baseElevationMeters: Float,
+        destElevationMeters: Float,
+        expectedCelsius: Float
+    ) {
+        val result = Meteorology.getTemperatureAtElevation(
+            Temperature.celsius(temperatureCelsius),
+            Distance.meters(baseElevationMeters),
+            Distance.meters(destElevationMeters)
+        )
+        assertEquals(expectedCelsius, result.celsius().value, 0.1f)
     }
 
     @Test
@@ -1417,6 +1442,7 @@ class MeteorologyTest {
                 Arguments.of(Season.Winter, true, LocalDate.of(2021, 12, 31)),
             )
         }
+
     }
 
 }

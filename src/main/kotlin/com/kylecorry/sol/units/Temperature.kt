@@ -41,6 +41,8 @@ value class Temperature private constructor(private val measure: Measure) : Comp
     companion object {
         val zero = celsius(0f)
 
+        val ABSOLUTE_ZERO = celsius(-273.15f)
+
         fun from(value: Float, unit: TemperatureUnits): Temperature {
             return Temperature(packMeasure(value, unit))
         }
