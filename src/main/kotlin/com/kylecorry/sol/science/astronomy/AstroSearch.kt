@@ -24,7 +24,7 @@ internal object AstroSearch {
         var left = range.start
         var right = range.end
         var iterations = 0
-        var wasFound = false
+        var wasFound = predicate(right)
 
         while (Duration.between(left, right) > precision && iterations < maxIterations) {
             val mid = left.plusMillis((right.toEpochMilli() - left.toEpochMilli()) / 2)
@@ -56,7 +56,7 @@ internal object AstroSearch {
         var left = range.start
         var right = range.end
         var iterations = 0
-        var wasFound = false
+        var wasFound = predicate(left)
 
         while (Duration.between(left, right) > precision && iterations < maxIterations) {
             val mid = left.plusMillis((right.toEpochMilli() - left.toEpochMilli()) / 2)
