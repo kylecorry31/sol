@@ -104,43 +104,43 @@ class InterpolationTest {
     @Test
     fun getMultiplesBetweenFloat() {
         val result1 = Interpolation.getMultiplesBetween(0f, 10f, 2f)
-        assertEquals(listOf(0f, 2f, 4f, 6f, 8f, 10f), result1)
+        assertEquals(listOf(0f, 2f, 4f, 6f, 8f, 10f), result1.toList())
 
         val result2 = Interpolation.getMultiplesBetween(1f, 9f, 2f)
-        assertEquals(listOf(2f, 4f, 6f, 8f), result2)
+        assertEquals(listOf(2f, 4f, 6f, 8f), result2.toList())
 
         val result3 = Interpolation.getMultiplesBetween(0f, 2f, 0.5f)
-        assertEquals(listOf(0f, 0.5f, 1f, 1.5f, 2f), result3)
+        assertEquals(listOf(0f, 0.5f, 1f, 1.5f, 2f), result3.toList())
 
         val result4 = Interpolation.getMultiplesBetween(-5f, 5f, 2.5f)
-        assertEquals(listOf(-5f, -2.5f, 0f, 2.5f, 5f), result4)
+        assertEquals(listOf(-5f, -2.5f, 0f, 2.5f, 5f), result4.toList())
 
         val result5 = Interpolation.getMultiplesBetween(0.1f, 0.4f, 1f)
         assertTrue(result5.isEmpty())
 
         val result6 = Interpolation.getMultiplesBetween(2f, 2f, 1f)
-        assertEquals(listOf(2f), result6)
+        assertEquals(listOf(2f), result6.toList())
     }
 
     @Test
     fun getMultiplesBetweenDouble() {
         val result1 = Interpolation.getMultiplesBetween(0.0, 10.0, 2.0)
-        assertEquals(listOf(0.0, 2.0, 4.0, 6.0, 8.0, 10.0), result1)
+        assertEquals(listOf(0.0, 2.0, 4.0, 6.0, 8.0, 10.0), result1.toList())
 
         val result2 = Interpolation.getMultiplesBetween(1.0, 9.0, 2.0)
-        assertEquals(listOf(2.0, 4.0, 6.0, 8.0), result2)
+        assertEquals(listOf(2.0, 4.0, 6.0, 8.0), result2.toList())
 
         val result3 = Interpolation.getMultiplesBetween(0.0, 2.0, 0.5)
-        assertEquals(listOf(0.0, 0.5, 1.0, 1.5, 2.0), result3)
+        assertEquals(listOf(0.0, 0.5, 1.0, 1.5, 2.0), result3.toList())
 
         val result4 = Interpolation.getMultiplesBetween(-5.0, 5.0, 2.5)
-        assertEquals(listOf(-5.0, -2.5, 0.0, 2.5, 5.0), result4)
+        assertEquals(listOf(-5.0, -2.5, 0.0, 2.5, 5.0), result4.toList())
 
         val result5 = Interpolation.getMultiplesBetween(0.1, 0.4, 1.0)
         assertTrue(result5.isEmpty())
 
         val result6 = Interpolation.getMultiplesBetween(2.0, 2.0, 1.0)
-        assertEquals(listOf(2.0), result6)
+        assertEquals(listOf(2.0), result6.toList())
 
         val result7 = Interpolation.getMultiplesBetween(0.0, 0.31, 0.1)
         assertEquals(4, result7.size)

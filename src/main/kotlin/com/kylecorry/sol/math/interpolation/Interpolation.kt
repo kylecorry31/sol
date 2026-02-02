@@ -160,26 +160,44 @@ object Interpolation {
      * @param start The starting value (inclusive).
      * @param end The ending value (inclusive).
      * @param multiple The number to find multiples of.
-     * @return A list of multiples of the given number between the start and end values.
+     * @return An array of multiples of the given number between the start and end values.
      */
     fun getMultiplesBetween(
         start: Double,
         end: Double,
         multiple: Double
-    ): List<Double> {
-        val startMultiple = ceil(start / multiple)
-        val endMultiple = floor(end / multiple)
-        return (startMultiple.toInt()..endMultiple.toInt()).map { it * multiple }
+    ): DoubleArray {
+        val startMultiple = ceil(start / multiple).toInt()
+        val endMultiple = floor(end / multiple).toInt()
+        val size = endMultiple - startMultiple + 1
+        if (size <= 0) return DoubleArray(0)
+
+        val result = DoubleArray(size)
+        var value = startMultiple * multiple
+        for (i in 0..<size) {
+            result[i] = value
+            value += multiple
+        }
+        return result
     }
 
     fun getMultiplesBetween(
         start: Float,
         end: Float,
         multiple: Float
-    ): List<Float> {
-        val startMultiple = ceil(start / multiple)
-        val endMultiple = floor(end / multiple)
-        return (startMultiple.toInt()..endMultiple.toInt()).map { it * multiple }
+    ): FloatArray {
+        val startMultiple = ceil(start / multiple).toInt()
+        val endMultiple = floor(end / multiple).toInt()
+        val size = endMultiple - startMultiple + 1
+        if (size <= 0) return FloatArray(0)
+
+        val result = FloatArray(size)
+        var value = startMultiple * multiple
+        for (i in 0..<size) {
+            result[i] = value
+            value += multiple
+        }
+        return result
     }
 
 }
