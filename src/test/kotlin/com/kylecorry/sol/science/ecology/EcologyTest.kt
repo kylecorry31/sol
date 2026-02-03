@@ -282,4 +282,133 @@ class EcologyTest {
 
         assertTrue(result.isNotEmpty())
     }
+
+    // getActivePeriodsForYear
+
+    @Test
+    fun activePeriodsReturnsEmptyForNoEvents() {
+        val result = Ecology.getActivePeriodsForYear(
+            2024,
+            emptyList(),
+            "start",
+            "end"
+        )
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun activePeriodsReturnsJan1ToEndWhenOnlyEndEvent() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2024, 3, 15), LifecycleEvent("end", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 1, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 3, 15), result[0].end)
+    }
+
+    @Test
+    fun activePeriodsReturnsStartToDec31WhenOnlyStartEvent() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2024, 5, 20), LifecycleEvent("start", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 5, 20), result[0].start)
+        assertEquals(LocalDate.of(2024, 12, 31), result[0].end)
+    }
+
+    @Test
+    fun activePeriodsReturnsStartToEndWhenBothExist() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2024, 4, 1), LifecycleEvent("start", trigger)),
+            Pair(LocalDate.of(2024, 9, 30), LifecycleEvent("end", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 4, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 9, 30), result[0].end)
+    }
+
+    @Test
+    fun activePeriodsReturnsMultiplePeriodsInYear() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2024, 3, 1), LifecycleEvent("start", trigger)),
+            Pair(LocalDate.of(2024, 5, 15), LifecycleEvent("end", trigger)),
+            Pair(LocalDate.of(2024, 7, 1), LifecycleEvent("start", trigger)),
+            Pair(LocalDate.of(2024, 10, 31), LifecycleEvent("end", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(2, result.size)
+        assertEquals(LocalDate.of(2024, 3, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 5, 15), result[0].end)
+        assertEquals(LocalDate.of(2024, 7, 1), result[1].start)
+        assertEquals(LocalDate.of(2024, 10, 31), result[1].end)
+    }
+
+    @Test
+    fun activePeriodsFiltersOutEventsFromOtherYears() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2023, 6, 1), LifecycleEvent("start", trigger)),
+            Pair(LocalDate.of(2024, 4, 1), LifecycleEvent("start", trigger)),
+            Pair(LocalDate.of(2024, 8, 1), LifecycleEvent("end", trigger)),
+            Pair(LocalDate.of(2025, 3, 1), LifecycleEvent("end", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 4, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 8, 1), result[0].end)
+    }
+
+    @Test
+    fun activePeriodsIgnoresUnrelatedEvents() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2024, 2, 1), LifecycleEvent("bloom", trigger)),
+            Pair(LocalDate.of(2024, 4, 1), LifecycleEvent("start", trigger)),
+            Pair(LocalDate.of(2024, 6, 1), LifecycleEvent("fruit", trigger)),
+            Pair(LocalDate.of(2024, 9, 1), LifecycleEvent("end", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 4, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 9, 1), result[0].end)
+    }
+
+    @Test
+    fun activePeriodsHandlesEndBeforeStart() {
+        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val events = listOf(
+            Pair(LocalDate.of(2024, 2, 1), LifecycleEvent("end", trigger)),
+            Pair(LocalDate.of(2024, 10, 1), LifecycleEvent("start", trigger))
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, events, "start", "end")
+
+        assertEquals(2, result.size)
+        // First period: Jan 1 to Feb 1 (end event closes implicit start)
+        assertEquals(LocalDate.of(2024, 1, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 2, 1), result[0].end)
+        // Second period: Oct 1 to Dec 31 (start event with no end)
+        assertEquals(LocalDate.of(2024, 10, 1), result[1].start)
+        assertEquals(LocalDate.of(2024, 12, 31), result[1].end)
+    }
 }

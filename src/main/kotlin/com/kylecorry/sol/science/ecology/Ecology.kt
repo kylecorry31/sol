@@ -128,4 +128,30 @@ object Ecology {
         return lifecycleEvents
     }
 
+    fun getActivePeriodsForYear(
+        year: Int,
+        events: List<Pair<LocalDate, LifecycleEvent>>,
+        activeStart: String,
+        activeEnd: String
+    ): List<Range<LocalDate>> {
+        val activePeriods = mutableListOf<Range<LocalDate>>()
+        var startDate: LocalDate = LocalDate.of(year, 1, 1)
+        var hasStartDate = false
+        for (event in events.filter { it.first.year == year }) {
+            if (event.second.name == activeEnd) {
+                activePeriods.add(Range(startDate, event.first))
+                hasStartDate = false
+            } else if (event.second.name == activeStart) {
+                startDate = event.first
+                hasStartDate = true
+            }
+        }
+
+        if (hasStartDate) {
+            activePeriods.add(Range(startDate, LocalDate.of(year, 12, 31)))
+        }
+
+        return activePeriods
+    }
+
 }
