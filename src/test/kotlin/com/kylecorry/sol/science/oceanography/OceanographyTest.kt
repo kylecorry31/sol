@@ -16,11 +16,9 @@ import java.net.http.HttpClient
 import java.time.*
 import java.util.stream.Stream
 
-internal class OceanographyServiceTest {
+internal class OceanographyTest {
     @Test
     fun getTidalRange() {
-        val service = OceanographyService()
-
         val cases = listOf(
             Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 6, 0), TidalRange.Neap),
             Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 17, 6, 0), TidalRange.Spring),
@@ -29,7 +27,7 @@ internal class OceanographyServiceTest {
 
         for (case in cases) {
             val tide =
-                service.getTidalRange(ZonedDateTime.of(case.first, ZoneId.of("America/New_York")))
+                Oceanography.getTidalRange(ZonedDateTime.of(case.first, ZoneId.of("America/New_York")))
             assertEquals(case.second, tide)
         }
 
@@ -120,7 +118,6 @@ internal class OceanographyServiceTest {
 
     @Test
     fun canGetTides() {
-        val service = OceanographyService()
         val location = Coordinate(42.8150, -70.8733)
         val start = ZonedDateTime.of(2024, 7, 1, 0, 0, 0, 0, ZoneId.of("America/New_York"))
         val end = ZonedDateTime.of(2024, 7, 29, 0, 0, 0, 0, ZoneId.of("America/New_York"))
@@ -154,12 +151,12 @@ internal class OceanographyServiceTest {
 
         val highs = source.filter { it.isHigh }.map { it.time }
         val lows = source.filter { !it.isHigh }.map { it.time }
-        val localLunitidalInterval = service.getMeanLunitidalInterval(highs, location) ?: Duration.ZERO
-        val localLowLunitidalInterval = service.getMeanLunitidalInterval(lows, location) ?: Duration.ZERO
+        val localLunitidalInterval = Oceanography.getMeanLunitidalInterval(highs, location) ?: Duration.ZERO
+        val localLowLunitidalInterval = Oceanography.getMeanLunitidalInterval(lows, location) ?: Duration.ZERO
         val utcLunitidalInterval =
-            service.getMeanLunitidalInterval(highs) ?: Duration.ZERO
+            Oceanography.getMeanLunitidalInterval(highs) ?: Duration.ZERO
         val utcLowLunitidalInterval =
-            service.getMeanLunitidalInterval(lows) ?: Duration.ZERO
+            Oceanography.getMeanLunitidalInterval(lows) ?: Duration.ZERO
 
         println("Local lunitidal interval: ${Time.hours(localLunitidalInterval).roundPlaces(2)}")
         println("UTC lunitidal interval: ${Time.hours(utcLunitidalInterval).roundPlaces(2)}")
@@ -194,8 +191,7 @@ internal class OceanographyServiceTest {
         end: ZonedDateTime,
         references: List<Tide>
     ) {
-        val service = OceanographyService()
-        val tides = service.getTides(
+        val tides = Oceanography.getTides(
             calculator,
             start,
             end,
@@ -255,8 +251,6 @@ internal class OceanographyServiceTest {
         val date = LocalDate.of(2021, 1, 1)
 
 
-        val service = OceanographyService()
-
         val levels = mutableListOf<Float>()
 
         val file = File("harmonics.csv")
@@ -293,9 +287,8 @@ internal class OceanographyServiceTest {
     @Test
     fun canCalculateDepth() {
         val currentPressure = Pressure.hpa(2222.516f)
-        val service = OceanographyService()
 
-        val depth = service.getDepth(currentPressure, Pressure.hpa(1013f))
+        val depth = Oceanography.getDepth(currentPressure, Pressure.hpa(1013f))
 
         val expected = Distance.from(12f, DistanceUnits.Meters)
 
@@ -305,9 +298,8 @@ internal class OceanographyServiceTest {
     @Test
     fun depthReturnsZeroWhenAboveWater() {
         val currentPressure = Pressure.hpa(1000f)
-        val service = OceanographyService()
 
-        val depth = service.getDepth(currentPressure, Pressure.hpa(1013f))
+        val depth = Oceanography.getDepth(currentPressure, Pressure.hpa(1013f))
 
         val expected = Distance.from(0f, DistanceUnits.Meters)
 

@@ -2,6 +2,7 @@ package com.kylecorry.sol.science.oceanography
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.optimization.IExtremaFinder
+import com.kylecorry.sol.math.optimization.NoisyExtremaFinder
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geology.Geology
@@ -11,9 +12,33 @@ import com.kylecorry.sol.units.*
 import java.time.Duration
 import java.time.ZonedDateTime
 
-class OceanographyService : IOceanographyService {
+object Oceanography {
 
-    override fun getTidalRange(time: ZonedDateTime): TidalRange {
+    const val DENSITY_SALT_WATER = 1023.6f
+    const val DENSITY_FRESH_WATER = 997.0474f
+
+    fun getDepth(
+        pressure: Pressure,
+        seaLevelPressure: Pressure,
+        isSaltWater: Boolean = true
+    ): Distance {
+        if (pressure <= seaLevelPressure) {
+            return Distance.from(0f, DistanceUnits.Meters)
+        }
+
+        val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
+        val pressureDiff =
+            pressure.convertTo(PressureUnits.Hpa).value - seaLevelPressure.convertTo(
+                PressureUnits.Hpa
+            ).value
+
+        return Distance.from(
+            pressureDiff * 100 / (Geology.GRAVITY * waterDensity),
+            DistanceUnits.Meters
+        )
+    }
+
+    fun getTidalRange(time: ZonedDateTime): TidalRange {
         for (i in 0..3) {
             val phase = Astronomy.getMoonPhase(time.minusDays(i.toLong()))
 
@@ -35,11 +60,14 @@ class OceanographyService : IOceanographyService {
         return TidalRange.Normal
     }
 
-    override fun getTides(
+    /**
+     * Gets the tides for the day
+     */
+    fun getTides(
         waterLevelCalculator: IWaterLevelCalculator,
         start: ZonedDateTime,
         end: ZonedDateTime,
-        extremaFinder: IExtremaFinder
+        extremaFinder: IExtremaFinder = NoisyExtremaFinder(1.0, 10)
     ): List<Tide> {
         val range = Duration.between(start, end).toMinutes()
         val extrema = extremaFinder.find(Range(0.0, range.toDouble())) {
@@ -48,28 +76,13 @@ class OceanographyService : IOceanographyService {
         return extrema.map { Tide(start.plusMinutes(it.point.x.toLong()), it.isHigh, it.point.y) }
     }
 
-    override fun getDepth(
-        pressure: Pressure,
-        seaLevelPressure: Pressure,
-        isSaltWater: Boolean
-    ): Distance {
-        if (pressure <= seaLevelPressure) {
-            return Distance.from(0f, DistanceUnits.Meters)
-        }
-
-        val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
-        val pressureDiff =
-            pressure.convertTo(PressureUnits.Hpa).value - seaLevelPressure.convertTo(
-                PressureUnits.Hpa
-            ).value
-
-        return Distance.from(
-            pressureDiff * 100 / (Geology.GRAVITY * waterDensity),
-            DistanceUnits.Meters
-        )
-    }
-
-    override fun getLunitidalInterval(highTideTime: ZonedDateTime, location: Coordinate): Duration? {
+    /**
+     * Gets the approximate lunitidal interval for the given high tide time. If the location is provided, this will be the local lunitidal interval.
+     * @param highTideTime The time of the high tide (you can pass in a low tide if you want to calculate the low lunitidal interval)
+     * @param location The location of the tide. If not provided, the interval will be calculated for the prime meridian.
+     * @return The lunitidal interval or null if it could not be calculated
+     */
+    fun getLunitidalInterval(highTideTime: ZonedDateTime, location: Coordinate = Coordinate.zero): Duration? {
         // Step 1: Get the time of the moon transit prior to the high tide
         val over = getLastMoonTransit(location, highTideTime)
         val under = getLastMoonUnderfootTime(location, highTideTime)
@@ -85,9 +98,15 @@ class OceanographyService : IOceanographyService {
         return duration
     }
 
-    override fun getMeanLunitidalInterval(
+    /**
+     * Gets the approximate mean lunitidal interval for the given high tide times. If the location is provided, this will be the local lunitidal interval.
+     * @param highTideTimes The times of the high tides (you can pass in low tides if you want to calculate the low lunitidal interval)
+     * @param location The location of the tide. If not provided, the interval will be calculated for the prime meridian.
+     * @return The mean lunitidal interval or null if it could not be calculated
+     */
+    fun getMeanLunitidalInterval(
         highTideTimes: List<ZonedDateTime>,
-        location: Coordinate
+        location: Coordinate = Coordinate.zero
     ): Duration? {
         // TODO: Give more weight to tides closer to full/new moon?
         val intervals = highTideTimes.mapNotNull { getLunitidalInterval(it, location) }
@@ -128,10 +147,4 @@ class OceanographyService : IOceanographyService {
     private fun getLastMoonUnderfootTime(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
         return getLastMoonTransit(Coordinate(-location.latitude, location.longitude + 180), time)
     }
-
-    companion object {
-        const val DENSITY_SALT_WATER = 1023.6f
-        const val DENSITY_FRESH_WATER = 997.0474f
-    }
-
 }
