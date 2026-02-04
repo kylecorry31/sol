@@ -377,4 +377,12 @@ object Geometry {
         return lines
     }
 
+    fun scaleToFit(
+        width: Float,
+        height: Float,
+        maxWidth: Float,
+        maxHeight: Float
+    ): Float {
+        return min(maxWidth / width, maxHeight / height)
+    }
 }

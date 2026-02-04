@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.interpolation
 
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.shared.Executor
 import com.kylecorry.sol.shared.SequentialExecutor
 import kotlin.math.ceil
@@ -134,6 +135,27 @@ object Interpolation {
     }
 
     /**
+     * Interpolates a value using Catmull-Rom splines
+     * @param n: The normalized position between y2 and y3 (0 to 1)
+     * @param y1: The first control point (before y2)
+     * @param y2: The second control point (start)
+     * @param y3: The third control point (end)
+     * @return The interpolated value
+     */
+    fun catmullRom(
+        n: Double,
+        y1: Double,
+        y2: Double,
+        y3: Double
+    ): Double {
+        val a = y2 - y1
+        val b = y3 - y2
+        val c = b - a
+
+        return y2 + (n / 2.0) * (a + b + n * c)
+    }
+
+    /**
      * Interpolates the isoline for a grid of values using the Marching Squares algorithm.
      * @param grid A 2D grid of point to value pairs. The points should be equidistant. It is recommended to supply 1 extra row and column on each side of the grid to ensure the isoline extends to the edges.
      * @param threshold The value to use as the isoline threshold.
@@ -198,6 +220,78 @@ object Interpolation {
             value += multiple
         }
         return result
+    }
+
+    fun lerp(percent: Float, start: Float, end: Float, shouldClamp: Boolean = false): Float {
+        val value = start + (end - start) * percent
+
+        return if (shouldClamp) {
+            Arithmetic.clamp(value, start, end)
+        } else {
+            value
+        }
+    }
+
+    fun lerp(percent: Double, start: Double, end: Double, shouldClamp: Boolean = false): Double {
+        val value = start + (end - start) * percent
+
+        return if (shouldClamp) {
+            Arithmetic.clamp(value, start, end)
+        } else {
+            value
+        }
+    }
+
+    fun map(
+        value: Double,
+        originalMin: Double,
+        originalMax: Double,
+        newMin: Double,
+        newMax: Double,
+        shouldClamp: Boolean = false
+    ): Double {
+        val normal = norm(value, originalMin, originalMax)
+        return lerp(normal, newMin, newMax, shouldClamp)
+    }
+
+    fun map(
+        value: Float,
+        originalMin: Float,
+        originalMax: Float,
+        newMin: Float,
+        newMax: Float,
+        shouldClamp: Boolean = false
+    ): Float {
+        val normal = norm(value, originalMin, originalMax)
+        return lerp(normal, newMin, newMax, shouldClamp)
+    }
+
+    fun norm(value: Double, minimum: Double, maximum: Double, shouldClamp: Boolean = false): Double {
+        val range = maximum - minimum
+        if (range == 0.0) {
+            return 0.0
+        }
+        val normal = (value - minimum) / range
+
+        return if (shouldClamp) {
+            Arithmetic.clamp(normal, 0.0, 1.0)
+        } else {
+            normal
+        }
+    }
+
+    fun norm(value: Float, minimum: Float, maximum: Float, shouldClamp: Boolean = false): Float {
+        val range = maximum - minimum
+        if (Arithmetic.isZero(range)) {
+            return 0f
+        }
+        val normal = (value - minimum) / range
+
+        return if (shouldClamp) {
+            Arithmetic.clamp(normal, 0f, 1f)
+        } else {
+            normal
+        }
     }
 
 }

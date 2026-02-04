@@ -1,106 +1,55 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.filters.LowPassFilter
 import com.kylecorry.sol.math.filters.MovingAverageFilter
+import com.kylecorry.sol.math.geometry.Geometry
+import com.kylecorry.sol.math.interpolation.Interpolation
 import kotlin.math.*
 
 object SolMath {
 
-    val EPSILON_FLOAT = 1e-5f
-    val EPSILON_DOUBLE = 1e-10
+    const val EPSILON_FLOAT = Arithmetic.EPSILON_FLOAT
+    const val EPSILON_DOUBLE = Arithmetic.EPSILON_DOUBLE
 
     fun wrap(value: Float, min: Float, max: Float): Float {
-        return wrap(value.toDouble(), min.toDouble(), max.toDouble()).toFloat()
+        return Arithmetic.wrap(value, min, max)
     }
 
     fun wrap(value: Double, min: Double, max: Double): Double {
-        // https://stackoverflow.com/questions/14415753/wrap-value-into-range-min-max-without-division
-        val range = max - min
-        if (value < min) {
-            return max - (min - value) % range
-        }
-
-        if (value > max) {
-            return min + (value - min) % range
-        }
-
-        return value
+        return Arithmetic.wrap(value, min, max)
     }
 
     fun power(x: Int, power: Int): Int {
-        if (x == 1) {
-            return 1
-        }
-
-        if (power < 0) {
-            return 0
-        }
-
-
-        var total = 1
-        for (i in 0 until power) {
-            total *= x
-        }
-
-        return total
+        return Arithmetic.power(x, power)
     }
 
     fun power(x: Double, power: Int): Double {
-        var total = 1.0
-        for (i in 0..<abs(power)) {
-            total *= x
-        }
-
-        if (power < 0) {
-            return 1 / total
-        }
-
-        return total
+        return Arithmetic.power(x, power)
     }
 
     fun power(x: Float, power: Int): Float {
-        var total = 1f
-        for (i in 0..<abs(power)) {
-            total *= x
-        }
-
-        if (power < 0) {
-            return 1 / total
-        }
-
-        return total
+        return Arithmetic.power(x, power)
     }
 
-    /**
-     * Computes a polynomial
-     * Ex. 1 + 2x + 5x^2 + x^4
-     * polynomial(x, 1, 2, 5, 0, 1)
-     */
     fun polynomial(x: Double, vararg coefs: Double): Double {
-        var runningTotal = 0.0
-        var xPower = 1.0
-        for (i in coefs.indices) {
-            runningTotal += xPower * coefs[i]
-            xPower *= x
-        }
-
-        return runningTotal
+        return Arithmetic.polynomial(x, *coefs)
     }
 
     fun cube(a: Double): Double {
-        return a * a * a
+        return Arithmetic.cube(a)
     }
 
     fun square(a: Double): Double {
-        return a * a
+        return Arithmetic.square(a)
     }
 
     fun cube(a: Float): Float {
-        return a * a * a
+        return Arithmetic.cube(a)
     }
 
     fun square(a: Float): Float {
-        return a * a
+        return Arithmetic.square(a)
     }
 
     fun interpolate(
@@ -109,11 +58,7 @@ object SolMath {
         y2: Double,
         y3: Double
     ): Double {
-        val a = y2 - y1
-        val b = y3 - y2
-        val c = b - a
-
-        return y2 + (n / 2.0) * (a + b + n * c)
+        return Interpolation.catmullRom(n, y1, y2, y3)
     }
 
     fun sinDegrees(angle: Double): Double {
@@ -168,31 +113,31 @@ object SolMath {
     }
 
     fun clamp(value: Double, minimum: Double, maximum: Double): Double {
-        return value.coerceIn(minimum, maximum)
+        return Arithmetic.clamp(value, minimum, maximum)
     }
 
     fun clamp(value: Float, minimum: Float, maximum: Float): Float {
-        return value.coerceIn(minimum, maximum)
+        return Arithmetic.clamp(value, minimum, maximum)
     }
 
     fun Double.roundPlaces(places: Int): Double {
-        return (this * 10.0.pow(places)).roundToLong() / 10.0.pow(places)
+        return Arithmetic.roundPlaces(this, places)
     }
 
     fun Float.roundPlaces(places: Int): Float {
-        return (this * 10f.pow(places)).roundToLong() / 10f.pow(places)
+        return Arithmetic.roundPlaces(this, places)
     }
 
     fun Double.roundNearest(nearest: Double): Double {
-        return (this / nearest).roundToLong() * nearest
+        return Arithmetic.roundNearest(this, nearest)
     }
 
     fun Float.roundNearest(nearest: Float): Float {
-        return (this / nearest).roundToLong() * nearest
+        return Arithmetic.roundNearest(this, nearest)
     }
 
     fun Int.roundNearest(nearest: Int): Int {
-        return (this.toDouble() / nearest).roundToInt() * nearest
+        return Arithmetic.roundNearest(this, nearest)
     }
 
     fun Double.roundNearestAngle(nearest: Double): Double {
@@ -264,23 +209,11 @@ object SolMath {
     }
 
     fun lerp(percent: Float, start: Float, end: Float, shouldClamp: Boolean = false): Float {
-        val value = start + (end - start) * percent
-
-        return if (shouldClamp) {
-            clamp(value, start, end)
-        } else {
-            value
-        }
+        return Interpolation.lerp(percent, start, end, shouldClamp)
     }
 
     fun lerp(percent: Double, start: Double, end: Double, shouldClamp: Boolean = false): Double {
-        val value = start + (end - start) * percent
-
-        return if (shouldClamp) {
-            clamp(value, start, end)
-        } else {
-            value
-        }
+        return Interpolation.lerp(percent, start, end, shouldClamp)
     }
 
     fun map(
@@ -291,8 +224,7 @@ object SolMath {
         newMax: Double,
         shouldClamp: Boolean = false
     ): Double {
-        val normal = norm(value, originalMin, originalMax)
-        return lerp(normal, newMin, newMax, shouldClamp)
+        return Interpolation.map(value, originalMin, originalMax, newMin, newMax, shouldClamp)
     }
 
     fun map(
@@ -303,36 +235,15 @@ object SolMath {
         newMax: Float,
         shouldClamp: Boolean = false
     ): Float {
-        val normal = norm(value, originalMin, originalMax)
-        return lerp(normal, newMin, newMax, shouldClamp)
+        return Interpolation.map(value, originalMin, originalMax, newMin, newMax, shouldClamp)
     }
 
     fun norm(value: Double, minimum: Double, maximum: Double, shouldClamp: Boolean = false): Double {
-        val range = maximum - minimum
-        if (range == 0.0) {
-            return 0.0
-        }
-        val normal = (value - minimum) / range
-
-        return if (shouldClamp) {
-            clamp(normal, 0.0, 1.0)
-        } else {
-            normal
-        }
+        return Interpolation.norm(value, minimum, maximum, shouldClamp)
     }
 
     fun norm(value: Float, minimum: Float, maximum: Float, shouldClamp: Boolean = false): Float {
-        val range = maximum - minimum
-        if (SolMath.isZero(range)) {
-            return 0f
-        }
-        val normal = (value - minimum) / range
-
-        return if (shouldClamp) {
-            clamp(normal, 0f, 1f)
-        } else {
-            normal
-        }
+        return Interpolation.norm(value, minimum, maximum, shouldClamp)
     }
 
     fun scaleToFit(
@@ -341,15 +252,15 @@ object SolMath {
         maxWidth: Float,
         maxHeight: Float
     ): Float {
-        return min(maxWidth / width, maxHeight / height)
+        return Geometry.scaleToFit(width, height, maxWidth, maxHeight)
     }
 
     fun normalizeAngle(angle: Float): Float {
-        return wrap(angle, 0f, 360f) % 360
+        return Arithmetic.wrap(angle, 0f, 360f) % 360
     }
 
     fun normalizeAngle(angle: Double): Double {
-        return wrap(angle, 0.0, 360.0) % 360
+        return Arithmetic.wrap(angle, 0.0, 360.0) % 360
     }
 
     fun <T : Comparable<T>> argmax(values: List<T>): Int {
@@ -389,11 +300,11 @@ object SolMath {
     }
 
     fun isCloseTo(a: Double, b: Double, tolerance: Double): Boolean {
-        return (a - b).absoluteValue <= tolerance
+        return Arithmetic.isCloseTo(a, b, tolerance)
     }
 
     fun isCloseTo(a: Float, b: Float, tolerance: Float): Boolean {
-        return (a - b).absoluteValue <= tolerance
+        return Arithmetic.isCloseTo(a, b, tolerance)
     }
 
     fun isIncreasingX(data: List<Vector2>): Boolean {
@@ -436,105 +347,51 @@ object SolMath {
     }
 
     fun Float.real(defaultValue: Float = 0f): Float {
-        return if (this.isNaN() || this.isInfinite()) defaultValue else this
+        return Arithmetic.real(this, defaultValue)
     }
 
     fun Float.positive(zeroReplacement: Float = 0f): Float {
-        return if (this < 0) {
-            -this
-        } else if (isZero(this)) {
-            zeroReplacement
-        } else {
-            this
-        }
+        return Arithmetic.positive(this, zeroReplacement)
     }
 
     fun Float.negative(zeroReplacement: Float = 0f): Float {
-        return if (this > 0) {
-            -this
-        } else if (isZero(this)) {
-            zeroReplacement
-        } else {
-            this
-        }
+        return Arithmetic.negative(this, zeroReplacement)
     }
 
     fun Float.round(method: RoundingMethod): Int {
-        return when (method) {
-            RoundingMethod.AwayFromZero -> {
-                if (abs(this) % 1 >= 0.5f) {
-                    (sign(this) * abs(this).roundToInt()).toInt()
-                } else {
-                    toInt()
-                }
-            }
-
-            RoundingMethod.TowardZero -> {
-                if (abs(this) % 1 <= 0.5f) {
-                    toInt()
-                } else {
-                    roundToInt()
-                }
-            }
-        }
+        return Arithmetic.round(this, method)
     }
 
     fun greatestCommonDivisor(a: Long, b: Long): Long {
-        val maxIterations = 1000
-        var currentA = a
-        var currentB = b
-        var iterations = 0
-        while (currentB != 0L && iterations < maxIterations) {
-            val temp = currentB
-            currentB = currentA % currentB
-            currentA = temp
-            iterations++
-        }
-        return currentA
+        return Arithmetic.greatestCommonDivisor(a, b)
     }
 
     fun greatestCommonDivisor(a: Double, b: Double, precision: Double = 0.0001): Double {
-        val maxIterations = 1000
-        var currentA = a
-        var currentB = b
-        var iterations = 0
-        while (currentB.absoluteValue > precision && iterations < maxIterations) {
-            val temp = currentB
-            currentB = currentA % currentB
-            currentA = temp
-            iterations++
-        }
-        return currentA
+        return Arithmetic.greatestCommonDivisor(a, b, precision)
     }
 
     fun greatestCommonDivisor(a: Float, b: Float): Float {
-        return greatestCommonDivisor(a.toDouble(), b.toDouble()).toFloat()
+        return Arithmetic.greatestCommonDivisor(a, b)
     }
 
     fun greatestCommonDivisor(a: Int, b: Int): Int {
-        return greatestCommonDivisor(a.toLong(), b.toLong()).toInt()
+        return Arithmetic.greatestCommonDivisor(a, b)
     }
 
     fun leastCommonMultiple(a: Long, b: Long): Long {
-        if (a == 0L || b == 0L) {
-            return 0
-        }
-        return abs(a) * (abs(b) / greatestCommonDivisor(a, b))
+        return Arithmetic.leastCommonMultiple(a, b)
     }
 
     fun leastCommonMultiple(a: Int, b: Int): Int {
-        return leastCommonMultiple(a.toLong(), b.toLong()).toInt()
+        return Arithmetic.leastCommonMultiple(a, b)
     }
 
     fun leastCommonMultiple(a: Double, b: Double): Double {
-        if (a == 0.0 || b == 0.0) {
-            return 0.0
-        }
-        return abs(a) * (abs(b) / greatestCommonDivisor(a, b))
+        return Arithmetic.leastCommonMultiple(a, b)
     }
 
     fun leastCommonMultiple(a: Float, b: Float): Float {
-        return leastCommonMultiple(a.toDouble(), b.toDouble()).toFloat()
+        return Arithmetic.leastCommonMultiple(a, b)
     }
 
     fun toDegrees(degrees: Double, minutes: Double = 0.0, seconds: Double = 0.0): Double {
@@ -548,10 +405,10 @@ object SolMath {
     }
 
     fun isApproximatelyEqual(a: Float, b: Float, tolerance: Float = EPSILON_FLOAT): Boolean {
-        return isZero(a - b, tolerance)
+        return Arithmetic.isApproximatelyEqual(a, b, tolerance)
     }
 
     fun isZero(value: Float, tolerance: Float = EPSILON_FLOAT): Boolean {
-        return abs(value) < tolerance
+        return Arithmetic.isZero(value, tolerance)
     }
 }
