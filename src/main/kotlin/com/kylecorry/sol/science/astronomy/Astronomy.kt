@@ -36,19 +36,19 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
-object Astronomy : IAstronomyService {
+object Astronomy {
 
     private val sun = Sun()
     private val moon = Moon()
     private val radiation = SolarRadiationCalculator()
     private val riseSetTransitCalculator = RobustRiseSetTransitTimeCalculator()
 
-    override fun getSunEvents(
+    fun getSunEvents(
         date: ZonedDateTime,
         location: Coordinate,
-        mode: SunTimesMode,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        mode: SunTimesMode = SunTimesMode.Actual,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes {
 
         val altitude = when (mode) {
@@ -68,11 +68,11 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getSunAltitude(
+    fun getSunAltitude(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Float {
         return AstroUtils.getAltitude(
             sun,
@@ -83,20 +83,20 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getSunAzimuth(
+    fun getSunAzimuth(
         time: ZonedDateTime,
         location: Coordinate,
-        withParallax: Boolean
+        withParallax: Boolean = false
     ): Bearing {
         return AstroUtils.getAzimuth(sun, time.toUniversalTime(), location, withParallax)
     }
 
-    override fun getNextSunset(
+    fun getNextSunset(
         time: ZonedDateTime,
         location: Coordinate,
-        mode: SunTimesMode,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        mode: SunTimesMode = SunTimesMode.Actual,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime? {
         val today = getSunEvents(time, location, mode, withRefraction, withParallax)
         if (today.set != null && today.set > time) {
@@ -111,12 +111,12 @@ object Astronomy : IAstronomyService {
         return null
     }
 
-    override fun getNextSunrise(
+    fun getNextSunrise(
         time: ZonedDateTime,
         location: Coordinate,
-        mode: SunTimesMode,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        mode: SunTimesMode = SunTimesMode.Actual,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime? {
         val today = getSunEvents(time, location, mode, withRefraction, withParallax)
         if (today.rise != null && today.rise > time) {
@@ -131,21 +131,21 @@ object Astronomy : IAstronomyService {
         return null
     }
 
-    override fun isSunUp(
+    fun isSunUp(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Boolean {
         return getSunAltitude(time, location, withRefraction, withParallax) > 0
     }
 
-    override fun getDaylightLength(
+    fun getDaylightLength(
         date: ZonedDateTime,
         location: Coordinate,
-        sunTimesMode: SunTimesMode,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        sunTimesMode: SunTimesMode = SunTimesMode.Actual,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Duration {
         val startOfDay = date.atStartOfDay()
         val sunrise =
@@ -180,15 +180,18 @@ object Astronomy : IAstronomyService {
         }
     }
 
-    override fun getSunDistance(time: ZonedDateTime): Distance {
+    fun getSunDistance(time: ZonedDateTime): Distance {
         return sun.getDistance(time.toUniversalTime())
     }
 
-    override fun getSolarRadiation(
+    /**
+     * Gets the solar radiation for the given time in kW/m^2
+     */
+    fun getSolarRadiation(
         date: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Double {
         return radiation.getRadiation(
             date.toUniversalTime(),
@@ -198,13 +201,16 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getSolarRadiation(
+    /**
+     * Gets the solar radiation for the given time in kW/m^2
+     */
+    fun getSolarRadiation(
         date: ZonedDateTime,
         location: Coordinate,
         tilt: Float,
         azimuth: Bearing,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Double {
         return radiation.getRadiation(
             date.toUniversalTime(),
@@ -216,13 +222,24 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getSunAboveHorizonTimes(
+    /**
+     * Gets the times the sun is above the horizon within approximately a day.
+     * If the sun does not set, it will return from the last rise (or start of day) until the end of the day.
+     * @param location The location of the observer
+     * @param time The current time
+     * @param nextRiseOffset The duration before the next rise to switch to the next day's times
+     * @param mode The mode to use for calculating sun times
+     * @param withRefraction True to correct for atmospheric refraction
+     * @param withParallax True to correct for parallax
+     * @return The range of times the sun is above the horizon or null if it is not above the horizon within approximately a day.
+     */
+    fun getSunAboveHorizonTimes(
         location: Coordinate,
         time: ZonedDateTime,
-        nextRiseOffset: Duration,
-        mode: SunTimesMode,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        nextRiseOffset: Duration = Duration.ofHours(6),
+        mode: SunTimesMode = SunTimesMode.Actual,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Range<ZonedDateTime>? {
         return getAboveHorizonTimes(
             location,
@@ -233,11 +250,11 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getMoonEvents(
+    fun getMoonEvents(
         date: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes {
         return riseSetTransitCalculator.calculate(
             moon,
@@ -249,11 +266,11 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getMoonAltitude(
+    fun getMoonAltitude(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Float {
         return AstroUtils.getAltitude(
             moon,
@@ -264,19 +281,19 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getMoonAzimuth(
+    fun getMoonAzimuth(
         time: ZonedDateTime,
         location: Coordinate,
-        withParallax: Boolean
+        withParallax: Boolean = false
     ): Bearing {
         return AstroUtils.getAzimuth(moon, time.toUniversalTime(), location, withParallax)
     }
 
-    override fun getNextMoonset(
+    fun getNextMoonset(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime? {
         val today = getMoonEvents(time, location, withRefraction, withParallax)
         if (today.set != null && today.set > time) {
@@ -291,11 +308,11 @@ object Astronomy : IAstronomyService {
         return null
     }
 
-    override fun getNextMoonrise(
+    fun getNextMoonrise(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): ZonedDateTime? {
         val today = getMoonEvents(time, location, withRefraction, withParallax)
         if (today.rise != null && today.rise > time) {
@@ -310,24 +327,24 @@ object Astronomy : IAstronomyService {
         return null
     }
 
-    override fun getMoonPhase(date: ZonedDateTime): MoonPhase {
+    fun getMoonPhase(date: ZonedDateTime): MoonPhase {
         return moon.getPhase(date.toUniversalTime())
     }
 
-    override fun isMoonUp(
+    fun isMoonUp(
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Boolean {
         return getMoonAltitude(time, location, withRefraction, withParallax) > 0
     }
 
-    override fun getMoonDistance(time: ZonedDateTime): Distance {
+    fun getMoonDistance(time: ZonedDateTime): Distance {
         return moon.getDistance(time.toUniversalTime())
     }
 
-    override fun isSuperMoon(time: ZonedDateTime): Boolean {
+    fun isSuperMoon(time: ZonedDateTime): Boolean {
         val phase = getMoonPhase(time)
         if (phase.phase != MoonTruePhase.Full) {
             return false
@@ -336,12 +353,22 @@ object Astronomy : IAstronomyService {
         return distance.convertTo(DistanceUnits.Kilometers).value <= 360000f
     }
 
-    override fun getMoonAboveHorizonTimes(
+    /**
+     * Gets the times the moon is above the horizon within approximately a day.
+     * If the sun does not set, it will return from the last rise (or start of day) until the end of the day.
+     * @param location The location of the observer
+     * @param time The current time
+     * @param nextRiseOffset The duration before the next rise to switch to the next day's times
+     * @param withRefraction True to correct for atmospheric refraction
+     * @param withParallax True to correct for parallax
+     * @return The range of times the moon is above the horizon or null if it is not above the horizon within approximately a day.
+     */
+    fun getMoonAboveHorizonTimes(
         location: Coordinate,
         time: ZonedDateTime,
-        nextRiseOffset: Duration,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        nextRiseOffset: Duration = Duration.ofHours(6),
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): Range<ZonedDateTime>? {
         return getAboveHorizonTimes(
             location,
@@ -352,15 +379,21 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getMoonTilt(time: ZonedDateTime, location: Coordinate): Float {
+    /**
+     * The tilt of the illuminated fraction of the moon in degrees clockwise from the top of the moon.
+     */
+    fun getMoonTilt(time: ZonedDateTime, location: Coordinate): Float {
         return moon.getTilt(time.toUniversalTime(), location)
     }
 
-    override fun getMoonParallacticAngle(time: ZonedDateTime, location: Coordinate): Float {
+    /**
+     * The parallactic angle of the moon in degrees.
+     */
+    fun getMoonParallacticAngle(time: ZonedDateTime, location: Coordinate): Float {
         return AstroUtils.getParallacticAngle(moon, time.toUniversalTime(), location)
     }
 
-    override fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
+    fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
         val sl = wrap(getSolarLongitude(date), 0f, 360f)
         return when {
             sl >= OrbitalPosition.WinterSolstice.solarLongitude -> if (location.isNorthernHemisphere) Season.Winter else Season.Summer
@@ -370,11 +403,11 @@ object Astronomy : IAstronomyService {
         }
     }
 
-    override fun getNextEclipse(
+    fun getNextEclipse(
         time: ZonedDateTime,
         location: Coordinate,
         type: EclipseType,
-        maxSearch: Duration?
+        maxSearch: Duration? = null
     ): Eclipse? {
         // TODO: Apply max search to lunar as well
         val calculator = when (type) {
@@ -385,7 +418,7 @@ object Astronomy : IAstronomyService {
         return calculator.getNextEclipse(time.toInstant(), location)
     }
 
-    override fun getEclipseMagnitude(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
+    fun getEclipseMagnitude(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
@@ -395,7 +428,7 @@ object Astronomy : IAstronomyService {
         return calculator.getMagnitude(time.toInstant(), location)
     }
 
-    override fun getEclipseObscuration(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
+    fun getEclipseObscuration(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()
@@ -405,7 +438,7 @@ object Astronomy : IAstronomyService {
         return calculator.getObscuration(time.toInstant(), location)
     }
 
-    override fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {
+    fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {
         val startOfDay = ZonedDateTime.of(date.toLocalDate(), LocalTime.MIN, date.zone)
 
         val solarLongitude = getSolarLongitude(date)
@@ -431,7 +464,7 @@ object Astronomy : IAstronomyService {
         return null
     }
 
-    override fun getMeteorShowerAltitude(
+    fun getMeteorShowerAltitude(
         shower: MeteorShower,
         location: Coordinate,
         time: Instant
@@ -440,7 +473,7 @@ object Astronomy : IAstronomyService {
         return AstroUtils.getAltitude(locator, time.toUniversalTime(), location, false)
     }
 
-    override fun getMeteorShowerAzimuth(
+    fun getMeteorShowerAzimuth(
         shower: MeteorShower,
         location: Coordinate,
         time: Instant
@@ -449,7 +482,11 @@ object Astronomy : IAstronomyService {
         return AstroUtils.getAzimuth(locator, time.toUniversalTime(), location)
     }
 
-    override fun getActiveMeteorShowers(
+    /**
+     * Get a list of meteor showers which are active.
+     * This does not check the time of day, so the shower may not currently be visible.
+     */
+    fun getActiveMeteorShowers(
         location: Coordinate,
         date: ZonedDateTime
     ): List<MeteorShowerPeak> {
@@ -472,7 +509,7 @@ object Astronomy : IAstronomyService {
         return active.toList()
     }
 
-    override fun getMeteorShowerPosition(
+    fun getMeteorShowerPosition(
         shower: MeteorShower,
         location: Coordinate,
         time: Instant
@@ -684,11 +721,11 @@ object Astronomy : IAstronomyService {
         return Range(nextRise, nextSet ?: time.atEndOfDay())
     }
 
-    override fun getStarAltitude(
+    fun getStarAltitude(
         star: Star,
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean
+        withRefraction: Boolean = false
     ): Float {
         return AstroUtils.getAltitude(
             StarLocator(star),
@@ -698,7 +735,7 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getStarAzimuth(
+    fun getStarAzimuth(
         star: Star,
         time: ZonedDateTime,
         location: Coordinate
@@ -706,18 +743,24 @@ object Astronomy : IAstronomyService {
         return AstroUtils.getAzimuth(StarLocator(star), time.toUniversalTime(), location)
     }
 
-    override fun getColorTemperature(star: Star): Float {
+    /**
+     * Get the color temperature of a star in Kelvin
+     */
+    fun getColorTemperature(star: Star): Float {
         return 4600f * ((1 / (0.92f * star.colorIndexBV + 1.7f)) + (1 / (0.92f * star.colorIndexBV + 0.62f)))
     }
 
-    override fun plateSolve(
+    /**
+     * Matches the readings to stars
+     */
+    fun plateSolve(
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
-        approximateLocation: Coordinate?,
-        tolerance: Float,
-        minMatches: Int,
-        numNeighbors: Int,
-        minMagnitude: Float
+        approximateLocation: Coordinate? = null,
+        tolerance: Float = 0.04f,
+        minMatches: Int = 5,
+        numNeighbors: Int = 3,
+        minMagnitude: Float = 4f
     ): List<DetectedStar> {
         return PlateSolver(tolerance, minMatches, numNeighbors, minMagnitude).solve(
             readings,
@@ -726,24 +769,24 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getZenithDistance(altitude: Float): Distance {
+    fun getZenithDistance(altitude: Float): Distance {
         val zenith = 90f - altitude
         return Distance.nauticalMiles(zenith * 60)
     }
 
-    override fun getLocationFromStars(
+    fun getLocationFromStars(
         starReadings: List<StarReading>,
-        approximateLocation: Coordinate?
+        approximateLocation: Coordinate? = null
     ): Coordinate? {
         return StarLocationCalculator().getLocationFromStars(starReadings, approximateLocation)
     }
 
-    override fun getPlanetPosition(
+    fun getPlanetPosition(
         planet: Planet,
         time: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): CelestialObservation {
         val ut = time.toUniversalTime()
         val locator = PlanetLocator(planet)
@@ -766,12 +809,12 @@ object Astronomy : IAstronomyService {
         )
     }
 
-    override fun getPlanetEvents(
+    fun getPlanetEvents(
         planet: Planet,
         date: ZonedDateTime,
         location: Coordinate,
-        withRefraction: Boolean,
-        withParallax: Boolean
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes {
         return riseSetTransitCalculator.calculate(
             PlanetLocator(planet),
