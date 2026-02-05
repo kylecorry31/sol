@@ -8,9 +8,9 @@ import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.geology.Region
 import com.kylecorry.sol.science.meteorology.Precipitation
 
-internal class CloudService : ICloudService {
+internal class CloudService {
 
-    override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
+    fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
         return when (cloud) {
             CloudGenus.Altostratus -> listOf(
                 Precipitation.Rain,
@@ -50,7 +50,7 @@ internal class CloudService : ICloudService {
         }
     }
 
-    override fun getPrecipitationChance(cloud: CloudGenus): Float {
+    fun getPrecipitationChance(cloud: CloudGenus): Float {
         // Using average values from table 9: https://www.ideals.illinois.edu/bitstream/handle/2142/101973/ISWSRI-33.pdf?sequence=1&isAllowed=y
         return when (cloud) {
             CloudGenus.Cirrus -> 0f
@@ -66,7 +66,7 @@ internal class CloudService : ICloudService {
         }
     }
 
-    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
+    fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
         if (level == CloudLevel.Low) {
             return Range(
                 Distance.from(0f, DistanceUnits.Kilometers),
@@ -99,7 +99,7 @@ internal class CloudService : ICloudService {
         }
     }
 
-    override fun getCloudCover(percent: Float): CloudCover {
+    fun getCloudCover(percent: Float): CloudCover {
         return when {
             percent < 0.01f -> {
                 CloudCover.NoClouds

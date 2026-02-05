@@ -17,12 +17,12 @@ import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
 
-object Meteorology : IWeatherService {
+object Meteorology {
 
     private val cloudService = CloudService()
 
-    override fun getSeaLevelPressure(
-        pressure: Pressure, altitude: Distance, temperature: Temperature?
+    fun getSeaLevelPressure(
+        pressure: Pressure, altitude: Distance, temperature: Temperature? = null
     ): Pressure {
         val hpa = pressure.hpa().value
         val meters = altitude.meters().value
@@ -38,15 +38,23 @@ object Meteorology : IWeatherService {
         return Pressure.hpa(adjustedPressure).convertTo(pressure.units)
     }
 
-    override fun isHighPressure(pressure: Pressure): Boolean {
+    fun isHighPressure(pressure: Pressure): Boolean {
         return pressure.hpa().value >= 1022.689
     }
 
-    override fun isLowPressure(pressure: Pressure): Boolean {
+    fun isLowPressure(pressure: Pressure): Boolean {
         return pressure.hpa().value <= 1009.144
     }
 
-    override fun getTendency(
+    /**
+     * Calculates the tendency
+     * @param last The last pressure reading (hPa)
+     * @param current The current pressure reading (hPa)
+     * @param duration The duration between the last and current pressure reading
+     * @param changeThreshold The change threshold (hPa / hr)
+     * @return The pressure tendency (hPa / hr)
+     */
+    fun getTendency(
         last: Pressure, current: Pressure, duration: Duration, changeThreshold: Float
     ): PressureTendency {
         val diff = current.hpa().value - last.hpa().value
@@ -72,8 +80,14 @@ object Meteorology : IWeatherService {
 
     }
 
-    override fun forecast(
-        tendency: PressureTendency, stormThreshold: Float?
+    /**
+     * Forecast the weather in the next few hours
+     * @param tendency The current pressure tendency (hPa / hr)
+     * @param stormThreshold (optional) The change threshold to consider a storm (hPa / hr)
+     * @return The predicted weather
+     */
+    fun forecast(
+        tendency: PressureTendency, stormThreshold: Float? = null
     ): Weather {
         val isStorm = tendency.amount <= (stormThreshold ?: -2f)
 
@@ -90,15 +104,27 @@ object Meteorology : IWeatherService {
         }
     }
 
-    override fun forecast(
+    /**
+     * Forecast the weather for the next few hours
+     * @param pressures the pressure readings
+     * @param clouds the cloud readings, null cloud genus = Clear
+     * @param dailyTemperatureRange the daily temperature range for the given time (the next 24 hours, but can be less than that)
+     * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
+     * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
+     * @param time the time to calculate the forecast after
+     * @param location the location to calculate the forecast for (may be used to determine climate zone / hemisphere - does not need to be very accurate)
+     * @param source the source to use to derive the forecast
+     * @return the predicted weather (now and later - times are not accurate yet)
+     */
+    fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
         dailyTemperatureRange: Range<Temperature>?,
-        pressureChangeThreshold: Float,
-        pressureStormChangeThreshold: Float,
-        time: Instant,
-        location: Coordinate,
-        source: ForecastSource
+        pressureChangeThreshold: Float = 0.5f,
+        pressureStormChangeThreshold: Float = 2f,
+        time: Instant = Instant.now(),
+        location: Coordinate = Coordinate.zero,
+        source: ForecastSource = ForecastSource.Sol
     ): List<WeatherForecast> {
         val pressureObservations = pressures.map { WeatherObservation.Pressure(it.time, it.value) }
         val cloudObservations = clouds.map { WeatherObservation.CloudGenus(it.time, it.value) }
@@ -113,14 +139,25 @@ object Meteorology : IWeatherService {
         )
     }
 
-    override fun forecast(
+    /**
+     * Forecast the weather for the next few hours
+     * @param observations the weather observations
+     * @param dailyTemperatureRange the daily temperature range for the given time (the next 24 hours, but can be less than that)
+     * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
+     * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
+     * @param time the time to calculate the forecast after
+     * @param location the location to calculate the forecast for (may be used to determine climate zone / hemisphere - does not need to be very accurate)
+     * @param source the source to use to derive the forecast
+     * @return the predicted weather (now and later - times are not accurate yet)
+     */
+    fun forecast(
         observations: List<WeatherObservation<*>>,
         dailyTemperatureRange: Range<Temperature>?,
-        pressureChangeThreshold: Float,
-        pressureStormChangeThreshold: Float,
-        time: Instant,
-        location: Coordinate,
-        source: ForecastSource
+        pressureChangeThreshold: Float = 0.5f,
+        pressureStormChangeThreshold: Float = 2f,
+        time: Instant = Instant.now(),
+        location: Coordinate = Coordinate.zero,
+        source: ForecastSource = ForecastSource.Sol
     ): List<WeatherForecast> {
 
         val forecaster = when (source) {
@@ -138,7 +175,13 @@ object Meteorology : IWeatherService {
         )
     }
 
-    override fun getHeatIndex(temperature: Float, relativeHumidity: Float): Float {
+    /**
+     * Calculates the heat index
+     * @param temperature The temperature (C)
+     * @param relativeHumidity The relative humidity (%)
+     * @return The heat index (C)
+     */
+    fun getHeatIndex(temperature: Float, relativeHumidity: Float): Float {
         if (temperature < 27) return temperature
 
         val c1 = -8.78469475556
@@ -157,7 +200,12 @@ object Meteorology : IWeatherService {
         return hi.toFloat()
     }
 
-    override fun getHeatAlert(heatIndex: Float): HeatAlert {
+    /**
+     * Get the current heat alert level
+     * @param heatIndex The heat index (C)
+     * @return The heat alert level
+     */
+    fun getHeatAlert(heatIndex: Float): HeatAlert {
         return when {
             heatIndex <= -25 -> HeatAlert.FrostbiteDanger
             heatIndex <= -17 -> HeatAlert.FrostbiteWarning
@@ -170,7 +218,13 @@ object Meteorology : IWeatherService {
         }
     }
 
-    override fun getDewPoint(temperature: Float, relativeHumidity: Float): Float {
+    /**
+     * Calculates the dew point
+     * @param temperature The temperature (C)
+     * @param relativeHumidity The relative humidity (%)
+     * @return The dew point (C)
+     */
+    fun getDewPoint(temperature: Float, relativeHumidity: Float): Float {
         val m = 17.62
         val tn = 243.12
         var lnRH = ln(relativeHumidity.toDouble() / 100)
@@ -183,7 +237,13 @@ object Meteorology : IWeatherService {
         return dewPoint.toFloat()
     }
 
-    override fun getLightningStrikeDistance(lightning: Instant, thunder: Instant): Float {
+    /**
+     * Calculates the distance of the lightning strike from the current position in meters
+     * @param lightning The time the lightning was seen
+     * @param thunder The time the thunder was heard
+     * @return The distance to the lightning strike in meters
+     */
+    fun getLightningStrikeDistance(lightning: Instant, thunder: Instant): Float {
         val speedOfSound = 343f
         val duration = Duration.between(lightning, thunder)
 
@@ -195,19 +255,31 @@ object Meteorology : IWeatherService {
         return speedOfSound * seconds
     }
 
-    override fun isLightningStrikeDangerous(distance: Distance): Boolean {
+    /**
+     * Determines if the lightning strike is close enough for concern
+     * @param distance The distance to the lightning strike
+     * @return true if the strike is dangerous, false otherwise
+     */
+    fun isLightningStrikeDangerous(distance: Distance): Boolean {
         // https://www.weather.gov/media/zhu/ZHU_Training_Page/lightning_stuff/lightning/lightning_facts.pdf
         return distance.meters().value <= 10000
     }
 
-    override fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
+    /**
+     * Calculates the ambient temperature from sequential temperature readings
+     * @param temp0 the initial temperature (celsius)
+     * @param temp1 the temperature occurring 1 time unit after temp0
+     * @param temp2 the temperature occurring 2 time units after temp0
+     * @return the ambient temperature in celsius or null if the readings weren't all increasing or decreasing
+     */
+    fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
         if (!((temp0 < temp1 && temp1 < temp2) || (temp0 > temp1 && temp1 > temp2))) {
             return null
         }
         return (temp0 * temp2 - temp1 * temp1) / (temp0 + temp2 - 2 * temp1)
     }
 
-    override fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
+    fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
         val north = location.isNorthernHemisphere
         val d = date.toLocalDate()
         return when {
@@ -219,7 +291,14 @@ object Meteorology : IWeatherService {
         }
     }
 
-    override fun getTemperatureAtElevation(
+    /**
+     * Calculates the temperature at an elevation
+     * @param temperature the temperature at the base elevation
+     * @param baseElevation the elevation in which the temperature reading was taken
+     * @param destElevation the elevation of the destination
+     * @return the temperature at the destination
+     */
+    fun getTemperatureAtElevation(
         temperature: Temperature, baseElevation: Distance, destElevation: Distance
     ): Temperature {
         val celsius = temperature.celsius().value
@@ -231,23 +310,50 @@ object Meteorology : IWeatherService {
             .convertTo(temperature.units)
     }
 
-    override fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
+    /**
+     * Get the likely precipitation types for the given cloud
+     * @param cloud the type of cloud
+     * @return the types of precipitation the cloud can produce
+     */
+    fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
         return cloudService.getPrecipitation(cloud)
     }
 
-    override fun getPrecipitationChance(cloud: CloudGenus): Float {
+    /**
+     * Get the likelihood that the cloud will precipitate
+     * @param cloud the type of cloud
+     * @return the chance that it will precipitate [0, 1]
+     */
+    fun getPrecipitationChance(cloud: CloudGenus): Float {
         return cloudService.getPrecipitationChance(cloud)
     }
 
-    override fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
+    /**
+     * Get the height range of the cloud layer
+     * @param level the cloud layer
+     * @param location the location
+     * @return the height range of the cloud layer
+     */
+    fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
         return cloudService.getHeightRange(level, location)
     }
 
-    override fun getCloudCover(percent: Float): CloudCover {
+    /**
+     * Get the cloud cover label
+     * @param percent the percent cloud cover [0, 1]
+     * @return the cloud cover classification
+     */
+    fun getCloudCover(percent: Float): CloudCover {
         return cloudService.getCloudCover(percent)
     }
 
-    override fun getKoppenGeigerClimateClassification(
+    /**
+     * Calculates the Koppen-Geiger climate classification
+     * @param temperatures The average monthly temperatures
+     * @param precipitation The average monthly precipitation
+     * @return The Koppen-Geiger climate classification
+     */
+    fun getKoppenGeigerClimateClassification(
         temperatures: Map<Month, Temperature>,
         precipitation: Map<Month, Distance>
     ): KoppenGeigerClimateClassification {
