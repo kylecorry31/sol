@@ -13,7 +13,7 @@ import com.kylecorry.sol.units.*
 import java.time.Instant
 import kotlin.math.*
 
-object Geology : IGeologyService {
+object Geology {
 
     const val GRAVITY = 9.81f
     const val EARTH_AVERAGE_RADIUS = 6371.2e3
@@ -28,10 +28,10 @@ object Geology : IGeologyService {
         deltaHCoefficients = WorldMagneticModel2025.DELTA_H
     )
 
-    override fun getGeomagneticDeclination(
+    fun getGeomagneticDeclination(
         coordinate: Coordinate,
-        altitude: Float?,
-        time: Long
+        altitude: Float? = null,
+        time: Long = System.currentTimeMillis()
     ): Float {
         val geoField = worldMagneticModel.getVector(
             coordinate,
@@ -41,10 +41,10 @@ object Geology : IGeologyService {
         return atan2(geoField.y, geoField.x).toDegrees()
     }
 
-    override fun getGeomagneticInclination(
+    fun getGeomagneticInclination(
         coordinate: Coordinate,
-        altitude: Float?,
-        time: Long
+        altitude: Float? = null,
+        time: Long = System.currentTimeMillis()
     ): Float {
         val geoField = worldMagneticModel.getVector(
             coordinate,
@@ -54,10 +54,10 @@ object Geology : IGeologyService {
         return atan2(geoField.z, hypot(geoField.x, geoField.y)).toDegrees()
     }
 
-    override fun getGeomagneticField(
+    fun getGeomagneticField(
         coordinate: Coordinate,
-        altitude: Float?,
-        time: Long
+        altitude: Float? = null,
+        time: Long = System.currentTimeMillis()
     ): Vector3 {
         val geoField = worldMagneticModel.getVector(
             coordinate,
@@ -67,7 +67,7 @@ object Geology : IGeologyService {
         return Vector3(geoField.x * 0.001f, geoField.y * 0.001f, geoField.z * 0.001f)
     }
 
-    override fun getGravity(coordinate: Coordinate): Float {
+    fun getGravity(coordinate: Coordinate): Float {
         // Somigliana equation (IGF80)
         val ellipsoid = ReferenceEllipsoid.wgs84
         val ge = 9.78032677153489
@@ -77,11 +77,21 @@ object Geology : IGeologyService {
         return (ge * (1 + k * sinLat2) / sqrt(1 - e2 * sinLat2)).toFloat()
     }
 
-    override fun getAvalancheRisk(inclination: Float): AvalancheRisk {
+    /**
+     * Determine the avalanche risk of a slope
+     * @param inclination The inclination angle (degrees)
+     * @return The avalanche risk
+     */
+    fun getAvalancheRisk(inclination: Float): AvalancheRisk {
         return riskClassifier.classify(inclination)
     }
 
-    override fun getSlopeGrade(inclination: Float): Float {
+    /**
+     * Determines the grade (percent)
+     * @param inclination The inclination angle (degrees)
+     * @return The slope grade as a percentage
+     */
+    fun getSlopeGrade(inclination: Float): Float {
         if (inclination == 90f) {
             return Float.POSITIVE_INFINITY
         } else if (inclination == -90f) {
@@ -91,15 +101,22 @@ object Geology : IGeologyService {
         return SolMath.tanDegrees(inclination) * 100
     }
 
-    override fun getInclinationFromSlopeGrade(grade: Float): Float {
+    fun getInclinationFromSlopeGrade(grade: Float): Float {
         return atan(grade / 100f).toDegrees()
     }
 
-    override fun getInclination(distance: Distance, elevationChange: Distance): Float {
+    fun getInclination(distance: Distance, elevationChange: Distance): Float {
         return getInclinationFromSlopeGrade(getSlopeGrade(distance, elevationChange))
     }
 
-    override fun getHeightFromInclination(
+    /**
+     * Estimates the height of an object
+     * @param distance The distance to the object
+     * @param bottomInclination The inclination angle to the bottom (degrees)
+     * @param topInclination The inclination angle to the top (degrees)
+     * @return The estimated height of the object
+     */
+    fun getHeightFromInclination(
         distance: Distance,
         bottomInclination: Float,
         topInclination: Float
@@ -114,7 +131,14 @@ object Geology : IGeologyService {
         return Distance.from(((up - down) * distance.value).absoluteValue, distance.units)
     }
 
-    override fun getDistanceFromInclination(
+    /**
+     * Estimates the distance to an object
+     * @param height The height to the object
+     * @param bottomInclination The inclination angle to the bottom (degrees)
+     * @param topInclination The inclination angle to the top (degrees)
+     * @return The estimated distance to the object
+     */
+    fun getDistanceFromInclination(
         height: Distance,
         bottomInclination: Float,
         topInclination: Float
@@ -128,7 +152,11 @@ object Geology : IGeologyService {
         return Distance.from((height.value / (up - down)).absoluteValue, height.units)
     }
 
-    override fun getInclination(angle: Float): Float {
+    /**
+     * Calculates the inclination from a unit angle
+     * @param angle The angle, where 0 is the horizon (front), 90 is the sky (above), 180 is the horizon (behind), and 270 is the ground (below)
+     */
+    fun getInclination(angle: Float): Float {
         return when (val wrappedAngle = wrap(angle, 0f, 360f)) {
             in 90f..270f -> 180f - wrappedAngle
             in 270f..360f -> wrappedAngle - 360f
@@ -136,7 +164,13 @@ object Geology : IGeologyService {
         }
     }
 
-    override fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float {
+    /**
+     * Determines the grade (percent)
+     * @param horizontal The horizontal distance
+     * @param vertical The vertical distance
+     * @return The slope grade as a percentage
+     */
+    fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float {
         val y = vertical.meters().value
         val x = horizontal.meters().value
 
@@ -155,7 +189,15 @@ object Geology : IGeologyService {
         return y / x * 100
     }
 
-    override fun getSlopeGrade(
+    /**
+     * Determines the grade (percent)
+     * @param start The starting coordinate
+     * @param startElevation The starting elevation
+     * @param end The ending coordinate
+     * @param endElevation The ending elevation
+     * @return The slope grade as a percentage
+     */
+    fun getSlopeGrade(
         start: Coordinate,
         startElevation: Distance,
         end: Coordinate,
@@ -167,15 +209,15 @@ object Geology : IGeologyService {
         )
     }
 
-    override fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean {
+    fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean {
         return area.contains(coordinate)
     }
 
-    override fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing {
+    fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing {
         return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing.from(0f)
     }
 
-    override fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance {
+    fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance {
         // TODO: Factor in temperature
         val hpa = pressure.hpa().value
         val seaHpa = seaLevelPressure.hpa().value
@@ -183,7 +225,7 @@ object Geology : IGeologyService {
         return Distance.meters(meters.toFloat())
     }
 
-    override fun getRegion(coordinate: Coordinate): Region {
+    fun getRegion(coordinate: Coordinate): Region {
         return when {
             coordinate.latitude.absoluteValue >= 66.5 -> Region.Polar
             coordinate.latitude.absoluteValue >= 23.5 -> Region.Temperate
@@ -191,7 +233,7 @@ object Geology : IGeologyService {
         }
     }
 
-    override fun getMapDistance(
+    fun getMapDistance(
         measurement: Distance,
         scaleFrom: Distance,
         scaleTo: Distance
@@ -203,15 +245,24 @@ object Geology : IGeologyService {
         )
     }
 
-    override fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
+    fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
         return Distance.from(ratioTo * measurement.value / ratioFrom, measurement.units)
     }
 
-    override fun getBounds(points: List<Coordinate>): CoordinateBounds {
+    fun getBounds(points: List<Coordinate>): CoordinateBounds {
         return CoordinateBounds.from(points)
     }
 
-    override fun triangulateSelf(
+    /**
+     * Triangulate a coordinate using two known coordinates and the bearings from the unknown coordinate to the known coordinates.
+     * Use this if you want to find your location by taking readings to two known locations.
+     * @param referenceA The first known coordinate
+     * @param selfToReferenceBearingA The bearing from the unknown coordinate to the first known coordinate (True North)
+     * @param referenceB The second known coordinate
+     * @param selfToReferenceBearingB The bearing from the unknown coordinate to the second known coordinate (True North)
+     * @return The triangulated coordinate, if possible
+     */
+    fun triangulateSelf(
         referenceA: Coordinate,
         selfToReferenceBearingA: Bearing,
         referenceB: Coordinate,
@@ -275,7 +326,16 @@ object Geology : IGeologyService {
         return Coordinate(normalizedLat, normalizedLng)
     }
 
-    override fun triangulateDestination(
+    /**
+     * Triangulate a coordinate using two known coordinates and the bearings from the known coordinates to the unknown coordinate.
+     * Use this if you want to find the location of a destination by taking readings at two known locations.
+     * @param referenceA The first known coordinate
+     * @param referenceAToDestinationBearing The bearing from the first known coordinate to the unknown coordinate (True North)
+     * @param referenceB The second known coordinate
+     * @param referenceBToDestinationBearing The bearing from the second known coordinate to the unknown coordinate (True North)
+     * @return The triangulated coordinate, if possible
+     */
+    fun triangulateDestination(
         referenceA: Coordinate,
         referenceAToDestinationBearing: Bearing,
         referenceB: Coordinate,
@@ -289,7 +349,7 @@ object Geology : IGeologyService {
         )
     }
 
-    override fun deadReckon(
+    fun deadReckon(
         lastLocation: Coordinate,
         distanceTravelled: Float,
         bearingToLast: Bearing
@@ -297,12 +357,12 @@ object Geology : IGeologyService {
         return lastLocation.plus(distanceTravelled.toDouble(), bearingToLast.inverse())
     }
 
-    override fun navigate(
+    fun navigate(
         from: Coordinate,
         to: Coordinate,
-        declination: Float,
-        useTrueNorth: Boolean,
-        highAccuracy: Boolean
+        declination: Float = 0f,
+        useTrueNorth: Boolean = true,
+        highAccuracy: Boolean = true
     ): NavigationVector {
         val results = if (highAccuracy) {
             DistanceCalculator.vincenty(from, to)
@@ -322,7 +382,7 @@ object Geology : IGeologyService {
         )
     }
 
-    override fun getCrossTrackDistance(
+    fun getCrossTrackDistance(
         point: Coordinate,
         start: Coordinate,
         end: Coordinate
@@ -346,7 +406,7 @@ object Geology : IGeologyService {
         return Distance.meters(crossTrackDistance.toFloat())
     }
 
-    override fun getAlongTrackDistance(
+    fun getAlongTrackDistance(
         point: Coordinate,
         start: Coordinate,
         end: Coordinate
@@ -375,7 +435,7 @@ object Geology : IGeologyService {
         return Distance.meters(distance.toFloat())
     }
 
-    override fun getNearestPoint(
+    fun getNearestPoint(
         point: Coordinate,
         start: Coordinate,
         end: Coordinate
@@ -396,11 +456,11 @@ object Geology : IGeologyService {
         return start.plus(alongTrack, bearing)
     }
 
-    override fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
+    fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
         return from.plus(distance.toDouble(), bearing)
     }
 
-    override fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean): Distance {
+    fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Distance {
         if (points.size < 2) {
             return Distance.meters(0f)
         }
@@ -413,7 +473,7 @@ object Geology : IGeologyService {
         return Distance.meters(distance)
     }
 
-    override fun getElevationGain(elevations: List<Distance>): Distance {
+    fun getElevationGain(elevations: List<Distance>): Distance {
         var sum = 0f
 
         if (elevations.isEmpty()) {
@@ -431,7 +491,7 @@ object Geology : IGeologyService {
         return Distance.meters(sum)
     }
 
-    override fun getElevationLoss(elevations: List<Distance>): Distance {
+    fun getElevationLoss(elevations: List<Distance>): Distance {
         var sum = 0f
 
         if (elevations.isEmpty()) {

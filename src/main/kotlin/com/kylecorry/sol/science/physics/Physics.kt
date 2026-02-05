@@ -3,38 +3,48 @@ package com.kylecorry.sol.science.physics
 import com.kylecorry.sol.math.*
 import com.kylecorry.sol.math.calculus.RungeKutta4thOrderSolver
 import com.kylecorry.sol.math.interpolation.Interpolator
+import com.kylecorry.sol.math.interpolation.LinearInterpolator
+import com.kylecorry.sol.math.optimization.HillClimbingOptimizer
 import com.kylecorry.sol.math.optimization.IOptimizer
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.units.*
 import java.time.Duration
 import kotlin.math.absoluteValue
 
-object Physics : IPhysicsService {
+object Physics {
 
-    override fun fallHeight(time: Duration, gravity: Float): Distance {
+    fun fallHeight(time: Duration, gravity: Float = Geology.GRAVITY): Distance {
         val seconds = time.toMillis() / 1000f
         return Distance.from(0.5f * gravity * seconds * seconds, DistanceUnits.Meters)
     }
 
-    override fun isMetal(magneticField: Vector3, threshold: Float): Boolean {
+    fun isMetal(magneticField: Vector3, threshold: Float = 65f): Boolean {
         return isMetal(magneticField.magnitude(), threshold)
     }
 
-    override fun isMetal(fieldStrength: Float, threshold: Float): Boolean {
+    fun isMetal(fieldStrength: Float, threshold: Float = 65f): Boolean {
         return fieldStrength >= threshold
     }
 
-    override fun removeGeomagneticField(
+    /**
+     * Removes the geomagnetic field from a raw magnetometer reading.
+     * The orientation changes is the changes in phone orientation from the point the geomagnetic field was taken.
+     */
+    fun removeGeomagneticField(
         rawMagneticField: Vector3,
         geomagneticField: Vector3,
-        orientationChange: Quaternion?
+        orientationChange: Quaternion? = null
     ): Vector3 {
         val updatedGeo = orientationChange?.rotate(geomagneticField)
             ?: (rawMagneticField.normalize() * geomagneticField.magnitude())
         return rawMagneticField - updatedGeo
     }
 
-    override fun getMetalDirection(
+    /**
+     * Calculates the direction to a piece of metal
+     * @return The poles pointing to and away from the metal (unable to determine which)
+     */
+    fun getMetalDirection(
         magneticField: Vector3,
         gravity: Vector3
     ): Pair<Bearing, Bearing> {
@@ -42,12 +52,15 @@ object Physics : IPhysicsService {
         return azimuth to azimuth.inverse()
     }
 
-    override fun getTrajectory2D(
-        initialPosition: Vector2,
-        initialVelocity: Vector2,
-        dragModel: DragModel,
-        timeStep: Float,
-        maxTime: Float,
+    /**
+     * Calculates the trajectory of a projectile in 2D space.
+     */
+    fun getTrajectory2D(
+        initialPosition: Vector2 = Vector2.zero,
+        initialVelocity: Vector2 = Vector2.zero,
+        dragModel: DragModel = NoDragModel(),
+        timeStep: Float = 0.01f,
+        maxTime: Float = 10f,
     ): List<TrajectoryPoint2D> {
         val trajectory = mutableListOf<TrajectoryPoint2D>()
 
@@ -77,17 +90,22 @@ object Physics : IPhysicsService {
         return trajectory
     }
 
-    override fun getVelocityVectorForImpact(
+    /**
+     * Calculates the required velocity vector for an impact at a target position with the given velocity.
+     */
+    fun getVelocityVectorForImpact(
         targetPosition: Vector2,
         velocity: Float,
-        initialPosition: Vector2,
-        dragModel: DragModel,
-        timeStep: Float,
-        maxTime: Float,
-        minAngle: Float,
-        maxAngle: Float,
-        optimizer: IOptimizer,
-        getInterpolator: (points: List<Vector2>) -> Interpolator
+        initialPosition: Vector2 = Vector2.zero,
+        dragModel: DragModel = NoDragModel(),
+        timeStep: Float = 0.01f,
+        maxTime: Float = 10f,
+        minAngle: Float = 0f,
+        maxAngle: Float = 90f,
+        optimizer: IOptimizer = HillClimbingOptimizer(0.001, initialValue = 0.0 to 0.0),
+        getInterpolator: (points: List<Vector2>) -> Interpolator = { points ->
+            LinearInterpolator(points)
+        }
     ): Vector2 {
         val bestAngle = optimizer.optimize(
             Range(minAngle.toDouble(), maxAngle.toDouble()),
@@ -118,28 +136,14 @@ object Physics : IPhysicsService {
         )
     }
 
-    override fun getKineticEnergy(mass: Weight, speed: Speed): Energy {
+    /**
+     * Calculates the kinetic energy of an object moving at a given speed.
+     */
+    fun getKineticEnergy(mass: Weight, speed: Speed): Energy {
         val massKg = mass.convertTo(WeightUnits.Kilograms).value
         val speedMps = speed.convertTo(DistanceUnits.Meters, TimeUnits.Seconds).speed
         val joules = 0.5f * massKg * speedMps * speedMps
         return Energy.from(joules, EnergyUnits.Joules)
-    }
-
-}
-
-data class TrajectoryPoint2D(
-    val time: Float,
-    val position: Vector2,
-    val velocity: Vector2
-)
-
-interface DragModel {
-    fun getDragAcceleration(velocity: Vector2): Vector2
-}
-
-class NoDragModel : DragModel {
-    override fun getDragAcceleration(velocity: Vector2): Vector2 {
-        return Vector2.zero
     }
 
 }
