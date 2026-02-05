@@ -2,10 +2,10 @@ package com.kylecorry.sol.math
 
 import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.math.arithmetic.Arithmetic
-import com.kylecorry.sol.math.filters.LowPassFilter
-import com.kylecorry.sol.math.filters.MovingAverageFilter
 import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.interpolation.Interpolation
+import com.kylecorry.sol.math.lists.Lists
+import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.*
 
 object SolMath {
@@ -143,25 +143,11 @@ object SolMath {
     }
 
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
-        if (data.isEmpty()) {
-            return data
-        }
-
-        val filter = LowPassFilter(smoothing, data.first())
-
-        return data.mapIndexed { index, value ->
-            if (index == 0) {
-                value
-            } else {
-                filter.filter(value)
-            }
-        }
+        return Statistics.smooth(data, smoothing)
     }
 
     fun movingAverage(data: List<Float>, window: Int = 5): List<Float> {
-        val filter = MovingAverageFilter(window)
-
-        return data.map { filter.filter(it) }
+        return Statistics.movingAverage(data, window)
     }
 
     fun removeOutliers(
@@ -170,34 +156,7 @@ object SolMath {
         replaceWithAverage: Boolean = false,
         replaceLast: Boolean = false
     ): List<Double> {
-        if (measurements.size < 3) {
-            return measurements
-        }
-
-        val filtered = mutableListOf(measurements.first())
-
-        for (i in 1 until measurements.lastIndex) {
-            val before = measurements[i - 1]
-            val current = measurements[i]
-            val after = measurements[i + 1]
-
-            val last = if (replaceWithAverage) (before + after) / 2 else filtered.last()
-
-            if (current - before > threshold && current - after > threshold) {
-                filtered.add(last)
-            } else if (current - before < -threshold && current - after < -threshold) {
-                filtered.add(last)
-            } else {
-                filtered.add(current)
-            }
-        }
-
-        if (replaceLast && abs(filtered.last() - measurements.last()) > threshold) {
-            filtered.add(filtered.last())
-        } else {
-            filtered.add(measurements.last())
-        }
-        return filtered
+        return Statistics.removeOutliers(measurements, threshold, replaceWithAverage, replaceLast)
     }
 
     fun lerp(percent: Float, start: Float, end: Float, shouldClamp: Boolean = false): Float {
@@ -256,39 +215,15 @@ object SolMath {
     }
 
     fun <T : Comparable<T>> argmax(values: List<T>): Int {
-        if (values.isEmpty()) {
-            return -1
-        }
-
-        var maxIndex = 0
-
-        for (i in values.indices) {
-            if (values[i] > values[maxIndex]) {
-                maxIndex = i
-            }
-        }
-
-        return maxIndex
+        return Lists.argmax(values)
     }
 
     fun <T : Comparable<T>> argmin(values: List<T>): Int {
-        if (values.isEmpty()) {
-            return -1
-        }
-
-        var minIndex = 0
-
-        for (i in values.indices) {
-            if (values[i] < values[minIndex]) {
-                minIndex = i
-            }
-        }
-
-        return minIndex
+        return Lists.argmin(values)
     }
 
     fun <T> oneHot(value: Int, classes: Int, on: T, off: T): List<T> {
-        return List(classes) { if (it == value) on else off }
+        return Lists.oneHot(value, classes, on, off)
     }
 
     fun isCloseTo(a: Double, b: Double, tolerance: Double): Boolean {
@@ -300,42 +235,19 @@ object SolMath {
     }
 
     fun isIncreasingX(data: List<Vector2>): Boolean {
-        for (i in 1 until data.size) {
-            if (data[i].x < data[i - 1].x) {
-                return false
-            }
-        }
-        return true
+        return Lists.isIncreasingX(data)
     }
 
     fun <T> reorder(data: List<T>, indices: List<Int>, inverse: Boolean = false): List<T> {
-        return if (inverse) {
-            val newIndices = MutableList(indices.size) { it }
-            for (i in indices.indices) {
-                val index = indices[i]
-                newIndices[index] = i
-            }
-            reorder(data, newIndices, false)
-        } else {
-            val newData = data.toMutableList()
-            for (i in data.indices) {
-                val index = indices[i]
-                newData[i] = data[index]
-            }
-            newData
-        }
+        return Lists.reorder(data, indices, inverse)
     }
 
     fun <T : Comparable<T>> sortIndices(data: List<T>): List<Int> {
-        return data.mapIndexed { index, value ->
-            index to value
-        }.sortedBy { it.second }.map { it.first }
+        return Lists.sortIndices(data)
     }
 
     fun <T : Comparable<T>> sortIndicesDescending(data: List<T>): List<Int> {
-        return data.mapIndexed { index, value ->
-            index to value
-        }.sortedByDescending { it.second }.map { it.first }
+        return Lists.sortIndicesDescending(data)
     }
 
     fun Float.real(defaultValue: Float = 0f): Float {
@@ -387,13 +299,11 @@ object SolMath {
     }
 
     fun toDegrees(degrees: Double, minutes: Double = 0.0, seconds: Double = 0.0): Double {
-        val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
-        return sign * (degrees.absoluteValue + minutes.absoluteValue / 60 + seconds.absoluteValue / 3600)
+        return Trigonometry.toDegrees(degrees, minutes, seconds)
     }
 
     fun toDegrees(degrees: Float, minutes: Float = 0f, seconds: Float = 0f): Float {
-        val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
-        return sign * (degrees.absoluteValue + minutes.absoluteValue / 60 + seconds.absoluteValue / 3600)
+        return Trigonometry.toDegrees(degrees, minutes, seconds)
     }
 
     fun isApproximatelyEqual(a: Float, b: Float, tolerance: Float = EPSILON_FLOAT): Boolean {

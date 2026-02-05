@@ -24,6 +24,16 @@ object Trigonometry {
         return Math.toDegrees(angle.toDouble()).toFloat()
     }
 
+    fun toDegrees(degrees: Double, minutes: Double = 0.0, seconds: Double = 0.0): Double {
+        val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
+        return sign * (abs(degrees) + abs(minutes) / 60 + abs(seconds) / 3600)
+    }
+
+    fun toDegrees(degrees: Float, minutes: Float = 0f, seconds: Float = 0f): Float {
+        val sign = if (degrees < 0 || minutes < 0 || seconds < 0) -1 else 1
+        return sign * (abs(degrees) + abs(minutes) / 60 + abs(seconds) / 3600)
+    }
+
     fun sinDegrees(angle: Double): Double {
         return sin(toRadians(angle))
     }

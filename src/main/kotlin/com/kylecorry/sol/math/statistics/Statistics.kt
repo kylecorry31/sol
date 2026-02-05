@@ -8,8 +8,11 @@ import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.multiply
+import com.kylecorry.sol.math.filters.LowPassFilter
+import com.kylecorry.sol.math.filters.MovingAverageFilter
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
+import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -257,5 +260,63 @@ object Statistics {
             return 0f
         }
         return tp / (tp + fp)
+    }
+
+    fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
+        if (data.isEmpty()) {
+            return data
+        }
+
+        val filter = LowPassFilter(smoothing, data.first())
+
+        return data.mapIndexed { index, value ->
+            if (index == 0) {
+                value
+            } else {
+                filter.filter(value)
+            }
+        }
+    }
+
+    fun movingAverage(data: List<Float>, window: Int = 5): List<Float> {
+        val filter = MovingAverageFilter(window)
+
+        return data.map { filter.filter(it) }
+    }
+
+    fun removeOutliers(
+        measurements: List<Double>,
+        threshold: Double,
+        replaceWithAverage: Boolean = false,
+        replaceLast: Boolean = false
+    ): List<Double> {
+        if (measurements.size < 3) {
+            return measurements
+        }
+
+        val filtered = mutableListOf(measurements.first())
+
+        for (i in 1 until measurements.lastIndex) {
+            val before = measurements[i - 1]
+            val current = measurements[i]
+            val after = measurements[i + 1]
+
+            val last = if (replaceWithAverage) (before + after) / 2 else filtered.last()
+
+            if (current - before > threshold && current - after > threshold) {
+                filtered.add(last)
+            } else if (current - before < -threshold && current - after < -threshold) {
+                filtered.add(last)
+            } else {
+                filtered.add(current)
+            }
+        }
+
+        if (replaceLast && abs(filtered.last() - measurements.last()) > threshold) {
+            filtered.add(filtered.last())
+        } else {
+            filtered.add(measurements.last())
+        }
+        return filtered
     }
 }
