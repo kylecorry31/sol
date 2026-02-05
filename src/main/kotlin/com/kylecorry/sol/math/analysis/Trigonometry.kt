@@ -1,17 +1,80 @@
 package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.deltaAngle
-import com.kylecorry.sol.math.SolMath.normalizeAngle
-import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
 
 object Trigonometry {
+
+    fun toRadians(angle: Double): Double {
+        return Math.toRadians(angle)
+    }
+
+    fun toRadians(angle: Float): Float {
+        return Math.toRadians(angle.toDouble()).toFloat()
+    }
+
+    fun toDegrees(angle: Double): Double {
+        return Math.toDegrees(angle)
+    }
+
+    fun toDegrees(angle: Float): Float {
+        return Math.toDegrees(angle.toDouble()).toFloat()
+    }
+
+    fun sinDegrees(angle: Double): Double {
+        return sin(toRadians(angle))
+    }
+
+    fun sinDegrees(angle: Float): Float {
+        return sin(toRadians(angle))
+    }
+
+    fun cosDegrees(angle: Double): Double {
+        return cos(toRadians(angle))
+    }
+
+    fun cosDegrees(angle: Float): Float {
+        return cos(toRadians(angle))
+    }
+
+    fun tanDegrees(angle: Double): Double {
+        return tan(toRadians(angle))
+    }
+
+    fun tanDegrees(angle: Float): Float {
+        return tan(toRadians(angle))
+    }
+
+    fun normalizeAngle(angle: Float): Float {
+        return Arithmetic.wrap(angle, 0f, 360f) % 360
+    }
+
+    fun normalizeAngle(angle: Double): Double {
+        return Arithmetic.wrap(angle, 0.0, 360.0) % 360
+    }
+
+    fun deltaAngle(angle1: Float, angle2: Float): Float {
+        val a = normalizeAngle(angle1 - angle2)
+        val b = normalizeAngle(angle2 - angle1)
+        return if (a < b) {
+            -a
+        } else {
+            b
+        }
+    }
+
+    fun roundNearestAngle(angle: Double, nearest: Double): Double {
+        val normalized = normalizeAngle(angle)
+        return normalizeAngle(Arithmetic.roundNearest(normalized, nearest))
+    }
+
+    fun roundNearestAngle(angle: Float, nearest: Float): Float {
+        val normalized = normalizeAngle(angle)
+        return normalizeAngle(Arithmetic.roundNearest(normalized, nearest))
+    }
 
     /**
      * Remap an angle from a unit circle to a circle with a different start and direction
@@ -81,11 +144,11 @@ object Trigonometry {
 
         if (approximateFrequency != null) {
             val below =
-                frequency * (SolMath.power(
+                frequency * (Arithmetic.power(
                     2,
                     floor(log2(approximateFrequency / frequency)).toInt()
                 ) + 1)
-            val above = frequency * (SolMath.power(
+            val above = frequency * (Arithmetic.power(
                 2,
                 ceil(log2(approximateFrequency / frequency)).toInt()
             ) + 1)
@@ -116,7 +179,7 @@ object Trigonometry {
         val cosAlt1 = cosDegrees(altitude1)
         val sinAlt2 = sinDegrees(altitude2)
         val cosAlt2 = cosDegrees(altitude2)
-        return acos(sinAlt1 * sinAlt2 + cosAlt1 * cosAlt2 * cosDegrees(azimuth2 - azimuth1)).toDegrees()
+        return toDegrees(acos(sinAlt1 * sinAlt2 + cosAlt1 * cosAlt2 * cosDegrees(azimuth2 - azimuth1)))
     }
 
 }

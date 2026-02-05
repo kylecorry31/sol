@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.filters.LowPassFilter
 import com.kylecorry.sol.math.filters.MovingAverageFilter
@@ -62,54 +63,47 @@ object SolMath {
     }
 
     fun sinDegrees(angle: Double): Double {
-        return sin(angle.toRadians())
+        return Trigonometry.sinDegrees(angle)
     }
 
     fun sinDegrees(angle: Float): Float {
-        return sin(angle.toRadians())
+        return Trigonometry.sinDegrees(angle)
     }
 
     fun tanDegrees(angle: Double): Double {
-        return tan(angle.toRadians())
+        return Trigonometry.tanDegrees(angle)
     }
 
     fun tanDegrees(angle: Float): Float {
-        return tan(angle.toRadians())
+        return Trigonometry.tanDegrees(angle)
     }
 
     fun cosDegrees(angle: Double): Double {
-        return cos(angle.toRadians())
+        return Trigonometry.cosDegrees(angle)
     }
 
     fun cosDegrees(angle: Float): Float {
-        return cos(angle.toRadians())
+        return Trigonometry.cosDegrees(angle)
     }
 
     fun Double.toRadians(): Double {
-        return Math.toRadians(this)
+        return Trigonometry.toRadians(this)
     }
 
     fun Float.toRadians(): Float {
-        return Math.toRadians(this.toDouble()).toFloat()
+        return Trigonometry.toRadians(this)
     }
 
     fun Float.toDegrees(): Float {
-        return Math.toDegrees(this.toDouble()).toFloat()
+        return Trigonometry.toDegrees(this)
     }
 
     fun Double.toDegrees(): Double {
-        return Math.toDegrees(this)
+        return Trigonometry.toDegrees(this)
     }
 
     fun deltaAngle(angle1: Float, angle2: Float): Float {
-        // These will be at most 360 degrees apart, so normalize them to restrict that
-        val a = normalizeAngle(angle1 - angle2)
-        val b = normalizeAngle(angle2 - angle1)
-        return if (a < b) {
-            -a
-        } else {
-            b
-        }
+        return Trigonometry.deltaAngle(angle1, angle2)
     }
 
     fun clamp(value: Double, minimum: Double, maximum: Double): Double {
@@ -141,13 +135,11 @@ object SolMath {
     }
 
     fun Double.roundNearestAngle(nearest: Double): Double {
-        val normalized = normalizeAngle(this)
-        return normalizeAngle(normalized.roundNearest(nearest))
+        return Trigonometry.roundNearestAngle(this, nearest)
     }
 
     fun Float.roundNearestAngle(nearest: Float): Float {
-        val normalized = normalizeAngle(this)
-        return normalizeAngle(normalized.roundNearest(nearest))
+        return Trigonometry.roundNearestAngle(this, nearest)
     }
 
     fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
@@ -256,11 +248,11 @@ object SolMath {
     }
 
     fun normalizeAngle(angle: Float): Float {
-        return Arithmetic.wrap(angle, 0f, 360f) % 360
+        return Trigonometry.normalizeAngle(angle)
     }
 
     fun normalizeAngle(angle: Double): Double {
-        return Arithmetic.wrap(angle, 0.0, 360.0) % 360
+        return Trigonometry.normalizeAngle(angle)
     }
 
     fun <T : Comparable<T>> argmax(values: List<T>): Int {
