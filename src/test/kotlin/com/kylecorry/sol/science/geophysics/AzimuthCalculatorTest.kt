@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.geology
+package com.kylecorry.sol.science.geophysics
 
 import com.kylecorry.sol.math.Vector3
 import org.junit.jupiter.api.Assertions.assertEquals

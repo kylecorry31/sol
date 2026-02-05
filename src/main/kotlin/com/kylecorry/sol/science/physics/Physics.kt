@@ -6,14 +6,14 @@ import com.kylecorry.sol.math.interpolation.Interpolator
 import com.kylecorry.sol.math.interpolation.LinearInterpolator
 import com.kylecorry.sol.math.optimization.HillClimbingOptimizer
 import com.kylecorry.sol.math.optimization.IOptimizer
-import com.kylecorry.sol.science.geology.Geology
+import com.kylecorry.sol.science.geophysics.Geophysics
 import com.kylecorry.sol.units.*
 import java.time.Duration
 import kotlin.math.absoluteValue
 
 object Physics {
 
-    fun fallHeight(time: Duration, gravity: Float = Geology.GRAVITY): Distance {
+    fun fallHeight(time: Duration, gravity: Float = Geophysics.GRAVITY): Distance {
         val seconds = time.toMillis() / 1000f
         return Distance.from(0.5f * gravity * seconds * seconds, DistanceUnits.Meters)
     }
@@ -48,7 +48,7 @@ object Physics {
         magneticField: Vector3,
         gravity: Vector3
     ): Pair<Bearing, Bearing> {
-        val azimuth = Geology.getAzimuth(gravity, magneticField)
+        val azimuth = Geophysics.getAzimuth(gravity, magneticField)
         return azimuth to azimuth.inverse()
     }
 
@@ -77,7 +77,7 @@ object Physics {
         ) { _, v ->
             val velocity = Vector2(v[2], v[3])
             val drag = dragModel.getDragAcceleration(velocity)
-            Vector.from(velocity.x, velocity.y, drag.x, drag.y - Geology.GRAVITY)
+            Vector.from(velocity.x, velocity.y, drag.x, drag.y - Geophysics.GRAVITY)
         }
 
         for (result in results) {

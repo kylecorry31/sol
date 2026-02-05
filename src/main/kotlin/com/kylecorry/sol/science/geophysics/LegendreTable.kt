@@ -16,7 +16,7 @@
  * This file was converted to Kotlin by Kyle Corry.
  */
 
-package com.kylecorry.sol.science.geology
+package com.kylecorry.sol.science.geophysics
 
 import kotlin.math.cos
 import kotlin.math.sin

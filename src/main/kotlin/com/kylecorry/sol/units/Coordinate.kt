@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.SolMath.cosDegrees
 import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.science.geography.formatting.*
 import kotlin.math.*
 
@@ -22,9 +23,9 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
 
     fun distanceTo(other: Coordinate, highAccuracy: Boolean = true): Float {
         return if (highAccuracy) {
-            DistanceCalculator.vincenty(this, other)[0]
+            Geography.vincenty(this, other)[0]
         } else {
-            DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[0]
+            Geography.haversine(this, other, EARTH_AVERAGE_RADIUS)[0]
         }
     }
 
@@ -55,9 +56,9 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
      */
     fun bearingTo(other: Coordinate, highAccuracy: Boolean = true): Bearing {
         return if (highAccuracy) {
-            Bearing.from(DistanceCalculator.vincenty(this, other)[1])
+            Bearing.from(Geography.vincenty(this, other)[1])
         } else {
-            Bearing.from(DistanceCalculator.haversine(this, other, EARTH_AVERAGE_RADIUS)[1])
+            Bearing.from(Geography.haversine(this, other, EARTH_AVERAGE_RADIUS)[1])
         }
     }
 

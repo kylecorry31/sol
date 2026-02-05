@@ -1,4 +1,4 @@
-package com.kylecorry.sol.science.geology
+package com.kylecorry.sol.science.geophysics
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toDegrees

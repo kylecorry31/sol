@@ -5,7 +5,7 @@ import com.kylecorry.sol.math.optimization.IExtremaFinder
 import com.kylecorry.sol.math.optimization.NoisyExtremaFinder
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
-import com.kylecorry.sol.science.geology.Geology
+import com.kylecorry.sol.science.geophysics.Geophysics
 import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.*
@@ -33,7 +33,7 @@ object Oceanography {
             ).value
 
         return Distance.from(
-            pressureDiff * 100 / (Geology.GRAVITY * waterDensity),
+            pressureDiff * 100 / (Geophysics.GRAVITY * waterDensity),
             DistanceUnits.Meters
         )
     }

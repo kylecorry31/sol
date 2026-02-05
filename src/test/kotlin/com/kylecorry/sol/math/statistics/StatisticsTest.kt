@@ -1,7 +1,8 @@
 package com.kylecorry.sol.math.statistics
 
+import com.kylecorry.sol.math.algebra.Matrix
 import org.junit.jupiter.api.Assertions.*
-
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
@@ -40,6 +41,29 @@ internal class StatisticsTest {
     fun quantile(values: List<Float>, quantile: Float, interpolate: Boolean, expected: Float) {
         val actual = Statistics.quantile(values, quantile, interpolate)
         assertEquals(expected, actual, 0.00001f)
+    }
+
+    @Test
+    fun textureFeatures() {
+        val glcm4x4 = arrayOf(
+            arrayOf(0.3333f, 0.0833f, 0.0833f, 0f),
+            arrayOf(0.0833f, 0f, 0.0833f, 0.0833f),
+            arrayOf(0.0833f, 0.0833f, 0f, 0f),
+            arrayOf(0f, 0.0833f, 0f, 0f)
+        )
+        val features = Statistics.textureFeatures(Matrix.create(glcm4x4))
+        assertEquals(2.02f, features.entropy, 0.1f)
+        assertEquals(0.41f, features.energy, 0.1f)
+        assertEquals(1.66f, features.contrast, 0.1f)
+        assertEquals(0.57f, features.homogeneity, 0.1f)
+        assertEquals(0.99f, features.dissimilarity, 0.1f)
+        assertEquals(0.17f, features.angularSecondMoment, 0.1f)
+        assertEquals(0.833f, features.horizontalMean, 0.1f)
+        assertEquals(0.833f, features.verticalMean, 0.1f)
+        assertEquals(0.97f, features.horizontalVariance, 0.1f)
+        assertEquals(0.97f, features.verticalVariance, 0.1f)
+        assertEquals(0.14f, features.correlation, 0.1f)
+        assertEquals(0.33f, features.max, 0.1f)
     }
 
     companion object {

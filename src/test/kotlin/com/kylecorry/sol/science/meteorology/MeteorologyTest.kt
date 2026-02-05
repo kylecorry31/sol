@@ -1,6 +1,8 @@
 package com.kylecorry.sol.science.meteorology
 
 import com.kylecorry.sol.math.Range
+import assertk.assertThat
+import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
@@ -15,6 +17,14 @@ import java.time.*
 import java.util.stream.Stream
 
 class MeteorologyTest {
+
+    @ParameterizedTest
+    @MethodSource("provideAltitudes")
+    fun altitude(pressure: Float, seaLevel: Float, altitude: Float) {
+        val actual = Meteorology.getAltitude(Pressure.hpa(pressure), Pressure.hpa(seaLevel))
+        val expected = Distance.meters(altitude)
+        assertThat(actual).isCloseTo(expected, 1f)
+    }
 
     @ParameterizedTest
     @MethodSource("provideForecasts")
@@ -499,6 +509,15 @@ class MeteorologyTest {
     }
 
     companion object {
+
+        @JvmStatic
+        fun provideAltitudes(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(1000f, 1000f, 0f),
+                Arguments.of(1100f, 1000f, -811.3525f),
+                Arguments.of(900f, 1000f, 879.9459f),
+            )
+        }
 
         fun monthlyTemperatures(
             jan: Number,

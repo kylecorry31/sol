@@ -16,7 +16,7 @@
  * This file was heavily modified by Kyle Corry. Convert to Kotlin, extracted from GeomagneticField.java, updated to support scalars.
  */
 
-package com.kylecorry.sol.science.geology
+package com.kylecorry.sol.science.geophysics
 
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector3
@@ -212,5 +212,3 @@ internal class SphericalHarmonics(
     }
 
 }
-
-

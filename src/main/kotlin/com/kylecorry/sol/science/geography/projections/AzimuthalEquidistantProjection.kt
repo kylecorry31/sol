@@ -5,7 +5,7 @@ import com.kylecorry.sol.math.SolMath.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.science.geology.Geology
+import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import kotlin.math.atan2
@@ -19,7 +19,7 @@ class AzimuthalEquidistantProjection(
     IMapProjection {
 
     override fun toPixels(location: Coordinate): Vector2 {
-        val navigation = Geology.navigate(centerLocation, location)
+        val navigation = Geography.navigate(centerLocation, location)
         val angle = Trigonometry.toUnitAngle(navigation.direction.value, 90f, false)
         val pixelDistance = navigation.distance * scale
         val xDiff = cosDegrees(angle) * pixelDistance

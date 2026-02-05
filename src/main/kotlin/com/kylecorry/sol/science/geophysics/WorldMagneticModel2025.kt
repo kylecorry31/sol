@@ -1,9 +1,9 @@
-package com.kylecorry.sol.science.geology
+package com.kylecorry.sol.science.geophysics
 
 import com.kylecorry.sol.time.Time.toUTC
 import java.time.LocalDate
 
-object WorldMagneticModel2025 {
+internal object WorldMagneticModel2025 {
     val BASE_TIME = LocalDate.of(2025, 1, 1).atStartOfDay().toUTC().toInstant()
 
     val G_COEFFICIENTS = arrayOf(
