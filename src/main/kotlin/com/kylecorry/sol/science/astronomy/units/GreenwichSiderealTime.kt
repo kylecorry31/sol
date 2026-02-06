@@ -1,4 +1,5 @@
 package com.kylecorry.sol.science.astronomy.units
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.time.Time
 import java.time.LocalDate
@@ -11,7 +12,7 @@ internal class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0)
         val jd0 = time.jd0()
         val days = jd - jd0
         val t = (jd0 - 2415020) / 36525.0
-        val r = com.kylecorry.sol.math.SolMath.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
+        val r = Arithmetic.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
         val b = 24 - r + 24 * (date.year - 1900)
         var t0 = 0.0657098 * days - b
 

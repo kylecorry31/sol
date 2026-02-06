@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.classifiers
+import com.kylecorry.sol.math.lists.Lists
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
@@ -55,7 +56,7 @@ class NeuralNetwork(
         val x = input.map { Matrix.row(values = it.toFloatArray()) }
         val y = output.map {
             Matrix.row(
-                values = SolMath.oneHot(it, layers.last().outputSize, 1f, 0f).toFloatArray()
+                values = Lists.oneHot(it, layers.last().outputSize, 1f, 0f).toFloatArray()
             )
         }
         return fit(x, y, epochs, learningRate, regularization, batchSize, onEpochCompleteFn)

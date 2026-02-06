@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.math.SolMath.lerp
+import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import kotlin.math.exp
 import kotlin.random.Random
 

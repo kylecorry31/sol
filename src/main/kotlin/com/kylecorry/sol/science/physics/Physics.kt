@@ -1,4 +1,5 @@
 package com.kylecorry.sol.science.physics
+import com.kylecorry.sol.math.analysis.Trigonometry
 
 import com.kylecorry.sol.math.*
 import com.kylecorry.sol.math.calculus.RungeKutta4thOrderSolver
@@ -113,8 +114,8 @@ object Physics {
         ) { angle, _ ->
             val initialVelocity =
                 Vector2(
-                    velocity * SolMath.cosDegrees(angle.toFloat()),
-                    velocity * SolMath.sinDegrees(angle.toFloat())
+                    velocity * Trigonometry.cosDegrees(angle.toFloat()),
+                    velocity * Trigonometry.sinDegrees(angle.toFloat())
                 )
             val trajectory =
                 getTrajectory2D(
@@ -131,8 +132,8 @@ object Physics {
             (interpolated - targetPosition.y).absoluteValue.toDouble()
         }
         return Vector2(
-            velocity * SolMath.cosDegrees(bestAngle.first.toFloat()),
-            velocity * SolMath.sinDegrees(bestAngle.first.toFloat())
+            velocity * Trigonometry.cosDegrees(bestAngle.first.toFloat()),
+            velocity * Trigonometry.sinDegrees(bestAngle.first.toFloat())
         )
     }
 

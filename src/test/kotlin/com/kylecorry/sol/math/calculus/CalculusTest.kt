@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.calculus
 
-import com.kylecorry.sol.math.SolMath.cube
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.arithmetic.Arithmetic.cube
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.algebra.Polynomial

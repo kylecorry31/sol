@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import kotlin.math.sqrt
 
 data class ReferenceEllipsoid(val semiMajorAxis: Double, val semiMinorAxis: Double) {

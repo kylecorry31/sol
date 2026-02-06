@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.geophysics
 
-import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid

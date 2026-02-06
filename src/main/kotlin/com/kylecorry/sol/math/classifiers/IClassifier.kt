@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.classifiers
+import com.kylecorry.sol.math.lists.Lists
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.Matrix
@@ -22,7 +23,7 @@ fun IClassifier.confusion(
 ): Matrix {
     val matrix = Matrix.zeros(classes, classes)
     x.zip(y).forEach {
-        val prediction = SolMath.argmax(this.classify(it.first))
+        val prediction = Lists.argmax(this.classify(it.first))
         matrix[prediction, it.second]++
     }
     return matrix

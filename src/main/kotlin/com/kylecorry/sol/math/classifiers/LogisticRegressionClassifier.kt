@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.classifiers
+import com.kylecorry.sol.math.lists.Lists
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
@@ -37,7 +38,7 @@ class LogisticRegressionClassifier(
         val x = input.map { Matrix.row(values = it.toFloatArray()) }
         val y = output.map {
             Matrix.row(
-                values = SolMath.oneHot(it, this.output, 1f, 0f).toFloatArray()
+                values = Lists.oneHot(it, this.output, 1f, 0f).toFloatArray()
             )
         }
         return fit(x, y, epochs, learningRate, batchSize, onEpochCompleteFn)

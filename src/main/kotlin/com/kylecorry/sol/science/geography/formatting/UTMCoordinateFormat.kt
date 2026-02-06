@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.geography.formatting
 
-import com.kylecorry.sol.math.SolMath.power
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.shared.toDoubleCompat
 import com.kylecorry.sol.units.Coordinate
 import gov.nasa.worldwind.avlist.AVKey

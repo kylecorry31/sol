@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.corrections
 
-import com.kylecorry.sol.math.SolMath.polynomial
+import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 
 internal object TerrestrialTime {
 

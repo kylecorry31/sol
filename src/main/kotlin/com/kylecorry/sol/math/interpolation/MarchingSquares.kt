@@ -99,7 +99,7 @@ internal object MarchingSquares {
             return null
         }
 
-        var pct = SolMath.norm(value, min(a.second, b.second), max(a.second, b.second))
+        var pct = Interpolation.norm(value, min(a.second, b.second), max(a.second, b.second))
         if (a.second > b.second) {
             pct = 1 - pct
         }

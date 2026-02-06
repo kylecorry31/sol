@@ -4,6 +4,10 @@ import com.kylecorry.sol.math.Vector2
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 import kotlin.math.abs
 
 class InterpolationTest {
@@ -191,5 +195,135 @@ class InterpolationTest {
             match1 || match2,
             "Expected ($x1, $y1)-($x2, $y2) but got (${start.x}, ${start.y})-(${end.x}, ${end.y})"
         )
+    }
+
+    @Test
+    fun interpolateCatmullRom() {
+        assertEquals(
+            0.876125,
+            Interpolation.catmullRom(0.18125, 0.884226, 0.877366, 0.870531),
+            0.0000005
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNorm")
+    fun normDouble(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = Interpolation.norm(value, min, max, shouldClamp)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNorm")
+    fun normFloat(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = Interpolation.norm(value.toFloat(), min.toFloat(), max.toFloat(), shouldClamp)
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLerp")
+    fun lerpDouble(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = Interpolation.lerp(value, min, max, shouldClamp)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLerp")
+    fun lerpFloat(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
+        val actual = Interpolation.lerp(value.toFloat(), min.toFloat(), max.toFloat(), shouldClamp)
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMap")
+    fun mapDouble(
+        value: Double,
+        min: Double,
+        max: Double,
+        newMin: Double,
+        newMax: Double,
+        shouldClamp: Boolean,
+        expected: Double
+    ) {
+        val actual = Interpolation.map(value, min, max, newMin, newMax, shouldClamp)
+        assertEquals(expected, actual, 0.00001)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMap")
+    fun mapFloat(
+        value: Double,
+        min: Double,
+        max: Double,
+        newMin: Double,
+        newMax: Double,
+        shouldClamp: Boolean,
+        expected: Double
+    ) {
+        val actual = Interpolation.map(
+            value.toFloat(),
+            min.toFloat(),
+            max.toFloat(),
+            newMin.toFloat(),
+            newMax.toFloat(),
+            shouldClamp
+        )
+        assertEquals(expected.toFloat(), actual, 0.00001f)
+    }
+
+    companion object {
+        @JvmStatic
+        fun provideNorm(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, false, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, false, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, false, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, false, 1.2),
+                Arguments.of(-0.1, 0.0, 1.0, false, -0.1),
+                Arguments.of(4.0, 2.0, 6.0, false, 0.5),
+                Arguments.of(1.0, 2.0, 6.0, false, -0.25),
+                Arguments.of(6.0, 2.0, 6.0, false, 1.0),
+                Arguments.of(2.0, 2.0, 6.0, false, 0.0),
+                Arguments.of(-1.0, 0.0, 1.0, true, 0.0),
+                Arguments.of(0.5, 0.0, 1.0, true, 0.5),
+                Arguments.of(2.0, 0.0, 1.0, true, 1.0),
+            )
+        }
+
+        @JvmStatic
+        fun provideLerp(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, false, 0.1),
+                Arguments.of(0.0, 0.0, 1.0, false, 0.0),
+                Arguments.of(1.0, 0.0, 1.0, false, 1.0),
+                Arguments.of(1.2, 0.0, 1.0, false, 1.2),
+                Arguments.of(-0.1, 0.0, 1.0, false, -0.1),
+                Arguments.of(0.5, 2.0, 6.0, false, 4.0),
+                Arguments.of(-0.25, 2.0, 6.0, false, 1.0),
+                Arguments.of(1.0, 2.0, 6.0, false, 6.0),
+                Arguments.of(0.0, 2.0, 6.0, false, 2.0),
+                Arguments.of(-1.0, 0.0, 1.0, true, 0.0),
+                Arguments.of(0.5, 0.0, 1.0, true, 0.5),
+                Arguments.of(2.0, 0.0, 1.0, true, 1.0),
+            )
+        }
+
+        @JvmStatic
+        fun provideMap(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(0.1, 0.0, 1.0, 2.0, 4.0, false, 2.2),
+                Arguments.of(0.0, 0.0, 1.0, 2.0, 4.0, false, 2.0),
+                Arguments.of(1.0, 0.0, 1.0, 2.0, 4.0, false, 4.0),
+                Arguments.of(1.2, 0.0, 1.0, 2.0, 4.0, false, 4.4),
+                Arguments.of(-0.1, 0.0, 1.0, 2.0, 4.0, false, 1.8),
+                Arguments.of(4.0, 2.0, 6.0, 0.0, 4.0, false, 2.0),
+                Arguments.of(1.0, 2.0, 6.0, 0.0, 4.0, false, -1.0),
+                Arguments.of(6.0, 2.0, 6.0, 0.0, 4.0, false, 4.0),
+                Arguments.of(2.0, 2.0, 6.0, 0.0, 4.0, false, 0.0),
+                Arguments.of(-1.0, 0.0, 1.0, 2.0, 4.0, true, 2.0),
+                Arguments.of(0.5, 0.0, 1.0, 2.0, 4.0, true, 3.0),
+                Arguments.of(2.0, 0.0, 1.0, 2.0, 4.0, true, 4.0),
+            )
+        }
     }
 }

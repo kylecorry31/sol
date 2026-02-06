@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.astronomy
 
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.math.SolMath.tanDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.tanDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate

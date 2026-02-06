@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.geography.projections
 
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.analysis.Trigonometry

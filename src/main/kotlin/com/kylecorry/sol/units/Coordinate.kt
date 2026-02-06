@@ -1,8 +1,9 @@
 package com.kylecorry.sol.units
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.science.geography.Geography
@@ -87,7 +88,7 @@ data class Coordinate(val latitude: Double, val longitude: Double) {
         private const val EARTH_AVERAGE_RADIUS = 6371.2e3
 
         fun toLongitude(degrees: Double): Double {
-            return SolMath.wrap(degrees, -180.0, 180.0)
+            return Arithmetic.wrap(degrees, -180.0, 180.0)
         }
 
         fun constrained(latitude: Double, longitude: Double): Coordinate {

@@ -1,12 +1,13 @@
 package com.kylecorry.sol.science.astronomy.units
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.power
-import com.kylecorry.sol.math.SolMath.sinDegrees
-import com.kylecorry.sol.math.SolMath.tanDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.tanDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
@@ -72,14 +73,14 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
         val tanElev = tanDegrees(altitude)
 
         if (altitude > 5.0) {
-            return (58.1 / tanElev - 0.07 / SolMath.cube(tanElev) + 0.000086 / power(
+            return (58.1 / tanElev - 0.07 / Arithmetic.cube(tanElev) + 0.000086 / power(
                 tanElev,
                 5
             )) / 3600.0
         }
 
         if (altitude > -0.575) {
-            return SolMath.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
+            return Arithmetic.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
         }
 
         return -20.774 / tanElev / 3600.0

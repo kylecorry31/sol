@@ -1,10 +1,11 @@
 package com.kylecorry.sol.math.statistics
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.RoundingMethod
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.lerp
+import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import com.kylecorry.sol.math.SolMath.round
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.multiply
@@ -119,13 +120,13 @@ object Statistics {
         val deviation = stdev ?: stdev(values, mean = average)
 
         return values.sumOf {
-            SolMath.power((it - average) / deviation.toDouble(), 3)
+            Arithmetic.power((it - average) / deviation.toDouble(), 3)
         }.toFloat() / values.size
     }
 
     fun probability(values: List<Float>): List<Float> {
         val sum = values.sum()
-        if (SolMath.isZero(sum)) {
+        if (Arithmetic.isZero(sum)) {
             return values
         }
 
@@ -143,7 +144,7 @@ object Statistics {
         val maxZ = values.max()
         val exponents = values.map { exp(it - maxZ) }
         val sumExp = exponents.sum()
-        return exponents.map { if (SolMath.isZero(sumExp)) 0f else it / sumExp }
+        return exponents.map { if (Arithmetic.isZero(sumExp)) 0f else it / sumExp }
     }
 
     fun joint(distributions: List<GaussianDistribution>): GaussianDistribution? {
@@ -245,7 +246,7 @@ object Statistics {
         val actual = confusion.getColumn(classIdx)
         val tp = confusion[classIdx, classIdx]
         val fn = actual.sum() - tp
-        if (SolMath.isZero(tp + fn)) {
+        if (Arithmetic.isZero(tp + fn)) {
             return 0f
         }
         return tp / (tp + fn)
@@ -258,7 +259,7 @@ object Statistics {
         val predicted = confusion.getRow(classIdx)
         val tp = confusion[classIdx, classIdx]
         val fp = predicted.sum() - tp
-        if (SolMath.isZero(tp + fp)) {
+        if (Arithmetic.isZero(tp + fp)) {
             return 0f
         }
         return tp / (tp + fp)

@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.algebra
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector
@@ -167,7 +168,7 @@ object LinearAlgebra {
         }
 
         val det = determinant(m)
-        if (SolMath.isZero(det)) {
+        if (Arithmetic.isZero(det)) {
             // No inverse exists
             return Matrix.zeros(m.rows(), m.columns())
         }

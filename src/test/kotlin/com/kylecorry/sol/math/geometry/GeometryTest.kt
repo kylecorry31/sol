@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 internal class GeometryTest {
 
@@ -203,4 +206,62 @@ internal class GeometryTest {
         assertEquals(expected.z, actual.z, delta)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideScaleToFit")
+    fun scaleToFit(
+        width: Float,
+        height: Float,
+        maxWidth: Float,
+        maxHeight: Float,
+        expected: Float
+    ) {
+        val actual = Geometry.scaleToFit(width, height, maxWidth, maxHeight)
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    companion object {
+        @JvmStatic
+        fun provideScaleToFit(): Stream<Arguments> {
+            return Stream.of(
+                // Square destination
+                Arguments.of(2.0f, 2.0f, 2.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 1.0f, 2.0f, 2.0f, 2.0f),
+                Arguments.of(4.0f, 4.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 2.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(2.0f, 4.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(1.0f, 4.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 1.0f, 2.0f, 2.0f, 0.5f),
+                Arguments.of(2.0f, 1.0f, 2.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 2.0f, 2.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 0.5f, 2.0f, 2.0f, 2.0f),
+                Arguments.of(0.5f, 1.0f, 2.0f, 2.0f, 2.0f),
+
+                // Long destination
+                Arguments.of(2.0f, 2.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 1.0f, 4.0f, 2.0f, 2.0f),
+                Arguments.of(4.0f, 4.0f, 4.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 2.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(2.0f, 4.0f, 4.0f, 2.0f, 0.5f),
+                Arguments.of(1.0f, 4.0f, 4.0f, 2.0f, 0.5f),
+                Arguments.of(4.0f, 1.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(2.0f, 1.0f, 4.0f, 2.0f, 2.0f),
+                Arguments.of(1.0f, 2.0f, 4.0f, 2.0f, 1.0f),
+                Arguments.of(1.0f, 0.5f, 4.0f, 2.0f, 4.0f),
+                Arguments.of(0.5f, 1.0f, 4.0f, 2.0f, 2.0f),
+
+                // Tall destination
+                Arguments.of(2.0f, 2.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(1.0f, 1.0f, 2.0f, 4.0f, 2.0f),
+                Arguments.of(4.0f, 4.0f, 2.0f, 4.0f, 0.5f),
+                Arguments.of(4.0f, 2.0f, 2.0f, 4.0f, 0.5f),
+                Arguments.of(2.0f, 4.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(1.0f, 4.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(4.0f, 1.0f, 2.0f, 4.0f, 0.5f),
+                Arguments.of(2.0f, 1.0f, 2.0f, 4.0f, 1.0f),
+                Arguments.of(1.0f, 2.0f, 2.0f, 4.0f, 2.0f),
+                Arguments.of(1.0f, 0.5f, 2.0f, 4.0f, 2.0f),
+                Arguments.of(0.5f, 1.0f, 2.0f, 4.0f, 4.0f),
+            )
+        }
+    }
 }

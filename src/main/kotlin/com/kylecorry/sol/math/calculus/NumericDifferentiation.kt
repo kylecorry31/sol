@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.calculus
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
@@ -73,7 +74,7 @@ internal object NumericDifferentiation {
             maxX = max(maxX, values[index].x)
         }
         val dx = maxX - minX
-        if (SolMath.isZero(dx)) {
+        if (Arithmetic.isZero(dx)) {
             return Vector2(x, 0f)
         }
         // Coefficients are based on the multiple of dx (space between points, which is why it is count - 1)

@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.algebra
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.sumOfFloat
@@ -20,11 +21,11 @@ class Polynomial(terms: List<PolynomialTerm>) {
             val coefficient = groupedTerms.sumOfFloat { it.coefficient }
             PolynomialTerm(coefficient, exponent)
         }
-        .filter { !SolMath.isZero(it.coefficient) }
+        .filter { !Arithmetic.isZero(it.coefficient) }
         .sortedBy { -it.exponent }
 
     fun evaluate(x: Float): Float {
-        return terms.sumOfFloat { it.coefficient * SolMath.power(x, it.exponent) }
+        return terms.sumOfFloat { it.coefficient * Arithmetic.power(x, it.exponent) }
     }
 
     fun derivative(): Polynomial {

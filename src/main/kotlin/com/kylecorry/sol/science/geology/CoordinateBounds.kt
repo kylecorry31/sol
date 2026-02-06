@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.SolMath.deltaAngle
-import com.kylecorry.sol.math.SolMath.isCloseTo
+import com.kylecorry.sol.math.analysis.Trigonometry.deltaAngle
+import com.kylecorry.sol.math.arithmetic.Arithmetic.isCloseTo
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.CompassDirection
 import com.kylecorry.sol.units.Coordinate

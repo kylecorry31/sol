@@ -1,7 +1,8 @@
 package com.kylecorry.sol.math.geometry
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.algebra.QuadraticEquation
@@ -31,7 +32,7 @@ internal object IntersectionMath {
         val intercepts = line1.intercept() - line2.intercept()
         val slopes = line2.slope() - line1.slope()
 
-        if (SolMath.isZero(slopes)) {
+        if (Arithmetic.isZero(slopes)) {
             return null
         }
 

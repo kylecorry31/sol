@@ -1,4 +1,5 @@
 package com.kylecorry.sol.science.physics
+import com.kylecorry.sol.math.interpolation.Interpolation
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
@@ -89,17 +90,17 @@ class PhysicsTest {
             val closestAfter = trajectory.filter { it.time >= expected.first }
                 .minBy { it.time }
 
-            val percent = SolMath.norm(expected.first, closestBefore.time, closestAfter.time)
+            val percent = Interpolation.norm(expected.first, closestBefore.time, closestAfter.time)
 
             val actual = TrajectoryPoint2D(
                 expected.first,
                 Vector2(
-                    SolMath.lerp(percent, closestBefore.position.x, closestAfter.position.x),
-                    SolMath.lerp(percent, closestBefore.position.y, closestAfter.position.y)
+                    Interpolation.lerp(percent, closestBefore.position.x, closestAfter.position.x),
+                    Interpolation.lerp(percent, closestBefore.position.y, closestAfter.position.y)
                 ),
                 Vector2(
-                    SolMath.lerp(percent, closestBefore.velocity.x, closestAfter.velocity.x),
-                    SolMath.lerp(percent, closestBefore.velocity.y, closestAfter.velocity.y)
+                    Interpolation.lerp(percent, closestBefore.velocity.x, closestAfter.velocity.x),
+                    Interpolation.lerp(percent, closestBefore.velocity.y, closestAfter.velocity.y)
                 )
             )
 

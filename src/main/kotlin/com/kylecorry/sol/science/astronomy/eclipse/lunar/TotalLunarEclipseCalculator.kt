@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
-import com.kylecorry.sol.math.SolMath.power
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import java.time.Duration
 import kotlin.math.sqrt
 

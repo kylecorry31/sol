@@ -1,9 +1,11 @@
 package com.kylecorry.sol.science.astronomy.locators
+import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.polynomial
-import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.science.astronomy.AstroUtils
@@ -27,8 +29,8 @@ internal class Moon : ICelestialLocator {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
         val T = tt.toJulianCenturies()
-        val L = SolMath.normalizeAngle(
-            SolMath.polynomial(
+        val L = Trigonometry.normalizeAngle(
+            Arithmetic.polynomial(
                 T,
                 218.3164477,
                 481267.88123421,
@@ -45,11 +47,11 @@ internal class Moon : ICelestialLocator {
 
         val F = getArgumentOfLatitude(tt)
 
-        val a1 = SolMath.normalizeAngle(119.75 + 131.849 * T)
-        val a2 = SolMath.normalizeAngle(53.09 + 479264.29 * T)
-        val a3 = SolMath.normalizeAngle(313.45 + 481266.484 * T)
-        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000074)
-        val E2 = SolMath.square(E)
+        val a1 = Trigonometry.normalizeAngle(119.75 + 131.849 * T)
+        val a2 = Trigonometry.normalizeAngle(53.09 + 479264.29 * T)
+        val a3 = Trigonometry.normalizeAngle(313.45 + 481266.484 * T)
+        val E = Arithmetic.polynomial(T, 1.0, -0.002516, -0.0000074)
+        val E2 = Arithmetic.square(E)
 
         val t47a = table47a()
         val t47b = table47b()
@@ -99,8 +101,8 @@ internal class Moon : ICelestialLocator {
         val M = sun.getMeanAnomaly(tt)
 
         val Mprime = getMeanAnomaly(tt)
-        val E = SolMath.polynomial(T, 1.0, -0.002516, -0.0000075)
-        val E2 = SolMath.square(E)
+        val E = Arithmetic.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E2 = Arithmetic.square(E)
         val t47a = table47a()
         var sumR = 0.0
 
@@ -126,8 +128,8 @@ internal class Moon : ICelestialLocator {
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.normalizeAngle(
-            SolMath.polynomial(
+        return Trigonometry.normalizeAngle(
+            Arithmetic.polynomial(
                 T,
                 134.9633964,
                 477198.8675055,
@@ -237,8 +239,8 @@ internal class Moon : ICelestialLocator {
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.normalizeAngle(
-            SolMath.polynomial(
+        return Trigonometry.normalizeAngle(
+            Arithmetic.polynomial(
                 T,
                 297.8501921,
                 445267.1114034,
@@ -251,8 +253,8 @@ internal class Moon : ICelestialLocator {
 
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
-        return SolMath.normalizeAngle(
-            SolMath.polynomial(
+        return Trigonometry.normalizeAngle(
+            Arithmetic.polynomial(
                 T,
                 93.2720950,
                 483202.0175233,

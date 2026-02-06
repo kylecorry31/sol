@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math.algebra
 
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 
 /**
  * An equation of form y = ax^2 + bx + c

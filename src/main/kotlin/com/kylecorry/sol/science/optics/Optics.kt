@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.optics
 
-import com.kylecorry.sol.math.SolMath.power
-import com.kylecorry.sol.math.SolMath.tanDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
+import com.kylecorry.sol.math.analysis.Trigonometry.tanDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3

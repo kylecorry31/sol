@@ -1,4 +1,7 @@
 package com.kylecorry.sol.math.filters
+import com.kylecorry.sol.math.lists.Lists
+import com.kylecorry.sol.math.interpolation.Interpolation
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.SolMath
@@ -43,18 +46,18 @@ class LoessFilter2D(
         val rangeX = Range(data.minOf { it.x }, data.maxOf { it.x })
         val rangeY = Range(data.minOf { it.y }, data.maxOf { it.y })
 
-        val wasResorted = !SolMath.isIncreasingX(data)
+        val wasResorted = !Lists.isIncreasingX(data)
         var sortOrder = data.indices.toList()
 
         val sortedData = if (wasResorted) {
-            sortOrder = SolMath.sortIndices(data.map { it.x })
-            SolMath.reorder(data, sortOrder)
+            sortOrder = Lists.sortIndices(data.map { it.x })
+            Lists.reorder(data, sortOrder)
         } else {
             data
         }.map {
             Vector2(
-                SolMath.norm(it.x, rangeX.start, rangeX.end),
-                SolMath.norm(it.y, rangeY.start, rangeY.end)
+                Interpolation.norm(it.x, rangeX.start, rangeX.end),
+                Interpolation.norm(it.y, rangeY.start, rangeY.end)
             )
         }
 
@@ -63,7 +66,7 @@ class LoessFilter2D(
         val residuals = MutableList(n) { 0f }
         val robustnessWeights = MutableList(n) { 1f }
         val mappedMaxDistance =
-            maximumSpanDistance?.let { SolMath.norm(maximumSpanDistance, rangeX.start, rangeX.end) }
+            maximumSpanDistance?.let { Interpolation.norm(maximumSpanDistance, rangeX.start, rangeX.end) }
 
         for (iteration in 0..robustnessIterations) {
             for (i in sortedData.indices) {
@@ -85,7 +88,7 @@ class LoessFilter2D(
                 val maxDistance = mappedMaxDistance ?: nearest.last().second
 
                 val w = nearest.map {
-                    if (SolMath.isZero(maxDistance)) {
+                    if (Arithmetic.isZero(maxDistance)) {
                         1f
                     } else {
                         tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
@@ -119,13 +122,13 @@ class LoessFilter2D(
         }
 
         return if (wasResorted) {
-            SolMath.reorder(res, sortOrder, true)
+            Lists.reorder(res, sortOrder, true)
         } else {
             res
         }.map {
             Vector2(
-                SolMath.lerp(it.x, rangeX.start, rangeX.end),
-                SolMath.lerp(it.y, rangeY.start, rangeY.end)
+                Interpolation.lerp(it.x, rangeX.start, rangeX.end),
+                Interpolation.lerp(it.y, rangeY.start, rangeY.end)
             )
         }
     }

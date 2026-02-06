@@ -1,4 +1,5 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
+import com.kylecorry.sol.math.analysis.Trigonometry
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.science.oceanography.TidalHarmonic
@@ -18,7 +19,7 @@ class HarmonicWaterLevelCalculator(private val harmonics: List<TidalHarmonic>) :
             val f = corrections[it.constituent]?.first ?: 0.0
             val uv = corrections[it.constituent]?.second ?: 0.0
 
-            (f * it.amplitude * SolMath.cosDegrees(it.constituent.speed * t + uv - it.phase)).toFloat()
+            (f * it.amplitude * Trigonometry.cosDegrees(it.constituent.speed * t + uv - it.phase)).toFloat()
         }
         return heights.sum()
     }

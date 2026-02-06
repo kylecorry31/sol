@@ -1,4 +1,5 @@
 package com.kylecorry.sol.science.geophysics
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toDegrees
@@ -27,7 +28,7 @@ internal object AzimuthCalculator {
 
         val sin = east[0] + north[1]
         val cos = east[1] - north[0]
-        val azimuth = if (!(SolMath.isZero(cos) && SolMath.isApproximatelyEqual(cos, sin))) atan2(cos, sin) else 0f
+        val azimuth = if (!(Arithmetic.isZero(cos) && Arithmetic.isApproximatelyEqual(cos, sin))) atan2(cos, sin) else 0f
 
         if (azimuth.isNaN()){
             return null

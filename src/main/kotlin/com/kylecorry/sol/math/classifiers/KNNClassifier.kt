@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.SolMath.square
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.mapRows
 import com.kylecorry.sol.math.statistics.Statistics

@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.algebra
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
 import kotlin.math.sqrt
@@ -9,8 +10,8 @@ object Algebra {
      * Solves an equation of form mx + b = 0
      */
     fun solve(equation: LinearEquation): Float? {
-        if (SolMath.isZero(equation.m)) {
-            if (SolMath.isZero(equation.b)) {
+        if (Arithmetic.isZero(equation.m)) {
+            if (Arithmetic.isZero(equation.b)) {
                 return 0f
             }
             return null
@@ -19,7 +20,7 @@ object Algebra {
     }
 
     fun solve(equation: QuadraticEquation): Pair<Float, Float>? {
-        if (SolMath.isZero(equation.a)) {
+        if (Arithmetic.isZero(equation.a)) {
             val linear = solve(LinearEquation(equation.b, equation.c)) ?: return null
             return linear to linear
         }

@@ -1,4 +1,5 @@
 package com.kylecorry.sol.math.optimization
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
 import kotlin.math.absoluteValue
@@ -7,7 +8,7 @@ object Optimization {
 
     inline fun newtonRaphsonIteration(
         initialValue: Double = 0.0,
-        tolerance: Double = SolMath.EPSILON_DOUBLE,
+        tolerance: Double = Arithmetic.EPSILON_DOUBLE,
         maxIterations: Int = Int.MAX_VALUE,
         crossinline calculate: (lastValue: Double) -> Double
     ): Double {
@@ -25,7 +26,7 @@ object Optimization {
 
     inline fun newtonRaphsonIteration(
         initialValue: Float = 0f,
-        tolerance: Float = SolMath.EPSILON_FLOAT,
+        tolerance: Float = Arithmetic.EPSILON_FLOAT,
         maxIterations: Int = Int.MAX_VALUE,
         crossinline calculate: (lastValue: Float) -> Float
     ): Float {

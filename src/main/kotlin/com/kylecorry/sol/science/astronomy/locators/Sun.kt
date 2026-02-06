@@ -1,10 +1,12 @@
 package com.kylecorry.sol.science.astronomy.locators
+import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.science.astronomy.OrbitalMath
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
@@ -28,7 +30,7 @@ internal class Sun : ICelestialLocator {
         val T = tt.toJulianCenturies()
         val apparentLongitude = getApparentLongitude(T)
         val correctedObliquity = getObliquityCorrection(T)
-        val rightAscension = SolMath.normalizeAngle(
+        val rightAscension = Trigonometry.normalizeAngle(
             atan2(
                 cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
                 cosDegrees(apparentLongitude)
@@ -60,7 +62,7 @@ internal class Sun : ICelestialLocator {
     }
 
     private fun getMeanAnomaly(T: Double): Double {
-        return SolMath.normalizeAngle(SolMath.polynomial(T, 357.5291092, 35999.0502909, -0.0001536, 1 / 24490000.0))
+        return Trigonometry.normalizeAngle(Arithmetic.polynomial(T, 357.5291092, 35999.0502909, -0.0001536, 1 / 24490000.0))
     }
 
     private fun getTrueAnomaly(T: Double): Double {
@@ -71,7 +73,7 @@ internal class Sun : ICelestialLocator {
 
     private fun getApparentLongitude(T: Double): Double {
         val trueLng = getTrueLongitude(T)
-        val omega = SolMath.polynomial(T, 125.04, -1934.136)
+        val omega = Arithmetic.polynomial(T, 125.04, -1934.136)
         return trueLng - 0.00569 - 0.00478 * sinDegrees(omega)
     }
 
@@ -82,23 +84,23 @@ internal class Sun : ICelestialLocator {
     }
 
     private fun getGeometricLongitude(T: Double): Double {
-        return SolMath.normalizeAngle(SolMath.polynomial(T, 280.46646, 36000.76983, 0.0003032))
+        return Trigonometry.normalizeAngle(Arithmetic.polynomial(T, 280.46646, 36000.76983, 0.0003032))
     }
 
     private fun getEccentricity(T: Double): Double {
-        return SolMath.polynomial(T, 0.01675104, -0.0000418, -0.000000126)
+        return Arithmetic.polynomial(T, 0.01675104, -0.0000418, -0.000000126)
     }
 
     private fun equationOfCenter(T: Double): Double {
         val M = getMeanAnomaly(T)
-        return SolMath.polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
-                SolMath.polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
+        return Arithmetic.polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
+                Arithmetic.polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
                 0.000289 * sinDegrees(3 * M)
     }
 
     private fun getObliquityCorrection(T: Double): Double {
         val e = EclipticObliquity.getMeanObliquityOfEcliptic(T)
-        val omega = SolMath.polynomial(T, 125.04, -1934.136)
+        val omega = Arithmetic.polynomial(T, 125.04, -1934.136)
         return e + 0.00256 * cosDegrees(omega)
     }
 

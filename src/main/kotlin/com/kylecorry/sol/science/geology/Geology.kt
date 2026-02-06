@@ -1,8 +1,10 @@
 package com.kylecorry.sol.science.geology
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.analysis.Trigonometry
 
 import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.units.*
 import kotlin.math.*
 
@@ -31,7 +33,7 @@ object Geology {
             return Float.NEGATIVE_INFINITY
         }
 
-        return SolMath.tanDegrees(inclination) * 100
+        return Trigonometry.tanDegrees(inclination) * 100
     }
 
     fun getInclinationFromSlopeGrade(grade: Float): Float {
@@ -107,15 +109,15 @@ object Geology {
         val y = vertical.meters().value
         val x = horizontal.meters().value
 
-        if (SolMath.isZero(x) && y > 0f) {
+        if (Arithmetic.isZero(x) && y > 0f) {
             return Float.POSITIVE_INFINITY
         }
 
-        if (SolMath.isZero(x) && y < 0f) {
+        if (Arithmetic.isZero(x) && y < 0f) {
             return Float.NEGATIVE_INFINITY
         }
 
-        if (SolMath.isZero(x)) {
+        if (Arithmetic.isZero(x)) {
             return 0f
         }
 

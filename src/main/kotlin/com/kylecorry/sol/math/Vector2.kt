@@ -1,8 +1,9 @@
 package com.kylecorry.sol.math
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath.cosDegrees
-import com.kylecorry.sol.math.SolMath.normalizeAngle
-import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.normalizeAngle
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -43,7 +44,7 @@ value class Vector2 internal constructor(internal val packed: Long) {
 
     fun normalize(): Vector2 {
         val length = magnitude()
-        if (SolMath.isZero(length)) return this
+        if (Arithmetic.isZero(length)) return this
         return Vector2(x / length, y / length)
     }
 
@@ -64,7 +65,7 @@ value class Vector2 internal constructor(internal val packed: Long) {
     }
 
     fun rotate(angle: Float, origin: Vector2 = zero): Vector2 {
-        if (SolMath.isZero(angle % 360f)) return this
+        if (Arithmetic.isZero(angle % 360f)) return this
         val x = this.x - origin.x
         val y = this.y - origin.y
         val cos = cosDegrees(angle)
