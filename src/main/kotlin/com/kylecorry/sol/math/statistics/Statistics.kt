@@ -1,24 +1,18 @@
 package com.kylecorry.sol.math.statistics
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.RoundingMethod
-import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import com.kylecorry.sol.math.SolMath.round
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.multiply
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.filters.LowPassFilter
 import com.kylecorry.sol.math.filters.MovingAverageFilter
+import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.abs
-import kotlin.math.exp
-import kotlin.math.ln
-import kotlin.math.max
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object Statistics {
 

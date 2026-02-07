@@ -5,7 +5,7 @@ import com.kylecorry.sol.math.algebra.*
 class LeastSquaresRegression(
     private val input: List<List<Float>>,
     private val output: List<Float>
-): IRegression {
+) : IRegression {
 
     private val inputs = input.firstOrNull()?.size ?: 0
     val b = fit()

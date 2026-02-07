@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy.corrections
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 import com.kylecorry.sol.science.astronomy.units.UniversalTime

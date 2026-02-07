@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math
 
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.SolMath.toDegrees
 import kotlin.math.*
 
 data class Quaternion(val x: Float, val y: Float, val z: Float, val w: Float) {
@@ -110,7 +110,7 @@ object QuaternionMath {
     const val Z = 2
     const val W = 3
 
-    fun fromEuler(euler: FloatArray, out: FloatArray){
+    fun fromEuler(euler: FloatArray, out: FloatArray) {
         val cosY = cosDegrees(euler[2] / 2.0)
         val sinY = sinDegrees(euler[2] / 2.0)
         val cosP = cosDegrees(euler[1] / 2.0)
@@ -181,7 +181,7 @@ object QuaternionMath {
         out[W] = a[W] + b[W]
     }
 
-    fun subtractRotation(a: FloatArray, b: FloatArray, out: FloatArray){
+    fun subtractRotation(a: FloatArray, b: FloatArray, out: FloatArray) {
         val inverse = FloatArray(4)
         inverse(b, inverse)
         multiply(inverse, a, out)
@@ -231,9 +231,9 @@ object QuaternionMath {
         divide(out, mag * mag, out)
     }
 
-    fun slerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true){
+    fun slerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true) {
         val cosHalfTheta = dot(quat1, quat2)
-        if (cosHalfTheta.absoluteValue >= 1){
+        if (cosHalfTheta.absoluteValue >= 1) {
             out[X] = quat1[X]
             out[Y] = quat1[Y]
             out[Z] = quat1[Z]
@@ -241,7 +241,7 @@ object QuaternionMath {
             return
         }
 
-        if (useShortestPath && cosHalfTheta < 0){
+        if (useShortestPath && cosHalfTheta < 0) {
             val temp = FloatArray(4)
             multiply(quat2, -1f, temp)
             // Passing in false for useShortestPath to avoid infinite recursion
@@ -253,7 +253,7 @@ object QuaternionMath {
         val halfTheta = acos(cosHalfTheta)
         val sinHalfTheta = sqrt(1 - cosHalfTheta * cosHalfTheta)
 
-        if (sinHalfTheta.absoluteValue < 0.001){
+        if (sinHalfTheta.absoluteValue < 0.001) {
             out[X] = quat1[X] * 0.5f + quat2[X] * 0.5f
             out[Y] = quat1[Y] * 0.5f + quat2[Y] * 0.5f
             out[Z] = quat1[Z] * 0.5f + quat2[Z] * 0.5f
@@ -270,7 +270,7 @@ object QuaternionMath {
         out[W] = quat1[W] * ratioA + quat2[W] * ratioB
     }
 
-    fun lerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true){
+    fun lerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true) {
         val multiplier = if (useShortestPath && dot(quat1, quat2) < 0) -1f else 1f
 
         val x = quat1[X] + t * (multiplier * quat2[X] - quat1[X])

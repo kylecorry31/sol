@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math.geometry
 
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
 

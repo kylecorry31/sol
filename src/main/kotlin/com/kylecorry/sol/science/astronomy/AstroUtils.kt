@@ -1,9 +1,9 @@
 package com.kylecorry.sol.science.astronomy
 
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.tanDegrees
-import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.HorizonCoordinate
@@ -12,7 +12,6 @@ import com.kylecorry.sol.science.astronomy.units.toSiderealTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
-import kotlin.math.atan
 import kotlin.math.atan2
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)

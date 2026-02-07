@@ -1,12 +1,13 @@
 package com.kylecorry.sol.science.geology
-import com.kylecorry.sol.math.arithmetic.Arithmetic
-import com.kylecorry.sol.math.analysis.Trigonometry
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
-import com.kylecorry.sol.units.*
-import kotlin.math.*
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+import kotlin.math.absoluteValue
+import kotlin.math.atan
 
 object Geology {
 

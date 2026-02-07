@@ -1,11 +1,10 @@
 package com.kylecorry.sol.math.filters
-import com.kylecorry.sol.math.lists.Lists
-import com.kylecorry.sol.math.interpolation.Interpolation
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.interpolation.Interpolation
+import com.kylecorry.sol.math.lists.Lists
 import com.kylecorry.sol.math.regression.WeightedLinearRegression
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs

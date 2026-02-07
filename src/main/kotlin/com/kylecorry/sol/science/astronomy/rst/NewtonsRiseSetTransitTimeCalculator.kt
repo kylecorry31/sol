@@ -1,21 +1,18 @@
 package com.kylecorry.sol.science.astronomy.rst
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.arithmetic.Arithmetic
-import com.kylecorry.sol.math.interpolation.Interpolation
 
-import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.cosDegrees
+import com.kylecorry.sol.math.SolMath.sinDegrees
+import com.kylecorry.sol.math.SolMath.wrap
+import com.kylecorry.sol.science.astronomy.AstroUtils
+import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.*
-import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
-import com.kylecorry.sol.science.astronomy.AstroUtils
-import com.kylecorry.sol.science.astronomy.RiseSetTransitTimes
 import com.kylecorry.sol.time.Time.plusHours
+import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import java.time.ZonedDateTime
 import kotlin.math.abs
@@ -99,7 +96,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
 
         // Handle the case where a rise or set is close to the horizon and refraction is messing it up
         if (withRefraction && (rise == null || transit == null || set == null)) {
-            val calculated =  calculate(
+            val calculated = calculate(
                 locator,
                 date,
                 location,
@@ -165,9 +162,9 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
     private fun getMeanSiderealTime(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val theta0 =
-            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * Arithmetic.square(
+            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * SolMath.square(
                 T
-            ) - Arithmetic.cube(
+            ) - SolMath.cube(
                 T
             ) / 38710000.0
         return wrap(theta0, 0.0, 360.0)
@@ -212,11 +209,11 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
 
         for (i in 0 until iterations) {
             val sidereal0 =
-                GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m0) / 15)
+                GreenwichSiderealTime(SolMath.normalizeAngle(apparentSidereal + 360.985647 * m0) / 15)
             val sidereal1 =
-                GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m1) / 15)
+                GreenwichSiderealTime(SolMath.normalizeAngle(apparentSidereal + 360.985647 * m1) / 15)
             val sidereal2 =
-                GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m2) / 15)
+                GreenwichSiderealTime(SolMath.normalizeAngle(apparentSidereal + 360.985647 * m2) / 15)
 
             val n0 = m0 + deltaT / 86400
             val n1 = m1 + deltaT / 86400
@@ -294,7 +291,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
             )
         )
 
-        val ra = Interpolation.catmullRom(
+        val ra = SolMath.interpolate(
             value,
             normalizedRas.first,
             normalizedRas.second,
@@ -302,7 +299,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         )
 
         val declination =
-            Interpolation.catmullRom(value, first.declination, second.declination, third.declination)
+            SolMath.interpolate(value, first.declination, second.declination, third.declination)
 
         return EquatorialCoordinate(declination, ra)
     }
@@ -313,7 +310,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         second: Distance,
         third: Distance
     ): Distance {
-        val distance = Interpolation.catmullRom(
+        val distance = SolMath.interpolate(
             value,
             first.value.toDouble(),
             second.value.toDouble(),

@@ -1,4 +1,5 @@
 package com.kylecorry.sol.science.astronomy.units
+
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 import com.kylecorry.sol.time.Time

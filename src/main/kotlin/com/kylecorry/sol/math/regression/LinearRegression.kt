@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math.regression
 
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.statistics.Statistics
 
 class LinearRegression(data: List<Vector2>) : IRegression1D {

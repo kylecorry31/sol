@@ -1,8 +1,7 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
+import com.kylecorry.sol.math.SolMath.square
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.algebra.mapRows
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.sqrt
 
@@ -17,7 +16,7 @@ class KNNClassifier(
         val xArr = x.toTypedArray()
 
         val tempNeighbors = mutableListOf<Pair<Array<Int>, Float>>()
-        for (row in 0 until input.rows()){
+        for (row in 0 until input.rows()) {
             tempNeighbors.add(labels[row] to distance(xArr, input.getRow(row).toTypedArray()))
         }
         val neighbors = tempNeighbors.sortedBy { it.second }.take(k)

@@ -1,11 +1,10 @@
 package com.kylecorry.sol.science.astronomy.locators
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.science.astronomy.OrbitalMath
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
@@ -62,7 +61,15 @@ internal class Sun : ICelestialLocator {
     }
 
     private fun getMeanAnomaly(T: Double): Double {
-        return Trigonometry.normalizeAngle(Arithmetic.polynomial(T, 357.5291092, 35999.0502909, -0.0001536, 1 / 24490000.0))
+        return Trigonometry.normalizeAngle(
+            Arithmetic.polynomial(
+                T,
+                357.5291092,
+                35999.0502909,
+                -0.0001536,
+                1 / 24490000.0
+            )
+        )
     }
 
     private fun getTrueAnomaly(T: Double): Double {

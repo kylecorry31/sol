@@ -18,7 +18,7 @@ data class SphericalCoordinate(
     val r: Float,
     val theta: Float,
     val phi: Float
-){
+) {
     fun toCartesian(): Vector3 {
         val thetaRad = theta.toRadians()
         val phiRad = phi.toRadians()

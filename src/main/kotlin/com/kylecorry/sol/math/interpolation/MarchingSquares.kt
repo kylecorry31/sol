@@ -1,6 +1,5 @@
 package com.kylecorry.sol.math.interpolation
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.shared.Executor
 import com.kylecorry.sol.shared.SequentialExecutor
 import kotlin.math.max

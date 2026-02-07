@@ -6,7 +6,6 @@ import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.interpolation.Interpolation
 import com.kylecorry.sol.math.lists.Lists
 import com.kylecorry.sol.math.statistics.Statistics
-import kotlin.math.*
 
 object SolMath {
 

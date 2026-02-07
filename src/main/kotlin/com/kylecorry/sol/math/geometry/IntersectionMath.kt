@@ -1,11 +1,10 @@
 package com.kylecorry.sol.math.geometry
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.algebra.QuadraticEquation
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 
 internal object IntersectionMath {
 

@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy.corrections
 
-import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 

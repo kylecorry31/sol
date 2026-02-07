@@ -1,7 +1,6 @@
 package com.kylecorry.sol.math.statistics
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import kotlin.math.PI
 import kotlin.math.exp

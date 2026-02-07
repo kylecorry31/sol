@@ -1,10 +1,10 @@
 package com.kylecorry.sol.math
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.normalizeAngle
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.atan2
 import kotlin.math.sqrt
 

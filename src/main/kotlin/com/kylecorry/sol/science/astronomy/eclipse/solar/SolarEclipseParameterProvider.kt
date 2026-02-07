@@ -1,11 +1,10 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase

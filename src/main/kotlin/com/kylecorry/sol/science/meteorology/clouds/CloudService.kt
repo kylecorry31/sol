@@ -1,12 +1,12 @@
 package com.kylecorry.sol.science.meteorology.clouds
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.science.geology.Geology
+import com.kylecorry.sol.science.geology.Region
+import com.kylecorry.sol.science.meteorology.Precipitation
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import com.kylecorry.sol.science.geography.Geography
-import com.kylecorry.sol.science.geology.Region
-import com.kylecorry.sol.science.meteorology.Precipitation
 
 internal class CloudService {
 
@@ -17,27 +17,32 @@ internal class CloudService {
                 Precipitation.Snow,
                 Precipitation.IcePellets
             )
+
             CloudGenus.Nimbostratus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Snow,
                 Precipitation.IcePellets
             )
+
             CloudGenus.Stratus -> listOf(
                 Precipitation.Drizzle,
                 Precipitation.Snow,
                 Precipitation.SnowGrains
             )
+
             CloudGenus.Stratocumulus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Drizzle,
                 Precipitation.Snow,
                 Precipitation.SnowPellets
             )
+
             CloudGenus.Cumulus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Snow,
                 Precipitation.SnowPellets
             )
+
             CloudGenus.Cumulonimbus -> listOf(
                 Precipitation.Rain,
                 Precipitation.Snow,
@@ -46,6 +51,7 @@ internal class CloudService {
                 Precipitation.SmallHail,
                 Precipitation.Lightning
             )
+
             else -> emptyList()
         }
     }
@@ -74,7 +80,7 @@ internal class CloudService {
             )
         }
 
-        val region = Geography.getRegion(location)
+        val region = Geology.getRegion(location)
         val highStart = when (region) {
             Region.Polar -> 3f
             Region.Temperate -> 5f
@@ -92,6 +98,7 @@ internal class CloudService {
                 Distance.from(2f, DistanceUnits.Kilometers),
                 Distance.from(highStart, DistanceUnits.Kilometers)
             )
+
             else -> Range(
                 Distance.from(highStart, DistanceUnits.Kilometers),
                 Distance.from(highEnd, DistanceUnits.Kilometers)
@@ -104,18 +111,23 @@ internal class CloudService {
             percent < 0.01f -> {
                 CloudCover.NoClouds
             }
+
             percent < 0.1f -> {
                 CloudCover.Few
             }
+
             percent < 0.25f -> {
                 CloudCover.Isolated
             }
+
             percent < 0.5f -> {
                 CloudCover.Scattered
             }
+
             percent < 0.9f -> {
                 CloudCover.Broken
             }
+
             else -> {
                 CloudCover.Overcast
             }

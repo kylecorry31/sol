@@ -1,9 +1,8 @@
 package com.kylecorry.sol.math.classifiers
-import com.kylecorry.sol.math.lists.Lists
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.algebra.*
 import com.kylecorry.sol.math.batch
+import com.kylecorry.sol.math.lists.Lists
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.exp

@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.analysis.Trigonometry.deltaAngle
-import com.kylecorry.sol.math.arithmetic.Arithmetic.isCloseTo
+import com.kylecorry.sol.math.SolMath.deltaAngle
+import com.kylecorry.sol.math.SolMath.isCloseTo
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.CompassDirection
 import com.kylecorry.sol.units.Coordinate
@@ -96,7 +96,7 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
                 contains(other.southWest) &&
                 contains(other.center)
     }
-    
+
     fun intersects(other: CoordinateBounds): Boolean {
         if (south > other.north || other.south > north) {
             return false

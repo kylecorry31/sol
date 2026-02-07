@@ -3,7 +3,7 @@ package com.kylecorry.sol.science.geography.formatting
 import com.kylecorry.sol.math.SolMath.roundPlaces
 import com.kylecorry.sol.shared.toDoubleCompat
 import com.kylecorry.sol.units.Coordinate
-import java.util.Locale
+import java.util.*
 import kotlin.math.abs
 
 class DegreesMinutesSecondsCoordinateFormat(private val precision: Int = 1) : CoordinateFormat {

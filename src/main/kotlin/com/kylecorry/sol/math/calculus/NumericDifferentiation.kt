@@ -1,8 +1,7 @@
 package com.kylecorry.sol.math.calculus
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.max
 import kotlin.math.min
 

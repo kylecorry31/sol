@@ -1,13 +1,12 @@
 package com.kylecorry.sol.science.astronomy.locators
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
-import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation

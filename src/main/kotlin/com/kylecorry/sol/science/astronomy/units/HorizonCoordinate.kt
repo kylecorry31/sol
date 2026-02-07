@@ -1,12 +1,11 @@
 package com.kylecorry.sol.science.astronomy.units
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.analysis.Trigonometry.tanDegrees
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance

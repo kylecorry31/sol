@@ -1,7 +1,6 @@
 package com.kylecorry.sol.math.optimization
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.absoluteValue
 
 object Optimization {

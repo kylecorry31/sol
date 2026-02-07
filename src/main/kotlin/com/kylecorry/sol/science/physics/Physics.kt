@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.physics
-import com.kylecorry.sol.math.analysis.Trigonometry
 
 import com.kylecorry.sol.math.*
+import com.kylecorry.sol.math.analysis.Trigonometry
 import com.kylecorry.sol.math.calculus.RungeKutta4thOrderSolver
 import com.kylecorry.sol.math.interpolation.Interpolator
 import com.kylecorry.sol.math.interpolation.LinearInterpolator

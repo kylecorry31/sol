@@ -1,10 +1,9 @@
 package com.kylecorry.sol.science.geophysics
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Utils
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.units.Bearing
 import kotlin.math.atan2
 
@@ -28,9 +27,10 @@ internal object AzimuthCalculator {
 
         val sin = east[0] + north[1]
         val cos = east[1] - north[0]
-        val azimuth = if (!(Arithmetic.isZero(cos) && Arithmetic.isApproximatelyEqual(cos, sin))) atan2(cos, sin) else 0f
+        val azimuth =
+            if (!(Arithmetic.isZero(cos) && Arithmetic.isApproximatelyEqual(cos, sin))) atan2(cos, sin) else 0f
 
-        if (azimuth.isNaN()){
+        if (azimuth.isNaN()) {
             return null
         }
 
@@ -39,7 +39,7 @@ internal object AzimuthCalculator {
 
 
     fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
-       return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
+        return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
     }
 
 }

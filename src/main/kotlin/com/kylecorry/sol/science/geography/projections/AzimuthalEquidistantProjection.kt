@@ -1,10 +1,10 @@
 package com.kylecorry.sol.science.geography.projections
 
-import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
 import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate

@@ -1,13 +1,17 @@
 package com.kylecorry.sol.science.geophysics
 
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
-import com.kylecorry.sol.units.*
+import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
 import java.time.Instant
-import kotlin.math.*
+import kotlin.math.atan2
+import kotlin.math.hypot
+import kotlin.math.sqrt
 
 object Geophysics {
 

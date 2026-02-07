@@ -1,7 +1,6 @@
 package com.kylecorry.sol.math
 
 import com.kylecorry.sol.math.algebra.Matrix
-import kotlin.collections.sumOf
 import kotlin.math.sqrt
 
 @JvmInline

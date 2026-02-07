@@ -12,9 +12,11 @@ internal class AvalancheRiskClassifier {
             absAngle < 30 || absAngle > 60 -> {
                 AvalancheRisk.Low
             }
+
             absAngle in 30.0..45.0 -> {
                 AvalancheRisk.High
             }
+
             else -> {
                 AvalancheRisk.Moderate
             }

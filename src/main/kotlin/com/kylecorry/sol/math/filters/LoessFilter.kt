@@ -1,13 +1,11 @@
 package com.kylecorry.sol.math.filters
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 
-import com.kylecorry.sol.math.SolMath
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.regression.WeightedLeastSquaresRegression
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs
 import kotlin.math.floor
-import kotlin.math.max
 import kotlin.math.pow
 
 // Based on org.apache.commons.math.analysis.interpolation.LoessInterpolator

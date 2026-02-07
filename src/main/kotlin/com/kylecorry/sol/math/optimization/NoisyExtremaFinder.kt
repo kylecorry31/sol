@@ -63,7 +63,7 @@ class NoisyExtremaFinder(private val step: Double = 1.0, private val debounceCou
     }
 
     override fun find(values: List<Float>): List<Extremum> {
-        if (values.isEmpty()){
+        if (values.isEmpty()) {
             return emptyList()
         }
         val last = values.first()

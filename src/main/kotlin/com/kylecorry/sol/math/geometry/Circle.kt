@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.geometry
 
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import kotlin.math.PI
 
 data class Circle(val center: Vector2, val radius: Float) {
