@@ -2,9 +2,9 @@ package com.kylecorry.sol.science.astronomy.locators
 
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry
+import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 import com.kylecorry.sol.science.astronomy.AstroUtils
@@ -29,7 +29,7 @@ internal class Moon : ICelestialLocator {
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
         val T = tt.toJulianCenturies()
         val L = Trigonometry.normalizeAngle(
-            Arithmetic.polynomial(
+            polynomial(
                 T,
                 218.3164477,
                 481267.88123421,
@@ -128,7 +128,7 @@ internal class Moon : ICelestialLocator {
     fun getMeanAnomaly(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         return Trigonometry.normalizeAngle(
-            Arithmetic.polynomial(
+            polynomial(
                 T,
                 134.9633964,
                 477198.8675055,
@@ -239,7 +239,7 @@ internal class Moon : ICelestialLocator {
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         return Trigonometry.normalizeAngle(
-            Arithmetic.polynomial(
+            polynomial(
                 T,
                 297.8501921,
                 445267.1114034,
@@ -253,7 +253,7 @@ internal class Moon : ICelestialLocator {
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         return Trigonometry.normalizeAngle(
-            Arithmetic.polynomial(
+            polynomial(
                 T,
                 93.2720950,
                 483202.0175233,

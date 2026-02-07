@@ -1,6 +1,6 @@
 package com.kylecorry.sol.units
 
-import com.kylecorry.sol.math.analysis.Trigonometry.normalizeAngle
+import com.kylecorry.sol.math.trigonometry.Trigonometry.normalizeAngle
 
 @JvmInline
 value class Bearing private constructor(val value: Float) {

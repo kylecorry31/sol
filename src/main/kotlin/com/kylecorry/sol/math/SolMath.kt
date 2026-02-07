@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.interpolation.Interpolation

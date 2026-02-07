@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math.analysis
 
-import org.junit.jupiter.api.Test
+import com.kylecorry.sol.math.trigonometry.SineWave
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest

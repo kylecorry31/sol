@@ -5,7 +5,7 @@ import com.kylecorry.sol.math.SolMath.toRadians
 import com.kylecorry.sol.math.Vector
 import com.kylecorry.sol.math.algebra.LinearAlgebra
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.analysis.Trigonometry.deltaAngle
+import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.optimization.ConvergenceOptimizer
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer

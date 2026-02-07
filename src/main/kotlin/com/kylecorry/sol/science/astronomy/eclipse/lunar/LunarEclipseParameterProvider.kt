@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
-import com.kylecorry.sol.math.analysis.Trigonometry
-import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry
+import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime

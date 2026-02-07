@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.stars
 
-import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate

@@ -1,8 +1,8 @@
-package com.kylecorry.sol.math.analysis
+package com.kylecorry.sol.math.trigonometry
 
-import kotlin.math.cos
+import kotlin.math.sin
 
-class CosineWave(
+class SineWave(
     override val amplitude: Float,
     override val frequency: Float,
     override val horizontalShift: Float,
@@ -10,7 +10,7 @@ class CosineWave(
 ) : Waveform {
 
     override fun calculate(x: Float): Float {
-        return amplitude * cos(frequency * (x - horizontalShift)) + verticalShift
+        return amplitude * sin(frequency * (x - horizontalShift)) + verticalShift
     }
 
 }

@@ -1,4 +1,4 @@
-package com.kylecorry.sol.math.analysis
+package com.kylecorry.sol.math.trigonometry
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2

@@ -2,10 +2,10 @@ package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.math.SolMath.toDegrees
 import com.kylecorry.sol.math.SolMath.toRadians
-import com.kylecorry.sol.math.analysis.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.analysis.Trigonometry.normalizeAngle
-import com.kylecorry.sol.math.analysis.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.analysis.Trigonometry.tanDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.normalizeAngle
+import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.optimization.Optimization
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate

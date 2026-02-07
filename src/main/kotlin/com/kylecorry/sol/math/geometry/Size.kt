@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math.geometry
 
-import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import kotlin.math.abs
 
 data class Size(val width: Float, val height: Float) {

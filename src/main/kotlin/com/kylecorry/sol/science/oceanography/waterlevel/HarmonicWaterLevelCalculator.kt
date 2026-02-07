@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
 
-import com.kylecorry.sol.math.analysis.Trigonometry
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.science.oceanography.TidalHarmonic
 import com.kylecorry.sol.science.oceanography.TideConstituent
 import java.time.Duration

@@ -1,4 +1,4 @@
-package com.kylecorry.sol.math.analysis
+package com.kylecorry.sol.math.trigonometry
 
 interface Waveform {
     val amplitude: Float

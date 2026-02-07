@@ -1,5 +1,7 @@
 package com.kylecorry.sol.math.analysis
 
+import com.kylecorry.sol.math.trigonometry.CosineWave
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

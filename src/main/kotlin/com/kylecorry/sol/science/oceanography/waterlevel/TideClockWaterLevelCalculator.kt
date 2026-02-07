@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
 
 import com.kylecorry.sol.math.SolMath.toRadians
-import com.kylecorry.sol.math.analysis.CosineWave
-import com.kylecorry.sol.math.analysis.Waveform
+import com.kylecorry.sol.math.trigonometry.CosineWave
+import com.kylecorry.sol.math.trigonometry.Waveform
 import com.kylecorry.sol.science.oceanography.Tide
 import com.kylecorry.sol.science.oceanography.TideConstituent
 import com.kylecorry.sol.time.Time.hoursBetween
