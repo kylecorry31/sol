@@ -2,10 +2,7 @@ package com.kylecorry.sol.math.arithmetic
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.MethodSource
-import java.util.stream.Stream
 
 class ArithmeticTest {
     @ParameterizedTest
@@ -26,56 +23,145 @@ class ArithmeticTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideWrapDouble")
+    @CsvSource(
+        "0.2, 0.0, 1.0, 0.2",
+        "1.0, 0.0, 1.0, 1.0",
+        "0.0, 0.0, 1.0, 0.0",
+        "1.5, 0.0, 1.0, 0.5",
+        "-0.75, 0.0, 1.0, 0.25",
+        "0.0, 1.0, 4.0, 3.0",
+        "5.0, 1.0, 4.0, 2.0",
+        "6.0, 5.0, 4.0, 5.0",
+        "0.0, 0.0, 0.0, 0.0",
+        "1800.0, 0.0, 360.0, 0.0",
+        "-1800.0, 0.0, 360.0, 360.0",
+        "1799.0, 0.0, 360.0, 359.0",
+        "-1799.0, 0.0, 360.0, 1.0",
+    )
     fun wrapDouble(value: Double, min: Double, max: Double, expected: Double) {
         val actual = Arithmetic.wrap(value, min, max)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
-    @MethodSource("provideWrapFloat")
+    @CsvSource(
+        "0.2, 0.0, 1.0, 0.2",
+        "1.0, 0.0, 1.0, 1.0",
+        "0.0, 0.0, 1.0, 0.0",
+        "1.5, 0.0, 1.0, 0.5",
+        "-0.75, 0.0, 1.0, 0.25",
+        "0.0, 1.0, 4.0, 3.0",
+        "5.0, 1.0, 4.0, 2.0",
+        "6.0, 5.0, 4.0, 5.0",
+        "0.0, 0.0, 0.0, 0.0",
+        "1800.0, 0.0, 360.0, 0.0",
+        "-1800.0, 0.0, 360.0, 360.0",
+        "1799.0, 0.0, 360.0, 359.0",
+        "-1799.0, 0.0, 360.0, 1.0",
+        "-250.0, -180.0, 180.0, 110.0",
+    )
     fun wrapFloat(value: Float, min: Float, max: Float, expected: Float) {
         val actual = Arithmetic.wrap(value, min, max)
         assertEquals(expected, actual, 0.00001f)
     }
 
     @ParameterizedTest
-    @MethodSource("providePower")
+    @CsvSource(
+        "1.0, 2, 1.0",
+        "1.0, 0, 1.0",
+        "1.0, -1, 1.0",
+        "3.0, -1, 0.3333333333333333",
+        "3.0, -2, 0.1111111111111111",
+        "3.0, 0, 1.0",
+        "3.0, 1, 3.0",
+        "3.0, 2, 9.0",
+        "0.0, 2, 0.0",
+        "-2.0, 2, 4.0",
+        "-2.0, 3, -8.0",
+        "0.5, 2, 0.25",
+        "0.5, -2, 4.0",
+    )
     fun power(value: Double, exponent: Int, expected: Double) {
         val actual = Arithmetic.power(value, exponent)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
-    @MethodSource("providePowerInt")
-    fun power(value: Int, exponent: Int, expected: Int) {
+    @CsvSource(
+        "1, 2, 1",
+        "1, 0, 1",
+        "1, -1, 1",
+        "3, -1, 0",
+        "3, -2, 0",
+        "3, 0, 1",
+        "3, 1, 3",
+        "3, 2, 9",
+        "-2, 2, 4",
+        "-2, 3, -8",
+        "0, 3, 0",
+    )
+    fun powerInt(value: Int, exponent: Int, expected: Int) {
         val actual = Arithmetic.power(value, exponent)
         assertEquals(expected, actual)
     }
 
     @ParameterizedTest
-    @MethodSource("provideCube")
+    @CsvSource(
+        "1.0, 1.0",
+        "2.0, 8.0",
+        "3.0, 27.0",
+        "4.0, 64.0",
+        "-4.0, -64.0",
+        "0.0, 0.0",
+        "0.5, 0.125",
+    )
     fun cube(x: Double, expected: Double) {
         val actual = Arithmetic.cube(x)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
-    @MethodSource("provideSquare")
+    @CsvSource(
+        "1.0, 1.0",
+        "2.0, 4.0",
+        "3.0, 9.0",
+        "4.0, 16.0",
+        "-4.0, 16.0",
+        "0.0, 0.0",
+        "0.5, 0.25",
+    )
     fun square(x: Double, expected: Double) {
         val actual = Arithmetic.square(x)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
-    @MethodSource("provideClamp")
+    @CsvSource(
+        "0.1, 0.0, 1.0, 0.1",
+        "0.0, 0.0, 1.0, 0.0",
+        "1.0, 0.0, 1.0, 1.0",
+        "1.2, 0.0, 1.0, 1.0",
+        "-0.1, 0.0, 1.0, 0.0",
+        "4.0, 2.0, 5.0, 4.0",
+        "1.0, 2.0, 5.0, 2.0",
+        "6.0, 2.0, 5.0, 5.0",
+    )
     fun clampDouble(value: Double, min: Double, max: Double, expected: Double) {
         val actual = Arithmetic.clamp(value, min, max)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
-    @MethodSource("provideClamp")
+    @CsvSource(
+        "0.1, 0.0, 1.0, 0.1",
+        "0.0, 0.0, 1.0, 0.0",
+        "1.0, 0.0, 1.0, 1.0",
+        "1.2, 0.0, 1.0, 1.0",
+        "-0.1, 0.0, 1.0, 0.0",
+        "4.0, 2.0, 5.0, 4.0",
+        "1.0, 2.0, 5.0, 2.0",
+        "6.0, 2.0, 5.0, 5.0",
+    )
     fun clampFloat(value: Double, min: Double, max: Double, expected: Double) {
         val actual = Arithmetic.clamp(value.toFloat(), min.toFloat(), max.toFloat())
         assertEquals(expected.toFloat(), actual, 0.00001f)
@@ -142,122 +228,5 @@ class ArithmeticTest {
     fun leastCommonMultipleFloat(a: Float, b: Float, expected: Float) {
         val actual = Arithmetic.leastCommonMultiple(a, b)
         assertEquals(expected, actual, 0.001f)
-    }
-
-    companion object {
-        @JvmStatic
-        fun provideWrapDouble(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(0.2, 0.0, 1.0, 0.2),
-                Arguments.of(1.0, 0.0, 1.0, 1.0),
-                Arguments.of(0.0, 0.0, 1.0, 0.0),
-                Arguments.of(1.5, 0.0, 1.0, 0.5),
-                Arguments.of(-0.75, 0.0, 1.0, 0.25),
-                Arguments.of(0.0, 1.0, 4.0, 3.0),
-                Arguments.of(5.0, 1.0, 4.0, 2.0),
-                Arguments.of(6.0, 5.0, 4.0, 5.0),
-                Arguments.of(0.0, 0.0, 0.0, 0.0),
-                Arguments.of(1800.0, 0.0, 360.0, 0.0),
-                Arguments.of(-1800.0, 0.0, 360.0, 360.0),
-                Arguments.of(1799.0, 0.0, 360.0, 359.0),
-                Arguments.of(-1799.0, 0.0, 360.0, 1.0),
-            )
-        }
-
-        @JvmStatic
-        fun provideWrapFloat(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(0.2f, 0.0f, 1.0f, 0.2f),
-                Arguments.of(1.0f, 0.0f, 1.0f, 1.0f),
-                Arguments.of(0.0f, 0.0f, 1.0f, 0.0f),
-                Arguments.of(1.5f, 0.0f, 1.0f, 0.5f),
-                Arguments.of(-0.75f, 0.0f, 1.0f, 0.25f),
-                Arguments.of(0.0f, 1.0f, 4.0f, 3.0f),
-                Arguments.of(5.0f, 1.0f, 4.0f, 2.0f),
-                Arguments.of(6.0f, 5.0f, 4.0f, 5.0f),
-                Arguments.of(0.0f, 0.0f, 0.0f, 0.0f),
-                Arguments.of(1800.0f, 0.0f, 360.0f, 0.0f),
-                Arguments.of(-1800.0f, 0.0f, 360.0f, 360.0f),
-                Arguments.of(1799.0f, 0.0f, 360.0f, 359.0f),
-                Arguments.of(-1799.0f, 0.0f, 360.0f, 1.0f),
-                Arguments.of(-250f, -180f, 180f, 110f),
-            )
-        }
-
-        @JvmStatic
-        fun providePower(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(1.0, 2, 1.0),
-                Arguments.of(1.0, 0, 1.0),
-                Arguments.of(1.0, -1, 1.0),
-                Arguments.of(3.0, -1, 1 / 3.0),
-                Arguments.of(3.0, -2, 1 / 9.0),
-                Arguments.of(3.0, 0, 1.0),
-                Arguments.of(3.0, 1, 3.0),
-                Arguments.of(3.0, 2, 9.0),
-                Arguments.of(0.0, 2, 0.0),
-                Arguments.of(-2.0, 2, 4.0),
-                Arguments.of(-2.0, 3, -8.0),
-                Arguments.of(0.5, 2, 0.25),
-                Arguments.of(0.5, -2, 4.0),
-            )
-        }
-
-        @JvmStatic
-        fun providePowerInt(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(1, 2, 1),
-                Arguments.of(1, 0, 1),
-                Arguments.of(1, -1, 1),
-                Arguments.of(3, -1, 0),
-                Arguments.of(3, -2, 0),
-                Arguments.of(3, 0, 1),
-                Arguments.of(3, 1, 3),
-                Arguments.of(3, 2, 9),
-                Arguments.of(-2, 2, 4),
-                Arguments.of(-2, 3, -8),
-                Arguments.of(0, 3, 0)
-            )
-        }
-
-        @JvmStatic
-        fun provideCube(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(1.0, 1.0),
-                Arguments.of(2.0, 8.0),
-                Arguments.of(3.0, 27.0),
-                Arguments.of(4.0, 64.0),
-                Arguments.of(-4.0, -64.0),
-                Arguments.of(0.0, 0.0),
-                Arguments.of(0.5, 0.125),
-            )
-        }
-
-        @JvmStatic
-        fun provideSquare(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(1.0, 1.0),
-                Arguments.of(2.0, 4.0),
-                Arguments.of(3.0, 9.0),
-                Arguments.of(4.0, 16.0),
-                Arguments.of(-4.0, 16.0),
-                Arguments.of(0.0, 0.0),
-                Arguments.of(0.5, 0.25),
-            )
-        }
-
-        @JvmStatic
-        fun provideClamp(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(0.1, 0.0, 1.0, 0.1),
-                Arguments.of(0.0, 0.0, 1.0, 0.0),
-                Arguments.of(1.0, 0.0, 1.0, 1.0),
-                Arguments.of(1.2, 0.0, 1.0, 1.0),
-                Arguments.of(-0.1, 0.0, 1.0, 0.0),
-                Arguments.of(4.0, 2.0, 5.0, 4.0),
-                Arguments.of(1.0, 2.0, 5.0, 2.0),
-                Arguments.of(6.0, 2.0, 5.0, 5.0),
-            )
-        }
     }
 }
