@@ -1,11 +1,12 @@
 package com.kylecorry.sol.science.astronomy.locators
 
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.normalizeAngle
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
+import com.kylecorry.sol.math.trigonometry.Trigonometry.toDegrees
 import com.kylecorry.sol.science.astronomy.OrbitalMath
 import com.kylecorry.sol.science.astronomy.units.*
 import com.kylecorry.sol.units.Distance

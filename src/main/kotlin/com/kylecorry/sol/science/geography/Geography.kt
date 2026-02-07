@@ -1,8 +1,8 @@
 package com.kylecorry.sol.science.geography
 
-import com.kylecorry.sol.math.SolMath.real
-import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.real
+import com.kylecorry.sol.math.MathExtensions.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees

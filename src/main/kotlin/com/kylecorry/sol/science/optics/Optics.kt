@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.optics
 
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees

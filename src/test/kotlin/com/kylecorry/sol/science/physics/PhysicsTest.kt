@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.physics
 import com.kylecorry.sol.math.interpolation.Interpolation
 
-import com.kylecorry.sol.math.SolMath
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.*

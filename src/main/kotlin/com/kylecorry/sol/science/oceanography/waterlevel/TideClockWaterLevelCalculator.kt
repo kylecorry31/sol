@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.oceanography.waterlevel
 
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.trigonometry.CosineWave
 import com.kylecorry.sol.math.trigonometry.Waveform
 import com.kylecorry.sol.science.oceanography.Tide

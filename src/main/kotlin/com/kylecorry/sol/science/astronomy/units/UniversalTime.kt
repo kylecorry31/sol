@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.astronomy.units
 
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation

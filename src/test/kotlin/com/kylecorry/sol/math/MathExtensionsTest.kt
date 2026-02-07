@@ -1,14 +1,14 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.SolMath.negative
-import com.kylecorry.sol.math.SolMath.positive
-import com.kylecorry.sol.math.SolMath.real
-import com.kylecorry.sol.math.SolMath.round
-import com.kylecorry.sol.math.SolMath.roundNearest
-import com.kylecorry.sol.math.SolMath.roundNearestAngle
-import com.kylecorry.sol.math.SolMath.roundPlaces
-import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.negative
+import com.kylecorry.sol.math.MathExtensions.positive
+import com.kylecorry.sol.math.MathExtensions.real
+import com.kylecorry.sol.math.MathExtensions.round
+import com.kylecorry.sol.math.MathExtensions.roundNearest
+import com.kylecorry.sol.math.MathExtensions.roundNearestAngle
+import com.kylecorry.sol.math.MathExtensions.roundPlaces
+import com.kylecorry.sol.math.MathExtensions.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class SolMathTest {
+class MathExtensionsTest {
 
     @ParameterizedTest
     @MethodSource("provideRadians")

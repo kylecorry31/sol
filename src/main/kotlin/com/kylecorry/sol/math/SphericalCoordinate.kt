@@ -1,8 +1,8 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.SolMath.real
-import com.kylecorry.sol.math.SolMath.toDegrees
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.real
+import com.kylecorry.sol.math.MathExtensions.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.cos

@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.oceanography
 
-import com.kylecorry.sol.math.SolMath.roundPlaces
+import com.kylecorry.sol.math.MathExtensions.roundPlaces
 import com.kylecorry.sol.math.optimization.GoldenSearchExtremaFinder
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.science.oceanography.waterlevel.*

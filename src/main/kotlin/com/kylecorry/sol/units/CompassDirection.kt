@@ -1,6 +1,6 @@
 package com.kylecorry.sol.units
 
-import com.kylecorry.sol.math.SolMath.roundNearest
+import com.kylecorry.sol.math.MathExtensions.roundNearest
 
 enum class CompassDirection(val azimuth: Float) {
     North(0f),

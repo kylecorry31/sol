@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.meteorology.clouds
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.geology.Region
 import com.kylecorry.sol.science.meteorology.Precipitation
@@ -80,7 +81,7 @@ internal class CloudService {
             )
         }
 
-        val region = Geology.getRegion(location)
+        val region = Geography.getRegion(location)
         val highStart = when (region) {
             Region.Polar -> 3f
             Region.Temperate -> 5f

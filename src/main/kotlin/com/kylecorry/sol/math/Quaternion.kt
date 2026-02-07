@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import kotlin.math.*

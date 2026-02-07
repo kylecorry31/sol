@@ -1,7 +1,7 @@
 package com.kylecorry.sol.shared
 
 
-import com.kylecorry.sol.math.SolMath.roundPlaces
+import com.kylecorry.sol.math.MathExtensions.roundPlaces
 import java.text.DecimalFormat
 import java.util.concurrent.ConcurrentHashMap
 

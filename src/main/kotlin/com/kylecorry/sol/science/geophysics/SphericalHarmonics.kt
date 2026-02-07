@@ -18,7 +18,7 @@
 
 package com.kylecorry.sol.science.geophysics
 
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance

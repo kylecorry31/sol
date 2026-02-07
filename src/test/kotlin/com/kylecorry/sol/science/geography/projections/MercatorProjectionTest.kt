@@ -2,7 +2,7 @@ package com.kylecorry.sol.science.geography.projections
 
 import assertk.assertThat
 import assertk.assertions.isCloseTo
-import com.kylecorry.sol.math.SolMath.toRadians
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.Coordinate

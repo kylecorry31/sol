@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math
 
-import com.kylecorry.sol.math.SolMath.roundPlaces
+import com.kylecorry.sol.math.MathExtensions.roundPlaces
 import com.kylecorry.sol.shared.Guards
 import kotlin.math.ceil
 import kotlin.math.floor

@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.geology
 
-import com.kylecorry.sol.math.SolMath.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
