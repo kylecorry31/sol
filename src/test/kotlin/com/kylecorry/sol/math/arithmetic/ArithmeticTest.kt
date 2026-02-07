@@ -54,13 +54,6 @@ class ArithmeticTest {
     }
 
     @ParameterizedTest
-    @MethodSource("providePolynomial")
-    fun polynomial(x: Double, coefs: DoubleArray, expected: Double) {
-        val actual = Arithmetic.polynomial(x, *coefs)
-        assertEquals(expected, actual, 0.00001)
-    }
-
-    @ParameterizedTest
     @MethodSource("provideCube")
     fun cube(x: Double, expected: Double) {
         val actual = Arithmetic.cube(x)
@@ -224,18 +217,6 @@ class ArithmeticTest {
                 Arguments.of(-2, 2, 4),
                 Arguments.of(-2, 3, -8),
                 Arguments.of(0, 3, 0)
-            )
-        }
-
-        @JvmStatic
-        fun providePolynomial(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of(1.0, doubleArrayOf(1.0, 2.0, 3.0), 6.0),
-                Arguments.of(2.0, doubleArrayOf(1.0, 2.0, 3.0), 17.0),
-                Arguments.of(3.0, doubleArrayOf(0.0, 1.0, 3.0, 1.0), 57.0),
-                Arguments.of(3.0, doubleArrayOf(0.0, 1.0, -3.0, 1.0), 3.0),
-                Arguments.of(3.0, doubleArrayOf(), 0.0),
-                Arguments.of(3.0, doubleArrayOf(1.0), 1.0),
             )
         }
 

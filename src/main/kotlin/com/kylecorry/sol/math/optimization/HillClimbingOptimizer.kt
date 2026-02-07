@@ -1,9 +1,9 @@
 package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import kotlin.random.Random
 
 class HillClimbingOptimizer(

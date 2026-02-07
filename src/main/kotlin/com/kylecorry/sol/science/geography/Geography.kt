@@ -5,14 +5,14 @@ import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
-import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
-import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic.clamp
 import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
+import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
+import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.science.geology.*
 import com.kylecorry.sol.units.*
 import kotlin.math.*

@@ -81,22 +81,6 @@ object Arithmetic {
         return total
     }
 
-    /**
-     * Computes a polynomial
-     * Ex. 1 + 2x + 5x^2 + x^4
-     * polynomial(x, 1, 2, 5, 0, 1)
-     */
-    fun polynomial(x: Double, vararg coefs: Double): Double {
-        var runningTotal = 0.0
-        var xPower = 1.0
-        for (i in coefs.indices) {
-            runningTotal += xPower * coefs[i]
-            xPower *= x
-        }
-
-        return runningTotal
-    }
-
     fun cube(a: Double): Double {
         return a * a * a
     }

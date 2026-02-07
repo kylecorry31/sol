@@ -1,12 +1,13 @@
 package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
-import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
-import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
+import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
+import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
+import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
@@ -79,7 +80,7 @@ internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
         }
 
         if (altitude > -0.575) {
-            return Arithmetic.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
+            return Algebra.polynomial(altitude, 1735.0, -518.2, 103.4, -12.79, 0.711) / 3600.0
         }
 
         return -20.774 / tanElev / 3600.0

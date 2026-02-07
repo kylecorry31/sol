@@ -1,9 +1,9 @@
 package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator

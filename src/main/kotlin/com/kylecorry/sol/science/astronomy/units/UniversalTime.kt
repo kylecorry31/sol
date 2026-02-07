@@ -1,7 +1,7 @@
 package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.MathExtensions.toRadians
-import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.time.Time
@@ -55,7 +55,7 @@ internal fun UniversalTime.toSiderealTime(apparent: Boolean = false): GreenwichS
 
     val t = (jd0 - 2415020.0) / 36525.0
 
-    val r = Arithmetic.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
+    val r = Algebra.polynomial(t, 6.6460656, 2400.051262, 0.00002581)
 
     val b = 24 - r + 24 * (year - 1900)
 

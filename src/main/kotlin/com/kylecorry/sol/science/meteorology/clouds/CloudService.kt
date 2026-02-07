@@ -2,7 +2,6 @@ package com.kylecorry.sol.science.meteorology.clouds
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.geography.Geography
-import com.kylecorry.sol.science.geology.Geology
 import com.kylecorry.sol.science.geology.Region
 import com.kylecorry.sol.science.meteorology.Precipitation
 import com.kylecorry.sol.units.Coordinate

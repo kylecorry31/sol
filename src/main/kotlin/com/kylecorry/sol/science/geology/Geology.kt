@@ -1,9 +1,9 @@
 package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
-import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import kotlin.math.absoluteValue

@@ -2,11 +2,11 @@ package com.kylecorry.sol.science.astronomy.locators
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.MathExtensions.toRadians
+import com.kylecorry.sol.math.algebra.Algebra.polynomial
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic
-import com.kylecorry.sol.math.arithmetic.Arithmetic.polynomial
 import com.kylecorry.sol.science.astronomy.AstroUtils
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
@@ -49,7 +49,7 @@ internal class Moon : ICelestialLocator {
         val a1 = Trigonometry.normalizeAngle(119.75 + 131.849 * T)
         val a2 = Trigonometry.normalizeAngle(53.09 + 479264.29 * T)
         val a3 = Trigonometry.normalizeAngle(313.45 + 481266.484 * T)
-        val E = Arithmetic.polynomial(T, 1.0, -0.002516, -0.0000074)
+        val E = polynomial(T, 1.0, -0.002516, -0.0000074)
         val E2 = Arithmetic.square(E)
 
         val t47a = table47a()
@@ -100,7 +100,7 @@ internal class Moon : ICelestialLocator {
         val M = sun.getMeanAnomaly(tt)
 
         val Mprime = getMeanAnomaly(tt)
-        val E = Arithmetic.polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E = polynomial(T, 1.0, -0.002516, -0.0000075)
         val E2 = Arithmetic.square(E)
         val t47a = table47a()
         var sumR = 0.0

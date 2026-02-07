@@ -2,9 +2,9 @@ package com.kylecorry.sol.units
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.science.geography.formatting.*
 import kotlin.math.*

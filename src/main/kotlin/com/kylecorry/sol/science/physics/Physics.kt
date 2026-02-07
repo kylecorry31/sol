@@ -1,12 +1,12 @@
 package com.kylecorry.sol.science.physics
 
 import com.kylecorry.sol.math.*
-import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.calculus.RungeKutta4thOrderSolver
 import com.kylecorry.sol.math.interpolation.Interpolator
 import com.kylecorry.sol.math.interpolation.LinearInterpolator
 import com.kylecorry.sol.math.optimization.HillClimbingOptimizer
 import com.kylecorry.sol.math.optimization.IOptimizer
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.science.geophysics.Geophysics
 import com.kylecorry.sol.units.*
 import java.time.Duration

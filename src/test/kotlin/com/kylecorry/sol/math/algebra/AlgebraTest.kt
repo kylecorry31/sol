@@ -1,11 +1,15 @@
 package com.kylecorry.sol.math.algebra
 
-import org.junit.jupiter.api.Assertions.*
-
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 internal class AlgebraTest {
-    
+
     @Test
     fun solveLinear() {
         assertEquals(-2.0f, Algebra.solve(LinearEquation(0.25f, 0.5f))!!, 0.0001f)
@@ -25,9 +29,16 @@ internal class AlgebraTest {
     }
 
     @Test
-    fun inverse(){
+    fun inverse() {
         val inverted = Algebra.inverse(LinearEquation(5f, 2f))
         assertEquals(0.2f to -0.4f, inverted.m to inverted.b, 0.0001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("providePolynomial")
+    fun polynomial(x: Double, coefs: DoubleArray, expected: Double) {
+        val actual = Algebra.polynomial(x, *coefs)
+        assertEquals(expected, actual, 0.00001)
     }
 
     fun assertEquals(
@@ -37,5 +48,19 @@ internal class AlgebraTest {
     ) {
         assertEquals(expected.first, actual.first, tolerance)
         assertEquals(expected.second, actual.second, tolerance)
+    }
+
+    companion object {
+        @JvmStatic
+        fun providePolynomial(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(1.0, doubleArrayOf(1.0, 2.0, 3.0), 6.0),
+                Arguments.of(2.0, doubleArrayOf(1.0, 2.0, 3.0), 17.0),
+                Arguments.of(3.0, doubleArrayOf(0.0, 1.0, 3.0, 1.0), 57.0),
+                Arguments.of(3.0, doubleArrayOf(0.0, 1.0, -3.0, 1.0), 3.0),
+                Arguments.of(3.0, doubleArrayOf(), 0.0),
+                Arguments.of(3.0, doubleArrayOf(1.0), 1.0),
+            )
+        }
     }
 }

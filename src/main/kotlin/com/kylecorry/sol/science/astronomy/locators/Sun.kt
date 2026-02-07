@@ -1,11 +1,11 @@
 package com.kylecorry.sol.science.astronomy.locators
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
+import com.kylecorry.sol.math.algebra.Algebra
+import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic
-import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.science.astronomy.OrbitalMath
 import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
@@ -62,7 +62,7 @@ internal class Sun : ICelestialLocator {
 
     private fun getMeanAnomaly(T: Double): Double {
         return Trigonometry.normalizeAngle(
-            Arithmetic.polynomial(
+            Algebra.polynomial(
                 T,
                 357.5291092,
                 35999.0502909,
@@ -80,7 +80,7 @@ internal class Sun : ICelestialLocator {
 
     private fun getApparentLongitude(T: Double): Double {
         val trueLng = getTrueLongitude(T)
-        val omega = Arithmetic.polynomial(T, 125.04, -1934.136)
+        val omega = Algebra.polynomial(T, 125.04, -1934.136)
         return trueLng - 0.00569 - 0.00478 * sinDegrees(omega)
     }
 
@@ -91,23 +91,23 @@ internal class Sun : ICelestialLocator {
     }
 
     private fun getGeometricLongitude(T: Double): Double {
-        return Trigonometry.normalizeAngle(Arithmetic.polynomial(T, 280.46646, 36000.76983, 0.0003032))
+        return Trigonometry.normalizeAngle(Algebra.polynomial(T, 280.46646, 36000.76983, 0.0003032))
     }
 
     private fun getEccentricity(T: Double): Double {
-        return Arithmetic.polynomial(T, 0.01675104, -0.0000418, -0.000000126)
+        return Algebra.polynomial(T, 0.01675104, -0.0000418, -0.000000126)
     }
 
     private fun equationOfCenter(T: Double): Double {
         val M = getMeanAnomaly(T)
-        return Arithmetic.polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
-                Arithmetic.polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
+        return Algebra.polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
+                Algebra.polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
                 0.000289 * sinDegrees(3 * M)
     }
 
     private fun getObliquityCorrection(T: Double): Double {
         val e = EclipticObliquity.getMeanObliquityOfEcliptic(T)
-        val omega = Arithmetic.polynomial(T, 125.04, -1934.136)
+        val omega = Algebra.polynomial(T, 125.04, -1934.136)
         return e + 0.00256 * cosDegrees(omega)
     }
 

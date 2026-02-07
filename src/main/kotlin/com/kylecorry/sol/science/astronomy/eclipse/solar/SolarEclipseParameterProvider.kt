@@ -1,10 +1,10 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
+import com.kylecorry.sol.math.algebra.Algebra
+import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic
-import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
@@ -60,7 +60,7 @@ internal class SolarEclipseParameterProvider {
                 2
             ) + 0.00000215 * power(T, 3)
         )
-        val E = Arithmetic.polynomial(T, 1.0, -0.002516, -0.0000074)
+        val E = Algebra.polynomial(T, 1.0, -0.002516, -0.0000074)
 
         val F1 = F - 0.02665 * sinDegrees(omega)
         val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)

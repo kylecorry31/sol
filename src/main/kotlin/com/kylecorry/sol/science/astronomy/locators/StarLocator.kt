@@ -1,9 +1,9 @@
 package com.kylecorry.sol.science.astronomy.locators
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
+import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
@@ -18,7 +18,7 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
         val coords = star.coordinate
         val motion = star.motion
 
-        val value1 = Arithmetic.polynomial(
+        val value1 = Algebra.polynomial(
             t,
             0.0,
             2306.2181,
@@ -26,7 +26,7 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
             0.017998
         ) / 3600
 
-        val value2 = Arithmetic.polynomial(
+        val value2 = Algebra.polynomial(
             t,
             0.0,
             2306.2181,
@@ -34,7 +34,7 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
             0.018203
         ) / 3600
 
-        val value3 = Arithmetic.polynomial(
+        val value3 = Algebra.polynomial(
             t,
             0.0,
             2004.3109,

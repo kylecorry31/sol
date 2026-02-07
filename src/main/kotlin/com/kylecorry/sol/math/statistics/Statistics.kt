@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.statistics
 
-import com.kylecorry.sol.math.RoundingMethod
 import com.kylecorry.sol.math.MathExtensions.round
+import com.kylecorry.sol.math.RoundingMethod
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.algebra.multiply
