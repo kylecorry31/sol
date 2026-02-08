@@ -7,6 +7,7 @@ import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.time.Duration
 import java.time.LocalDate
 
 class EcologyTest {
@@ -214,6 +215,32 @@ class EcologyTest {
         )
 
         assertEquals(1, result.count { it.second.name == "bloom" })
+    }
+
+    @Test
+    fun lifecycleEventAppliesOffsetWhenProvided() {
+        val event = LifecycleEvent(
+            "bloom",
+            MinimumGrowingDegreeDaysTrigger(10f),
+            offset = Duration.ofDays(60)
+        )
+        val phenology = SpeciesPhenology(
+            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
+            events = listOf(event)
+        )
+
+        val start = LocalDate.of(2024, 1, 1)
+        val end = LocalDate.of(2024, 1, 10)
+
+        val result = Ecology.getLifecycleEventDates(
+            phenology,
+            Range(start, end),
+            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
+        )
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 3, 1), result[0].first)
+        assertEquals("bloom", result[0].second.name)
     }
 
     @Test

@@ -121,7 +121,14 @@ object Ecology {
                 }
                 if (event.trigger.isTriggered(factors)) {
                     hits.add(event)
-                    lifecycleEvents.add(Pair(date.first, event))
+
+                    val eventDate = if (event.offset != null) {
+                        date.first.plusDays(event.offset.toDays())
+                    } else {
+                        date.first
+                    }
+
+                    lifecycleEvents.add(Pair(eventDate, event))
                 }
             }
         }
