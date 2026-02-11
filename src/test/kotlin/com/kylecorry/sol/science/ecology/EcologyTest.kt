@@ -438,4 +438,32 @@ class EcologyTest {
         assertEquals(LocalDate.of(2024, 10, 1), result[1].start)
         assertEquals(LocalDate.of(2024, 12, 31), result[1].end)
     }
+
+    @Test
+    fun activePeriodsUsesChronologicalLifecycleEventsWhenOffsetsReorderDates() {
+        val start = LifecycleEvent(
+            "start",
+            MinimumGrowingDegreeDaysTrigger(10f),
+            offset = Duration.ofDays(5)
+        )
+        val end = LifecycleEvent("end", MinimumGrowingDegreeDaysTrigger(20f))
+        val phenology = SpeciesPhenology(
+            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
+            events = listOf(start, end)
+        )
+
+        val lifecycleEvents = Ecology.getLifecycleEventDates(
+            phenology,
+            Range(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31)),
+            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
+        )
+
+        val result = Ecology.getActivePeriodsForYear(2024, lifecycleEvents, "start", "end")
+
+        assertEquals(2, result.size)
+        assertEquals(LocalDate.of(2024, 1, 1), result[0].start)
+        assertEquals(LocalDate.of(2024, 1, 2), result[0].end)
+        assertEquals(LocalDate.of(2024, 1, 6), result[1].start)
+        assertEquals(LocalDate.of(2024, 12, 31), result[1].end)
+    }
 }

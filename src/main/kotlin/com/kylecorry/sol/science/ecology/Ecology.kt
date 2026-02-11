@@ -132,7 +132,7 @@ object Ecology {
                 }
             }
         }
-        return lifecycleEvents
+        return lifecycleEvents.sortedBy { it.first }
     }
 
     fun getActivePeriodsForYear(
