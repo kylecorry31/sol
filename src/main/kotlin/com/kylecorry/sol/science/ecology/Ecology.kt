@@ -105,22 +105,29 @@ object Ecology {
             // New year starting
             if (lastGdd > date.second) {
                 hits.clear()
-                temperatureBuffer.clear()
                 gddBuffer.clear()
+
+                // TODO: Not sure if these should actually be cleared
+                temperatureBuffer.clear()
+                dayLengthBuffer.clear()
             }
             lastGdd = date.second
-            temperatureBuffer.add(temperatureProvider(date.first))
+            val temperature = temperatureProvider(date.first)
+            temperatureBuffer.add(temperature)
             gddBuffer.add(date.second)
             val dayLength = dayLengthProvider(date.first)
             dayLengthBuffer.add(dayLength)
 
             val factors = LifecycleEventFactors(
-                date.second,
-                dayLength,
-                temperatureBuffer.toList(),
-                gddBuffer.toList(),
-                dayLengthBuffer.toList()
+                LifecycleEventFactor(date.second, gddBuffer.toList()),
+                LifecycleEventFactor(dayLength, dayLengthBuffer.toList()),
+                LifecycleEventFactor(temperature, temperatureBuffer.toList())
             )
+
+            // Allow buffers to be populated
+            if (date.first < dateRange.start) {
+                continue
+            }
 
             for (event in phenology.events) {
                 if (event in hits) {

@@ -15,6 +15,6 @@ class MinimumGrowingDegreeDaysTrigger(
     }
 
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {
-        return factors.cumulativeGrowingDegreeDays >= minC
+        return factors.cumulativeGrowingDegreeDays.current >= minC
     }
 }

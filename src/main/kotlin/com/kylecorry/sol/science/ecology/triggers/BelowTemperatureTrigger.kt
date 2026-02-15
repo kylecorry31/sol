@@ -11,9 +11,9 @@ class BelowTemperatureTrigger(
 
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {
         val aboveFreezing =
-            factors.temperatureHistory30Days.indexOfFirst { it.start.celsius().value > averageLowC }
+            factors.temperature.history.indexOfFirst { it.start.celsius().value > averageLowC }
         val belowFreezing =
-            factors.temperatureHistory30Days.indexOfFirst { it.start.celsius().value <= averageLowC }
+            factors.temperature.history.indexOfFirst { it.start.celsius().value <= averageLowC }
         // Drops below freezing
         return aboveFreezing != -1 && belowFreezing > aboveFreezing
     }

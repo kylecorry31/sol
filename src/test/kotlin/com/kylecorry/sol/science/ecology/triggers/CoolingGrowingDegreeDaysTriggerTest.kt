@@ -1,6 +1,9 @@
 package com.kylecorry.sol.science.ecology.triggers
 
+import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.science.ecology.LifecycleEventFactor
 import com.kylecorry.sol.science.ecology.LifecycleEventFactors
+import com.kylecorry.sol.units.Temperature
 import com.kylecorry.sol.units.TemperatureUnits
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -63,6 +66,16 @@ class CoolingGrowingDegreeDaysTriggerTest {
     }
 
     private fun factors(cumulativeHistory: List<Float>): LifecycleEventFactors {
-        return LifecycleEventFactors(0f, Duration.ofHours(12), emptyList(), cumulativeHistory, emptyList())
+        return LifecycleEventFactors(
+            cumulativeGrowingDegreeDays = LifecycleEventFactor(
+                cumulativeHistory.lastOrNull() ?: 0f,
+                cumulativeHistory
+            ),
+            lengthOfDay = LifecycleEventFactor(Duration.ofHours(12), emptyList()),
+            temperature = LifecycleEventFactor(
+                Range(Temperature.celsius(0f), Temperature.celsius(0f)),
+                emptyList()
+            )
+        )
     }
 }

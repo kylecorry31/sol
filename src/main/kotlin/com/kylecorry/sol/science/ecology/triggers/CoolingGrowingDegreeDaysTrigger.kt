@@ -18,9 +18,9 @@ class CoolingGrowingDegreeDaysTrigger(
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {
         // Get the difference between each cumulative GDD
         val gdd = mutableListOf<Float>()
-        for (i in 1 until factors.cumulativeGrowingDegreeDayHistory30Days.size) {
+        for (i in 1 until factors.cumulativeGrowingDegreeDays.history.size) {
             gdd.add(
-                factors.cumulativeGrowingDegreeDayHistory30Days[i] - factors.cumulativeGrowingDegreeDayHistory30Days[i - 1]
+                factors.cumulativeGrowingDegreeDays.history[i] - factors.cumulativeGrowingDegreeDays.history[i - 1]
             )
         }
 
