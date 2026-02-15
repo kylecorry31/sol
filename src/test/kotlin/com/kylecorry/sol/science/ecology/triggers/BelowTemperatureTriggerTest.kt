@@ -4,82 +4,32 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.ecology.LifecycleEventFactor
 import com.kylecorry.sol.science.ecology.LifecycleEventFactors
 import com.kylecorry.sol.units.Temperature
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.time.Duration
 
 class BelowTemperatureTriggerTest {
 
-    @Test
-    fun triggeredWhenTemperatureDropsBelowThreshold() {
+    @ParameterizedTest
+    @CsvSource(
+        "0, false",
+        "-1, true",
+        "1, false"
+    )
+    fun triggeredWhenTemperatureIsBelowThreshold(temperature: Float, isTriggered: Boolean) {
         val trigger = BelowTemperatureTrigger(Temperature.celsius(0f))
-        val history = listOf(
-            Range(Temperature.celsius(5f), Temperature.celsius(15f)),
-            Range(Temperature.celsius(-2f), Temperature.celsius(8f))
-        )
-        val factors = factors(history)
-        assertTrue(trigger.isTriggered(factors))
+        val factors = factors(temperature)
+        assertEquals(isTriggered, trigger.isTriggered(factors))
     }
 
-    @Test
-    fun notTriggeredWhenAlwaysBelowThreshold() {
-        val trigger = BelowTemperatureTrigger(Temperature.celsius(0f))
-        val history = listOf(
-            Range(Temperature.celsius(-5f), Temperature.celsius(5f)),
-            Range(Temperature.celsius(-10f), Temperature.celsius(2f))
-        )
-        val factors = factors(history)
-        assertFalse(trigger.isTriggered(factors))
-    }
-
-    @Test
-    fun notTriggeredWhenAlwaysAboveThreshold() {
-        val trigger = BelowTemperatureTrigger(Temperature.celsius(0f))
-        val history = listOf(
-            Range(Temperature.celsius(5f), Temperature.celsius(15f)),
-            Range(Temperature.celsius(8f), Temperature.celsius(20f))
-        )
-        val factors = factors(history)
-        assertFalse(trigger.isTriggered(factors))
-    }
-
-    @Test
-    fun notTriggeredWhenTemperatureRisesAboveAfterBeingBelow() {
-        val trigger = BelowTemperatureTrigger(Temperature.celsius(0f))
-        val history = listOf(
-            Range(Temperature.celsius(-5f), Temperature.celsius(5f)),
-            Range(Temperature.celsius(5f), Temperature.celsius(15f))
-        )
-        val factors = factors(history)
-        assertFalse(trigger.isTriggered(factors))
-    }
-
-    @Test
-    fun notTriggeredWithEmptyHistory() {
-        val trigger = BelowTemperatureTrigger(Temperature.celsius(0f))
-        val factors = factors(emptyList())
-        assertFalse(trigger.isTriggered(factors))
-    }
-
-    @Test
-    fun worksWithCustomThreshold() {
-        val trigger = BelowTemperatureTrigger(Temperature.celsius(10f))
-        val history = listOf(
-            Range(Temperature.celsius(15f), Temperature.celsius(25f)),
-            Range(Temperature.celsius(5f), Temperature.celsius(12f))
-        )
-        val factors = factors(history)
-        assertTrue(trigger.isTriggered(factors))
-    }
-
-    private fun factors(history: List<Range<Temperature>>): LifecycleEventFactors {
+    private fun factors(temperature: Float): LifecycleEventFactors {
         return LifecycleEventFactors(
             cumulativeGrowingDegreeDays = LifecycleEventFactor(0f, emptyList()),
             lengthOfDay = LifecycleEventFactor(Duration.ofHours(12), emptyList()),
             temperature = LifecycleEventFactor(
-                history.lastOrNull() ?: Range(Temperature.celsius(0f), Temperature.celsius(0f)),
-                history
+                Range(Temperature.celsius(temperature), Temperature.celsius(0f)),
+                emptyList()
             )
         )
     }

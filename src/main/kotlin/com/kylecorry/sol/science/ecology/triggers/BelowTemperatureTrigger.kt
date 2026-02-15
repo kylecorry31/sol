@@ -10,12 +10,7 @@ class BelowTemperatureTrigger(
     private val averageLowC = averageLowTemperature.celsius().value
 
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {
-        val aboveFreezing =
-            factors.temperature.history.indexOfFirst { it.start.celsius().value > averageLowC }
-        val belowFreezing =
-            factors.temperature.history.indexOfFirst { it.start.celsius().value <= averageLowC }
-        // Drops below freezing
-        return aboveFreezing != -1 && belowFreezing > aboveFreezing
+        return factors.temperature.current.start.celsius().value < averageLowC
     }
 
 }

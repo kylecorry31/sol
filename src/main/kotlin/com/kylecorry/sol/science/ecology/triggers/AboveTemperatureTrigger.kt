@@ -10,12 +10,7 @@ class AboveTemperatureTrigger(
     private val averageHighC = averageHighTemperature.celsius().value
 
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {
-        val aboveTemperature =
-            factors.temperature.history.indexOfFirst { it.end.celsius().value >= averageHighC }
-        val belowTemperature =
-            factors.temperature.history.indexOfFirst { it.end.celsius().value < averageHighC }
-        // Rises above temperature
-        return belowTemperature != -1 && aboveTemperature > belowTemperature
+        return factors.temperature.current.end.celsius().value > averageHighC
     }
 
 }
