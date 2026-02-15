@@ -1,6 +1,9 @@
 package com.kylecorry.sol.science.ecology
 
 import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.trigonometry.SineWave
+import com.kylecorry.sol.science.ecology.triggers.AboveDayLengthTrigger
+import com.kylecorry.sol.science.ecology.triggers.BelowTemperatureTrigger
 import com.kylecorry.sol.science.ecology.triggers.MinimumGrowingDegreeDaysTrigger
 import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.LocalDate
+import kotlin.math.PI
 
 class EcologyTest {
 
@@ -121,7 +125,7 @@ class EcologyTest {
         val result = Ecology.getCumulativeGrowingDegreeDays(
             emptyList(),
             Temperature.celsius(0f),
-            { Range(Temperature.celsius(0f), Temperature.celsius(10f)) }
+            ::mockTemperatureProvider
         )
         assertEquals(emptyList<Pair<LocalDate, Float>>(), result)
     }
@@ -146,129 +150,46 @@ class EcologyTest {
     }
 
     // getLifecycleEventDates
-
     @Test
-    fun lifecycleEventTriggeredWhenGDDReached() {
-        // 10 GDD per day: (15+5)/2 - 0 = 10. Threshold is 25, so should trigger on day 3.
-        val event = LifecycleEvent("bloom", MinimumGrowingDegreeDaysTrigger(25f))
+    fun getLifecycleEventDates() {
         val phenology = SpeciesPhenology(
             baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(event)
-        )
-
-        val coldestDate = LocalDate.of(2023, 12, 31)
-        val start = LocalDate.of(2024, 1, 1)
-        val end = LocalDate.of(2024, 1, 10)
-
-        val result = Ecology.getLifecycleEventDates(
-            phenology,
-            Range(start, end),
-            { Duration.ofHours(12) }
-        ) {
-            if (it == coldestDate) {
-                Range(Temperature.celsius(-50f), Temperature.celsius(-40f))
-            } else {
-                Range(Temperature.celsius(5f), Temperature.celsius(15f))
-            }
-        }
-
-        assertEquals(1, result.size)
-        assertEquals(LocalDate.of(2024, 1, 3), result[0].first)
-        assertEquals("bloom", result[0].second.name)
-    }
-
-    @Test
-    fun lifecycleEventNotTriggeredWhenGDDNotReached() {
-        val event = LifecycleEvent("bloom", MinimumGrowingDegreeDaysTrigger(Float.MAX_VALUE))
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(event)
-        )
-
-        val start = LocalDate.of(2024, 6, 1)
-        val end = LocalDate.of(2024, 6, 5)
-
-        val result = Ecology.getLifecycleEventDates(
-            phenology,
-            Range(start, end),
-            { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
-        )
-
-        assertTrue(result.isEmpty())
-    }
-
-    @Test
-    fun lifecycleEventOnlyTriggeredOnce() {
-        val event = LifecycleEvent("bloom", MinimumGrowingDegreeDaysTrigger(1f))
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(event)
-        )
-
-        val start = LocalDate.of(2024, 6, 1)
-        val end = LocalDate.of(2024, 6, 10)
-
-        val result = Ecology.getLifecycleEventDates(
-            phenology,
-            Range(start, end),
-            { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
-        )
-
-        assertEquals(1, result.count { it.second.name == "bloom" })
-    }
-
-    @Test
-    fun lifecycleEventAppliesOffsetWhenProvided() {
-        val event = LifecycleEvent(
-            "bloom",
-            MinimumGrowingDegreeDaysTrigger(10f),
-            offset = Duration.ofDays(60)
-        )
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(event)
+            events = listOf(
+                // Hits the GDD threshold once
+                LifecycleEvent("event1", MinimumGrowingDegreeDaysTrigger(1000f)),
+                // Hits the temperature threshold once
+                LifecycleEvent("event2", BelowTemperatureTrigger(Temperature.celsius(5f))),
+                // Hits the day length threshold once
+                LifecycleEvent("event3", AboveDayLengthTrigger(Duration.ofHours(12))),
+                // Never reached
+                LifecycleEvent("event4", AboveDayLengthTrigger(Duration.ofHours(100))),
+                // Offset
+                LifecycleEvent("event5", MinimumGrowingDegreeDaysTrigger(1000f), offset = Duration.ofDays(5)),
+            )
         )
 
         val start = LocalDate.of(2024, 1, 1)
-        val end = LocalDate.of(2024, 1, 10)
+        val end = LocalDate.of(2025, 1, 1)
 
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
-            { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
+            ::mockDayLengthProvider,
+            ::mockTemperatureProvider
         )
 
-        assertEquals(1, result.size)
-        assertEquals(LocalDate.of(2024, 3, 1), result[0].first)
-        assertEquals("bloom", result[0].second.name)
-    }
+        assertEquals(4, result.size)
+        assertEquals(LocalDate.of(2024, 3, 28), result[0].first)
+        assertEquals("event3", result[0].second.name)
 
-    @Test
-    fun multipleLifecycleEventsCanTrigger() {
-        val early = LifecycleEvent("leaf-out", MinimumGrowingDegreeDaysTrigger(1f))
-        val late = LifecycleEvent("bloom", MinimumGrowingDegreeDaysTrigger(50f))
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(early, late)
-        )
+        assertEquals(LocalDate.of(2024, 5, 19), result[1].first)
+        assertEquals("event1", result[1].second.name)
 
-        val start = LocalDate.of(2024, 6, 1)
-        val end = LocalDate.of(2024, 7, 31)
+        assertEquals(LocalDate.of(2024, 5, 24), result[2].first)
+        assertEquals("event5", result[2].second.name)
 
-        val result = Ecology.getLifecycleEventDates(
-            phenology,
-            Range(start, end),
-            { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
-        )
-
-        assertEquals(2, result.size)
-        assertEquals("leaf-out", result[0].second.name)
-        assertEquals("bloom", result[1].second.name)
-        assertTrue(result[0].first <= result[1].first)
+        assertEquals(LocalDate.of(2024, 10, 1), result[3].first)
+        assertEquals("event2", result[3].second.name)
     }
 
     @Test
@@ -285,7 +206,7 @@ class EcologyTest {
             phenology,
             Range(date, date.minusDays(1)),
             { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
+            ::mockTemperatureProvider
         )
 
         assertTrue(result.isEmpty())
@@ -293,27 +214,26 @@ class EcologyTest {
 
     @Test
     fun lifecycleEventUsesGDDCap() {
-        // With a cap of 15, the max temp is capped at 15 so GDD = (15+5)/2 - 0 = 10 per day
-        // Without cap, GDD = (25+5)/2 - 0 = 15 per day
-        // With threshold at 12, it should take 2 days with cap vs 1 day without
-        val event = LifecycleEvent("bloom", MinimumGrowingDegreeDaysTrigger(12f))
         val phenology = SpeciesPhenology(
             baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(event),
-            growingDegreeDaysCap = 15f
+            events = listOf(
+                LifecycleEvent("event1", MinimumGrowingDegreeDaysTrigger(1000f)),
+            ),
+            growingDegreeDaysCap = 1f
         )
 
-        val start = LocalDate.of(2024, 6, 1)
-        val end = LocalDate.of(2024, 6, 10)
+        val start = LocalDate.of(2024, 1, 1)
+        val end = LocalDate.of(2025, 1, 1)
 
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
-            { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(25f)) }
+            ::mockDayLengthProvider,
+            ::mockTemperatureProvider
         )
 
-        assertTrue(result.isNotEmpty())
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 8, 22), result[0].first)
     }
 
     // getActivePeriodsForYear
@@ -445,32 +365,27 @@ class EcologyTest {
         assertEquals(LocalDate.of(2024, 12, 31), result[1].end)
     }
 
-    @Test
-    fun activePeriodsUsesChronologicalLifecycleEventsWhenOffsetsReorderDates() {
-        val start = LifecycleEvent(
-            "start",
-            MinimumGrowingDegreeDaysTrigger(10f),
-            offset = Duration.ofDays(5)
-        )
-        val end = LifecycleEvent("end", MinimumGrowingDegreeDaysTrigger(20f))
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(start, end)
-        )
+    private fun mockTemperatureProvider(date: LocalDate): Range<Temperature> {
+        // Sine wave with min at Feb 1 and max at Aug 1, ranging from 0C to 20C
+        val dayOfYear = date.dayOfYear
+        val amplitude = 10f
+        val frequency = 1f
+        val phaseShift = 1.5f + 32 / 365f
+        val verticalShift = 10f
+        val wave = SineWave(amplitude, frequency, phaseShift, verticalShift)
+        val temp = wave.calculate(2 * PI.toFloat() * dayOfYear.toFloat() / 365f)
+        return Range(Temperature.celsius(temp - 5f), Temperature.celsius(temp + 5f))
+    }
 
-        val lifecycleEvents = Ecology.getLifecycleEventDates(
-            phenology,
-            Range(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31)),
-            { Duration.ofHours(12) },
-            { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
-        )
-
-        val result = Ecology.getActivePeriodsForYear(2024, lifecycleEvents, "start", "end")
-
-        assertEquals(2, result.size)
-        assertEquals(LocalDate.of(2024, 1, 1), result[0].start)
-        assertEquals(LocalDate.of(2024, 1, 2), result[0].end)
-        assertEquals(LocalDate.of(2024, 1, 6), result[1].start)
-        assertEquals(LocalDate.of(2024, 12, 31), result[1].end)
+    private fun mockDayLengthProvider(date: LocalDate): Duration {
+        // Sine wave with min at Jan 1 and max at July 1, ranging from 8 to 16
+        val dayOfYear = date.dayOfYear
+        val amplitude = 4f
+        val frequency = 1f
+        val phaseShift = 1.5f
+        val verticalShift = 12f
+        val wave = SineWave(amplitude, frequency, phaseShift, verticalShift)
+        val minutes = wave.calculate(2 * PI.toFloat() * dayOfYear.toFloat() / 365f) * 60
+        return Duration.ofMinutes(minutes.toLong())
     }
 }

@@ -80,8 +80,9 @@ object Ecology {
         dayLengthProvider: (LocalDate) -> Duration,
         temperatureProvider: (LocalDate) -> Range<Temperature>,
     ): List<Pair<LocalDate, LifecycleEvent>> {
+        val historyLength = 30
         val dates = mutableListOf<LocalDate>()
-        var currentDate = dateRange.start
+        var currentDate = dateRange.start.minusYears(1)
         while (currentDate <= dateRange.end) {
             dates.add(currentDate)
             currentDate = currentDate.plusDays(1)
@@ -97,19 +98,17 @@ object Ecology {
 
         val lifecycleEvents = mutableListOf<Pair<LocalDate, LifecycleEvent>>()
         val hits = mutableSetOf<LifecycleEvent>()
-        val dayLengthBuffer = RingBuffer<Duration>(30)
-        val temperatureBuffer = RingBuffer<Range<Temperature>>(30)
-        val gddBuffer = RingBuffer<Float>(30)
+        val dayLengthBuffer = RingBuffer<Duration>(historyLength)
+        val temperatureBuffer = RingBuffer<Range<Temperature>>(historyLength)
+        val gddBuffer = RingBuffer<Float>(historyLength)
         var lastGdd = 0f
         for (date in gdd) {
-            // New year starting
+            // New year starting, cumulative GDD is reset
             if (lastGdd > date.second) {
-                hits.clear()
                 gddBuffer.clear()
-
-                // TODO: Not sure if these should actually be cleared
-                temperatureBuffer.clear()
-                dayLengthBuffer.clear()
+                repeat(historyLength) {
+                    gddBuffer.add(date.second)
+                }
             }
             lastGdd = date.second
             val temperature = temperatureProvider(date.first)
@@ -124,17 +123,9 @@ object Ecology {
                 LifecycleEventFactor(temperature, temperatureBuffer.toList())
             )
 
-            // Allow buffers to be populated
-            if (date.first < dateRange.start) {
-                continue
-            }
-
             for (event in phenology.events) {
-                if (event in hits) {
-                    continue
-                }
                 if (event.trigger.isTriggered(factors)) {
-                    hits.add(event)
+                    val isNew = hits.add(event)
 
                     val eventDate = if (event.offset != null) {
                         date.first.plusDays(event.offset.toDays())
@@ -142,7 +133,11 @@ object Ecology {
                         date.first
                     }
 
-                    lifecycleEvents.add(Pair(eventDate, event))
+                    if (isNew && date.first >= dateRange.start) {
+                        lifecycleEvents.add(Pair(eventDate, event))
+                    }
+                } else {
+                    hits.remove(event)
                 }
             }
         }
