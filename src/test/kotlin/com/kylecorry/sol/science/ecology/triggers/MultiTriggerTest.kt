@@ -4,52 +4,45 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.ecology.LifecycleEventFactor
 import com.kylecorry.sol.science.ecology.LifecycleEventFactors
 import com.kylecorry.sol.units.Temperature
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.time.Duration
 
 class MultiTriggerTest {
 
-    @Test
-    fun triggeredWhenAllTriggersPass() {
-        val trigger = MultiTrigger(alwaysTrue(), alwaysTrue())
-        assertTrue(trigger.isTriggered(factors()))
+
+    @ParameterizedTest
+    @CsvSource(
+        "true, true, true",
+        "true, false, false",
+        "false, true, false",
+        "false, false, false",
+    )
+    fun triggersWithAnyFalse(trigger1: Boolean, trigger2: Boolean, expected: Boolean) {
+        val trigger = MultiTrigger(createTrigger(trigger1), createTrigger(trigger2))
+        assertEquals(expected, trigger.isTriggered(factors()))
     }
 
-    @Test
-    fun notTriggeredWhenOneTriggersIsFalse() {
-        val trigger = MultiTrigger(alwaysTrue(), alwaysFalse())
-        assertFalse(trigger.isTriggered(factors()))
+    @ParameterizedTest
+    @CsvSource(
+        "true, true, true",
+        "true, false, true",
+        "false, true, true",
+        "false, false, false",
+    )
+    fun triggersWithAnyTrue(trigger1: Boolean, trigger2: Boolean, expected: Boolean) {
+        val trigger = MultiTrigger(createTrigger(trigger1), createTrigger(trigger2), any = true)
+        assertEquals(expected, trigger.isTriggered(factors()))
     }
 
-    @Test
-    fun notTriggeredWhenAllTriggersAreFalse() {
-        val trigger = MultiTrigger(alwaysFalse(), alwaysFalse())
-        assertFalse(trigger.isTriggered(factors()))
-    }
 
-    @Test
-    fun triggeredWithSingleTriggerThatPasses() {
-        val trigger = MultiTrigger(alwaysTrue())
-        assertTrue(trigger.isTriggered(factors()))
-    }
-
-    @Test
-    fun notTriggeredWithSingleTriggerThatFails() {
-        val trigger = MultiTrigger(alwaysFalse())
-        assertFalse(trigger.isTriggered(factors()))
-    }
-
-    private fun alwaysTrue(): LifecycleEventTrigger {
+    private fun createTrigger(value: Boolean): LifecycleEventTrigger {
         return object : LifecycleEventTrigger {
-            override fun isTriggered(factors: LifecycleEventFactors): Boolean = true
-        }
-    }
-
-    private fun alwaysFalse(): LifecycleEventTrigger {
-        return object : LifecycleEventTrigger {
-            override fun isTriggered(factors: LifecycleEventFactors): Boolean = false
+            override fun isTriggered(factors: LifecycleEventFactors): Boolean = value
         }
     }
 
