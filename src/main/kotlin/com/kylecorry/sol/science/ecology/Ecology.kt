@@ -3,6 +3,7 @@ package com.kylecorry.sol.science.ecology
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.RingBuffer
 import com.kylecorry.sol.units.Temperature
+import java.time.Duration
 import java.time.LocalDate
 
 object Ecology {
@@ -76,7 +77,8 @@ object Ecology {
     fun getLifecycleEventDates(
         phenology: SpeciesPhenology,
         dateRange: Range<LocalDate>,
-        temperatureProvider: (LocalDate) -> Range<Temperature>
+        dayLengthProvider: (LocalDate) -> Duration,
+        temperatureProvider: (LocalDate) -> Range<Temperature>,
     ): List<Pair<LocalDate, LifecycleEvent>> {
         val dates = mutableListOf<LocalDate>()
         var currentDate = dateRange.start
@@ -95,6 +97,7 @@ object Ecology {
 
         val lifecycleEvents = mutableListOf<Pair<LocalDate, LifecycleEvent>>()
         val hits = mutableSetOf<LifecycleEvent>()
+        val dayLengthBuffer = RingBuffer<Duration>(30)
         val temperatureBuffer = RingBuffer<Range<Temperature>>(30)
         val gddBuffer = RingBuffer<Float>(30)
         var lastGdd = 0f
@@ -108,11 +111,15 @@ object Ecology {
             lastGdd = date.second
             temperatureBuffer.add(temperatureProvider(date.first))
             gddBuffer.add(date.second)
+            val dayLength = dayLengthProvider(date.first)
+            dayLengthBuffer.add(dayLength)
 
             val factors = LifecycleEventFactors(
                 date.second,
+                dayLength,
                 temperatureBuffer.toList(),
-                gddBuffer.toList()
+                gddBuffer.toList(),
+                dayLengthBuffer.toList()
             )
 
             for (event in phenology.events) {

@@ -5,6 +5,7 @@ import com.kylecorry.sol.units.TemperatureUnits
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.time.Duration
 
 class CoolingGrowingDegreeDaysTriggerTest {
 
@@ -62,6 +63,6 @@ class CoolingGrowingDegreeDaysTriggerTest {
     }
 
     private fun factors(cumulativeHistory: List<Float>): LifecycleEventFactors {
-        return LifecycleEventFactors(0f, emptyList(), cumulativeHistory)
+        return LifecycleEventFactors(0f, Duration.ofHours(12), emptyList(), cumulativeHistory, emptyList())
     }
 }

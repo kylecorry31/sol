@@ -5,6 +5,7 @@ import com.kylecorry.sol.units.TemperatureUnits
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.time.Duration
 
 class MinimumGrowingDegreeDaysTriggerTest {
 
@@ -45,6 +46,6 @@ class MinimumGrowingDegreeDaysTriggerTest {
     }
 
     private fun factors(cumulativeGDD: Float): LifecycleEventFactors {
-        return LifecycleEventFactors(cumulativeGDD, emptyList(), emptyList())
+        return LifecycleEventFactors(cumulativeGDD, Duration.ofHours(12),emptyList(), emptyList(), emptyList())
     }
 }

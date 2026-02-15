@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.ecology
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.science.ecology.triggers.LifecycleEventTrigger
 import com.kylecorry.sol.science.ecology.triggers.MinimumGrowingDegreeDaysTrigger
 import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -163,7 +162,8 @@ class EcologyTest {
 
         val result = Ecology.getLifecycleEventDates(
             phenology,
-            Range(start, end)
+            Range(start, end),
+            { Duration.ofHours(12) }
         ) {
             if (it == coldestDate) {
                 Range(Temperature.celsius(-50f), Temperature.celsius(-40f))
@@ -191,6 +191,7 @@ class EcologyTest {
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
         )
 
@@ -211,6 +212,7 @@ class EcologyTest {
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
         )
 
@@ -235,6 +237,7 @@ class EcologyTest {
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
         )
 
@@ -258,6 +261,7 @@ class EcologyTest {
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
         )
 
@@ -280,6 +284,7 @@ class EcologyTest {
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(date, date.minusDays(1)),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
         )
 
@@ -304,6 +309,7 @@ class EcologyTest {
         val result = Ecology.getLifecycleEventDates(
             phenology,
             Range(start, end),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(25f)) }
         )
 
@@ -455,6 +461,7 @@ class EcologyTest {
         val lifecycleEvents = Ecology.getLifecycleEventDates(
             phenology,
             Range(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31)),
+            { Duration.ofHours(12) },
             { Range(Temperature.celsius(5f), Temperature.celsius(15f)) }
         )
 

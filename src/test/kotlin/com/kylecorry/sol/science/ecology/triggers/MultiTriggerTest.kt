@@ -4,6 +4,7 @@ import com.kylecorry.sol.science.ecology.LifecycleEventFactors
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.time.Duration
 
 class MultiTriggerTest {
 
@@ -50,6 +51,6 @@ class MultiTriggerTest {
     }
 
     private fun factors(): LifecycleEventFactors {
-        return LifecycleEventFactors(0f, emptyList(), emptyList())
+        return LifecycleEventFactors(0f, Duration.ofHours(12), emptyList(), emptyList(), emptyList())
     }
 }

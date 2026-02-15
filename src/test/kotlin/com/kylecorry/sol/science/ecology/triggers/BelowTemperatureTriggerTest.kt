@@ -6,6 +6,7 @@ import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.time.Duration
 
 class BelowTemperatureTriggerTest {
 
@@ -72,6 +73,6 @@ class BelowTemperatureTriggerTest {
     }
 
     private fun factors(history: List<Range<Temperature>>): LifecycleEventFactors {
-        return LifecycleEventFactors(0f, history, emptyList())
+        return LifecycleEventFactors(0f, Duration.ofHours(12), history, emptyList(), emptyList())
     }
 }
