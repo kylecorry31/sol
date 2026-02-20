@@ -140,6 +140,18 @@ object Ecology {
                     hits.remove(event)
                 }
             }
+
+            // Add all active events that occurred and are currently active as of the start date
+            if (date.first == dateRange.start) {
+                hits.forEach { event ->
+                    val eventDate = if (event.offset != null) {
+                        date.first.plusDays(event.offset.toDays())
+                    } else {
+                        date.first
+                    }
+                    lifecycleEvents.add(eventDate to event)
+                }
+            }
         }
         return lifecycleEvents.sortedBy { it.first }
     }

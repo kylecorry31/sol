@@ -157,7 +157,7 @@ class EcologyTest {
             events = listOf(
                 // Hits the GDD threshold once
                 LifecycleEvent("event1", MinimumGrowingDegreeDaysTrigger(1000f)),
-                // Hits the temperature threshold once
+                // Hits the temperature threshold twice (carryover from previous year + once at end of year)
                 LifecycleEvent("event2", BelowTemperatureTrigger(Temperature.celsius(5f))),
                 // Hits the day length threshold once
                 LifecycleEvent("event3", AboveDayLengthTrigger(Duration.ofHours(12))),
@@ -178,18 +178,21 @@ class EcologyTest {
             ::mockTemperatureProvider
         )
 
-        assertEquals(4, result.size)
-        assertEquals(LocalDate.of(2024, 3, 28), result[0].first)
-        assertEquals("event3", result[0].second.name)
+        assertEquals(5, result.size)
+        assertEquals(LocalDate.of(2024, 1, 1), result[0].first)
+        assertEquals("event2", result[0].second.name)
 
-        assertEquals(LocalDate.of(2024, 5, 19), result[1].first)
-        assertEquals("event1", result[1].second.name)
+        assertEquals(LocalDate.of(2024, 3, 28), result[1].first)
+        assertEquals("event3", result[1].second.name)
 
-        assertEquals(LocalDate.of(2024, 5, 24), result[2].first)
-        assertEquals("event5", result[2].second.name)
+        assertEquals(LocalDate.of(2024, 5, 19), result[2].first)
+        assertEquals("event1", result[2].second.name)
 
-        assertEquals(LocalDate.of(2024, 10, 1), result[3].first)
-        assertEquals("event2", result[3].second.name)
+        assertEquals(LocalDate.of(2024, 5, 24), result[3].first)
+        assertEquals("event5", result[3].second.name)
+
+        assertEquals(LocalDate.of(2024, 10, 1), result[4].first)
+        assertEquals("event2", result[4].second.name)
     }
 
     @Test
