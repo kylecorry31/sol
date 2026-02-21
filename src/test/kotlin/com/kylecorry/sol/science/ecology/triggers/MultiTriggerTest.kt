@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.ecology.triggers
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.science.ecology.LifecycleEventFactor
 import com.kylecorry.sol.science.ecology.LifecycleEventFactors
 import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.time.Duration
+import java.time.LocalDate
 
 class MultiTriggerTest {
 
@@ -39,6 +39,19 @@ class MultiTriggerTest {
         assertEquals(expected, trigger.isTriggered(factors()))
     }
 
+    @Test
+    fun resetCallsResetOnAllTriggers() {
+        val trigger1 = ResetTrackingTrigger()
+        val trigger2 = ResetTrackingTrigger()
+        val trigger3 = ResetTrackingTrigger()
+        val trigger = MultiTrigger(trigger1, trigger2, trigger3)
+
+        trigger.reset()
+
+        assertEquals(1, trigger1.resetCount)
+        assertEquals(1, trigger2.resetCount)
+        assertEquals(1, trigger3.resetCount)
+    }
 
     private fun createTrigger(value: Boolean): LifecycleEventTrigger {
         return object : LifecycleEventTrigger {
@@ -46,14 +59,22 @@ class MultiTriggerTest {
         }
     }
 
+    private class ResetTrackingTrigger : LifecycleEventTrigger {
+        var resetCount = 0
+            private set
+
+        override fun isTriggered(factors: LifecycleEventFactors): Boolean = false
+
+        override fun reset() {
+            resetCount++
+        }
+    }
+
     private fun factors(): LifecycleEventFactors {
         return LifecycleEventFactors(
-            cumulativeGrowingDegreeDays = LifecycleEventFactor(0f, emptyList()),
-            lengthOfDay = LifecycleEventFactor(Duration.ofHours(12), emptyList()),
-            temperature = LifecycleEventFactor(
-                Range(Temperature.celsius(0f), Temperature.celsius(0f)),
-                emptyList()
-            )
+            lengthOfDay = Duration.ofHours(12),
+            temperature = Range(Temperature.celsius(0f), Temperature.celsius(0f)),
+            date = LocalDate.now()
         )
     }
 }

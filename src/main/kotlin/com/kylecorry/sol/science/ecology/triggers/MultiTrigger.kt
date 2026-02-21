@@ -10,4 +10,8 @@ class MultiTrigger(private vararg val triggers: LifecycleEventTrigger, private v
             triggers.all { it.isTriggered(factors) }
         }
     }
+
+    override fun reset() {
+        triggers.forEach { it.reset() }
+    }
 }

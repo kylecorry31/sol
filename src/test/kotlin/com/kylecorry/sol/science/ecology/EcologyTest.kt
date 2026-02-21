@@ -2,9 +2,10 @@ package com.kylecorry.sol.science.ecology
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.trigonometry.SineWave
-import com.kylecorry.sol.science.ecology.triggers.AboveDayLengthTrigger
-import com.kylecorry.sol.science.ecology.triggers.BelowTemperatureTrigger
-import com.kylecorry.sol.science.ecology.triggers.MinimumGrowingDegreeDaysTrigger
+import com.kylecorry.sol.science.ecology.triggers.CumulativeGrowingDegreeDaysTrigger
+import com.kylecorry.sol.science.ecology.triggers.LifecycleEventTrigger
+import com.kylecorry.sol.science.ecology.triggers.PhotoperiodTrigger
+import com.kylecorry.sol.science.ecology.triggers.TemperatureTrigger
 import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -194,27 +195,24 @@ class EcologyTest {
     // getLifecycleEventDates
     @Test
     fun getLifecycleEventDates() {
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(
-                // Hits the GDD threshold once
-                LifecycleEvent("event1", MinimumGrowingDegreeDaysTrigger(1000f)),
-                // Hits the temperature threshold twice (carryover from previous year + once at end of year)
-                LifecycleEvent("event2", BelowTemperatureTrigger(Temperature.celsius(5f))),
-                // Hits the day length threshold once
-                LifecycleEvent("event3", AboveDayLengthTrigger(Duration.ofHours(12))),
-                // Never reached
-                LifecycleEvent("event4", AboveDayLengthTrigger(Duration.ofHours(100))),
-                // Offset
-                LifecycleEvent("event5", MinimumGrowingDegreeDaysTrigger(1000f), offset = Duration.ofDays(5)),
-            )
+        val events = listOf(
+            // Hits the GDD threshold once
+            LifecycleEvent("event1", CumulativeGrowingDegreeDaysTrigger(1000f)),
+            // Hits the temperature threshold twice (carryover from previous year + once at end of year)
+            LifecycleEvent("event2", TemperatureTrigger(Temperature.celsius(5f), above = false)),
+            // Hits the day length threshold once
+            LifecycleEvent("event3", PhotoperiodTrigger(Duration.ofHours(12), above = true)),
+            // Never reached
+            LifecycleEvent("event4", PhotoperiodTrigger(Duration.ofHours(100), above = true)),
+            // Offset
+            LifecycleEvent("event5", CumulativeGrowingDegreeDaysTrigger(1000f), offset = Duration.ofDays(5)),
         )
 
         val start = LocalDate.of(2024, 1, 1)
         val end = LocalDate.of(2025, 1, 1)
 
         val result = Ecology.getLifecycleEventDates(
-            phenology,
+            events,
             Range(start, end),
             ::mockDayLengthProvider,
             ::mockTemperatureProvider
@@ -239,16 +237,13 @@ class EcologyTest {
 
     @Test
     fun lifecycleEventReturnsEmptyForEmptyRange() {
-        val event = LifecycleEvent("bloom", MinimumGrowingDegreeDaysTrigger(10f))
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(event)
-        )
+        val event = LifecycleEvent("bloom", CumulativeGrowingDegreeDaysTrigger(10f))
+        val events = listOf(event)
 
         val date = LocalDate.of(2024, 6, 1)
 
         val result = Ecology.getLifecycleEventDates(
-            phenology,
+            events,
             Range(date, date.minusDays(1)),
             { Duration.ofHours(12) },
             ::mockTemperatureProvider
@@ -258,27 +253,28 @@ class EcologyTest {
     }
 
     @Test
-    fun lifecycleEventUsesGDDCap() {
-        val phenology = SpeciesPhenology(
-            baseGrowingDegreeDaysTemperature = Temperature.celsius(0f),
-            events = listOf(
-                LifecycleEvent("event1", MinimumGrowingDegreeDaysTrigger(1000f)),
-            ),
-            growingDegreeDaysCap = 1f
-        )
+    fun lifecycleEventResetsTriggersBeforeEvaluation() {
+        val callOrder = mutableListOf<String>()
+        val trigger = object : LifecycleEventTrigger {
+            override fun isTriggered(factors: LifecycleEventFactors): Boolean {
+                callOrder.add("isTriggered")
+                return false
+            }
 
-        val start = LocalDate.of(2024, 1, 1)
-        val end = LocalDate.of(2025, 1, 1)
+            override fun reset() {
+                callOrder.add("reset")
+            }
+        }
 
-        val result = Ecology.getLifecycleEventDates(
-            phenology,
-            Range(start, end),
-            ::mockDayLengthProvider,
+        Ecology.getLifecycleEventDates(
+            listOf(LifecycleEvent("event", trigger)),
+            Range(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 2)),
+            { Duration.ofHours(12) },
             ::mockTemperatureProvider
         )
 
-        assertEquals(1, result.size)
-        assertEquals(LocalDate.of(2024, 8, 22), result[0].first)
+        assertTrue(callOrder.isNotEmpty())
+        assertEquals("reset", callOrder.first())
     }
 
     // getActivePeriodsForYear
@@ -297,7 +293,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsReturnsJan1ToEndWhenOnlyEndEvent() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2024, 3, 15), LifecycleEvent("end", trigger))
         )
@@ -311,7 +307,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsReturnsStartToDec31WhenOnlyStartEvent() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2024, 5, 20), LifecycleEvent("start", trigger))
         )
@@ -325,7 +321,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsReturnsStartToEndWhenBothExist() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2024, 4, 1), LifecycleEvent("start", trigger)),
             Pair(LocalDate.of(2024, 9, 30), LifecycleEvent("end", trigger))
@@ -340,7 +336,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsReturnsMultiplePeriodsInYear() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2024, 3, 1), LifecycleEvent("start", trigger)),
             Pair(LocalDate.of(2024, 5, 15), LifecycleEvent("end", trigger)),
@@ -359,7 +355,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsFiltersOutEventsFromOtherYears() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2023, 6, 1), LifecycleEvent("start", trigger)),
             Pair(LocalDate.of(2024, 4, 1), LifecycleEvent("start", trigger)),
@@ -376,7 +372,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsIgnoresUnrelatedEvents() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2024, 2, 1), LifecycleEvent("bloom", trigger)),
             Pair(LocalDate.of(2024, 4, 1), LifecycleEvent("start", trigger)),
@@ -393,7 +389,7 @@ class EcologyTest {
 
     @Test
     fun activePeriodsHandlesEndBeforeStart() {
-        val trigger = MinimumGrowingDegreeDaysTrigger(1f)
+        val trigger = CumulativeGrowingDegreeDaysTrigger(1f)
         val events = listOf(
             Pair(LocalDate.of(2024, 2, 1), LifecycleEvent("end", trigger)),
             Pair(LocalDate.of(2024, 10, 1), LifecycleEvent("start", trigger))

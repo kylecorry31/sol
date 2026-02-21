@@ -1,5 +1,7 @@
 package com.kylecorry.sol.units
 
+import com.kylecorry.sol.math.Range
+
 @JvmInline
 value class Temperature private constructor(private val measure: Measure) : Comparable<Temperature> {
     val value: Float
@@ -55,4 +57,11 @@ value class Temperature private constructor(private val measure: Measure) : Comp
             return from(temperature, TemperatureUnits.Fahrenheit)
         }
     }
+}
+
+fun Range<Temperature>.average(): Temperature {
+    val startC = start.celsius().value
+    val endC = end.celsius().value
+    val averageC = (startC + endC) / 2
+    return Temperature.celsius(averageC).convertTo(start.units)
 }

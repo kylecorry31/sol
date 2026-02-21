@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.ecology
 
 import com.kylecorry.sol.math.Range
-import com.kylecorry.sol.math.RingBuffer
 import com.kylecorry.sol.units.Temperature
 import java.time.Duration
 import java.time.LocalDate
@@ -86,65 +85,36 @@ object Ecology {
     }
 
     fun getLifecycleEventDates(
-        phenology: SpeciesPhenology,
+        events: List<LifecycleEvent>,
         dateRange: Range<LocalDate>,
         dayLengthProvider: (LocalDate) -> Duration,
         temperatureProvider: (LocalDate) -> Range<Temperature>,
     ): List<Pair<LocalDate, LifecycleEvent>> {
-        val historyLength = 30
-        val dates = mutableListOf<LocalDate>()
-        var currentDate = dateRange.start.minusYears(1)
-        while (currentDate <= dateRange.end) {
-            dates.add(currentDate)
-            currentDate = currentDate.plusDays(1)
-        }
-
-        val gdd = getCumulativeGrowingDegreeDays(
-            dates,
-            phenology.baseGrowingDegreeDaysTemperature,
-            temperatureProvider,
-            phenology.growingDegreeDaysCap,
-            phenology.growingDegreeDaysCalculationType
-        )
-
         val lifecycleEvents = mutableListOf<Pair<LocalDate, LifecycleEvent>>()
         val hits = mutableSetOf<LifecycleEvent>()
-        val dayLengthBuffer = RingBuffer<Duration>(historyLength)
-        val temperatureBuffer = RingBuffer<Range<Temperature>>(historyLength)
-        val gddBuffer = RingBuffer<Float>(historyLength)
-        var lastGdd = 0f
-        for (date in gdd) {
-            // New year starting, cumulative GDD is reset
-            if (lastGdd > date.second) {
-                gddBuffer.clear()
-                repeat(historyLength) {
-                    gddBuffer.add(date.second)
-                }
-            }
-            lastGdd = date.second
-            val temperature = temperatureProvider(date.first)
-            temperatureBuffer.add(temperature)
-            gddBuffer.add(date.second)
-            val dayLength = dayLengthProvider(date.first)
-            dayLengthBuffer.add(dayLength)
+        var date = dateRange.start.minusYears(1)
+        events.forEach { it.trigger.reset() }
+        while (date <= dateRange.end) {
+            val temperature = temperatureProvider(date)
+            val dayLength = dayLengthProvider(date)
 
             val factors = LifecycleEventFactors(
-                LifecycleEventFactor(date.second, gddBuffer.toList()),
-                LifecycleEventFactor(dayLength, dayLengthBuffer.toList()),
-                LifecycleEventFactor(temperature, temperatureBuffer.toList())
+                dayLength,
+                temperature,
+                date
             )
 
-            for (event in phenology.events) {
+            for (event in events) {
                 if (event.trigger.isTriggered(factors)) {
                     val isNew = hits.add(event)
 
                     val eventDate = if (event.offset != null) {
-                        date.first.plusDays(event.offset.toDays())
+                        date.plusDays(event.offset.toDays())
                     } else {
-                        date.first
+                        date
                     }
 
-                    if (isNew && date.first >= dateRange.start) {
+                    if (isNew && date >= dateRange.start) {
                         lifecycleEvents.add(Pair(eventDate, event))
                     }
                 } else {
@@ -153,16 +123,18 @@ object Ecology {
             }
 
             // Add all active events that occurred and are currently active as of the start date
-            if (date.first == dateRange.start) {
+            if (date == dateRange.start) {
                 hits.forEach { event ->
                     val eventDate = if (event.offset != null) {
-                        date.first.plusDays(event.offset.toDays())
+                        date.plusDays(event.offset.toDays())
                     } else {
-                        date.first
+                        date
                     }
                     lifecycleEvents.add(eventDate to event)
                 }
             }
+
+            date = date.plusDays(1)
         }
         return lifecycleEvents.sortedBy { it.first }
     }

@@ -1,0 +1,42 @@
+package com.kylecorry.sol.science.ecology.triggers
+
+import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.science.ecology.Ecology
+import com.kylecorry.sol.science.ecology.LifecycleEventFactors
+import com.kylecorry.sol.units.Temperature
+import com.kylecorry.sol.units.TemperatureUnits
+
+class CumulativeColdDegreeDaysTrigger(
+    minimum: Float,
+    units: TemperatureUnits = TemperatureUnits.Celsius,
+    private val baseTemperature: Temperature = Temperature.zero,
+    private val limit: Float = Float.MAX_VALUE,
+    private val zeroCountBeforeReset: Int = 1
+) : LifecycleEventTrigger {
+
+    private var total = 0f
+    private var zeroCount = 0
+    private val minimumC = if (units == TemperatureUnits.Celsius) {
+        minimum
+    } else {
+        minimum * 5 / 9f
+    }
+
+    override fun isTriggered(factors: LifecycleEventFactors): Boolean {
+        val cdd = Ecology.getColdDegreeDays(factors.temperature, baseTemperature, limit)
+        if (Arithmetic.isZero(cdd)) {
+            zeroCount++
+        } else {
+            zeroCount = 0
+        }
+        if (zeroCount >= zeroCountBeforeReset) {
+            reset()
+        }
+        total += cdd
+        return total >= minimumC
+    }
+
+    override fun reset() {
+        total = 0f
+    }
+}
