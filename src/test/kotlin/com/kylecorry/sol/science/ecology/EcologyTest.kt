@@ -203,9 +203,7 @@ class EcologyTest {
             // Hits the day length threshold once
             LifecycleEvent("event3", PhotoperiodTrigger(Duration.ofHours(12), above = true)),
             // Never reached
-            LifecycleEvent("event4", PhotoperiodTrigger(Duration.ofHours(100), above = true)),
-            // Offset
-            LifecycleEvent("event5", CumulativeGrowingDegreeDaysTrigger(1000f), offset = Duration.ofDays(5)),
+            LifecycleEvent("event4", PhotoperiodTrigger(Duration.ofHours(100), above = true))
         )
 
         val start = LocalDate.of(2024, 1, 1)
@@ -218,7 +216,7 @@ class EcologyTest {
             ::mockTemperatureProvider
         )
 
-        assertEquals(5, result.size)
+        assertEquals(4, result.size)
         assertEquals(LocalDate.of(2024, 1, 1), result[0].first)
         assertEquals("event2", result[0].second.name)
 
@@ -228,11 +226,8 @@ class EcologyTest {
         assertEquals(LocalDate.of(2024, 5, 19), result[2].first)
         assertEquals("event1", result[2].second.name)
 
-        assertEquals(LocalDate.of(2024, 5, 24), result[3].first)
-        assertEquals("event5", result[3].second.name)
-
-        assertEquals(LocalDate.of(2024, 10, 1), result[4].first)
-        assertEquals("event2", result[4].second.name)
+        assertEquals(LocalDate.of(2024, 10, 1), result[3].first)
+        assertEquals("event2", result[3].second.name)
     }
 
     @Test

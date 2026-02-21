@@ -108,14 +108,8 @@ object Ecology {
                 if (event.trigger.isTriggered(factors)) {
                     val isNew = hits.add(event)
 
-                    val eventDate = if (event.offset != null) {
-                        date.plusDays(event.offset.toDays())
-                    } else {
-                        date
-                    }
-
                     if (isNew && date >= dateRange.start) {
-                        lifecycleEvents.add(Pair(eventDate, event))
+                        lifecycleEvents.add(date to event)
                     }
                 } else {
                     hits.remove(event)
@@ -125,12 +119,7 @@ object Ecology {
             // Add all active events that occurred and are currently active as of the start date
             if (date == dateRange.start) {
                 hits.forEach { event ->
-                    val eventDate = if (event.offset != null) {
-                        date.plusDays(event.offset.toDays())
-                    } else {
-                        date
-                    }
-                    lifecycleEvents.add(eventDate to event)
+                    lifecycleEvents.add(date to event)
                 }
             }
 
