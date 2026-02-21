@@ -27,6 +27,17 @@ object Ecology {
         return (average - baseTemperature.celsius().value).coerceAtLeast(0f)
     }
 
+    fun getColdDegreeDays(
+        temperature: Range<Temperature>,
+        baseTemperature: Temperature,
+        limit: Float = Float.MAX_VALUE
+    ): Float {
+        val max = temperature.end.celsius().value.coerceAtMost(limit)
+        val min = temperature.start.celsius().value
+        val average = (max + min) / 2
+        return (baseTemperature.celsius().value - average).coerceAtLeast(0f)
+    }
+
     fun getCumulativeGrowingDegreeDays(
         dates: List<LocalDate>,
         baseTemperature: Temperature,

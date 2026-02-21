@@ -90,6 +90,48 @@ class EcologyTest {
         assertEquals(5f, gdd, 0.01f)
     }
 
+    // getColdDegreeDays
+
+    @Test
+    fun cddIsBaseMinusAverage() {
+        val cdd = Ecology.getColdDegreeDays(
+            Range(Temperature.celsius(0f), Temperature.celsius(10f)),
+            Temperature.celsius(10f)
+        )
+        // 10 - ((10 + 0) / 2) = 5
+        assertEquals(5f, cdd)
+    }
+
+    @Test
+    fun cddIsZeroWhenAverageAboveBase() {
+        val cdd = Ecology.getColdDegreeDays(
+            Range(Temperature.celsius(10f), Temperature.celsius(20f)),
+            Temperature.celsius(10f)
+        )
+        assertEquals(0f, cdd)
+    }
+
+    @Test
+    fun cddCapsMaxTemperature() {
+        val cdd = Ecology.getColdDegreeDays(
+            Range(Temperature.celsius(0f), Temperature.celsius(30f)),
+            Temperature.celsius(20f),
+            limit = 10f
+        )
+        // 20 - ((10 + 0) / 2) = 15
+        assertEquals(15f, cdd)
+    }
+
+    @Test
+    fun cddWorksWithFahrenheit() {
+        val cdd = Ecology.getColdDegreeDays(
+            Range(Temperature.fahrenheit(32f), Temperature.fahrenheit(50f)),
+            Temperature.celsius(10f)
+        )
+        // 32F = 0C, 50F = 10C: 10 - ((10 + 0) / 2) = 5
+        assertEquals(5f, cdd, 0.01f)
+    }
+
     // getCumulativeGrowingDegreeDays
 
     @Test
