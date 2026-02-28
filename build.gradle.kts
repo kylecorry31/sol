@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.2.21"
     id("java-library")
-    id("com.vanniktech.maven.publish") version "0.34.0"
+    id("com.vanniktech.maven.publish") version "0.35.0"
 }
 
 val versionName = "16.1.1"
