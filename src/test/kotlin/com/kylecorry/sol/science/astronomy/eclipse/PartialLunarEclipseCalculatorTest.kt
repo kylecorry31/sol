@@ -65,7 +65,7 @@ class PartialLunarEclipseCalculatorTest {
         )
 
         assertDate(
-            ZonedDateTime.of(LocalDateTime.of(2022, Month.MAY, 16, 5, 55), ZoneId.of("UTC")),
+            ZonedDateTime.of(LocalDateTime.of(2022, Month.MAY, 16, 4, 17), ZoneId.of("UTC")),
             actual.end.atZone(ZoneId.of("UTC")),
             Duration.ofMinutes(2)
         )

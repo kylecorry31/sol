@@ -7,6 +7,7 @@ import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseCalculator
+import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Coordinate
 import java.time.Duration
 import java.time.Instant
@@ -75,7 +76,34 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
             val circle1 = Circle(Vector2.zero, moonRadiusInEarthRadii.toFloat())
             val circle2 = Circle(Vector2(parameters.minDistanceFromCenter.toFloat(), 0f), umbraRadius.toFloat())
             val obscuration = Geometry.getIntersectionArea(circle2, circle1) / circle1.area()
-            return Eclipse(time.start, time.end, magnitude.toFloat(), obscuration)
+
+            var start = time.start
+            var end = time.end
+
+            if (!upAtStart) {
+                // Find the moon rise time
+                val moonRise = Astronomy.getNextMoonrise(
+                    time.start.toZonedDateTime(),
+                    location,
+                    withRefraction = true,
+                    withParallax = true
+                )
+                start = moonRise?.toInstant() ?: start
+            }
+
+            if (!upAtEnd) {
+                // Find moon set time
+                val moonSet = Astronomy.getNextMoonset(
+                    time.start.toZonedDateTime(),
+                    location,
+                    withRefraction = true,
+                    withParallax = true
+                )
+                end = moonSet?.toInstant() ?: end
+            }
+
+            val maximum = time.start.plus(Duration.between(time.start, time.end).dividedBy(2)).coerceIn(start, end)
+            return Eclipse(start, end, magnitude.toFloat(), obscuration, maximum)
         }
 
         return getNextEclipseHelper(

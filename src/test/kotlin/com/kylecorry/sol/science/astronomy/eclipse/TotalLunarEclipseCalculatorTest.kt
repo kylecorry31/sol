@@ -44,7 +44,7 @@ class TotalLunarEclipseCalculatorTest {
         )
 
         assertDate(
-            ZonedDateTime.of(LocalDateTime.of(2022, Month.NOVEMBER, 8, 11, 41), ZoneId.of("UTC")),
+            ZonedDateTime.of(LocalDateTime.of(2022, Month.NOVEMBER, 8, 11, 24), ZoneId.of("UTC")),
             actual.end.atZone(ZoneId.of("UTC")),
             Duration.ofMinutes(2)
         )
