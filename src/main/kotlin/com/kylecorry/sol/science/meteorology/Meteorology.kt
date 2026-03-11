@@ -227,6 +227,26 @@ object Meteorology {
     }
 
     /**
+     * Get the wind chill (https://www.weather.gov/safety/cold-wind-chill-chart)
+     * @param temperature the air temperature
+     * @param windSpeed the wind speed
+     * @return the wind chill temperature
+     */
+    fun getWindChill(temperature: Temperature, windSpeed: Speed): Temperature {
+        val t = temperature.convertTo(TemperatureUnits.Fahrenheit).value.toDouble()
+        val v = windSpeed.convertTo(DistanceUnits.Miles, TimeUnits.Hours).speed.toDouble()
+
+        // Wind chill is defined only at or below 50F and speeds above 3mph
+        if (t > 50f || v <= 3) {
+            return temperature
+        }
+
+        val vPow = v.pow(0.16)
+        val chill = 35.74 + 0.6215 * t - 35.75 * vPow + 0.4275 * t * vPow
+        return Temperature.fahrenheit(chill.toFloat()).convertTo(temperature.units)
+    }
+
+    /**
      * Calculates the dew point
      * @param temperature The temperature (C)
      * @param relativeHumidity The relative humidity (%)

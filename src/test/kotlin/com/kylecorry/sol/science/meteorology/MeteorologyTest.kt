@@ -1,13 +1,13 @@
 package com.kylecorry.sol.science.meteorology
 
-import com.kylecorry.sol.math.Range
 import assertk.assertThat
-import com.kylecorry.sol.tests.isCloseTo
+import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
-import com.kylecorry.sol.units.*
 import com.kylecorry.sol.science.shared.Season
+import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.time.Time
-import org.junit.jupiter.api.Assertions.*
+import com.kylecorry.sol.units.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -78,6 +78,24 @@ class MeteorologyTest {
     fun heatAlert(heatIndex: Float, expected: HeatAlert) {
         val alert = Meteorology.getHeatAlert(heatIndex)
         assertEquals(expected, alert)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "40, 5, 36",
+        "10, 25, -11",
+        "-10, 15, -32",
+        "-15, 40, -50",
+        "-45, 60, -98",
+        "50.5, 10, 50.5",
+        "0, 3, 0",
+    )
+    fun getWindChill(temperature: Float, windSpeed: Float, expected: Float) {
+        val chill = Meteorology.getWindChill(
+            Temperature.fahrenheit(temperature),
+            Speed.from(windSpeed, DistanceUnits.Miles, TimeUnits.Hours)
+        )
+        assertEquals(expected, chill.value, 0.5f)
     }
 
     @ParameterizedTest
