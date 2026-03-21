@@ -7,4 +7,5 @@ enum class WeightUnits(val id: Int, val grams: Double) {
     Grams(4, 1.0),
     Milligrams(5, 0.001),
     Grains(6, 0.06479891),
+    Stone(7, 6350.29318)
 }

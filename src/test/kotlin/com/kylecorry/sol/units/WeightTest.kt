@@ -56,6 +56,7 @@ internal class WeightTest {
                 Arguments.of(4f, WeightUnits.Milligrams, 0.004f, WeightUnits.Grams),
                 Arguments.of(1f, WeightUnits.Grains, 64.79891f, WeightUnits.Milligrams),
                 Arguments.of(1f, WeightUnits.Grams, 1000f, WeightUnits.Milligrams),
+                Arguments.of(1f, WeightUnits.Stone, 6.350293f, WeightUnits.Kilograms),
             )
         }
 
