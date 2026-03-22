@@ -1,11 +1,10 @@
 package com.kylecorry.sol.science.geology
 
-import assertk.assertThat
-import assertk.assertions.isCloseTo
 import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -55,7 +54,49 @@ internal class GeologyTest {
         assertEquals(expected, grade, 0.01f)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, true, 0",
+        "1000, true, 0.067267",
+        "1000, false, 0.0784782",
+        "10000, true, 6.7267",
+        "10000, false, 7.84782"
+    )
+    fun getElevationCurvatureCorrection(distanceMeters: Float, withRefraction: Boolean, expected: Float) {
+        val correction = Geology.getElevationCurvatureCorrection(
+            Distance.meters(distanceMeters),
+            withRefraction
+        )
+        assertEquals(expected, correction.value, 0.0001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "80, true, 1.42824",
+        "100, true, 0.282622",
+        "125, true, -1.01028",
+        "130, false, -1.15475"
+    )
+    fun getHorizonDipAngle(
+        currentElevationMeters: Float,
+        withRefraction: Boolean,
+        expected: Float
+    ) {
+        val angle = Geology.getHorizonDipAngle(
+            Distance.meters(currentElevationMeters),
+            horizonMeasurements,
+            withRefraction
+        )
+        assertEquals(expected, angle, 0.0001f)
+    }
+
     companion object {
+
+        private val horizonMeasurements = listOf(
+            ElevationRayMeasurement(Distance.meters(1000f), Distance.meters(105f)),
+            ElevationRayMeasurement(Distance.meters(2000f), Distance.meters(90f)),
+            ElevationRayMeasurement(Distance.meters(3000f), Distance.meters(70f))
+        )
 
         @JvmStatic
         fun provideGrade(): Stream<Arguments> {

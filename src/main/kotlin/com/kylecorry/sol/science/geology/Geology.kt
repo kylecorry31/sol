@@ -2,6 +2,7 @@ package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.units.Coordinate
@@ -10,6 +11,8 @@ import kotlin.math.absoluteValue
 import kotlin.math.atan
 
 object Geology {
+
+    const val EARTH_AVERAGE_RADIUS = 6371.2e3
 
     private val riskClassifier = AvalancheRiskClassifier()
 
@@ -43,6 +46,35 @@ object Geology {
 
     fun getInclination(distance: Distance, elevationChange: Distance): Float {
         return getInclinationFromSlopeGrade(getSlopeGrade(distance, elevationChange))
+    }
+
+    fun getElevationCurvatureCorrection(distance: Distance, withRefraction: Boolean = true): Distance {
+        // https://giwmscdnone.gov.np/media/pdf_upload/Compress-%202.%20Engineering%20Surveying%20Grade%20-%209_mv8gnsx.pdf
+        val distanceMeters = distance.meters().value
+        val curvatureCorrection = square(distanceMeters) / (2 * EARTH_AVERAGE_RADIUS)
+        val refractionCorrection = if (withRefraction) curvatureCorrection / 7 else 0.0
+        val totalCorrection = curvatureCorrection - refractionCorrection
+        return Distance.meters(totalCorrection.toFloat())
+    }
+
+    /**
+     * Get the angle to the horizon
+     * @param currentElevation the elevation of the observer
+     * @param elevations a list of elevation measurements in the same direction up to the horizon
+     * @return the inclination of the horizon
+     */
+    fun getHorizonDipAngle(
+        currentElevation: Distance,
+        elevations: List<ElevationRayMeasurement>,
+        withRefraction: Boolean = true
+    ): Float {
+        val currentMeters = currentElevation.meters().value
+        return elevations.maxOf {
+            val curvatureCorrection = getElevationCurvatureCorrection(it.distance, withRefraction)
+            val elevationMeters = it.elevation.meters().value - curvatureCorrection.meters().value
+            val elevationChange = elevationMeters - currentMeters
+            getInclination(it.distance, Distance.meters(elevationChange))
+        }
     }
 
     /**
