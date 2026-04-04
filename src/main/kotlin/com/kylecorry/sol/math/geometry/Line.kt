@@ -2,10 +2,12 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 data class Line(val start: Vector2, val end: Vector2) {
 
-    val isVertical = start.x == end.x
+    val isVertical = Arithmetic.isApproximatelyEqual(start.x, end.x)
+    val isHorizontal = Arithmetic.isApproximatelyEqual(start.y, end.y)
 
     fun left(): Vector2 {
         return if (start.x < end.x) {

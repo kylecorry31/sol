@@ -62,11 +62,16 @@ internal object IntersectionMath {
         }
 
         val equation = line.equation()
-        val inverse = Algebra.inverse(equation)
+        val inverse = if (line.isHorizontal) {
+            // Inverse is not defined for horizontal lines
+            null
+        } else {
+            Algebra.inverse(equation)
+        }
         val left = Vector2(rectangle.left, equation.evaluate(rectangle.left))
         val right = Vector2(rectangle.right, equation.evaluate(rectangle.right))
-        val top = Vector2(inverse.evaluate(rectangle.top), rectangle.top)
-        val bottom = Vector2(inverse.evaluate(rectangle.bottom), rectangle.bottom)
+        val top = inverse?.let { Vector2(inverse.evaluate(rectangle.top), rectangle.top) }
+        val bottom = inverse?.let { Vector2(inverse.evaluate(rectangle.bottom), rectangle.bottom) }
 
         val intersections = mutableSetOf<Vector2>()
 
@@ -78,11 +83,11 @@ internal object IntersectionMath {
             intersections.add(right)
         }
 
-        if (rectangle.contains(top)) {
+        if (top != null && rectangle.contains(top)) {
             intersections.add(top)
         }
 
-        if (rectangle.contains(bottom)) {
+        if (bottom != null && rectangle.contains(bottom)) {
             intersections.add(bottom)
         }
 

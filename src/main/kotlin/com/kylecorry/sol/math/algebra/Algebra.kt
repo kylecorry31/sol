@@ -9,6 +9,8 @@ object Algebra {
      * Solves an equation of form mx + b = 0
      */
     fun solve(equation: LinearEquation): Float? {
+        require(equation.m.isFinite()) { "m must be finite" }
+        require(equation.b.isFinite()) { "b must be finite" }
         if (Arithmetic.isZero(equation.m)) {
             if (Arithmetic.isZero(equation.b)) {
                 return 0f
@@ -19,6 +21,9 @@ object Algebra {
     }
 
     fun solve(equation: QuadraticEquation): Pair<Float, Float>? {
+        require(equation.a.isFinite()) { "a must be finite" }
+        require(equation.b.isFinite()) { "b must be finite" }
+        require(equation.c.isFinite()) { "c must be finite" }
         if (Arithmetic.isZero(equation.a)) {
             val linear = solve(LinearEquation(equation.b, equation.c)) ?: return null
             return linear to linear
@@ -35,6 +40,9 @@ object Algebra {
     }
 
     fun inverse(equation: LinearEquation): LinearEquation {
+        require(equation.m.isFinite()) { "m must be finite" }
+        require(!Arithmetic.isZero(equation.m)) { "m must not be zero" }
+        require(equation.b.isFinite()) { "b must be finite" }
         return LinearEquation(1 / equation.m, -equation.b / equation.m)
     }
 
@@ -44,9 +52,11 @@ object Algebra {
      * polynomial(x, 1, 2, 5, 0, 1)
      */
     fun polynomial(x: Double, vararg coefs: Double): Double {
+        require(x.isFinite()) { "x must be finite" }
         var runningTotal = 0.0
         var xPower = 1.0
         for (i in coefs.indices) {
+            require(coefs[i].isFinite()) { "coefs must be finite, index: $i was ${coefs[i]}" }
             runningTotal += xPower * coefs[i]
             xPower *= x
         }
