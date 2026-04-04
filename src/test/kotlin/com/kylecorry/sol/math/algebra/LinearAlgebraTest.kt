@@ -1,8 +1,10 @@
 package com.kylecorry.sol.math.algebra
 
+import assertk.assertFailure
 import com.kylecorry.sol.math.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.sqrt
 
 class LinearAlgebraTest {
 
@@ -41,6 +43,16 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun dotAssertions() {
+        val m1 = Matrix.create(2, 2, 0f)
+        val m2 = Matrix.create(3, 3, 0f)
+
+        assertFailure {
+            LinearAlgebra.dot(m1, m2)
+        }
+    }
+
+    @Test
     fun subtract() {
         val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
@@ -69,6 +81,26 @@ class LinearAlgebraTest {
         val result = LinearAlgebra.subtract(m1, m2)
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun subtractAssertions(){
+        val m3x2 = Matrix.create(3, 2, 0f)
+        val m3x3 = Matrix.create(3, 3, 0f)
+        val m2x3 = Matrix.create(2, 3, 0f)
+        val m1x1 = Matrix.create(1, 1, 0f)
+        val m3x1 = Matrix.create(3, 1, 0f)
+        val m1x3 = Matrix.create(1, 3, 0f)
+
+        assertFailure { LinearAlgebra.subtract(m3x2, m2x3) }
+        assertFailure { LinearAlgebra.subtract(m3x2, m3x3) }
+        assertFailure { LinearAlgebra.subtract(m2x3, m3x3) }
+        assertFailure { LinearAlgebra.subtract(m1x1, m3x3) }
+
+        // Subtracting a vector is fine
+        LinearAlgebra.subtract(m3x3, m1x1)
+        LinearAlgebra.subtract(m3x3, m3x1)
+        LinearAlgebra.subtract(m3x3, m1x3)
     }
 
     @Test
@@ -128,6 +160,26 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun addAssertions(){
+        val m3x2 = Matrix.create(3, 2, 0f)
+        val m3x3 = Matrix.create(3, 3, 0f)
+        val m2x3 = Matrix.create(2, 3, 0f)
+        val m1x1 = Matrix.create(1, 1, 0f)
+        val m3x1 = Matrix.create(3, 1, 0f)
+        val m1x3 = Matrix.create(1, 3, 0f)
+
+        assertFailure { LinearAlgebra.add(m3x2, m2x3) }
+        assertFailure { LinearAlgebra.add(m3x2, m3x3) }
+        assertFailure { LinearAlgebra.add(m2x3, m3x3) }
+        assertFailure { LinearAlgebra.add(m1x1, m3x3) }
+
+        // Adding a vector is fine
+        LinearAlgebra.add(m3x3, m1x1)
+        LinearAlgebra.add(m3x3, m3x1)
+        LinearAlgebra.add(m3x3, m1x3)
+    }
+
+    @Test
     fun addScalar() {
         val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
@@ -184,6 +236,26 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun multiplyAssertions(){
+        val m3x2 = Matrix.create(3, 2, 0f)
+        val m3x3 = Matrix.create(3, 3, 0f)
+        val m2x3 = Matrix.create(2, 3, 0f)
+        val m1x1 = Matrix.create(1, 1, 0f)
+        val m3x1 = Matrix.create(3, 1, 0f)
+        val m1x3 = Matrix.create(1, 3, 0f)
+
+        assertFailure { LinearAlgebra.multiply(m3x2, m2x3) }
+        assertFailure { LinearAlgebra.multiply(m3x2, m3x3) }
+        assertFailure { LinearAlgebra.multiply(m2x3, m3x3) }
+        assertFailure { LinearAlgebra.multiply(m1x1, m3x3) }
+
+        // Multiplying by a vector is fine
+        LinearAlgebra.multiply(m3x3, m1x1)
+        LinearAlgebra.multiply(m3x3, m3x1)
+        LinearAlgebra.multiply(m3x3, m1x3)
+    }
+
+    @Test
     fun multiplyScalar() {
         val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
@@ -237,6 +309,26 @@ class LinearAlgebraTest {
         val result = LinearAlgebra.divide(m1, m2)
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun divideAssertions(){
+        val m3x2 = Matrix.create(3, 2, 0f)
+        val m3x3 = Matrix.create(3, 3, 0f)
+        val m2x3 = Matrix.create(2, 3, 0f)
+        val m1x1 = Matrix.create(1, 1, 0f)
+        val m3x1 = Matrix.create(3, 1, 0f)
+        val m1x3 = Matrix.create(1, 3, 0f)
+
+        assertFailure { LinearAlgebra.divide(m3x2, m2x3) }
+        assertFailure { LinearAlgebra.divide(m3x2, m3x3) }
+        assertFailure { LinearAlgebra.divide(m2x3, m3x3) }
+        assertFailure { LinearAlgebra.divide(m1x1, m3x3) }
+
+        // Dividing by a vector is fine
+        LinearAlgebra.divide(m3x3, m1x1)
+        LinearAlgebra.divide(m3x3, m3x1)
+        LinearAlgebra.divide(m3x3, m1x3)
     }
 
     @Test
@@ -367,6 +459,21 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun norm() {
+        val m1 = Matrix.create(3, 2, 0f)
+        m1[0, 0] = 1f
+        m1[0, 1] = 2f
+        m1[1, 0] = 3f
+        m1[1, 1] = 4f
+        m1[2, 0] = 5f
+        m1[2, 1] = 6f
+
+        val result = LinearAlgebra.norm(m1)
+
+        assertEquals(sqrt(91.0).toFloat(), result, 0.00001f)
+    }
+
+    @Test
     fun max() {
         val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
@@ -469,6 +576,18 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun inverseAssertion(){
+        val m = Matrix.create(3, 2, 0f)
+        assertFailure { LinearAlgebra.inverse(m) }
+    }
+
+    @Test
+    fun adjugateAssertion(){
+        val m = Matrix.create(3, 2, 0f)
+        assertFailure { LinearAlgebra.adjugate(m) }
+    }
+
+    @Test
     fun determinant3x3() {
         val m1 = Matrix.create(3, 3, 0f)
         m1[0, 0] = 2f
@@ -501,6 +620,12 @@ class LinearAlgebraTest {
         val actual = LinearAlgebra.determinant(m1)
 
         assertEquals(expected, actual, 0.00001f)
+    }
+
+    @Test
+    fun determinantAssertion(){
+        val m = Matrix.create(3, 2, 0f)
+        assertFailure { LinearAlgebra.determinant(m) }
     }
 
     @Test

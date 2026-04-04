@@ -14,11 +14,11 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun sum(): Float {
-        var sum = 0.0f
+        var sum = 0.0
         for (i in 2..rawData.lastIndex) {
             sum += rawData[i]
         }
-        return sum
+        return sum.toFloat()
     }
 
     fun max(): Float {
@@ -33,7 +33,12 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun norm(): Float {
-        return sqrt(rawData.sumOf { it * it.toDouble() }).toFloat()
+        var sum = 0.0
+        for (i in 2..rawData.lastIndex) {
+            sum += rawData[i] * rawData[i].toDouble()
+        }
+        require(sum >= 0){ "Sum of squares must be non-negative but was $sum" }
+        return sqrt(sum.toFloat())
     }
 
     fun rows(): Int {
@@ -49,16 +54,16 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun setRow(row: Int, rowData: FloatArray) {
-        if (rowData.size != columns()) {
-            throw IllegalArgumentException("Expected row to be of length ${columns()} but got ${rowData.size}")
+        require(rowData.size == columns()){
+            "Expected row to be of length ${columns()} but got ${rowData.size}"
         }
         val startIndex = getIndex(row, 0)
         rowData.copyInto(rawData, startIndex)
     }
 
     fun getRow(row: Int, destination: FloatArray = FloatArray(columns())): FloatArray {
-        if (destination.size != columns()) {
-            throw IllegalArgumentException("Expected destination to be of length ${columns()} but got ${destination.size}")
+        require(destination.size == columns()){
+            "Expected destination to be of length ${columns()} but got ${destination.size}"
         }
         val startIndex = getIndex(row, 0)
         rawData.copyInto(destination, startIndex = startIndex, endIndex = startIndex + columns())
@@ -66,19 +71,19 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun setColumn(column: Int, columnData: FloatArray) {
-        if (columnData.size != rows()) {
-            throw IllegalArgumentException("Expected column to be of length ${rows()} but got ${columnData.size}")
+        require(columnData.size == rows()){
+            "Expected column to be of length ${rows()} but got ${columnData.size}"
         }
-        for (row in 0 until rows()) {
+        for (row in 0..<rows()) {
             set(row, column, columnData[row])
         }
     }
 
     fun getColumn(column: Int, destination: FloatArray = FloatArray(rows())): FloatArray {
-        if (destination.size != rows()) {
-            throw IllegalArgumentException("Expected destination to be of length ${rows()} but got ${destination.size}")
+        require(destination.size == rows()){
+            "Expected destination to be of length ${rows()} but got ${destination.size}"
         }
-        for (row in 0 until rows()) {
+        for (row in 0..<rows()) {
             destination[row] = get(row, column)
         }
         return destination
@@ -91,28 +96,38 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     private fun getIndex(row: Int, column: Int): Int {
-        if (row >= rows() || row < 0) {
-            throw IllegalArgumentException("Expected row to be between 0 and ${rows()} but got $row")
+        require(row in 0..<rows()){
+            "Expected row to be between 0 and ${rows()} but got $row"
         }
-        if (column >= columns() || column < 0) {
-            throw IllegalArgumentException("Expected column to be between 0 and ${columns()} but got $column")
+        require(column in 0..<columns()){
+            "Expected column to be between 0 and ${columns()} but got $column"
         }
         return 2 + columns() * row + column
     }
 
     companion object {
         fun zeros(rows: Int, columns: Int): Matrix {
+            require(rows >= 0) { "rows must be non-negative, but was $rows" }
+            require(columns >= 0) { "columns must be non-negative, but was $columns" }
             val data = FloatArray(rows * columns + 2)
             data[0] = Float.fromBits(rows)
             data[1] = Float.fromBits(columns)
-            return Matrix(data)
+            val matrix = Matrix(data)
+            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun create(rows: Int, columns: Int, value: Float = 0f): Matrix {
+            require(rows >= 0) { "rows must be non-negative, but was $rows" }
+            require(columns >= 0) { "columns must be non-negative, but was $columns" }
             val data = FloatArray(rows * columns + 2) { value }
             data[0] = Float.fromBits(rows)
             data[1] = Float.fromBits(columns)
-            return Matrix(data)
+            val matrix = Matrix(data)
+            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun createFromRawData(data: FloatArray): Matrix {
@@ -120,36 +135,59 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
         }
 
         fun create(rows: Int, columns: Int, data: FloatArray): Matrix {
-            if (data.size != rows * columns) {
-                throw IllegalArgumentException("Expected data to be of length ${rows * columns} but got ${data.size}")
+            require(rows >= 0) { "rows must be non-negative, but was $rows" }
+            require(columns >= 0) { "columns must be non-negative, but was $columns" }
+            require(data.size == rows * columns) {
+                "Expected data to be of length ${rows * columns} but got ${data.size}"
             }
             val newData = FloatArray(2 + data.size)
             newData[0] = Float.fromBits(rows)
             newData[1] = Float.fromBits(columns)
             data.copyInto(newData, 2)
-            return Matrix(newData)
+            val matrix = Matrix(newData)
+            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun identity(size: Int): Matrix {
-            return diagonal(values = FloatArray(size) { 1f })
+            require(size >= 0) { "size must be non-negative, but was $size" }
+            val matrix = diagonal(values = FloatArray(size) { 1f })
+            require(matrix.rows() == size) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == size) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun diagonal(vararg values: Float): Matrix {
-            return create(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
+            val matrix = create(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
+            require(matrix.rows() == values.size) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == values.size) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun column(vararg values: Float): Matrix {
-            return create(values.size, 1) { r, _ -> values[r] }
+            val matrix = create(values.size, 1) { r, _ -> values[r] }
+            require(matrix.rows() == values.size) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == 1) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun row(vararg values: Float): Matrix {
-            return create(1, values.size) { _, c -> values[c] }
+            val matrix = create(1, values.size) { _, c -> values[c] }
+            require(matrix.rows() == 1) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == values.size) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         fun create(oldMatrix: Array<Array<Float>>): Matrix {
-            return create(oldMatrix.size, oldMatrix[0].size) { r, c ->
+            val rows = oldMatrix.size
+            val columns = oldMatrix.getOrNull(0)?.size ?: 0
+            val matrix = create(rows, columns) { r, c ->
                 oldMatrix[r][c]
             }
+            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
 
         inline fun create(
@@ -157,16 +195,23 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
             columns: Int,
             crossinline initialize: (row: Int, column: Int) -> Float
         ): Matrix {
+            require(rows >= 0) { "rows must be non-negative, but was $rows" }
+            require(columns >= 0) { "columns must be non-negative, but was $columns" }
             val newData = FloatArray(2 + rows * columns)
             newData[0] = Float.fromBits(rows)
             newData[1] = Float.fromBits(columns)
-            for (i in 2 until newData.size) {
+            for (i in 2..<newData.size) {
                 val index = i - 2
                 val row = index / columns
                 val column = index % columns
+                require(row <= rows) { "Row $row out of range $rows" }
+                require(column <= columns) { "Column $column out of range $columns" }
                 newData[i] = initialize(row, column)
             }
-            return createFromRawData(newData)
+            val matrix = createFromRawData(newData)
+            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            return matrix
         }
     }
 }
