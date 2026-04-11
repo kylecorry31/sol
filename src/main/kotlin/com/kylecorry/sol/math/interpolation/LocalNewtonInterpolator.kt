@@ -5,10 +5,7 @@ import com.kylecorry.sol.math.Vector2
 /**
  * A newton interpolator that only uses the points surrounding the x to interpolate rather than the points from the beginning.
  */
-class LocalNewtonInterpolator(
-    points: List<Vector2>,
-    private val order: Int,
-) : Interpolator {
+class LocalNewtonInterpolator(points: List<Vector2>, private val order: Int) : Interpolator {
     private val sortedPoints = points.sortedBy { it.x }
     private var cachedPoints = emptyList<Vector2>()
     private var cachedInterpolator: NewtonInterpolator? = null
@@ -46,9 +43,10 @@ class LocalNewtonInterpolator(
         return interpolate(x, points)
     }
 
+
     private fun interpolate(
         x: Float,
-        points: List<Vector2>,
+        points: List<Vector2>
     ): Float {
         synchronized(lock) {
             if (points != cachedPoints || cachedInterpolator == null) {

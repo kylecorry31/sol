@@ -5,56 +5,57 @@ import com.kylecorry.sol.math.sumOfFloat
 
 data class PolynomialTerm(
     val coefficient: Float,
-    val exponent: Int,
+    val exponent: Int
 ) {
-    operator fun times(other: PolynomialTerm): PolynomialTerm =
-        PolynomialTerm(this.coefficient * other.coefficient, this.exponent + other.exponent)
+    operator fun times(other: PolynomialTerm): PolynomialTerm {
+        return PolynomialTerm(this.coefficient * other.coefficient, this.exponent + other.exponent)
+    }
 }
 
-class Polynomial(
-    terms: List<PolynomialTerm>,
-) {
-    val terms =
-        terms
-            .groupBy { it.exponent }
-            .map { (exponent, groupedTerms) ->
-                val coefficient = groupedTerms.sumOfFloat { it.coefficient }
-                PolynomialTerm(coefficient, exponent)
-            }.filter { !Arithmetic.isZero(it.coefficient) }
-            .sortedBy { -it.exponent }
+class Polynomial(terms: List<PolynomialTerm>) {
 
-    fun evaluate(x: Float): Float = terms.sumOfFloat { it.coefficient * Arithmetic.power(x, it.exponent) }
+    val terms = terms
+        .groupBy { it.exponent }
+        .map { (exponent, groupedTerms) ->
+            val coefficient = groupedTerms.sumOfFloat { it.coefficient }
+            PolynomialTerm(coefficient, exponent)
+        }
+        .filter { !Arithmetic.isZero(it.coefficient) }
+        .sortedBy { -it.exponent }
+
+    fun evaluate(x: Float): Float {
+        return terms.sumOfFloat { it.coefficient * Arithmetic.power(x, it.exponent) }
+    }
 
     fun derivative(): Polynomial {
-        val derivedTerms =
-            terms.mapNotNull {
-                if (it.exponent == 0) {
-                    null
-                } else {
-                    PolynomialTerm(it.coefficient * it.exponent, it.exponent - 1)
-                }
+        val derivedTerms = terms.mapNotNull {
+            if (it.exponent == 0) {
+                null
+            } else {
+                PolynomialTerm(it.coefficient * it.exponent, it.exponent - 1)
             }
+        }
         return Polynomial(derivedTerms)
     }
 
     fun integral(c: Float = 0f): Polynomial {
-        val integratedTerms =
-            terms.map {
-                PolynomialTerm(
-                    coefficient = it.coefficient / (it.exponent + 1),
-                    exponent = it.exponent + 1,
-                )
-            }
+        val integratedTerms = terms.map {
+            PolynomialTerm(
+                coefficient = it.coefficient / (it.exponent + 1),
+                exponent = it.exponent + 1
+            )
+        }
         return Polynomial(integratedTerms + listOf(PolynomialTerm(c, 0)))
     }
 
-    operator fun plus(other: Polynomial): Polynomial = Polynomial(this.terms + other.terms)
+    operator fun plus(other: Polynomial): Polynomial {
+        return Polynomial(this.terms + other.terms)
+    }
 
     operator fun minus(other: Polynomial): Polynomial {
-        val negatedTerms =
-            other.terms.map {
-                PolynomialTerm(-it.coefficient, it.exponent)
-            }
+        val negatedTerms = other.terms.map {
+            PolynomialTerm(-it.coefficient, it.exponent)
+        }
         return Polynomial(this.terms + negatedTerms)
     }
 
@@ -80,43 +81,43 @@ class Polynomial(
         return true
     }
 
-    override fun hashCode(): Int = terms.hashCode()
+    override fun hashCode(): Int {
+        return terms.hashCode()
+    }
 
     override fun toString(): String {
         if (terms.isEmpty()) {
             return "0"
         }
-        return terms
-            .joinToString(" + ") { term ->
-                val coefficientString =
-                    when {
-                        term.exponent == 0 -> "${term.coefficient}"
-                        term.coefficient == 1f -> ""
-                        term.coefficient == -1f -> "-"
-                        else -> "${term.coefficient}"
-                    }.removeSuffix(".0")
-                val exponentStr =
-                    when (term.exponent) {
-                        0 -> ""
-                        1 -> "x"
-                        else -> "x^${term.exponent}"
-                    }
-                "$coefficientString$exponentStr"
-            }.replace("+ -", "- ")
+        return terms.joinToString(" + ") { term ->
+            val coefficientString = when {
+                term.exponent == 0 -> "${term.coefficient}"
+                term.coefficient == 1f -> ""
+                term.coefficient == -1f -> "-"
+                else -> "${term.coefficient}"
+            }.removeSuffix(".0")
+            val exponentStr = when (term.exponent) {
+                0 -> ""
+                1 -> "x"
+                else -> "x^${term.exponent}"
+            }
+            "$coefficientString$exponentStr"
+        }.replace("+ -", "- ")
     }
 
     companion object {
-        fun of(vararg terms: PolynomialTerm): Polynomial = Polynomial(terms.toList())
+        fun of(vararg terms: PolynomialTerm): Polynomial {
+            return Polynomial(terms.toList())
+        }
 
         /**
          * Creates a polynomial from coefficients.
          * The index of the coefficient corresponds to the exponent.
          */
         fun fromCoefficients(vararg coefficients: Float): Polynomial {
-            val terms =
-                coefficients.mapIndexed { index, coefficient ->
-                    PolynomialTerm(coefficient, index)
-                }
+            val terms = coefficients.mapIndexed { index, coefficient ->
+                PolynomialTerm(coefficient, index)
+            }
             return Polynomial(terms)
         }
 
@@ -125,46 +126,42 @@ class Polynomial(
          * Example inputs: "x^2", "x + 4x^2 + 5", "-2x", "x - 2x^3"
          */
         fun of(equation: String): Polynomial {
-            val terms =
-                equation
-                    .replace(" ", "")
-                    .replace("-", "+-")
-                    .replace("^", "")
-                    .split("+")
-                    .filter { it.isNotEmpty() }
-                    .map { termString ->
-                        if ("x" !in termString) {
-                            return@map PolynomialTerm(termString.toFloat(), 0)
-                        }
-                        val parts = termString.split("x")
-                        val coefficientPart =
-                            parts[0]
-                                .replace("(", "")
-                                .replace(")", "")
-                        val coefficient =
-                            when {
-                                parts[0] == "" -> 1f
-                                parts[0] == "-" -> -1f
-                                parts[0].contains("/") -> {
-                                    val fractionParts = coefficientPart.split("/")
-                                    if (fractionParts.size != 2) {
-                                        throw IllegalArgumentException("Invalid fraction in term: $termString")
-                                    }
-                                    val numerator = fractionParts[0].toFloat()
-                                    val denominator = fractionParts[1].toFloat()
-                                    numerator / denominator
-                                }
-
-                                else -> parts[0].toFloat()
-                            }
-                        val exponent =
-                            if (parts.size > 1 && parts[1].isNotEmpty()) {
-                                parts[1].toInt()
-                            } else {
-                                1
-                            }
-                        PolynomialTerm(coefficient, exponent)
+            val terms = equation
+                .replace(" ", "")
+                .replace("-", "+-")
+                .replace("^", "")
+                .split("+")
+                .filter { it.isNotEmpty() }
+                .map { termString ->
+                    if ("x" !in termString) {
+                        return@map PolynomialTerm(termString.toFloat(), 0)
                     }
+                    val parts = termString.split("x")
+                    val coefficientPart = parts[0]
+                        .replace("(", "")
+                        .replace(")", "")
+                    val coefficient = when {
+                        parts[0] == "" -> 1f
+                        parts[0] == "-" -> -1f
+                        parts[0].contains("/") -> {
+                            val fractionParts = coefficientPart.split("/")
+                            if (fractionParts.size != 2) {
+                                throw IllegalArgumentException("Invalid fraction in term: $termString")
+                            }
+                            val numerator = fractionParts[0].toFloat()
+                            val denominator = fractionParts[1].toFloat()
+                            numerator / denominator
+                        }
+
+                        else -> parts[0].toFloat()
+                    }
+                    val exponent = if (parts.size > 1 && parts[1].isNotEmpty()) {
+                        parts[1].toInt()
+                    } else {
+                        1
+                    }
+                    PolynomialTerm(coefficient, exponent)
+                }
             return Polynomial(terms)
         }
     }

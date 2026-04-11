@@ -4,25 +4,22 @@ class KalmanFilter(
     initialEstimate: Double,
     private val initialError: Double,
     private val processError: Double,
-    initialTime: Double? = null,
+    initialTime: Double? = null
 ) {
+
     var estimate = initialEstimate
         private set
     var estimateError = initialError
         private set
     private var lastTime = initialTime
 
-    fun filter(
-        measurement: Double,
-        error: Double = initialError,
-        time: Double? = null,
-    ): Double {
-        val timeScale =
-            if (lastTime != null && time != null) {
-                time - lastTime!!
-            } else {
-                1.0
-            }
+    fun filter(measurement: Double, error: Double = initialError, time: Double? = null): Double {
+
+        val timeScale = if (lastTime != null && time != null) {
+            time - lastTime!!
+        } else {
+            1.0
+        }
 
         lastTime = time
 
@@ -38,6 +35,7 @@ class KalmanFilter(
     }
 
     companion object {
+
         /**
          * Filter a list of measurements, including the error estimate with the estimate
          * @return a list of pairs of estimate to error
@@ -46,7 +44,7 @@ class KalmanFilter(
             measurements: List<Double>,
             errors: List<Double>,
             processError: Double,
-            times: List<Double>? = null,
+            times: List<Double>? = null
         ): List<Pair<Double, Double>> {
             if (measurements.isEmpty()) {
                 return emptyList()
@@ -62,8 +60,8 @@ class KalmanFilter(
                     kalman.filter(
                         measurements[i],
                         errors[i],
-                        times?.get(i),
-                    ) to kalman.estimateError,
+                        times?.get(i)
+                    ) to kalman.estimateError
                 )
             }
 
@@ -74,7 +72,7 @@ class KalmanFilter(
             measurements: List<Double>,
             errors: List<Double>,
             processError: Double,
-            times: List<Double>? = null,
+            times: List<Double>? = null
         ): List<Double> {
             if (measurements.isEmpty()) {
                 return emptyList()
@@ -96,7 +94,11 @@ class KalmanFilter(
             measurements: List<Double>,
             error: Double,
             processError: Double,
-            times: List<Double>? = null,
-        ): List<Double> = filter(measurements, List(measurements.size) { error }, processError, times)
+            times: List<Double>? = null
+        ): List<Double> {
+            return filter(measurements, List(measurements.size) { error }, processError, times)
+        }
+
     }
+
 }

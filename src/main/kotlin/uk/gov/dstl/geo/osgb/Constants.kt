@@ -25,10 +25,8 @@ package uk.gov.dstl.geo.osgb
  */
 object Constants {
     const val NATIONALGRID_F0 = 0.9996012717
-
     // In degrees
     const val NATIONALGRID_LAT0 = 49.0
-
     // In degrees
     const val NATIONALGRID_LON0 = -2.0
     const val NATIONALGRID_E0 = 400000.0

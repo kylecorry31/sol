@@ -7,6 +7,6 @@ interface IOptimizer {
         xRange: Range<Double>,
         yRange: Range<Double> = Range(0.0, 0.0),
         maximize: Boolean = true,
-        fn: (x: Double, y: Double) -> Double,
+        fn: (x: Double, y: Double) -> Double
     ): Pair<Double, Double>
 }

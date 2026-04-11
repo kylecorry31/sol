@@ -15,6 +15,7 @@ import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.*
 
 object Statistics {
+
     /**
      * Calculate the weighted sum of the provided values
      * @param values a list of value to weights [0, 1]
@@ -28,7 +29,9 @@ object Statistics {
         return sum
     }
 
-    fun mean(values: List<Float>): Float = values.average().toFloat()
+    fun mean(values: List<Float>): Float {
+        return values.average().toFloat()
+    }
 
     fun meanVector2(values: List<Vector2>): Vector2 {
         if (values.isEmpty()) {
@@ -56,35 +59,28 @@ object Statistics {
         return total.pow(1 / values.size.toDouble()).toFloat()
     }
 
-    fun harmonicMean(values: List<Float>): Float = values.size / values.sumOfFloat { 1 / it }
+    fun harmonicMean(values: List<Float>): Float {
+        return values.size / values.sumOfFloat { 1 / it }
+    }
 
-    fun variance(
-        values: List<Float>,
-        forPopulation: Boolean = false,
-        mean: Float? = null,
-    ): Float {
+    fun variance(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
         if (values.size <= 1) {
             return 0f
         }
         val average = mean?.toDouble() ?: values.average()
-        return values
-            .sumOf { square(it.toDouble() - average) }
+        return values.sumOf { square(it.toDouble() - average) }
             .toFloat() / (values.size - if (!forPopulation) 1 else 0)
     }
 
-    fun stdev(
-        values: List<Float>,
-        forPopulation: Boolean = false,
-        mean: Float? = null,
-    ): Float = sqrt(variance(values, forPopulation, mean))
+    fun stdev(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
+        return sqrt(variance(values, forPopulation, mean))
+    }
 
-    fun median(values: List<Float>): Float = quantile(values, 0.5f, interpolate = false)
+    fun median(values: List<Float>): Float {
+        return quantile(values, 0.5f, interpolate = false)
+    }
 
-    fun quantile(
-        values: List<Float>,
-        quantile: Float,
-        interpolate: Boolean = true,
-    ): Float {
+    fun quantile(values: List<Float>, quantile: Float, interpolate: Boolean = true): Float {
         if (values.isEmpty()) {
             return 0f
         }
@@ -112,15 +108,14 @@ object Statistics {
     fun skewness(
         values: List<Float>,
         mean: Float? = null,
-        stdev: Float? = null,
+        stdev: Float? = null
     ): Float {
         val average = mean ?: values.average().toFloat()
         val deviation = stdev ?: stdev(values, mean = average)
 
-        return values
-            .sumOf {
-                Arithmetic.power((it - average) / deviation.toDouble(), 3)
-            }.toFloat() / values.size
+        return values.sumOf {
+            Arithmetic.power((it - average) / deviation.toDouble(), 3)
+        }.toFloat() / values.size
     }
 
     fun probability(values: List<Float>): List<Float> {
@@ -132,10 +127,9 @@ object Statistics {
         return values.map { it / sum }
     }
 
-    fun probability(
-        x: Float,
-        distribution: GaussianDistribution,
-    ): Float = distribution.probability(x)
+    fun probability(x: Float, distribution: GaussianDistribution): Float {
+        return distribution.probability(x)
+    }
 
     fun softmax(values: List<Float>): List<Float> {
         if (values.isEmpty()) {
@@ -165,29 +159,25 @@ object Statistics {
         return GaussianDistribution(mean, sqrt(variance))
     }
 
-    fun zScore(
-        value: Float,
-        distribution: GaussianDistribution,
-        n: Int = 1,
-    ): Float =
-        if (n == 1) {
+    fun zScore(value: Float, distribution: GaussianDistribution, n: Int = 1): Float {
+        return if (n == 1) {
             (value - distribution.mean) / distribution.standardDeviation
         } else {
             (value - distribution.mean) / (distribution.standardDeviation / sqrt(n.toFloat()))
         }
+    }
 
     /**
      * Calculates the slope of the best fit line
      */
-    fun slope(data: List<Vector2>): Float = LinearRegression(data).equation.m
+    fun slope(data: List<Vector2>): Float {
+        return LinearRegression(data).equation.m
+    }
 
     /**
      * Calculates the root mean square errors between the datasets. Actual and predicted must correspond 1-1 with eachother.
      */
-    fun rmse(
-        actual: List<Float>,
-        predicted: List<Float>,
-    ): Float {
+    fun rmse(actual: List<Float>, predicted: List<Float>): Float {
         val n = actual.size
         return sqrt(sse(actual, predicted) / n)
     }
@@ -195,10 +185,8 @@ object Statistics {
     /**
      * Calculates the sum of squared errors between the datasets. Actual and predicted must correspond 1-1 with eachother.
      */
-    fun sse(
-        actual: List<Float>,
-        predicted: List<Float>,
-    ): Float {
+    fun sse(actual: List<Float>, predicted: List<Float>): Float {
+
         var sum = 0f
         for (i in actual.indices) {
             sum += (actual[i] - predicted[i]).pow(2)
@@ -220,10 +208,7 @@ object Statistics {
      * Calculates the F1 score given a confusion matrix (rows = predicted, columns = actual)
      * @param weighted if true, a weighted average will be used to combine f1 scores by number of examples per class
      */
-    fun f1Score(
-        confusion: Matrix,
-        weighted: Boolean = false,
-    ): Float {
+    fun f1Score(confusion: Matrix, weighted: Boolean = false): Float {
         val all = confusion.sum()
         val weight = 1 / confusion.rows().toFloat()
 
@@ -238,10 +223,7 @@ object Statistics {
     /**
      * Calculates the F1 for a single class given a confusion matrix (rows = predicted, columns = actual)
      */
-    fun f1Score(
-        confusion: Matrix,
-        classIdx: Int,
-    ): Float {
+    fun f1Score(confusion: Matrix, classIdx: Int): Float {
         val precision = precision(confusion, classIdx)
         val recall = recall(confusion, classIdx)
         val f = (2 * precision * recall) / (precision + recall)
@@ -254,10 +236,7 @@ object Statistics {
     /**
      * Calculates the recall for a single class given a confusion matrix (rows = predicted, columns = actual)
      */
-    fun recall(
-        confusion: Matrix,
-        classIdx: Int,
-    ): Float {
+    fun recall(confusion: Matrix, classIdx: Int): Float {
         val actual = confusion.getColumn(classIdx)
         val tp = confusion[classIdx, classIdx]
         val fn = actual.sum() - tp
@@ -270,10 +249,7 @@ object Statistics {
     /**
      * Calculates the precision for a single class given a confusion matrix (rows = predicted, columns = actual)
      */
-    fun precision(
-        confusion: Matrix,
-        classIdx: Int,
-    ): Float {
+    fun precision(confusion: Matrix, classIdx: Int): Float {
         val predicted = confusion.getRow(classIdx)
         val tp = confusion[classIdx, classIdx]
         val fp = predicted.sum() - tp
@@ -283,10 +259,7 @@ object Statistics {
         return tp / (tp + fp)
     }
 
-    fun smooth(
-        data: List<Float>,
-        smoothing: Float = 0.5f,
-    ): List<Float> {
+    fun smooth(data: List<Float>, smoothing: Float = 0.5f): List<Float> {
         if (data.isEmpty()) {
             return data
         }
@@ -302,10 +275,7 @@ object Statistics {
         }
     }
 
-    fun movingAverage(
-        data: List<Float>,
-        window: Int = 5,
-    ): List<Float> {
+    fun movingAverage(data: List<Float>, window: Int = 5): List<Float> {
         val filter = MovingAverageFilter(window)
 
         return data.map { filter.filter(it) }
@@ -315,7 +285,7 @@ object Statistics {
         measurements: List<Double>,
         threshold: Double,
         replaceWithAverage: Boolean = false,
-        replaceLast: Boolean = false,
+        replaceLast: Boolean = false
     ): List<Double> {
         if (measurements.size < 3) {
             return measurements
@@ -406,7 +376,7 @@ object Statistics {
             varianceI,
             varianceJ,
             correlation,
-            maximum,
+            maximum
         )
     }
 }

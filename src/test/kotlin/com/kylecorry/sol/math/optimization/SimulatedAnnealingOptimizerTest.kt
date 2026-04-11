@@ -2,9 +2,11 @@ package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
 import org.junit.jupiter.api.Assertions.*
+
 import org.junit.jupiter.api.Test
 
 internal class SimulatedAnnealingOptimizerTest {
+
     @Test
     fun optimize() {
         val optimizer = SimulatedAnnealingOptimizer(100.0, 1.0, 1000)

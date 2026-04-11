@@ -5,7 +5,10 @@ import java.time.Duration
 import kotlin.math.sqrt
 
 internal class PartialLunarEclipseCalculator : AbstractUmbralLunarEclipseCalculator() {
-    override fun getMagnitudeThreshold(): Double = 0.0
+
+    override fun getMagnitudeThreshold(): Double {
+        return 0.0
+    }
 
     override fun getSemiDuration(parameters: LunarEclipseParameters): Duration {
         val p = 1.0128 - parameters.umbralConeRadius

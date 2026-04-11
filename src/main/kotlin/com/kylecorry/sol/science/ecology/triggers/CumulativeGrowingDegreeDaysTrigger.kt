@@ -13,16 +13,16 @@ class CumulativeGrowingDegreeDaysTrigger(
     private val baseTemperature: Temperature = Temperature.zero,
     private val limit: Float = Float.MAX_VALUE,
     private val calculationType: GrowingDegreeDaysCalculationType = GrowingDegreeDaysCalculationType.MinMax,
-    private val zeroCountBeforeReset: Int = 1,
+    private val zeroCountBeforeReset: Int = 1
 ) : LifecycleEventTrigger {
+
     private var total = 0f
     private var zeroCount = 0
-    private val minimumC =
-        if (units == TemperatureUnits.Celsius) {
-            minimum
-        } else {
-            minimum * 5 / 9f
-        }
+    private val minimumC = if (units == TemperatureUnits.Celsius) {
+        minimum
+    } else {
+        minimum * 5 / 9f
+    }
 
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {
         val gdd = Ecology.getGrowingDegreeDays(factors.temperature, baseTemperature, limit, calculationType)

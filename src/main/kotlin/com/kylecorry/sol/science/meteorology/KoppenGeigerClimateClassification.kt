@@ -9,9 +9,7 @@ data class KoppenGeigerClimateClassification(
         "${climateGroup.code}${seasonalPrecipitationPattern?.code ?: ""}${temperaturePattern?.code ?: ""}"
 }
 
-enum class KoppenGeigerClimateGroup(
-    val code: Char,
-) {
+enum class KoppenGeigerClimateGroup(val code: Char) {
     Tropical('A'),
     Dry('B'),
     Temperate('C'),
@@ -19,9 +17,7 @@ enum class KoppenGeigerClimateGroup(
     Polar('E'),
 }
 
-enum class KoppenGeigerSeasonalPrecipitationPattern(
-    val code: Char,
-) {
+enum class KoppenGeigerSeasonalPrecipitationPattern(val code: Char) {
     Rainforest('f'),
     Monsoon('m'),
     Savanna('s'),
@@ -34,9 +30,7 @@ enum class KoppenGeigerSeasonalPrecipitationPattern(
     IceCap('F'),
 }
 
-enum class KoppenGeigerTemperaturePattern(
-    val code: Char,
-) {
+enum class KoppenGeigerTemperaturePattern(val code: Char) {
     Hot('h'),
     Cold('k'),
     HotSummer('a'),

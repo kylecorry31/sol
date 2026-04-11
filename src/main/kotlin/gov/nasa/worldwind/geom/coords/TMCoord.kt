@@ -20,8 +20,9 @@ internal class TMCoord(
     val longitude: Angle,
     val easting: Double,
     val northing: Double,
-    val scale: Double,
+    val scale: Double
 ) {
+
     companion object {
         /**
          * Create a set of Transverse Mercator coordinates from a pair of latitude and longitude,
@@ -42,15 +43,10 @@ internal class TMCoord(
          * to using WGS84.
          */
         fun fromLatLon(
-            latitude: Angle,
-            longitude: Angle,
-            a: Double?,
-            f: Double?,
-            originLatitude: Angle,
-            centralMeridian: Angle,
-            falseEasting: Double,
-            falseNorthing: Double,
-            scale: Double,
+            latitude: Angle, longitude: Angle, a: Double?, f: Double?,
+            originLatitude: Angle, centralMeridian: Angle,
+            falseEasting: Double, falseNorthing: Double,
+            scale: Double
         ): TMCoord {
             var a = a
             var f = f
@@ -60,31 +56,18 @@ internal class TMCoord(
                 a = converter.a
                 f = converter.f
             }
-            var err =
-                converter.setTransverseMercatorParameters(
-                    a,
-                    f,
-                    originLatitude.radians,
-                    centralMeridian.radians,
-                    falseEasting,
-                    falseNorthing,
-                    scale,
-                )
-            if (err == TMCoordConverter.TRANMERC_NO_ERROR.toLong()) {
-                err =
-                    converter.convertGeodeticToTransverseMercator(latitude.radians, longitude.radians)
-            }
+            var err = converter.setTransverseMercatorParameters(
+                a, f, originLatitude.radians, centralMeridian.radians,
+                falseEasting, falseNorthing, scale
+            )
+            if (err == TMCoordConverter.TRANMERC_NO_ERROR.toLong()) err =
+                converter.convertGeodeticToTransverseMercator(latitude.radians, longitude.radians)
 
-            require(!(err != TMCoordConverter.TRANMERC_NO_ERROR.toLong() && err != TMCoordConverter.TRANMERC_LON_WARNING.toLong())) {
-                "TM Conversion Error"
-            }
+            require(!(err != TMCoordConverter.TRANMERC_NO_ERROR.toLong() && err != TMCoordConverter.TRANMERC_LON_WARNING.toLong())) { "TM Conversion Error" }
 
             return TMCoord(
-                latitude,
-                longitude,
-                converter.easting,
-                converter.northing,
-                scale,
+                latitude, longitude, converter.easting, converter.northing,
+                scale
             )
         }
 
@@ -105,43 +88,27 @@ internal class TMCoord(
          * to using WGS84.
          */
         fun fromTM(
-            easting: Double,
-            northing: Double,
-            originLatitude: Angle,
-            centralMeridian: Angle,
-            falseEasting: Double,
-            falseNorthing: Double,
-            scale: Double,
+            easting: Double, northing: Double,
+            originLatitude: Angle, centralMeridian: Angle,
+            falseEasting: Double, falseNorthing: Double,
+            scale: Double
         ): TMCoord {
             val converter = TMCoordConverter()
 
             val a = converter.a
             val f = converter.f
-            var err =
-                converter.setTransverseMercatorParameters(
-                    a,
-                    f,
-                    originLatitude.radians,
-                    centralMeridian.radians,
-                    falseEasting,
-                    falseNorthing,
-                    scale,
-                )
-            if (err == TMCoordConverter.TRANMERC_NO_ERROR.toLong()) {
-                err =
-                    converter.convertTransverseMercatorToGeodetic(easting, northing)
-            }
+            var err = converter.setTransverseMercatorParameters(
+                a, f, originLatitude.radians, centralMeridian.radians,
+                falseEasting, falseNorthing, scale
+            )
+            if (err == TMCoordConverter.TRANMERC_NO_ERROR.toLong()) err =
+                converter.convertTransverseMercatorToGeodetic(easting, northing)
 
-            require(!(err != TMCoordConverter.TRANMERC_NO_ERROR.toLong() && err != TMCoordConverter.TRANMERC_LON_WARNING.toLong())) {
-                "TM Conversion Error"
-            }
+            require(!(err != TMCoordConverter.TRANMERC_NO_ERROR.toLong() && err != TMCoordConverter.TRANMERC_LON_WARNING.toLong())) { "TM Conversion Error" }
 
             return TMCoord(
-                Angle.fromRadians(converter.latitude),
-                Angle.fromRadians(converter.longitude),
-                easting,
-                northing,
-                scale,
+                Angle.fromRadians(converter.latitude), Angle.fromRadians(converter.longitude),
+                easting, northing, scale
             )
         }
     }

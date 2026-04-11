@@ -13,15 +13,16 @@ class SimulatedAnnealingOptimizer(
     private val initialValue: Pair<Double, Double>? = null,
     private val coolingFn: (t0: Double, t: Double, k: Int) -> Double = { t0: Double, _: Double, k: Int ->
         t0 / (k + 1).toDouble()
-    },
+    }
 ) : IOptimizer {
+
     private val random = Random(1)
 
     override fun optimize(
         xRange: Range<Double>,
         yRange: Range<Double>,
         maximize: Boolean,
-        fn: (x: Double, y: Double) -> Double,
+        fn: (x: Double, y: Double) -> Double
     ): Pair<Double, Double> {
         val myFn = { x: Double, y: Double -> if (maximize) -fn(x, y) else fn(x, y) }
 

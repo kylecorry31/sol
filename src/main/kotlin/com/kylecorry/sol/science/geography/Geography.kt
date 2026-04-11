@@ -18,6 +18,7 @@ import com.kylecorry.sol.units.*
 import kotlin.math.*
 
 object Geography {
+
     private const val EARTH_AVERAGE_RADIUS = 6371.2e3
 
     /**
@@ -28,7 +29,7 @@ object Geography {
      */
     fun toENU(
         reference: Location,
-        destination: Location,
+        destination: Location
     ): Vector3 {
         val bearing = reference.coordinate.bearingTo(destination.coordinate).value
         val distance = reference.horizontalDistanceTo(destination)
@@ -46,7 +47,7 @@ object Geography {
     fun toENU(
         bearing: Float,
         elevation: Float,
-        distance: Float,
+        distance: Float
     ): Vector3 {
         val elevationRad = elevation.toRadians()
         val bearingRad = bearing.toRadians()
@@ -63,21 +64,27 @@ object Geography {
      * @param enu The ENU coordinate
      * @return The bearing (positive is clockwise from north)
      */
-    fun getBearingFromENU(enu: Vector3): Bearing = Bearing.from(atan2(enu.x, enu.y).toDegrees().real(0f))
+    fun getBearingFromENU(enu: Vector3): Bearing {
+        return Bearing.from(atan2(enu.x, enu.y).toDegrees().real(0f))
+    }
 
     /**
      * Calculates the elevation from an ENU coordinate.
      * @param enu The ENU coordinate
      * @return The elevation in degrees (positive is up)
      */
-    fun getElevationFromENU(enu: Vector3): Float = asin(enu.z / enu.magnitude()).toDegrees().real(0f)
+    fun getElevationFromENU(enu: Vector3): Float {
+        return asin(enu.z / enu.magnitude()).toDegrees().real(0f)
+    }
 
     /**
      * Calculates the distance from an ENU coordinate.
      * @param enu The ENU coordinate
      * @return The distance in the units of the ENU coordinate
      */
-    fun getDistanceFromENU(enu: Vector3): Float = enu.magnitude()
+    fun getDistanceFromENU(enu: Vector3): Float {
+        return enu.magnitude()
+    }
 
     /**
      * Calculates the ECEF coordinate from a geographic coordinate.
@@ -112,23 +119,22 @@ object Geography {
         val p = sqrt(square(x) + square(y))
         val theta = atan2(z * a, p * b)
         val lon = atan2(y, x)
-        val lat =
-            atan2(
-                z + square(e) * b * sin(theta).pow(3),
-                p - square(e) * a * cos(theta).pow(3),
-            )
+        val lat = atan2(
+            z + square(e) * b * sin(theta).pow(3),
+            p - square(e) * a * cos(theta).pow(3)
+        )
         val n = a / sqrt(1 - square(e) * square(sin(lat)))
         val alt = p / cos(lat) - n
         return Location(
             Coordinate(lat.toDegrees(), lon.toDegrees()),
-            Distance.meters(alt.toFloat()),
+            Distance.meters(alt.toFloat())
         )
     }
 
     fun trilaterate(
         readings: List<Geofence>,
         isWeighted: Boolean = false,
-        calculateBias: Boolean = false,
+        calculateBias: Boolean = false
     ): TrilaterationResult {
         if (readings.size < 2) {
             return TrilaterationResult(readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf())
@@ -144,8 +150,8 @@ object Geography {
             Coordinate(point[0].toDouble(), point[1].toDouble()).degreesBetween(
                 Coordinate(
                     guess[0].toDouble(),
-                    guess[1].toDouble(),
-                ),
+                    guess[1].toDouble()
+                )
             )
         }
 
@@ -163,39 +169,38 @@ object Geography {
 
         val errors = readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).value / 60f }
 
-        val result =
-            try {
-                optimizer.optimize(
-                    readings.map {
-                        listOf(
-                            it.center.latitude.toFloat(),
-                            it.center.longitude.toFloat(),
-                        ) + if (calculateBias) listOf(0f) else emptyList()
-                    },
-                    errors,
-                    maxIterations = 200,
-                    dampingFactor = 1f,
-                    tolerance = 0.000001f,
-                    weightingFn = weightingFn,
-                    distanceFn = distanceFnWithCorrection,
-                    jacobianFn = { index, point, guess ->
-                        val distance = distanceFn(point, guess)
-                        point.mapIndexed { j, value ->
-                            if (j < 2) {
-                                if (distance == 0f) {
-                                    0f
-                                } else {
-                                    deltaAngle(value, guess[j]) / distance * weightingFn(index, point, errors[index])
-                                }
+        val result = try {
+            optimizer.optimize(
+                readings.map {
+                    listOf(
+                        it.center.latitude.toFloat(),
+                        it.center.longitude.toFloat()
+                    ) + if (calculateBias) listOf(0f) else emptyList()
+                },
+                errors,
+                maxIterations = 200,
+                dampingFactor = 1f,
+                tolerance = 0.000001f,
+                weightingFn = weightingFn,
+                distanceFn = distanceFnWithCorrection,
+                jacobianFn = { index, point, guess ->
+                    val distance = distanceFn(point, guess)
+                    point.mapIndexed { j, value ->
+                        if (j < 2) {
+                            if (distance == 0f) {
+                                0f
                             } else {
-                                1f
+                                deltaAngle(value, guess[j]) / distance * weightingFn(index, point, errors[index])
                             }
+                        } else {
+                            1f
                         }
-                    },
-                )
-            } catch (_: IllegalStateException) {
-                return TrilaterationResult(emptyList())
-            }
+                    }
+                }
+            )
+        } catch (_: IllegalStateException) {
+            return TrilaterationResult(emptyList())
+        }
 
         if (result.any { !it.isFinite() }) {
             return TrilaterationResult(emptyList())
@@ -205,23 +210,21 @@ object Geography {
             listOf(
                 Coordinate.constrained(
                     result[0].toDouble(),
-                    Coordinate.toLongitude(result[1].toDouble()),
-                ),
-            ),
-            if (calculateBias) result[2] else null,
+                    Coordinate.toLongitude(result[1].toDouble())
+                )
+            ), if (calculateBias) result[2] else null
         )
     }
 
     private fun trilaterate2(readings: List<Geofence>): List<Coordinate> {
         val scale = 1000.0
-        val cartesianPoints =
-            readings.map {
-                listOf(
-                    cos(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
-                    sin(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
-                    sin(it.center.latitude.toRadians()) * scale,
-                )
-            }
+        val cartesianPoints = readings.map {
+            listOf(
+                cos(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
+                sin(it.center.longitude.toRadians()) * cos(it.center.latitude.toRadians()) * scale,
+                sin(it.center.latitude.toRadians()) * scale
+            )
+        }
 
         val radii = readings.map { (it.radius.convertTo(DistanceUnits.NauticalMiles).value / 60f).toRadians() }
 
@@ -275,7 +278,7 @@ object Geography {
      */
     fun vincenty(
         location1: Coordinate,
-        location2: Coordinate,
+        location2: Coordinate
     ): FloatArray {
         val lat1 = location1.latitude.toRadians()
         val lon1 = location1.longitude.toRadians()
@@ -320,49 +323,27 @@ object Geography {
             cos2SM =
                 if (cosSqAlpha == 0.0) 0.0 else cosSigma - 2.0 * sinU1sinU2 / cosSqAlpha // (18)
             val uSquared = cosSqAlpha * aSqMinusBSqOverBSq // defn
-            A = 1 + uSquared / 16384.0 * // (3)
-                (
-                    4096.0 + uSquared *
-                        (-768 + uSquared * (320.0 - 175.0 * uSquared))
-                )
-            val B =
-                uSquared / 1024.0 * // (4)
-                    (
-                        256.0 + uSquared *
-                            (-128.0 + uSquared * (74.0 - 47.0 * uSquared))
-                    )
-            val C =
-                f / 16.0 *
+            A = 1 + uSquared / 16384.0 *  // (3)
+                    (4096.0 + uSquared *
+                            (-768 + uSquared * (320.0 - 175.0 * uSquared)))
+            val B = uSquared / 1024.0 *  // (4)
+                    (256.0 + uSquared *
+                            (-128.0 + uSquared * (74.0 - 47.0 * uSquared)))
+            val C = f / 16.0 *
                     cosSqAlpha *
                     (4.0 + f * (4.0 - 3.0 * cosSqAlpha)) // (10)
             val cos2SMSq = cos2SM * cos2SM
-            deltaSigma = (
-                B * sinSigma * // (6)
-                    (
-                        cos2SM + B / 4.0 *
-                            (
-                                cosSigma * (-1.0 + 2.0 * cos2SMSq) -
+            deltaSigma = (B * sinSigma *  // (6)
+                    (cos2SM + B / 4.0 *
+                            (cosSigma * (-1.0 + 2.0 * cos2SMSq) -
                                     B / 6.0 * cos2SM *
                                     (-3.0 + 4.0 * sinSigma * sinSigma) *
-                                    (-3.0 + 4.0 * cos2SMSq)
-                            )
-                    )
-            )
+                                    (-3.0 + 4.0 * cos2SMSq))))
             lambda = L +
-                (
-                    (1.0 - C) * f * sinAlpha *
-                        (
-                            sigma + (
-                                C * sinSigma *
-                                    (
-                                        cos2SM + (
-                                            C * cosSigma *
-                                                (-1.0 + 2.0 * cos2SM * cos2SM)
-                                        )
-                                    )
-                            )
-                        )
-                ) // (11)
+                    ((1.0 - C) * f * sinAlpha *
+                            (sigma + (C * sinSigma *
+                                    (cos2SM + (C * cosSigma *
+                                            (-1.0 + 2.0 * cos2SM * cos2SM)))))) // (11)
             val delta = (lambda - lambdaOrig) / lambda
             if (abs(delta) < 1.0e-12) {
                 break
@@ -371,17 +352,15 @@ object Geography {
         val results = floatArrayOf(0f, 0f, 0f)
         val distance = (b * A * (sigma - deltaSigma)).toFloat()
         results[0] = distance
-        val initialBearing =
-            atan2(
-                cosU2 * sinLambda,
-                cosU1 * sinU2 - sinU1 * cosU2 * cosLambda,
-            ).toFloat().toDegrees()
+        val initialBearing = atan2(
+            cosU2 * sinLambda,
+            cosU1 * sinU2 - sinU1 * cosU2 * cosLambda
+        ).toFloat().toDegrees()
         results[1] = initialBearing
-        val finalBearing =
-            atan2(
-                cosU1 * sinLambda,
-                -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda,
-            ).toFloat().toDegrees()
+        val finalBearing = atan2(
+            cosU1 * sinLambda,
+            -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda
+        ).toFloat().toDegrees()
         results[2] = finalBearing
         return results
     }
@@ -395,7 +374,7 @@ object Geography {
     fun haversine(
         location1: Coordinate,
         location2: Coordinate,
-        radius: Double = 6371.2e3,
+        radius: Double = 6371.2e3
     ): FloatArray {
         val distance = getGreatCircleDistance(location1, location2, radius)
         val initial = getInitialGreatCircleBearing(location1, location2)
@@ -403,70 +382,61 @@ object Geography {
         return floatArrayOf(distance, initial, final)
     }
 
-    private fun getInitialGreatCircleBearing(
-        from: Coordinate,
-        to: Coordinate,
-    ): Float {
+    private fun getInitialGreatCircleBearing(from: Coordinate, to: Coordinate): Float {
         val deltaLongitude = (to.longitude - from.longitude).toRadians()
 
         val x =
-            cosDegrees(from.latitude) * sinDegrees(to.latitude) - sinDegrees(from.latitude) *
-                cosDegrees(
-                    to.latitude,
-                ) * cos(deltaLongitude)
+            cosDegrees(from.latitude) * sinDegrees(to.latitude) - sinDegrees(from.latitude) * cosDegrees(
+                to.latitude
+            ) * cos(deltaLongitude)
         val y = sin(deltaLongitude) * cosDegrees(to.latitude)
         val theta = atan2(y, x)
         return Bearing.getBearing(theta.toDegrees().toFloat())
     }
 
-    private fun getGreatCircleDistance(
-        from: Coordinate,
-        to: Coordinate,
-        radius: Double,
-    ): Float {
+    private fun getGreatCircleDistance(from: Coordinate, to: Coordinate, radius: Double): Float {
         val deltaLatitude = to.latitude.toRadians() - from.latitude.toRadians()
         val deltaLongitude = to.longitude.toRadians() - from.longitude.toRadians()
 
-        val a =
-            power(
-                sin(deltaLatitude / 2),
-                2,
-            ) + cosDegrees(from.latitude) * cosDegrees(to.latitude) * power(sin(deltaLongitude / 2), 2)
+        val a = power(
+            sin(deltaLatitude / 2),
+            2
+        ) + cosDegrees(from.latitude) * cosDegrees(to.latitude) * power(sin(deltaLongitude / 2), 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         return (radius * c).toFloat()
     }
 
-    fun containedByArea(
-        coordinate: Coordinate,
-        area: IGeoArea,
-    ): Boolean = area.contains(coordinate)
+    fun containedByArea(coordinate: Coordinate, area: IGeoArea): Boolean {
+        return area.contains(coordinate)
+    }
 
-    fun getRegion(coordinate: Coordinate): Region =
-        when {
+    fun getRegion(coordinate: Coordinate): Region {
+        return when {
             coordinate.latitude.absoluteValue >= 66.5 -> Region.Polar
             coordinate.latitude.absoluteValue >= 23.5 -> Region.Temperate
             else -> Region.Tropical
         }
-
-    fun getMapDistance(
-        measurement: Distance,
-        scaleFrom: Distance,
-        scaleTo: Distance,
-    ): Distance {
-        val scaledMeasurement = measurement.convertTo(scaleFrom.units)
-        return Distance.from(
-            scaleTo.value * scaledMeasurement.value / scaleFrom.value,
-            scaleTo.units,
-        )
     }
 
     fun getMapDistance(
         measurement: Distance,
-        ratioFrom: Float,
-        ratioTo: Float,
-    ): Distance = Distance.from(ratioTo * measurement.value / ratioFrom, measurement.units)
+        scaleFrom: Distance,
+        scaleTo: Distance
+    ): Distance {
+        val scaledMeasurement = measurement.convertTo(scaleFrom.units)
+        return Distance.from(
+            scaleTo.value * scaledMeasurement.value / scaleFrom.value,
+            scaleTo.units
+        )
+    }
 
-    fun getBounds(points: List<Coordinate>): CoordinateBounds = CoordinateBounds.from(points)
+    fun getMapDistance(measurement: Distance, ratioFrom: Float, ratioTo: Float): Distance {
+        return Distance.from(ratioTo * measurement.value / ratioFrom, measurement.units)
+    }
+
+    fun getBounds(points: List<Coordinate>): CoordinateBounds {
+        return CoordinateBounds.from(points)
+    }
 
     /**
      * Triangulate a coordinate using two known coordinates and the bearings from the unknown coordinate to the known coordinates.
@@ -481,64 +451,37 @@ object Geography {
         referenceA: Coordinate,
         selfToReferenceBearingA: Bearing,
         referenceB: Coordinate,
-        selfToReferenceBearingB: Bearing,
+        selfToReferenceBearingB: Bearing
     ): Coordinate? {
         val deltaLat = referenceA.latitude - referenceB.latitude
         val deltaLng = referenceA.longitude - referenceB.longitude
-        val angularDist =
-            2 *
-                asin(
-                    sqrt(
-                        sinDegrees(deltaLat / 2) * sinDegrees(deltaLat / 2) + cosDegrees(referenceA.latitude) *
-                            cosDegrees(
-                                referenceB.latitude,
-                            ) * sinDegrees(deltaLng / 2) * sinDegrees(deltaLng / 2),
-                    ),
-                )
+        val angularDist = 2 * asin(
+            sqrt(
+                sinDegrees(deltaLat / 2) * sinDegrees(deltaLat / 2) + cosDegrees(referenceA.latitude) * cosDegrees(
+                    referenceB.latitude
+                ) * sinDegrees(deltaLng / 2) * sinDegrees(deltaLng / 2)
+            )
+        )
 
-        val initialBearing =
-            acos(
-                (sinDegrees(referenceB.latitude) - sinDegrees(referenceA.latitude) * cos(angularDist)) / (
-                    sin(
-                        angularDist,
-                    ) * cosDegrees(referenceA.latitude)
-                ),
-            )
-        val finalBearing =
-            acos(
-                (sinDegrees(referenceA.latitude) - sinDegrees(referenceB.latitude) * cos(angularDist)) / (
-                    sin(
-                        angularDist,
-                    ) * cosDegrees(referenceB.latitude)
-                ),
-            )
+        val initialBearing = acos(
+            (sinDegrees(referenceB.latitude) - sinDegrees(referenceA.latitude) * cos(angularDist)) / (sin(
+                angularDist
+            ) * cosDegrees(referenceA.latitude))
+        )
+        val finalBearing = acos(
+            (sinDegrees(referenceA.latitude) - sinDegrees(referenceB.latitude) * cos(angularDist)) / (sin(
+                angularDist
+            ) * cosDegrees(referenceB.latitude))
+        )
 
         val a1: Double
         val a2: Double
         if (sinDegrees(referenceB.longitude - referenceA.longitude) > 0) {
-            a1 = selfToReferenceBearingA
-                .inverse()
-                .value
-                .toDouble()
-                .toRadians() - initialBearing
-            a2 = 2 * Math.PI - finalBearing -
-                selfToReferenceBearingB
-                    .inverse()
-                    .value
-                    .toDouble()
-                    .toRadians()
+            a1 = selfToReferenceBearingA.inverse().value.toDouble().toRadians() - initialBearing
+            a2 = 2 * Math.PI - finalBearing - selfToReferenceBearingB.inverse().value.toDouble().toRadians()
         } else {
-            a1 = selfToReferenceBearingA
-                .inverse()
-                .value
-                .toDouble()
-                .toRadians() - (2 * Math.PI - initialBearing)
-            a2 = finalBearing -
-                selfToReferenceBearingB
-                    .inverse()
-                    .value
-                    .toDouble()
-                    .toRadians()
+            a1 = selfToReferenceBearingA.inverse().value.toDouble().toRadians() - (2 * Math.PI - initialBearing)
+            a2 = finalBearing - selfToReferenceBearingB.inverse().value.toDouble().toRadians()
         }
 
         if (sin(a1) == 0.0 && sin(a2) == 0.0) {
@@ -551,18 +494,15 @@ object Geography {
 
         val a3 = acos(-cos(a1) * cos(a2) + sin(a1) * sin(a2) * cos(angularDist))
         val angularDist13 = atan2(sin(angularDist) * sin(a1) * sin(a2), cos(a2) + cos(a1) * cos(a3))
-        val p3Lat =
-            asin(
-                sinDegrees(referenceA.latitude) * cos(angularDist13) + cosDegrees(referenceA.latitude) *
-                    sin(
-                        angularDist13,
-                    ) * cosDegrees(selfToReferenceBearingA.inverse().value.toDouble()),
-            )
-        val deltaP3Long =
-            atan2(
-                sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(referenceA.latitude),
-                cos(angularDist13) - sinDegrees(referenceA.latitude) * sin(p3Lat),
-            )
+        val p3Lat = asin(
+            sinDegrees(referenceA.latitude) * cos(angularDist13) + cosDegrees(referenceA.latitude) * sin(
+                angularDist13
+            ) * cosDegrees(selfToReferenceBearingA.inverse().value.toDouble())
+        )
+        val deltaP3Long = atan2(
+            sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(referenceA.latitude),
+            cos(angularDist13) - sinDegrees(referenceA.latitude) * sin(p3Lat)
+        )
         val p3Lng = referenceA.longitude.toRadians() + deltaP3Long
 
         val normalizedLat = clamp(p3Lat.toDegrees(), -90.0, 90.0)
@@ -584,52 +524,53 @@ object Geography {
         referenceA: Coordinate,
         referenceAToDestinationBearing: Bearing,
         referenceB: Coordinate,
-        referenceBToDestinationBearing: Bearing,
-    ): Coordinate? =
-        triangulateSelf(
+        referenceBToDestinationBearing: Bearing
+    ): Coordinate? {
+        return triangulateSelf(
             referenceA,
             referenceAToDestinationBearing.inverse(),
             referenceB,
-            referenceBToDestinationBearing.inverse(),
+            referenceBToDestinationBearing.inverse()
         )
+    }
 
     fun deadReckon(
         lastLocation: Coordinate,
         distanceTravelled: Float,
-        bearingToLast: Bearing,
-    ): Coordinate = lastLocation.plus(distanceTravelled.toDouble(), bearingToLast.inverse())
+        bearingToLast: Bearing
+    ): Coordinate {
+        return lastLocation.plus(distanceTravelled.toDouble(), bearingToLast.inverse())
+    }
 
     fun navigate(
         from: Coordinate,
         to: Coordinate,
         declination: Float = 0f,
         useTrueNorth: Boolean = true,
-        highAccuracy: Boolean = true,
+        highAccuracy: Boolean = true
     ): NavigationVector {
-        val results =
-            if (highAccuracy) {
-                vincenty(from, to)
-            } else {
-                haversine(from, to, EARTH_AVERAGE_RADIUS)
-            }
+        val results = if (highAccuracy) {
+            vincenty(from, to)
+        } else {
+            haversine(from, to, EARTH_AVERAGE_RADIUS)
+        }
 
-        val declinationAdjustment =
-            if (useTrueNorth) {
-                0f
-            } else {
-                -declination
-            }
+        val declinationAdjustment = if (useTrueNorth) {
+            0f
+        } else {
+            -declination
+        }
 
         return NavigationVector(
             Bearing.from(results[1]).withDeclination(declinationAdjustment),
-            results[0],
+            results[0]
         )
     }
 
     fun getCrossTrackDistance(
         point: Coordinate,
         start: Coordinate,
-        end: Coordinate,
+        end: Coordinate
     ): Distance {
         // Adapted from https://www.movable-type.co.uk/scripts/latlong.html
         if (point == start || point == end) {
@@ -653,8 +594,9 @@ object Geography {
     fun getAlongTrackDistance(
         point: Coordinate,
         start: Coordinate,
-        end: Coordinate,
+        end: Coordinate
     ): Distance {
+
         if (point == start) {
             return Distance.meters(0f)
         }
@@ -681,7 +623,7 @@ object Geography {
     fun getNearestPoint(
         point: Coordinate,
         start: Coordinate,
-        end: Coordinate,
+        end: Coordinate
     ): Coordinate {
         val alongTrack = getAlongTrackDistance(point, start, end)
 
@@ -694,20 +636,16 @@ object Geography {
             return end
         }
 
+
         val bearing = start.bearingTo(end)
         return start.plus(alongTrack, bearing)
     }
 
-    fun destination(
-        from: Coordinate,
-        distance: Float,
-        bearing: Bearing,
-    ): Coordinate = from.plus(distance.toDouble(), bearing)
+    fun destination(from: Coordinate, distance: Float, bearing: Bearing): Coordinate {
+        return from.plus(distance.toDouble(), bearing)
+    }
 
-    fun getPathDistance(
-        points: List<Coordinate>,
-        highAccuracy: Boolean = true,
-    ): Distance {
+    fun getPathDistance(points: List<Coordinate>, highAccuracy: Boolean = true): Distance {
         if (points.size < 2) {
             return Distance.meters(0f)
         }

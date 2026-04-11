@@ -30,8 +30,9 @@ internal class SphericalHarmonics(
     private val hCoefficients: Array<FloatArray>,
     baseTime: Instant? = null,
     private val deltaGCoefficients: Array<FloatArray>? = null,
-    private val deltaHCoefficients: Array<FloatArray>? = null,
+    private val deltaHCoefficients: Array<FloatArray>? = null
 ) {
+
     private val schmidtQuasiNormFactors =
         computeSchmidtQuasiNormFactors(gCoefficients.size)
 
@@ -41,11 +42,11 @@ internal class SphericalHarmonics(
         coordinate: Coordinate,
         altitude: Distance = Distance.meters(0f),
         time: Instant = Instant.now(),
-    ): Vector3 =
-        calculate(
+    ): Vector3 {
+        return calculate(
             coordinate,
             altitude,
-            time,
+            time
         ) { yearsSinceBase, legendre, relativeRadiusPower, cosMLon, sinMLon, gdLatitudeRad, mGcLatitudeRad ->
             val maxN = gCoefficients.size
             val inverseCosLatitude = 1.0f / cos(mGcLatitudeRad)
@@ -65,19 +66,12 @@ internal class SphericalHarmonics(
                     // NOAA Technical report because that report used
                     // P_n^m(sin(theta)) and we use P_n^m(cos(90 - theta)), so the
                     // derivative with respect to theta is negated.
-                    gcX +=
-                        relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mPDeriv[n][m] *
-                        schmidtQuasiNormFactors[n][m]
+                    gcX += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mPDeriv[n][m] * schmidtQuasiNormFactors[n][m]
                     // Negative derivative with respect to longitude, divided by
                     // radius.
-                    gcY +=
-                        relativeRadiusPower[n + 2] * m * (g * sinMLon[m] - h * cosMLon[m]) * legendre.mP[n][m] *
-                        schmidtQuasiNormFactors[n][m] *
-                        inverseCosLatitude
+                    gcY += relativeRadiusPower[n + 2] * m * (g * sinMLon[m] - h * cosMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m] * inverseCosLatitude
                     // Negative derivative with respect to radius.
-                    gcZ -=
-                        (n + 1) * relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] *
-                        schmidtQuasiNormFactors[n][m]
+                    gcZ -= (n + 1) * relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
                 }
             }
 
@@ -87,16 +81,17 @@ internal class SphericalHarmonics(
             val z = (-gcX * sin(latDiffRad) + gcZ * cos(latDiffRad))
             Vector3(x, y, z)
         }
+    }
 
     fun getScalar(
         coordinate: Coordinate,
         altitude: Distance = Distance.meters(0f),
         time: Instant = Instant.now(),
-    ): Float =
-        calculate(
+    ): Float {
+        return calculate(
             coordinate,
             altitude,
-            time,
+            time
         ) { yearsSinceBase, legendre, relativeRadiusPower, cosMLon, sinMLon, gdLatitudeRad, mGcLatitudeRad ->
             val maxN = gCoefficients.size
             var scalar = 0f
@@ -107,27 +102,19 @@ internal class SphericalHarmonics(
                     val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
                     val h = hCoefficients[n][m] + yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
 
-                    scalar +=
-                        relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
+                    scalar += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
                 }
             }
 
             scalar
         }
+    }
 
     private inline fun <T> calculate(
         coordinate: Coordinate,
         altitude: Distance,
         time: Instant,
-        crossinline calculator: (
-            yearsSinceBase: Float,
-            legendre: LegendreTable,
-            relativeRadiusPower: FloatArray,
-            cosMLon: FloatArray,
-            sinMLon: FloatArray,
-            gdLatitudeRad: Float,
-            mGcLatitudeRad: Float,
-        ) -> T,
+        crossinline calculator: (yearsSinceBase: Float, legendre: LegendreTable, relativeRadiusPower: FloatArray, cosMLon: FloatArray, sinMLon: FloatArray, gdLatitudeRad: Float, mGcLatitudeRad: Float) -> T
     ): T {
         val timeMillis = time.toEpochMilli()
 
@@ -172,14 +159,15 @@ internal class SphericalHarmonics(
             cosMLon,
             sinMLon,
             gdLatitudeRad,
-            mGcLatitudeRad,
+            mGcLatitudeRad
         )
     }
+
 
     private fun computeGeocentricCoordinates(
         gdLatitudeDeg: Float,
         gdLongitudeDeg: Float,
-        altitudeMeters: Float,
+        altitudeMeters: Float
     ): Vector3 {
         val altitudeKm = altitudeMeters / 1000.0f
         val a2 = EARTH_SEMI_MAJOR_AXIS_KM * EARTH_SEMI_MAJOR_AXIS_KM
@@ -191,8 +179,7 @@ internal class SphericalHarmonics(
         val latRad = sqrt(a2 * clat * clat + b2 * slat * slat)
         val mGcLatitudeRad = atan(tlat * (latRad * altitudeKm + b2) / (latRad * altitudeKm + a2))
         val mGcLongitudeRad = gdLongitudeDeg.toRadians()
-        val radSq =
-            altitudeKm * altitudeKm +
+        val radSq = altitudeKm * altitudeKm +
                 2 * altitudeKm * sqrt(a2 * clat * clat + b2 * slat * slat) +
                 (a2 * a2 * clat * clat + b2 * b2 * slat * slat) / (a2 * clat * clat + b2 * slat * slat)
         val mGcRadiusKm = sqrt(radSq)
@@ -212,19 +199,16 @@ internal class SphericalHarmonics(
                 schmidtQuasiNorm[n]!![0] =
                     schmidtQuasiNorm[n - 1]!![0] * (2 * n - 1) / n.toFloat()
                 for (m in 1..n) {
-                    schmidtQuasiNorm[n]!![m] = (
-                        schmidtQuasiNorm[n]!![m - 1] *
-                            sqrt(
-                                (
-                                    (n - m + 1) * (if (m == 1) 2 else 1) /
-                                        (n + m).toFloat()
-                                ).toDouble(),
-                            ).toFloat()
-                    )
+                    schmidtQuasiNorm[n]!![m] = (schmidtQuasiNorm[n]!![m - 1]
+                            * sqrt(
+                        ((n - m + 1) * (if (m == 1) 2 else 1)
+                                / (n + m).toFloat()).toDouble()
+                    ).toFloat())
                 }
             }
             @Suppress("UNCHECKED_CAST")
             return schmidtQuasiNorm as Array<FloatArray>
         }
     }
+
 }

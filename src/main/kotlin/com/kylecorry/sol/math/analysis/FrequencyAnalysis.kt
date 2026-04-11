@@ -5,43 +5,56 @@ import kotlin.math.PI
 import kotlin.math.cos
 
 object FrequencyAnalysis {
+
     // Analysis
 
     fun fft(
         data: List<Float>,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size),
-    ): List<ComplexNumber> = FastFourierTransform.fft(data, twiddleFactors)
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size)
+    ): List<ComplexNumber> {
+        return FastFourierTransform.fft(data, twiddleFactors)
+    }
 
     fun ifft(
         fft: List<ComplexNumber>,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(fft.size),
-    ): List<Float> = FastFourierTransform.ifft(fft, twiddleFactors)
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(fft.size)
+    ): List<Float> {
+        return FastFourierTransform.ifft(fft, twiddleFactors)
+    }
 
     fun getMostResonantFrequency(
         data: List<Float>,
         sampleRate: Float,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size),
-    ): Float? = getMostResonantFrequencies(data, sampleRate, 1, twiddleFactors).firstOrNull()
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size)
+    ): Float? {
+        return getMostResonantFrequencies(data, sampleRate, 1, twiddleFactors).firstOrNull()
+    }
 
     fun getMostResonantFrequencies(
         data: List<Float>,
         sampleRate: Float,
         count: Int,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size),
-    ): List<Float> = getMostResonantFrequenciesFFT(fft(data, twiddleFactors), sampleRate, count)
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size)
+    ): List<Float> {
+        return getMostResonantFrequenciesFFT(fft(data, twiddleFactors), sampleRate, count)
+    }
 
     fun getFrequencySpectrum(
         data: List<Float>,
         sampleRate: Float,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size),
-    ): List<Pair<Float, Float>> = getFrequencySpectrumFFT(fft(data, twiddleFactors), sampleRate)
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size)
+    ): List<Pair<Float, Float>> {
+        return getFrequencySpectrumFFT(fft(data, twiddleFactors), sampleRate)
+    }
 
     fun getMagnitudeOfFrequency(
         data: List<Float>,
         frequency: Float,
         sampleRate: Float,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size),
-    ): Float = getMagnitudeOfFrequencyFFT(fft(data, twiddleFactors), frequency, sampleRate)
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactorsFFT(data.size)
+    ): Float {
+        return getMagnitudeOfFrequencyFFT(fft(data, twiddleFactors), frequency, sampleRate)
+    }
 
     fun hanningWindow(length: Int): FloatArray {
         val window = FloatArray(length)
@@ -58,17 +71,12 @@ object FrequencyAnalysis {
 
     // OPERATIONS ON FFT
 
-    fun getMostResonantFrequencyFFT(
-        fft: List<ComplexNumber>,
-        sampleRate: Float,
-    ): Float? = getMostResonantFrequenciesFFT(fft, sampleRate, 1).firstOrNull()
+    fun getMostResonantFrequencyFFT(fft: List<ComplexNumber>, sampleRate: Float): Float? {
+        return getMostResonantFrequenciesFFT(fft, sampleRate, 1).firstOrNull()
+    }
 
-    fun getMostResonantFrequenciesFFT(
-        fft: List<ComplexNumber>,
-        sampleRate: Float,
-        count: Int,
-    ): List<Float> =
-        fft
+    fun getMostResonantFrequenciesFFT(fft: List<ComplexNumber>, sampleRate: Float, count: Int): List<Float> {
+        return fft
             .asSequence()
             .take(fft.size / 2)
             .withIndex()
@@ -76,28 +84,19 @@ object FrequencyAnalysis {
             .take(count)
             .map { getFrequencyFFT(it.index, fft.size, sampleRate) }
             .toList()
+    }
 
-    fun getFrequencySpectrumFFT(
-        fft: List<ComplexNumber>,
-        sampleRate: Float,
-    ): List<Pair<Float, Float>> =
-        fft
+    fun getFrequencySpectrumFFT(fft: List<ComplexNumber>, sampleRate: Float): List<Pair<Float, Float>> {
+        return fft
             .mapIndexed { index, value -> Pair(getFrequencyFFT(index, fft.size, sampleRate), value.magnitude) }
+    }
 
-    fun getMagnitudeOfFrequencyFFT(
-        fft: List<ComplexNumber>,
-        frequency: Float,
-        sampleRate: Float,
-    ): Float {
+    fun getMagnitudeOfFrequencyFFT(fft: List<ComplexNumber>, frequency: Float, sampleRate: Float): Float {
         val index = getIndexFFT(frequency, fft.size, sampleRate)
         return fft[index].magnitude
     }
 
-    fun getFrequencyFFT(
-        index: Int,
-        size: Int,
-        sampleRate: Float,
-    ): Float {
+    fun getFrequencyFFT(index: Int, size: Int, sampleRate: Float): Float {
         val value = sampleRate / size
         val N = (size - 1) / 2 + 1
         return if (index < N) {
@@ -107,11 +106,7 @@ object FrequencyAnalysis {
         }
     }
 
-    fun getIndexFFT(
-        frequency: Float,
-        size: Int,
-        sampleRate: Float,
-    ): Int {
+    fun getIndexFFT(frequency: Float, size: Int, sampleRate: Float): Int {
         val value = sampleRate / size
         return if (frequency >= 0) {
             (frequency / value).toInt()
@@ -125,5 +120,8 @@ object FrequencyAnalysis {
      * @param size The size of the FFT
      * @return The twiddle factors
      */
-    fun getTwiddleFactorsFFT(size: Int): List<ComplexNumber> = FastFourierTransform.getTwiddleFactors(size)
+    fun getTwiddleFactorsFFT(size: Int): List<ComplexNumber> {
+        return FastFourierTransform.getTwiddleFactors(size)
+    }
+
 }

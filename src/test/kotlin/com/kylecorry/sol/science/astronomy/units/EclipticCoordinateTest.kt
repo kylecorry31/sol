@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class EclipticCoordinateTest {
+
     @Test
     fun toEquatorial() {
         val ut = UniversalTime.of(2000, 1, 1, 0, 0).minusDays(1)
@@ -30,4 +31,5 @@ internal class EclipticCoordinateTest {
         val e2010 = EclipticCoordinate.getObliquityOfTheEcliptic(ut)
         assertEquals(23.437992, e2010, 0.000001)
     }
+
 }

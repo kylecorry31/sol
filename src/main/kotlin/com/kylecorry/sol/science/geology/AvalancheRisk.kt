@@ -5,5 +5,5 @@ package com.kylecorry.sol.science.geology
 enum class AvalancheRisk {
     Low,
     High,
-    Moderate,
+    Moderate
 }

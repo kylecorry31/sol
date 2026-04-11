@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class AstroUtilsTest {
-    //    @Test
+
+
+//    @Test
 //    fun hourToAngle() {
 //        assertEquals(
 //            Math.toDegrees(2.4213389045),
@@ -15,6 +17,7 @@ class AstroUtilsTest {
 //            0.00000001
 //        )
 //    }
+
 
 //    @Test
 //    fun julianDay() {
@@ -76,6 +79,7 @@ class AstroUtilsTest {
 //        )
 //    }
 
+
 //    @Test
 //    fun riseSetTransitTimes() {
 //        val times = Astro.riseSetTransitTimes(
@@ -100,4 +104,6 @@ class AstroUtilsTest {
         assertEquals(13.7652847499, coords.declination, 0.001)
         assertEquals(134.6971088, coords.rightAscension, 0.001)
     }
+
+
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import kotlin.math.sqrt
 
 class LinearAlgebraTest {
+
     @Test
     fun dot() {
         val m1 = Matrix.create(3, 2, 0f)
@@ -83,7 +84,7 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun subtractAssertions() {
+    fun subtractAssertions(){
         val m3x2 = Matrix.create(3, 2, 0f)
         val m3x3 = Matrix.create(3, 3, 0f)
         val m2x3 = Matrix.create(2, 3, 0f)
@@ -159,7 +160,7 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun addAssertions() {
+    fun addAssertions(){
         val m3x2 = Matrix.create(3, 2, 0f)
         val m3x3 = Matrix.create(3, 3, 0f)
         val m2x3 = Matrix.create(2, 3, 0f)
@@ -235,7 +236,7 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun multiplyAssertions() {
+    fun multiplyAssertions(){
         val m3x2 = Matrix.create(3, 2, 0f)
         val m3x3 = Matrix.create(3, 3, 0f)
         val m2x3 = Matrix.create(2, 3, 0f)
@@ -311,7 +312,7 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun divideAssertions() {
+    fun divideAssertions(){
         val m3x2 = Matrix.create(3, 2, 0f)
         val m3x3 = Matrix.create(3, 3, 0f)
         val m2x3 = Matrix.create(2, 3, 0f)
@@ -575,13 +576,13 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun inverseAssertion() {
+    fun inverseAssertion(){
         val m = Matrix.create(3, 2, 0f)
         assertFailure { LinearAlgebra.inverse(m) }
     }
 
     @Test
-    fun adjugateAssertion() {
+    fun adjugateAssertion(){
         val m = Matrix.create(3, 2, 0f)
         assertFailure { LinearAlgebra.adjugate(m) }
     }
@@ -622,7 +623,7 @@ class LinearAlgebraTest {
     }
 
     @Test
-    fun determinantAssertion() {
+    fun determinantAssertion(){
         val m = Matrix.create(3, 2, 0f)
         assertFailure { LinearAlgebra.determinant(m) }
     }
@@ -695,11 +696,7 @@ class LinearAlgebraTest {
         assertEquals(expected3, actual3, 0.00001f)
     }
 
-    private fun assertEquals(
-        m1: Matrix,
-        m2: Matrix,
-        tolerance: Float = 0f,
-    ) {
+    private fun assertEquals(m1: Matrix, m2: Matrix, tolerance: Float = 0f) {
         assertEquals(m1.rows(), m2.rows())
         assertEquals(m1.columns(), m2.columns())
 
@@ -710,15 +707,13 @@ class LinearAlgebraTest {
         }
     }
 
-    private fun assertEquals(
-        m1: Vector,
-        m2: Vector,
-        tolerance: Float = 0f,
-    ) {
+    private fun assertEquals(m1: Vector, m2: Vector, tolerance: Float = 0f) {
         assertEquals(m1.size, m2.size)
 
         for (i in m1.data.indices) {
             assertEquals(m1[i], m2[i], tolerance)
         }
     }
+
+
 }

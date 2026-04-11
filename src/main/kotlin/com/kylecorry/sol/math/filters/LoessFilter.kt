@@ -28,15 +28,13 @@ class LoessFilter(
     private val minimumSpanSize: Int = 0,
     private val maximumSpanSize: Int = Int.MAX_VALUE,
     private val maximumSpanDistance: Float? = null,
-    private val distanceFn: (p1: List<Float>, p2: List<Float>) -> Float = Geometry::manhattanDistance,
+    private val distanceFn: (p1: List<Float>, p2: List<Float>) -> Float = Geometry::manhattanDistance
 ) {
+
     /**
      * Smooth the data, the output will have the same indices as the input
      */
-    fun filter(
-        xs: List<List<Float>>,
-        ys: List<Float>,
-    ): List<Float> {
+    fun filter(xs: List<List<Float>>, ys: List<Float>): List<Float> {
         val n = xs.size
         if (n < 3) {
             return ys
@@ -60,17 +58,16 @@ class LoessFilter(
                     res[i] = y
                     residuals[i] = abs(y - res[i])
                 } else {
-                    val w =
-                        nearest.map {
-                            tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
-                        }
 
-                    val regression =
-                        WeightedLeastSquaresRegression(
-                            nearest.map { it.first.first },
-                            nearest.map { it.first.second },
-                            w,
-                        )
+                    val w = nearest.map {
+                        tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                    }
+
+                    val regression = WeightedLeastSquaresRegression(
+                        nearest.map { it.first.first },
+                        nearest.map { it.first.second },
+                        w
+                    )
 
                     res[i] = regression.predict(x)
                     residuals[i] = abs(y - res[i])
@@ -89,12 +86,11 @@ class LoessFilter(
 
             for (i in ys.indices) {
                 val a = residuals[i] / (6 * medianResidual)
-                robustnessWeights[i] =
-                    if (a >= 1) {
-                        0f
-                    } else {
-                        (1 - a * a).pow(2)
-                    }
+                robustnessWeights[i] = if (a >= 1) {
+                    0f
+                } else {
+                    (1 - a * a).pow(2)
+                }
             }
         }
 
@@ -104,18 +100,19 @@ class LoessFilter(
     private fun getNearest(
         xs: List<List<Float>>,
         ys: List<Float>,
-        i: Int,
+        i: Int
     ): List<Triple<Pair<List<Float>, Float>, Float, Int>> {
         val size = floor(span * xs.size).toInt().coerceIn(minimumSpanSize, maximumSpanSize)
         val selected = xs[i]
-        return xs
-            .zip(ys)
+        return xs.zip(ys)
             .mapIndexed { index, value ->
                 Triple(value, distanceFn(selected, value.first), index)
-            }.sortedBy { it.second }
+            }
+            .sortedBy { it.second }
             .filterNot { it.third == i }
             .take(size)
     }
+
 
     private fun tricube(x: Float): Float {
         if (abs(x) >= 1f) {
@@ -123,4 +120,5 @@ class LoessFilter(
         }
         return (1 - x.pow(3)).pow(3)
     }
+
 }

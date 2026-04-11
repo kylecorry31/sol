@@ -1,11 +1,13 @@
 package com.kylecorry.sol.math
 
+
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.sqrt
 
 class Vector3Test {
+
     @Test
     fun cross() {
         val vec1 = Vector3(1f, 2f, 3f)
@@ -76,12 +78,11 @@ class Vector3Test {
     fun normalize() {
         val vec = Vector3(3f, 4f, 12f)
         val magnitude = 13f
-        val expected =
-            Vector3(
-                3 / magnitude,
-                4 / magnitude,
-                12 / magnitude,
-            )
+        val expected = Vector3(
+            3 / magnitude,
+            4 / magnitude,
+            12 / magnitude
+        )
 
         assertEquals(expected, vec.normalize())
     }

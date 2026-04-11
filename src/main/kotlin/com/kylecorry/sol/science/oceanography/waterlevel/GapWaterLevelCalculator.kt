@@ -9,8 +9,10 @@ import java.time.ZonedDateTime
 class GapWaterLevelCalculator(
     private val first: Tide,
     private val second: Tide,
-    private val approximateFrequency: Float,
-) : IWaterLevelCalculator {
+    private val approximateFrequency: Float
+) :
+    IWaterLevelCalculator {
+
     private val wave by lazy {
         val firstVec = Vector2(getX(first.time), first.height ?: (if (first.isHigh) 1f else -1f))
         val secondVec =
@@ -18,7 +20,12 @@ class GapWaterLevelCalculator(
         Trigonometry.connect(firstVec, secondVec, approximateFrequency)
     }
 
-    override fun calculate(time: ZonedDateTime): Float = wave.calculate(getX(time))
+    override fun calculate(time: ZonedDateTime): Float {
+        return wave.calculate(getX(time))
+    }
 
-    private fun getX(time: ZonedDateTime): Float = Time.hoursBetween(first.time, time)
+    private fun getX(time: ZonedDateTime): Float {
+        return Time.hoursBetween(first.time, time)
+    }
+
 }

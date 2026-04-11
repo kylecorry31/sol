@@ -2,10 +2,7 @@ package com.kylecorry.sol.math.filters
 
 import com.kylecorry.sol.math.sumOfFloat
 
-class ComplementaryFilter(
-    initialWeights: List<Float>,
-    initialValue: Float = 0f,
-) {
+class ComplementaryFilter(initialWeights: List<Float>, initialValue: Float = 0f) {
     var value = initialValue
 
     var weights = normalizeWeights(initialWeights)
@@ -18,10 +15,7 @@ class ComplementaryFilter(
         return value
     }
 
-    private fun weightedAverage(
-        weights: List<Float>,
-        values: List<Float>,
-    ): Float {
+    private fun weightedAverage(weights: List<Float>, values: List<Float>): Float {
         var sum = 0f
         for (i in weights.indices) {
             sum += weights[i] * values[i]
@@ -33,4 +27,5 @@ class ComplementaryFilter(
         val sum = weights.sumOfFloat { it }
         return weights.map { it / sum }
     }
+
 }

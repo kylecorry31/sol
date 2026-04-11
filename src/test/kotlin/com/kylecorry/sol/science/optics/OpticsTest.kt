@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class OpticsTest {
+
     @ParameterizedTest
     @CsvSource(
         "0, 0, 0, 0, 0, 0, 0, NaN, NaN",
@@ -31,7 +32,7 @@ class OpticsTest {
         cx: Float,
         cy: Float,
         expectedX: Float,
-        expectedY: Float,
+        expectedY: Float
     ) {
         val point = Vector3(x, y, z)
         val projection = Optics.perspectiveProjection(point, Vector2(fx, fy), Vector2(cx, cy))
@@ -61,7 +62,7 @@ class OpticsTest {
         cy: Float,
         expectedX: Float,
         expectedY: Float,
-        expectedZ: Float,
+        expectedZ: Float
     ) {
         val expected = Vector3(expectedX, expectedY, expectedZ)
         val point = Vector2(screenX, screenY)
@@ -78,11 +79,7 @@ class OpticsTest {
         "1, 2, 28.0725",
         "2, 1, 90",
     )
-    fun getAngularSize(
-        diameter: Float,
-        distance: Float,
-        expected: Float,
-    ) {
+    fun getAngularSize(diameter: Float, distance: Float, expected: Float) {
         assertEquals(expected, Optics.getAngularSize(diameter, distance), 0.001f)
 
         // Test the distance overload
@@ -90,9 +87,9 @@ class OpticsTest {
             expected,
             Optics.getAngularSize(
                 Distance.meters(diameter).convertTo(DistanceUnits.Feet),
-                Distance.meters(distance).convertTo(DistanceUnits.Miles),
+                Distance.meters(distance).convertTo(DistanceUnits.Miles)
             ),
-            0.001f,
+            0.001f
         )
     }
 
@@ -104,14 +101,9 @@ class OpticsTest {
         "2, 1, 2000, 4000",
         "1, 2, 500, 250",
         "2, 1, 500, 1000",
-        "1000, 2000, 2000, 1000",
+        "1000, 2000, 2000, 1000"
     )
-    fun getFocalLengthPixels(
-        focalLength: Float,
-        sensorSize: Float,
-        sensorSizePixels: Int,
-        expected: Float,
-    ) {
+    fun getFocalLengthPixels(focalLength: Float, sensorSize: Float, sensorSizePixels: Int, expected: Float) {
         assertEquals(expected, Optics.getFocalLengthPixels(focalLength, sensorSize, sensorSizePixels), 0.001f)
     }
 
@@ -124,11 +116,7 @@ class OpticsTest {
         "2000, 1000, 28.0725",
         "1000, 1000, 53.1301",
     )
-    fun getFieldOfView(
-        focalLength: Float,
-        sensorSize: Float,
-        expected: Float,
-    ) {
+    fun getFieldOfView(focalLength: Float, sensorSize: Float, expected: Float) {
         assertEquals(expected, Optics.getFieldOfView(focalLength, sensorSize), 0.001f)
     }
 
@@ -141,23 +129,16 @@ class OpticsTest {
         "28.0725, 1000, 2000",
         "53.1301, 1000, 1000",
     )
-    fun getFocalLength(
-        fieldOfView: Float,
-        viewSize: Float,
-        expected: Float,
-    ) {
+    fun getFocalLength(fieldOfView: Float, viewSize: Float, expected: Float) {
         assertEquals(expected, Optics.getFocalLength(fieldOfView, viewSize), 0.001f)
     }
 
     @ParameterizedTest
     @CsvSource(
         "8148, 181",
-        "5600, 150",
+        "5600, 150"
     )
-    fun beamDistance(
-        candela: Float,
-        distanceMeters: Float,
-    ) {
+    fun beamDistance(candela: Float, distanceMeters: Float) {
         val beamDistance = Optics.lightBeamDistance(candela)
         assertEquals(distanceMeters, beamDistance.value, 0.5f)
         assertEquals(DistanceUnits.Meters, beamDistance.units)
@@ -166,15 +147,12 @@ class OpticsTest {
     @ParameterizedTest
     @CsvSource(
         "8148, 181, 0.25",
-        "5600, 150, 0.25",
+        "5600, 150, 0.25"
     )
-    fun luxAtDistance(
-        candela: Float,
-        meters: Float,
-        lux: Float,
-    ) {
+    fun luxAtDistance(candela: Float, meters: Float, lux: Float) {
         val distance = Distance.meters(meters)
         val actualLux = Optics.luxAtDistance(candela, distance)
         assertEquals(lux, actualLux, 0.1f)
     }
+
 }

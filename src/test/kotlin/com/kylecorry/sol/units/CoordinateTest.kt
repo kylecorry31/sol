@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class CoordinateTest {
+
     @Test
-    fun canRestrictLongitude() {
+    fun canRestrictLongitude(){
         assertThat(Coordinate.toLongitude(10.0)).isEqualTo(10.0)
         assertThat(Coordinate.toLongitude(-180.0)).isEqualTo(-180.0)
         assertThat(Coordinate.toLongitude(180.0)).isEqualTo(180.0)
@@ -35,4 +36,5 @@ class CoordinateTest {
         assertEquals(expected.latitude, actual.latitude, 0.01)
         assertEquals(expected.longitude, actual.longitude, 0.01)
     }
+
 }

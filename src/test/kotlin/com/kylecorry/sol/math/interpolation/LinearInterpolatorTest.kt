@@ -5,18 +5,18 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class LinearInterpolatorTest {
+
     @Test
     fun interpolate() {
-        val interpolator =
-            LinearInterpolator(
-                listOf(
-                    Vector2(0f, 0f),
-                    Vector2(1f, 1f),
-                    Vector2(2f, 8f),
-                    Vector2(3f, 27f),
-                    Vector2(4f, 64f),
-                ),
+        val interpolator = LinearInterpolator(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(1f, 1f),
+                Vector2(2f, 8f),
+                Vector2(3f, 27f),
+                Vector2(4f, 64f)
             )
+        )
         assertEquals(-1f, interpolator.interpolate(-1f))
         assertEquals(0f, interpolator.interpolate(0f))
         assertEquals(1f, interpolator.interpolate(1f))

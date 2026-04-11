@@ -8,14 +8,8 @@ import kotlin.math.hypot
  * @property coordinate The geographic coordinate
  * @property elevation The elevation (reference point is unspecified)
  */
-class Location(
-    val coordinate: Coordinate,
-    val elevation: Distance,
-) {
-    fun distanceTo(
-        other: Location,
-        highAccuracy: Boolean = true,
-    ): Float {
+class Location(val coordinate: Coordinate, val elevation: Distance) {
+    fun distanceTo(other: Location, highAccuracy: Boolean = true): Float {
         val horizontal = horizontalDistanceTo(other, highAccuracy)
         val vertical = elevation.meters().value - other.elevation.meters().value
         return hypot(horizontal, vertical)
@@ -27,15 +21,15 @@ class Location(
         return Geology.getInclination(Distance.meters(distance), Distance.meters(vertical))
     }
 
-    fun horizontalDistanceTo(
-        other: Location,
-        highAccuracy: Boolean = true,
-    ): Float = coordinate.distanceTo(other.coordinate, highAccuracy)
+    fun horizontalDistanceTo(other: Location, highAccuracy: Boolean = true): Float {
+        return coordinate.distanceTo(other.coordinate, highAccuracy)
+    }
 
-    fun verticalDistanceTo(other: Location): Float = other.elevation.meters().value - elevation.meters().value
+    fun verticalDistanceTo(other: Location): Float {
+        return other.elevation.meters().value - elevation.meters().value
+    }
 
-    fun bearingTo(
-        other: Location,
-        highAccuracy: Boolean = true,
-    ): Bearing = coordinate.bearingTo(other.coordinate, highAccuracy)
+    fun bearingTo(other: Location, highAccuracy: Boolean = true): Bearing {
+        return coordinate.bearingTo(other.coordinate, highAccuracy)
+    }
 }

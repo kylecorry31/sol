@@ -4,6 +4,8 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.ecology.LifecycleEventFactors
 import com.kylecorry.sol.units.Temperature
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -11,6 +13,8 @@ import java.time.Duration
 import java.time.LocalDate
 
 class MultiTriggerTest {
+
+
     @ParameterizedTest
     @CsvSource(
         "true, true, true",
@@ -18,11 +22,7 @@ class MultiTriggerTest {
         "false, true, false",
         "false, false, false",
     )
-    fun triggersWithAnyFalse(
-        trigger1: Boolean,
-        trigger2: Boolean,
-        expected: Boolean,
-    ) {
+    fun triggersWithAnyFalse(trigger1: Boolean, trigger2: Boolean, expected: Boolean) {
         val trigger = MultiTrigger(createTrigger(trigger1), createTrigger(trigger2))
         assertEquals(expected, trigger.isTriggered(factors()))
     }
@@ -34,11 +34,7 @@ class MultiTriggerTest {
         "false, true, true",
         "false, false, false",
     )
-    fun triggersWithAnyTrue(
-        trigger1: Boolean,
-        trigger2: Boolean,
-        expected: Boolean,
-    ) {
+    fun triggersWithAnyTrue(trigger1: Boolean, trigger2: Boolean, expected: Boolean) {
         val trigger = MultiTrigger(createTrigger(trigger1), createTrigger(trigger2), any = true)
         assertEquals(expected, trigger.isTriggered(factors()))
     }
@@ -57,10 +53,11 @@ class MultiTriggerTest {
         assertEquals(1, trigger3.resetCount)
     }
 
-    private fun createTrigger(value: Boolean): LifecycleEventTrigger =
-        object : LifecycleEventTrigger {
+    private fun createTrigger(value: Boolean): LifecycleEventTrigger {
+        return object : LifecycleEventTrigger {
             override fun isTriggered(factors: LifecycleEventFactors): Boolean = value
         }
+    }
 
     private class ResetTrackingTrigger : LifecycleEventTrigger {
         var resetCount = 0
@@ -73,10 +70,11 @@ class MultiTriggerTest {
         }
     }
 
-    private fun factors(): LifecycleEventFactors =
-        LifecycleEventFactors(
+    private fun factors(): LifecycleEventFactors {
+        return LifecycleEventFactors(
             lengthOfDay = Duration.ofHours(12),
             temperature = Range(Temperature.celsius(0f), Temperature.celsius(0f)),
-            date = LocalDate.now(),
+            date = LocalDate.now()
         )
+    }
 }

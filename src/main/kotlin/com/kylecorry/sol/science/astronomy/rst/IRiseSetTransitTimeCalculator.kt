@@ -12,6 +12,6 @@ internal interface IRiseSetTransitTimeCalculator {
         location: Coordinate,
         standardAltitude: Double = 0.0,
         withRefraction: Boolean = false,
-        withParallax: Boolean = false,
+        withParallax: Boolean = false
     ): RiseSetTransitTimes
 }

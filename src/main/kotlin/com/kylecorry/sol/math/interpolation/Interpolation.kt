@@ -8,11 +8,12 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 object Interpolation {
+
     fun resample(
         interpolator: Interpolator,
         startX: Float,
         endX: Float,
-        interval: Float,
+        interval: Float
     ): List<Vector2> {
         val xs = getMultiplesBetween(startX, endX, interval)
         return xs.map { Vector2(it, interpolator.interpolate(it)) }
@@ -25,11 +26,7 @@ object Interpolation {
      * @param point2: The second control point (to the right of x)
      * @return The y value of the interpolation
      */
-    fun linear(
-        x: Float,
-        point1: Vector2,
-        point2: Vector2,
-    ): Float {
+    fun linear(x: Float, point1: Vector2, point2: Vector2): Float {
         val x1 = point1.x
         val y1 = point1.y
         val x2 = point2.x
@@ -46,13 +43,9 @@ object Interpolation {
      * @param y2: The y value of the second control point (to the right of x)
      * @return The y value of the interpolation
      */
-    fun linear(
-        x: Float,
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-    ): Float = y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+    fun linear(x: Float, x1: Float, y1: Float, x2: Float, y2: Float): Float {
+        return y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+    }
 
     /**
      * Calculates a cubic interpolation
@@ -68,7 +61,7 @@ object Interpolation {
         point0: Vector2,
         point1: Vector2,
         point2: Vector2,
-        point3: Vector2,
+        point3: Vector2
     ): Float {
         val x0 = point0.x
         val y0 = point0.y
@@ -104,13 +97,14 @@ object Interpolation {
         x2: Float,
         y2: Float,
         x3: Float,
-        y3: Float,
-    ): Float =
-        interpolate(
+        y3: Float
+    ): Float {
+        return interpolate(
             x,
             listOf(x0, x1, x2, x3),
-            listOf(y0, y1, y2, y3),
+            listOf(y0, y1, y2, y3)
         )
+    }
 
     /**
      * Use Lagrange interpolation to interpolate a value. You need at least order + 1 control points.
@@ -125,7 +119,7 @@ object Interpolation {
         x: Float,
         xs: List<Float>,
         ys: List<Float>,
-        order: Int = xs.size - 1,
+        order: Int = xs.size - 1
     ): Float {
         var y = 0f
         for (i in 0..order) {
@@ -152,7 +146,7 @@ object Interpolation {
         n: Double,
         y1: Double,
         y2: Double,
-        y3: Double,
+        y3: Double
     ): Double {
         val a = y2 - y1
         val b = y3 - y2
@@ -173,14 +167,15 @@ object Interpolation {
         grid: List<List<Pair<T, Float>>>,
         threshold: Float,
         executor: Executor = SequentialExecutor(),
-        interpolator: (percent: Float, a: T, b: T) -> T,
-    ): List<IsolineSegment<T>> =
-        MarchingSquares.getIsoline(
+        interpolator: (percent: Float, a: T, b: T) -> T
+    ): List<IsolineSegment<T>> {
+        return MarchingSquares.getIsoline(
             grid,
             threshold,
             executor,
-            interpolator,
+            interpolator
         )
+    }
 
     /**
      * Returns a list of multiples of a given number between two values.
@@ -192,7 +187,7 @@ object Interpolation {
     fun getMultiplesBetween(
         start: Double,
         end: Double,
-        multiple: Double,
+        multiple: Double
     ): DoubleArray {
         val startMultiple = ceil(start / multiple).toInt()
         val endMultiple = floor(end / multiple).toInt()
@@ -211,7 +206,7 @@ object Interpolation {
     fun getMultiplesBetween(
         start: Float,
         end: Float,
-        multiple: Float,
+        multiple: Float
     ): FloatArray {
         val startMultiple = ceil(start / multiple).toInt()
         val endMultiple = floor(end / multiple).toInt()
@@ -227,12 +222,7 @@ object Interpolation {
         return result
     }
 
-    fun lerp(
-        percent: Float,
-        start: Float,
-        end: Float,
-        shouldClamp: Boolean = false,
-    ): Float {
+    fun lerp(percent: Float, start: Float, end: Float, shouldClamp: Boolean = false): Float {
         val value = start + (end - start) * percent
 
         return if (shouldClamp) {
@@ -242,12 +232,7 @@ object Interpolation {
         }
     }
 
-    fun lerp(
-        percent: Double,
-        start: Double,
-        end: Double,
-        shouldClamp: Boolean = false,
-    ): Double {
+    fun lerp(percent: Double, start: Double, end: Double, shouldClamp: Boolean = false): Double {
         val value = start + (end - start) * percent
 
         return if (shouldClamp) {
@@ -263,7 +248,7 @@ object Interpolation {
         originalMax: Double,
         newMin: Double,
         newMax: Double,
-        shouldClamp: Boolean = false,
+        shouldClamp: Boolean = false
     ): Double {
         val normal = norm(value, originalMin, originalMax)
         return lerp(normal, newMin, newMax, shouldClamp)
@@ -275,18 +260,13 @@ object Interpolation {
         originalMax: Float,
         newMin: Float,
         newMax: Float,
-        shouldClamp: Boolean = false,
+        shouldClamp: Boolean = false
     ): Float {
         val normal = norm(value, originalMin, originalMax)
         return lerp(normal, newMin, newMax, shouldClamp)
     }
 
-    fun norm(
-        value: Double,
-        minimum: Double,
-        maximum: Double,
-        shouldClamp: Boolean = false,
-    ): Double {
+    fun norm(value: Double, minimum: Double, maximum: Double, shouldClamp: Boolean = false): Double {
         val range = maximum - minimum
         if (range == 0.0) {
             return 0.0
@@ -300,12 +280,7 @@ object Interpolation {
         }
     }
 
-    fun norm(
-        value: Float,
-        minimum: Float,
-        maximum: Float,
-        shouldClamp: Boolean = false,
-    ): Float {
+    fun norm(value: Float, minimum: Float, maximum: Float, shouldClamp: Boolean = false): Float {
         val range = maximum - minimum
         if (Arithmetic.isZero(range)) {
             return 0f
@@ -318,4 +293,6 @@ object Interpolation {
             normal
         }
     }
+
 }
+

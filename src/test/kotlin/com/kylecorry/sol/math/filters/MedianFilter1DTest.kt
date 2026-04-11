@@ -1,9 +1,11 @@
 package com.kylecorry.sol.math.filters
 
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
+import org.junit.jupiter.api.Assertions.*
+
 class MedianFilter1DTest {
+
     @Test
     fun filter() {
         val data = listOf(1f, 2f, 2f, 1f, 8f)

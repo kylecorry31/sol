@@ -4,9 +4,7 @@ import com.kylecorry.sol.shared.DecimalFormatter
 import com.kylecorry.sol.shared.toDoubleCompat
 import com.kylecorry.sol.units.Coordinate
 
-class DecimalDegreesCoordinateFormat(
-    private val precision: Int = 6,
-) : CoordinateFormat {
+class DecimalDegreesCoordinateFormat(private val precision: Int = 6) : CoordinateFormat {
     override fun toString(coordinate: Coordinate): String {
         val formattedLatitude = DecimalFormatter.format(coordinate.latitude, precision)
         val formattedLongitude = DecimalFormatter.format(coordinate.longitude, precision)

@@ -4,6 +4,7 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.sqrt
 
 object Algebra {
+
     /**
      * Solves an equation of form mx + b = 0
      */
@@ -50,10 +51,7 @@ object Algebra {
      * Ex. 1 + 2x + 5x^2 + x^4
      * polynomial(x, 1, 2, 5, 0, 1)
      */
-    fun polynomial(
-        x: Double,
-        vararg coefs: Double,
-    ): Double {
+    fun polynomial(x: Double, vararg coefs: Double): Double {
         require(x.isFinite()) { "x must be finite" }
         var runningTotal = 0.0
         var xPower = 1.0
@@ -65,4 +63,5 @@ object Algebra {
 
         return runningTotal
     }
+
 }

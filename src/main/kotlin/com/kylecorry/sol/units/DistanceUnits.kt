@@ -1,10 +1,6 @@
 package com.kylecorry.sol.units
 
-enum class DistanceUnits(
-    val id: Int,
-    val meters: Double,
-    val isMetric: Boolean,
-) {
+enum class DistanceUnits(val id: Int, val meters: Double, val isMetric: Boolean) {
     Centimeters(1, 0.01, true),
     Inches(2, 1 / (3.28084 * 12), false),
     Miles(3, 5280 / 3.28084, false),

@@ -2,15 +2,17 @@ package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 
-internal open class SiderealTime(
-    _hours: Double,
-    val longitude: Double,
-) {
+internal open class SiderealTime(_hours: Double, val longitude: Double) {
+
     val hours = wrap(_hours, 0.0, 24.0)
 
-    fun atGreenwich(): GreenwichSiderealTime = GreenwichSiderealTime(hours - longitude / 15)
+    fun atGreenwich(): GreenwichSiderealTime {
+        return GreenwichSiderealTime(hours - longitude / 15)
+    }
 
-    fun atLongitude(longitude: Double): SiderealTime = SiderealTime(hours + (longitude - this.longitude) / 15, longitude)
+    fun atLongitude(longitude: Double): SiderealTime {
+        return SiderealTime(hours + (longitude - this.longitude) / 15, longitude)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,4 +31,6 @@ internal open class SiderealTime(
         result = 31 * result + hours.hashCode()
         return result
     }
+
+
 }

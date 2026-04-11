@@ -11,8 +11,9 @@ import kotlin.math.pow
 
 class NeuralNetwork(
     private val layers: List<Layer>,
-    weights: List<LayerWeights>? = null,
+    weights: List<LayerWeights>? = null
 ) : IClassifier {
+
     init {
         layers.zipWithNext().forEach {
             if (it.first.outputSize != it.second.inputSize) {
@@ -49,15 +50,14 @@ class NeuralNetwork(
         learningRate: Float = 0.1f,
         regularization: Float = 0f,
         batchSize: Int = input.size,
-        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> },
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
         val x = input.map { Matrix.row(values = it.toFloatArray()) }
-        val y =
-            output.map {
-                Matrix.row(
-                    values = Lists.oneHot(it, layers.last().outputSize, 1f, 0f).toFloatArray(),
-                )
-            }
+        val y = output.map {
+            Matrix.row(
+                values = Lists.oneHot(it, layers.last().outputSize, 1f, 0f).toFloatArray()
+            )
+        }
         return fit(x, y, epochs, learningRate, regularization, batchSize, onEpochCompleteFn)
     }
 
@@ -68,7 +68,7 @@ class NeuralNetwork(
         learningRate: Float = 0.1f,
         regularization: Float = 0f,
         batchSize: Int = input.size,
-        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> },
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
         if (input.size != output.size) {
             throw IllegalArgumentException("Input and output have the same number of elements")
@@ -82,15 +82,11 @@ class NeuralNetwork(
         val outputSize = output.first().rows() to output.first().columns()
 
         if (inputSize.second != layers.first().inputSize) {
-            throw IllegalArgumentException(
-                "Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${layers.first().inputSize}",
-            )
+            throw IllegalArgumentException("Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${layers.first().inputSize}")
         }
 
         if (outputSize.second != layers.last().outputSize) {
-            throw IllegalArgumentException(
-                "Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${layers.last().outputSize}",
-            )
+            throw IllegalArgumentException("Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${layers.last().outputSize}")
         }
 
         if (input.any { it.rows() != inputSize.first || it.columns() != inputSize.second }) {
@@ -116,23 +112,18 @@ class NeuralNetwork(
                 val ones = Matrix.column(values = FloatArray(samples) { 1f })
 
                 val previousLayerOutputs =
-                    listOf(inputRow.transpose()) +
-                        layers
-                            .map { it.output.transpose() }
-                            .take(layers.size - 1)
+                    listOf(inputRow.transpose()) + layers.map { it.output.transpose() }
+                        .take(layers.size - 1)
 
                 var previousDelta: Matrix = Matrix.zeros(0, 0)
                 for (l in layers.indices.reversed()) {
-                    previousDelta =
-                        if (l == layers.lastIndex) {
-                            outputRow.subtract(predicted)
-                        } else {
-                            layers[l + 1].weights.transpose().dot(previousDelta)
-                        }.multiply(-1f).multiply(layers[l].derivative(layers[l].input))
-                    val change =
-                        previousDelta
-                            .dot(previousLayerOutputs[l])
-                            .add(layers[l].weights.multiply(regularization))
+                    previousDelta = if (l == layers.lastIndex) {
+                        outputRow.subtract(predicted)
+                    } else {
+                        layers[l + 1].weights.transpose().dot(previousDelta)
+                    }.multiply(-1f).multiply(layers[l].derivative(layers[l].input))
+                    val change = previousDelta.dot(previousLayerOutputs[l])
+                        .add(layers[l].weights.multiply(regularization))
                     layers[l].weights =
                         layers[l].weights.subtract(change.multiply(learningRate / samples))
                     val db = previousDelta.dot(ones).multiply(learningRate / samples)
@@ -146,18 +137,11 @@ class NeuralNetwork(
         return totalError
     }
 
-    private fun squaredError(
-        x: Matrix,
-        y: Matrix,
-        regularization: Float,
-    ): Float {
+    private fun squaredError(x: Matrix, y: Matrix, regularization: Float): Float {
         val y_ = predict(x)
         val sumSquareWeights = layers.sumOfFloat { it.weights.mapped { it.pow(2) }.sum() }
-        return 0.5f *
-            y_
-                .subtract(y)
-                .mapped { it.pow(2) }
-                .sum() / layers.first().inputSize + regularization / 2 * sumSquareWeights
+        return 0.5f * y_.subtract(y).mapped { it.pow(2) }
+            .sum() / layers.first().inputSize + regularization / 2 * sumSquareWeights
     }
 
     fun load(weights: List<LayerWeights>) {
@@ -176,12 +160,12 @@ class NeuralNetwork(
         }
     }
 
-    fun dump(): List<LayerWeights> = layers.map { LayerWeights(it.weights, it.bias) }
+    fun dump(): List<LayerWeights> {
+        return layers.map { LayerWeights(it.weights, it.bias) }
+    }
 
-    class LayerWeights(
-        val weights: Matrix,
-        val bias: Matrix,
-    ) {
+
+    class LayerWeights(val weights: Matrix, val bias: Matrix) {
         fun format(): String {
             val builder = StringBuilder()
             for (row in 0 until weights.rows()) {
@@ -195,11 +179,10 @@ class NeuralNetwork(
 
         companion object {
             fun parse(data: String): LayerWeights {
-                val parsed =
-                    data.split("\n").map {
-                        val row = it.split(",").mapNotNull { it.toFloatOrNull() }
-                        row.take(row.size - 1).toTypedArray() to row.takeLast(1).toTypedArray()
-                    }
+                val parsed = data.split("\n").map {
+                    val row = it.split(",").mapNotNull { it.toFloatOrNull() }
+                    row.take(row.size - 1).toTypedArray() to row.takeLast(1).toTypedArray()
+                }
                 val weights = Matrix.create(parsed.map { it.first }.toTypedArray())
                 val bias = Matrix.create(parsed.map { it.second }.toTypedArray())
                 return LayerWeights(weights, bias)
@@ -212,8 +195,9 @@ class NeuralNetwork(
         val outputSize: Int,
         private val activationFn: (Matrix) -> Matrix,
         private val activationDerivativeFn: (Matrix) -> Matrix,
-        val isClassifier: Boolean = false,
+        val isClassifier: Boolean = false
     ) {
+
         internal var weights: Matrix
         internal var bias: Matrix
         internal var output: Matrix
@@ -232,12 +216,13 @@ class NeuralNetwork(
             return this.output
         }
 
-        internal fun derivative(input: Matrix): Matrix = activationDerivativeFn(input)
+        internal fun derivative(input: Matrix): Matrix {
+            return activationDerivativeFn(input)
+        }
 
-        private fun randomMatrix(
-            rows: Int,
-            columns: Int,
-        ): Matrix = Matrix.create(rows, columns) { _, _ -> Math.random().toFloat() }
+        private fun randomMatrix(rows: Int, columns: Int): Matrix {
+            return Matrix.create(rows, columns) { _, _ -> Math.random().toFloat() }
+        }
 
         companion object {
             fun functionalLayer(
@@ -245,20 +230,18 @@ class NeuralNetwork(
                 output: Int,
                 activationFn: (Float) -> Float,
                 activationDerivativeFn: (Float) -> Float,
-                isClassifier: Boolean = false,
-            ): Layer =
-                Layer(
+                isClassifier: Boolean = false
+            ): Layer {
+                return Layer(
                     input,
                     output,
                     { it.mapped(activationFn) },
                     { it.mapped(activationDerivativeFn) },
-                    isClassifier,
+                    isClassifier
                 )
+            }
 
-            fun softmax(
-                input: Int,
-                output: Int,
-            ): Layer {
+            fun softmax(input: Int, output: Int): Layer {
                 val grad = { x: FloatArray ->
                     val softmax = Statistics.softmax(x.toList()).toFloatArray()
                     val diag = Matrix.diagonal(values = softmax)
@@ -272,89 +255,70 @@ class NeuralNetwork(
                     output,
                     { it.mapColumns { Statistics.softmax(it.toList()).toFloatArray() } },
                     { it.mapColumns(grad) },
-                    isClassifier = true,
+                    isClassifier = true
                 )
             }
 
-            fun binary(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun binary(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { if (it > 0) 1f else 0f },
-                    { 0f },
-                )
+                    { 0f })
+            }
 
-            fun linear(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun linear(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { it },
-                    { 1f },
-                )
+                    { 1f })
+            }
 
-            fun leakyRelu(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun leakyRelu(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { if (it > 0) it else 0.01f * it },
-                    { if (it > 0) 1f else 0.01f },
-                )
+                    { if (it > 0) 1f else 0.01f })
+            }
 
-            fun relu(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun relu(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { if (it > 0) it else 0f },
-                    { if (it > 0) 1f else 0f },
-                )
+                    { if (it > 0) 1f else 0f })
+            }
 
-            fun sigmoid(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun sigmoid(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { 1f / (1 + exp(-it)) },
                     {
                         val a = 1f / (1 + exp(-it))
                         a * (1 - a)
-                    },
-                )
+                    })
+            }
 
-            fun softplus(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun softplus(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { ln(1f + exp(it)) },
-                    { 1f / (1 + exp(-it)) },
-                )
+                    { 1f / (1 + exp(-it)) })
+            }
 
-            fun tanh(
-                input: Int,
-                output: Int,
-            ): Layer =
-                functionalLayer(
+            fun tanh(input: Int, output: Int): Layer {
+                return functionalLayer(
                     input,
                     output,
                     { kotlin.math.tanh(it) },
-                    { 1 - kotlin.math.tanh(it).pow(2) },
-                )
+                    { 1 - kotlin.math.tanh(it).pow(2) })
+            }
         }
+
     }
+
 }

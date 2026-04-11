@@ -3,9 +3,7 @@ package com.kylecorry.sol.units
 import kotlin.math.absoluteValue
 
 @JvmInline
-value class Weight private constructor(
-    private val measure: Measure,
-) {
+value class Weight private constructor(private val measure: Measure) {
     val value: Float
         get() = measureValue(measure)
 
@@ -25,14 +23,17 @@ value class Weight private constructor(
         return from(value + otherInUnits.value, units)
     }
 
-    operator fun times(amount: Number): Weight = from(value * amount.toFloat().absoluteValue, units)
+    operator fun times(amount: Number): Weight {
+        return from(value * amount.toFloat().absoluteValue, units)
+    }
 
-    override fun toString(): String = "$value $units"
+    override fun toString(): String {
+        return "$value $units"
+    }
 
     companion object {
-        fun from(
-            value: Float,
-            units: WeightUnits,
-        ): Weight = Weight(packMeasure(value, units))
+        fun from(value: Float, units: WeightUnits): Weight {
+            return Weight(packMeasure(value, units))
+        }
     }
 }

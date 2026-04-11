@@ -1,12 +1,13 @@
 package com.kylecorry.sol.science.astronomy.eclipse
 
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalculator
-import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.tests.assertDate
 import org.junit.jupiter.api.Test
 import java.time.*
 
 class TotalLunarEclipseCalculatorTest {
+
     @Test
     fun canGetNextEclipse() {
         val calculator = TotalLunarEclipseCalculator()
@@ -18,13 +19,13 @@ class TotalLunarEclipseCalculatorTest {
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 3, 29), ZoneId.of("UTC")),
             actual!!.start.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2),
+            Duration.ofMinutes(2)
         )
 
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, 5, 16, 4, 53), ZoneId.of("UTC")),
             actual.end.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2),
+            Duration.ofMinutes(2)
         )
     }
 
@@ -39,13 +40,13 @@ class TotalLunarEclipseCalculatorTest {
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, Month.NOVEMBER, 8, 10, 16), ZoneId.of("UTC")),
             actual!!.start.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2),
+            Duration.ofMinutes(2)
         )
 
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, Month.NOVEMBER, 8, 11, 24), ZoneId.of("UTC")),
             actual.end.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2),
+            Duration.ofMinutes(2)
         )
     }
 
@@ -60,13 +61,15 @@ class TotalLunarEclipseCalculatorTest {
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, Month.NOVEMBER, 8, 10, 16), ZoneId.of("UTC")),
             actual!!.start.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2),
+            Duration.ofMinutes(2)
         )
 
         assertDate(
             ZonedDateTime.of(LocalDateTime.of(2022, Month.NOVEMBER, 8, 11, 41), ZoneId.of("UTC")),
             actual.end.atZone(ZoneId.of("UTC")),
-            Duration.ofMinutes(2),
+            Duration.ofMinutes(2)
         )
     }
+
+
 }

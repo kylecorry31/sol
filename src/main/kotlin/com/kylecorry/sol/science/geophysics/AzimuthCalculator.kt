@@ -10,10 +10,8 @@ import kotlin.math.atan2
 // From https://stackoverflow.com/questions/16317599/android-compass-that-can-compensate-for-tilt-and-pitch
 
 internal object AzimuthCalculator {
-    fun calculate(
-        gravity: FloatArray,
-        magneticField: FloatArray,
-    ): Bearing? {
+
+    fun calculate(gravity: FloatArray, magneticField: FloatArray): Bearing? {
         // East vector - perpendicular to gravity and magnetic field
         val east = Vector3Utils.normalize(Vector3Utils.cross(magneticField, gravity), true)
 
@@ -39,8 +37,9 @@ internal object AzimuthCalculator {
         return Bearing.from(azimuth.toDegrees())
     }
 
-    fun calculate(
-        gravity: Vector3,
-        magneticField: Vector3,
-    ): Bearing? = calculate(gravity.toFloatArray(), magneticField.toFloatArray())
+
+    fun calculate(gravity: Vector3, magneticField: Vector3): Bearing? {
+        return calculate(gravity.toFloatArray(), magneticField.toFloatArray())
+    }
+
 }

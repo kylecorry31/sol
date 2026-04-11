@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 class CoordinateFormatterTest {
+
     @Test
     fun toUTM() {
         val format = UTMCoordinateFormat()
@@ -64,77 +65,50 @@ class CoordinateFormatterTest {
 
     @ParameterizedTest
     @MethodSource("provideDDM")
-    fun toDDM(
-        expected: String,
-        coordinate: Coordinate,
-        precision: Int,
-    ) {
+    fun toDDM(expected: String, coordinate: Coordinate, precision: Int) {
         assertEquals(expected, DegreesDecimalMinutesCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideDMS")
-    fun toDMS(
-        expected: String,
-        coordinate: Coordinate,
-        precision: Int,
-    ) {
+    fun toDMS(expected: String, coordinate: Coordinate, precision: Int) {
         assertEquals(expected, DegreesMinutesSecondsCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideDD")
-    fun toDD(
-        expected: String,
-        coordinate: Coordinate,
-        precision: Int,
-    ) {
+    fun toDD(expected: String, coordinate: Coordinate, precision: Int) {
         assertEquals(expected, DecimalDegreesCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideMGRS")
-    fun toMGRS(
-        expected: String,
-        coordinate: Coordinate,
-        precision: Int,
-    ) {
+    fun toMGRS(expected: String, coordinate: Coordinate, precision: Int) {
         assertEquals(expected, MGRSCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideUSNG")
-    fun toUSNG(
-        expected: String,
-        coordinate: Coordinate,
-        precision: Int,
-    ) {
+    fun toUSNG(expected: String, coordinate: Coordinate, precision: Int) {
         assertEquals(expected, USNGCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideOSGB")
-    fun toOSGB(
-        expected: String,
-        coordinate: Coordinate,
-        precision: Int,
-    ) {
+    fun toOSGB(expected: String, coordinate: Coordinate, precision: Int) {
         assertEquals(expected, OSGBCoordinateFormat(precision).toString(coordinate))
     }
 
     @ParameterizedTest
     @MethodSource("provideLocationStrings")
-    fun parse(
-        locationString: String,
-        expected: Coordinate?,
-    ) {
+    fun parse(locationString: String, expected: Coordinate?) {
         assertCoordinatesEqual(Coordinate.parse(locationString), expected, 0.001)
     }
 
     private fun assertCoordinatesEqual(
         actual: Coordinate?,
         expected: Coordinate?,
-        precision: Double,
+        precision: Double
     ) {
         if (expected == null) {
             assertNull(actual)
@@ -146,69 +120,77 @@ class CoordinateFormatterTest {
     }
 
     companion object {
+
         @JvmStatic
-        fun provideDDM(): Stream<Arguments> =
-            Stream.of(
+        fun provideDDM(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of("10°2.1'N    77°30.5'E", Coordinate(10.03472, 77.508333), 1),
                 Arguments.of("10°2.1'S    77°30.5'E", Coordinate(-10.03472, 77.508333), 1),
                 Arguments.of("10°2.08'N    77°30.5'W", Coordinate(10.03472, -77.508333), 2),
                 Arguments.of("10°2.0832'S    77°30.5'W", Coordinate(-10.03472, -77.508333), 4),
             )
+        }
 
         @JvmStatic
-        fun provideDMS(): Stream<Arguments> =
-            Stream.of(
+        fun provideDMS(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of("10°2'5.0\"N    77°30'30.0\"E", Coordinate(10.03472, 77.508333), 1),
                 Arguments.of("10°2'5.0\"S    77°30'30.0\"E", Coordinate(-10.03472, 77.508333), 1),
                 Arguments.of("10°2'4.99\"N    77°30'30.0\"W", Coordinate(10.03472, -77.508333), 2),
                 Arguments.of("10°7'23.16\"S    77°7'23.232\"W", Coordinate(-10.1231, -77.12312), 3),
             )
+        }
 
         @JvmStatic
-        fun provideDD(): Stream<Arguments> =
-            Stream.of(
+        fun provideDD(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of("42.1948°,  -71.6295°", Coordinate(42.1948, -71.6295), 4),
                 Arguments.of("-90°,  -180°", Coordinate(-90.0, -180.0), 0),
                 Arguments.of("-42.19°,  -71.63°", Coordinate(-42.1948, -71.6295), 2),
                 Arguments.of("1.2°,  1.4°", Coordinate(1.2, 1.4), 1),
             )
+        }
 
         @JvmStatic
-        fun provideMGRS(): Stream<Arguments> =
-            Stream.of(
+        fun provideMGRS(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of("27PXM 09601 05579", Coordinate(10.0, -20.0), 5),
                 Arguments.of("51DVC 65812 22723", Coordinate(-70.1, 122.1), 5),
                 Arguments.of("YZJ 98062 11010", Coordinate(89.0, -179.0), 5),
+
                 // Different precisions
                 Arguments.of("27PXM 0960 0558", Coordinate(10.0, -20.0), 4),
                 Arguments.of("27PXM 096 056", Coordinate(10.0, -20.0), 3),
                 Arguments.of("27PXM 10 06", Coordinate(10.0, -20.0), 2),
                 Arguments.of("27PXM 1 1", Coordinate(10.0, -20.0), 1),
             )
+        }
 
         @JvmStatic
-        fun provideUSNG(): Stream<Arguments> =
-            Stream.of(
+        fun provideUSNG(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of("14S NJ 39521 41744", Coordinate(39.2240867222, -98.5421515000), 5),
                 Arguments.of("18S UJ 23246 05745", Coordinate(38.8828019136, -77.0377807680), 5),
                 Arguments.of("17R KL 70903 50491", Coordinate(27.5589270380, -83.3203125000), 5),
                 Arguments.of("05Q KC 72828 79387", Coordinate(20.5998824479, -155.1796880364), 5),
             )
+        }
 
         @JvmStatic
-        fun provideOSGB(): Stream<Arguments> =
-            Stream.of(
+        fun provideOSGB(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038), 5),
                 Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029), 5),
                 Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038), 5),
                 Arguments.of("SK 87290 68571", Coordinate(53.2070530000, -0.6945160000), 5),
                 Arguments.of("TQ 22069 82537", Coordinate(51.5285582, -0.241681), 5),
-                Arguments.of("?", Coordinate(42.1948, -71.6295), 5),
+                Arguments.of("?", Coordinate(42.1948, -71.6295), 5)
             )
+        }
 
         @JvmStatic
-        fun provideLocationStrings(): Stream<Arguments> =
-            Stream.of(
+        fun provideLocationStrings(): Stream<Arguments> {
+            return Stream.of(
                 // DDM
                 Arguments.of("10°2.083333' N, 77°30.5' E", Coordinate(10.03472, 77.508333)),
                 Arguments.of("10°2.083333' S, 77°30.5' E", Coordinate(-10.03472, 77.508333)),
@@ -216,7 +198,7 @@ class CoordinateFormatterTest {
                 Arguments.of("10°2.083333' S, 77°30.5' W", Coordinate(-10.03472, -77.508333)),
                 Arguments.of(
                     "10°2.083333′ S, 77°30.5′ W",
-                    Coordinate(-10.03472, -77.508333),
+                    Coordinate(-10.03472, -77.508333)
                 ), // Using prime chars instead of quotes
                 // DMS
                 Arguments.of("10°2'5.0\" N, 77°30'30.0\" E", Coordinate(10.03472, 77.508333)),
@@ -226,15 +208,15 @@ class CoordinateFormatterTest {
                 Arguments.of("10°2'5\" S, 77°30'30\" W", Coordinate(-10.03472, -77.508333)),
                 Arguments.of(
                     "10°2′5\" S, 77°30′30\" W",
-                    Coordinate(-10.03472, -77.508333),
+                    Coordinate(-10.03472, -77.508333)
                 ), // Using prime chars instead of quotes
                 Arguments.of(
                     "10°2'5″ S, 77°30'30″ W",
-                    Coordinate(-10.03472, -77.508333),
+                    Coordinate(-10.03472, -77.508333)
                 ), // Using prime chars instead of quotes
                 Arguments.of(
                     "10°2′5″ S, 77°30′30″ W",
-                    Coordinate(-10.03472, -77.508333),
+                    Coordinate(-10.03472, -77.508333)
                 ), // Using prime chars instead of quotes
                 // DD
                 Arguments.of("42.1948, -71.6295", Coordinate(42.1948, -71.6295)),
@@ -281,6 +263,7 @@ class CoordinateFormatterTest {
                 Arguments.of("27PXM 096 056", Coordinate(10.0, -20.0)),
                 Arguments.of("27PXM 10 06", Coordinate(10.0038, -19.9963)),
                 Arguments.of("27PXM 1 1", Coordinate(10.0399725934, -19.9963)),
+
                 // USNG
                 Arguments.of("14S NJ 39521 41744", Coordinate(39.2240867222, -98.5421515000)),
                 Arguments.of("18S UJ 23246 05745", Coordinate(38.8828019136, -77.0377807680)),
@@ -290,6 +273,7 @@ class CoordinateFormatterTest {
                 Arguments.of("18SUJ2324605745", Coordinate(38.8828019136, -77.0377807680)),
                 Arguments.of("17RKL7090350491", Coordinate(27.5589270380, -83.3203125000)),
                 Arguments.of("5QKC7282879387", Coordinate(20.5998824479, -155.1796880364)),
+
                 // OSGB (OSGB-36)
                 Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038)),
                 Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029)),
@@ -298,6 +282,7 @@ class CoordinateFormatterTest {
                 Arguments.of("696706,650582", Coordinate(55.657977, 2.716029)),
                 Arguments.of("487289,368568", Coordinate(53.2070530000, -0.6945160000)),
                 Arguments.of("522067,182536", Coordinate(51.5285582, -0.241681)),
+
                 // Invalid formats / locations
                 Arguments.of("91 8", null),
                 Arguments.of("-91 8", null),
@@ -319,7 +304,10 @@ class CoordinateFormatterTest {
                 Arguments.of("10°2'5.0 S, 77°30'30.0\" W", null),
                 Arguments.of("10°2'5.0 S\", 30'30.0\" W", null),
                 Arguments.of("10°2' S\", 77°30'30.0\" W", null),
-                Arguments.of("10°5\" S, 77°30'30.0\" W", null),
+                Arguments.of("10°5\" S, 77°30'30.0\" W", null)
+
             )
+        }
     }
+
 }

@@ -13,18 +13,13 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import kotlin.math.*
 
-internal class HorizonCoordinate(
-    _azimuth: Double,
-    _altitude: Double,
-) {
+internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
+
     val azimuth = wrap(_azimuth, 0.0, 360.0)
     val altitude = wrap(_altitude, -90.0, 90.0)
     val zenith = 90 - altitude
 
-    fun toEquatorial(
-        siderealTime: SiderealTime,
-        latitude: Double,
-    ): EquatorialCoordinate {
+    fun toEquatorial(siderealTime: SiderealTime, latitude: Double): EquatorialCoordinate {
         val sinH = sinDegrees(altitude)
         val sinLat = sinDegrees(latitude)
         val cosLat = cosDegrees(latitude)
@@ -69,6 +64,7 @@ internal class HorizonCoordinate(
         return HorizonCoordinate(azimuth, altitude + refraction)
     }
 
+
     private fun getRefraction(): Double {
         if (altitude > 85.0) {
             return 0.0
@@ -77,13 +73,10 @@ internal class HorizonCoordinate(
         val tanElev = tanDegrees(altitude)
 
         if (altitude > 5.0) {
-            return (
-                58.1 / tanElev - 0.07 / Arithmetic.cube(tanElev) + 0.000086 /
-                    power(
-                        tanElev,
-                        5,
-                    )
-            ) / 3600.0
+            return (58.1 / tanElev - 0.07 / Arithmetic.cube(tanElev) + 0.000086 / power(
+                tanElev,
+                5
+            )) / 3600.0
         }
 
         if (altitude > -0.575) {
@@ -93,29 +86,32 @@ internal class HorizonCoordinate(
         return -20.774 / tanElev / 3600.0
     }
 
-    fun angularDistanceTo(coordinate: HorizonCoordinate): Double =
-        acos(
+    fun angularDistanceTo(coordinate: HorizonCoordinate): Double {
+        return acos(
             cosDegrees(zenith) * cosDegrees(coordinate.zenith) +
-                sinDegrees(zenith) * sinDegrees(coordinate.zenith) *
-                cosDegrees(azimuth - coordinate.azimuth),
+                    sinDegrees(zenith) * sinDegrees(coordinate.zenith) *
+                    cosDegrees(azimuth - coordinate.azimuth)
         ).toDegrees()
+    }
 
     companion object {
+
         fun fromEquatorial(
             equatorial: EquatorialCoordinate,
             ut: UniversalTime,
-            coordinate: Coordinate,
-        ): HorizonCoordinate =
-            fromEquatorial(
+            coordinate: Coordinate
+        ): HorizonCoordinate {
+            return fromEquatorial(
                 equatorial,
                 ut.toSiderealTime().atLongitude(coordinate.longitude),
-                coordinate.latitude,
+                coordinate.latitude
             )
+        }
 
         fun fromEquatorial(
             equatorial: EquatorialCoordinate,
             siderealTime: SiderealTime,
-            latitude: Double,
+            latitude: Double
         ): HorizonCoordinate {
             val sinD = sinDegrees(equatorial.declination)
             val sinLat = sinDegrees(latitude)
@@ -144,20 +140,21 @@ internal class HorizonCoordinate(
             equatorial: EquatorialCoordinate,
             ut: UniversalTime,
             coordinate: Coordinate,
-            distanceToBody: Distance,
-        ): HorizonCoordinate =
-            fromEquatorial(
+            distanceToBody: Distance
+        ): HorizonCoordinate {
+            return fromEquatorial(
                 equatorial,
                 ut.toSiderealTime().atLongitude(coordinate.longitude),
                 coordinate.latitude,
-                distanceToBody,
+                distanceToBody
             )
+        }
 
         fun fromEquatorial(
             equatorial: EquatorialCoordinate,
             siderealTime: SiderealTime,
             latitude: Double,
-            distanceToBody: Distance,
+            distanceToBody: Distance
         ): HorizonCoordinate {
             val sinPi = 6378.14 / distanceToBody.convertTo(DistanceUnits.Kilometers).value
             val hourAngle = equatorial.getHourAngle(siderealTime) * 15
@@ -166,23 +163,22 @@ internal class HorizonCoordinate(
             val x = cos(u) // factor in elevation
             val y = 0.99664719 * sin(u) // factor in elevation
 
-            val deltaAscension =
-                atan2(
-                    -x * sinPi * sinDegrees(hourAngle),
-                    cosDegrees(equatorial.declination) - x * sinPi * cosDegrees(hourAngle),
-                ).toDegrees()
+            val deltaAscension = atan2(
+                -x * sinPi * sinDegrees(hourAngle),
+                cosDegrees(equatorial.declination) - x * sinPi * cosDegrees(hourAngle)
+            ).toDegrees()
 
-            val trueDeclination =
-                atan2(
-                    (sinDegrees(equatorial.declination) - y * sinPi) * cosDegrees(deltaAscension),
-                    cosDegrees(equatorial.declination) - y * sinPi * cosDegrees(hourAngle),
-                ).toDegrees()
+            val trueDeclination = atan2(
+                (sinDegrees(equatorial.declination) - y * sinPi) * cosDegrees(deltaAscension),
+                cosDegrees(equatorial.declination) - y * sinPi * cosDegrees(hourAngle)
+            ).toDegrees()
 
             return fromEquatorial(
                 EquatorialCoordinate(trueDeclination, equatorial.rightAscension + deltaAscension),
                 siderealTime,
-                latitude,
+                latitude
             )
         }
     }
+
 }

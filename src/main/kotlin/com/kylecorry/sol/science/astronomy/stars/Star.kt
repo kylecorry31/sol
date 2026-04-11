@@ -21,13 +21,10 @@ class Star internal constructor(
     internal val coordinate: EquatorialCoordinate,
     val magnitude: Float,
     val motion: ProperMotion,
-    val colorIndexBV: Float,
+    val colorIndexBV: Float
 )
 
 /**
  * Proper motion of a star in degrees per year
  */
-data class ProperMotion(
-    val declination: Double,
-    val rightAscension: Double,
-)
+data class ProperMotion(val declination: Double, val rightAscension: Double)

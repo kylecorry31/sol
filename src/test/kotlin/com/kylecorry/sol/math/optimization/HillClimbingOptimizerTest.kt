@@ -2,9 +2,11 @@ package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
 import org.junit.jupiter.api.Assertions.*
+
 import org.junit.jupiter.api.Test
 
 internal class HillClimbingOptimizerTest {
+
     @Test
     fun optimize() {
         val optimizer = HillClimbingOptimizer(0.01, 10000)

@@ -2,9 +2,7 @@ package com.kylecorry.sol.units
 
 import com.kylecorry.sol.math.MathExtensions.roundNearest
 
-enum class CompassDirection(
-    val azimuth: Float,
-) {
+enum class CompassDirection(val azimuth: Float) {
     North(0f),
     NorthEast(45f),
     East(90f),
@@ -12,8 +10,7 @@ enum class CompassDirection(
     South(180f),
     SouthWest(225f),
     West(270f),
-    NorthWest(315f),
-    ;
+    NorthWest(315f);
 
     companion object {
         fun nearest(bearing: Float): CompassDirection {

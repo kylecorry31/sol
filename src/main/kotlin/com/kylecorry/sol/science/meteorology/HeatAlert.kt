@@ -8,5 +8,5 @@ enum class HeatAlert {
     HeatCaution,
     HeatWarning,
     HeatAlert,
-    HeatDanger,
+    HeatDanger
 }

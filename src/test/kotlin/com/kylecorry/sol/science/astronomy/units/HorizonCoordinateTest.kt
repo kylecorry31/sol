@@ -1,9 +1,11 @@
 package com.kylecorry.sol.science.astronomy.units
 
 import org.junit.jupiter.api.Assertions.*
+
 import org.junit.jupiter.api.Test
 
 internal class HorizonCoordinateTest {
+
     @Test
     fun toEquatorial() {
         val horizon = HorizonCoordinate(115.0, 40.0)

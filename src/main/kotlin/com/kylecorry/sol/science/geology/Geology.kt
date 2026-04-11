@@ -11,6 +11,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.atan
 
 object Geology {
+
     const val EARTH_AVERAGE_RADIUS = 6371.2e3
 
     private val riskClassifier = AvalancheRiskClassifier()
@@ -20,7 +21,9 @@ object Geology {
      * @param inclination The inclination angle (degrees)
      * @return The avalanche risk
      */
-    fun getAvalancheRisk(inclination: Float): AvalancheRisk = riskClassifier.classify(inclination)
+    fun getAvalancheRisk(inclination: Float): AvalancheRisk {
+        return riskClassifier.classify(inclination)
+    }
 
     /**
      * Determines the grade (percent)
@@ -37,17 +40,15 @@ object Geology {
         return Trigonometry.tanDegrees(inclination) * 100
     }
 
-    fun getInclinationFromSlopeGrade(grade: Float): Float = atan(grade / 100f).toDegrees()
+    fun getInclinationFromSlopeGrade(grade: Float): Float {
+        return atan(grade / 100f).toDegrees()
+    }
 
-    fun getInclination(
-        distance: Distance,
-        elevationChange: Distance,
-    ): Float = getInclinationFromSlopeGrade(getSlopeGrade(distance, elevationChange))
+    fun getInclination(distance: Distance, elevationChange: Distance): Float {
+        return getInclinationFromSlopeGrade(getSlopeGrade(distance, elevationChange))
+    }
 
-    fun getElevationCurvatureCorrection(
-        distance: Distance,
-        withRefraction: Boolean = true,
-    ): Distance {
+    fun getElevationCurvatureCorrection(distance: Distance, withRefraction: Boolean = true): Distance {
         // https://giwmscdnone.gov.np/media/pdf_upload/Compress-%202.%20Engineering%20Surveying%20Grade%20-%209_mv8gnsx.pdf
         val distanceMeters = distance.meters().value
         val curvatureCorrection = square(distanceMeters) / (2 * EARTH_AVERAGE_RADIUS)
@@ -65,7 +66,7 @@ object Geology {
     fun getHorizonDipAngle(
         currentElevation: Distance,
         elevations: List<ElevationRayMeasurement>,
-        withRefraction: Boolean = true,
+        withRefraction: Boolean = true
     ): Float {
         require(elevations.isNotEmpty()) { "elevations must have at least one element" }
         val currentMeters = currentElevation.meters().value
@@ -87,7 +88,7 @@ object Geology {
     fun getHeightFromInclination(
         distance: Distance,
         bottomInclination: Float,
-        topInclination: Float,
+        topInclination: Float
     ): Distance {
         val up = getSlopeGrade(topInclination) / 100f
         val down = getSlopeGrade(bottomInclination) / 100f
@@ -109,7 +110,7 @@ object Geology {
     fun getDistanceFromInclination(
         height: Distance,
         bottomInclination: Float,
-        topInclination: Float,
+        topInclination: Float
     ): Distance {
         val up = getSlopeGrade(topInclination) / 100f
         val down = getSlopeGrade(bottomInclination) / 100f
@@ -124,12 +125,13 @@ object Geology {
      * Calculates the inclination from a unit angle
      * @param angle The angle, where 0 is the horizon (front), 90 is the sky (above), 180 is the horizon (behind), and 270 is the ground (below)
      */
-    fun getInclination(angle: Float): Float =
-        when (val wrappedAngle = wrap(angle, 0f, 360f)) {
+    fun getInclination(angle: Float): Float {
+        return when (val wrappedAngle = wrap(angle, 0f, 360f)) {
             in 90f..270f -> 180f - wrappedAngle
             in 270f..360f -> wrappedAngle - 360f
             else -> wrappedAngle
         }
+    }
 
     /**
      * Determines the grade (percent)
@@ -137,10 +139,7 @@ object Geology {
      * @param vertical The vertical distance
      * @return The slope grade as a percentage
      */
-    fun getSlopeGrade(
-        horizontal: Distance,
-        vertical: Distance,
-    ): Float {
+    fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float {
         val y = vertical.meters().value
         val x = horizontal.meters().value
 
@@ -171,10 +170,12 @@ object Geology {
         start: Coordinate,
         startElevation: Distance,
         end: Coordinate,
-        endElevation: Distance,
-    ): Float =
-        getSlopeGrade(
+        endElevation: Distance
+    ): Float {
+        return getSlopeGrade(
             Distance.meters(start.distanceTo(end)),
-            Distance.meters(endElevation.meters().value - startElevation.meters().value),
+            Distance.meters(endElevation.meters().value - startElevation.meters().value)
         )
+    }
+
 }

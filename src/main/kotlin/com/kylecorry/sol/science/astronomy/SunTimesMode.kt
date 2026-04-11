@@ -4,5 +4,5 @@ enum class SunTimesMode {
     Actual,
     Civil,
     Nautical,
-    Astronomical,
+    Astronomical
 }

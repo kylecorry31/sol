@@ -12,5 +12,5 @@ data class TextureFeatures(
     val horizontalVariance: Float,
     val verticalVariance: Float,
     val correlation: Float,
-    var max: Float,
+    var max: Float
 )

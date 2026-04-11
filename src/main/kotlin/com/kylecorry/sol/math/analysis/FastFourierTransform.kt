@@ -5,19 +5,17 @@ import com.kylecorry.sol.shared.ArrayUtils.swap
 import kotlin.math.PI
 
 internal object FastFourierTransform {
+
     fun fft(
         data: List<Float>,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactors(data.size),
+        twiddleFactors: List<ComplexNumber> = getTwiddleFactors(data.size)
     ): List<ComplexNumber> {
         val complexData = Array(data.size) { ComplexNumber(data[it], 0f) }
         bitReverse(complexData)
         return fftIterative(complexData, twiddleFactors).toList()
     }
 
-    private fun fftIterative(
-        data: Array<ComplexNumber>,
-        twiddleFactors: List<ComplexNumber>,
-    ): Array<ComplexNumber> {
+    private fun fftIterative(data: Array<ComplexNumber>, twiddleFactors: List<ComplexNumber>): Array<ComplexNumber> {
         val n = data.size
         var m = 1
         while (m < n) {
@@ -51,10 +49,7 @@ internal object FastFourierTransform {
         }
     }
 
-    fun ifft(
-        fft: List<ComplexNumber>,
-        twiddleFactors: List<ComplexNumber> = getTwiddleFactors(fft.size),
-    ): List<Float> {
+    fun ifft(fft: List<ComplexNumber>, twiddleFactors: List<ComplexNumber> = getTwiddleFactors(fft.size)): List<Float> {
         val size = fft.size
         val conjugatedInput = Array(size) { fft[it].conjugate() }
         bitReverse(conjugatedInput)
@@ -62,9 +57,11 @@ internal object FastFourierTransform {
             .map { it.conjugate().real / size }
     }
 
-    fun getTwiddleFactors(size: Int): List<ComplexNumber> =
-        List(size / 2) { k ->
+    fun getTwiddleFactors(size: Int): List<ComplexNumber> {
+        return List(size / 2) { k ->
             val twiddleIndex = k.toFloat() / size.toFloat()
             ComplexNumber.exp(-2 * PI.toFloat() * twiddleIndex)
         }
+    }
+
 }

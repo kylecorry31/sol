@@ -2,10 +2,12 @@ package com.kylecorry.sol.math.filters
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
+import org.junit.jupiter.api.Assertions.*
+
 class ProximityChangeFilter1DTest {
+
     @Test
     fun filter() {
         val list = listOf(1f, 2f, 4f, 5f, 6f, 7f, 20f)

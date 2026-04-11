@@ -9,56 +9,52 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 
 internal class CloudService {
-    fun getPrecipitation(cloud: CloudGenus): List<Precipitation> =
-        when (cloud) {
-            CloudGenus.Altostratus ->
-                listOf(
-                    Precipitation.Rain,
-                    Precipitation.Snow,
-                    Precipitation.IcePellets,
-                )
 
-            CloudGenus.Nimbostratus ->
-                listOf(
-                    Precipitation.Rain,
-                    Precipitation.Snow,
-                    Precipitation.IcePellets,
-                )
+    fun getPrecipitation(cloud: CloudGenus): List<Precipitation> {
+        return when (cloud) {
+            CloudGenus.Altostratus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.IcePellets
+            )
 
-            CloudGenus.Stratus ->
-                listOf(
-                    Precipitation.Drizzle,
-                    Precipitation.Snow,
-                    Precipitation.SnowGrains,
-                )
+            CloudGenus.Nimbostratus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.IcePellets
+            )
 
-            CloudGenus.Stratocumulus ->
-                listOf(
-                    Precipitation.Rain,
-                    Precipitation.Drizzle,
-                    Precipitation.Snow,
-                    Precipitation.SnowPellets,
-                )
+            CloudGenus.Stratus -> listOf(
+                Precipitation.Drizzle,
+                Precipitation.Snow,
+                Precipitation.SnowGrains
+            )
 
-            CloudGenus.Cumulus ->
-                listOf(
-                    Precipitation.Rain,
-                    Precipitation.Snow,
-                    Precipitation.SnowPellets,
-                )
+            CloudGenus.Stratocumulus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Drizzle,
+                Precipitation.Snow,
+                Precipitation.SnowPellets
+            )
 
-            CloudGenus.Cumulonimbus ->
-                listOf(
-                    Precipitation.Rain,
-                    Precipitation.Snow,
-                    Precipitation.SnowPellets,
-                    Precipitation.Hail,
-                    Precipitation.SmallHail,
-                    Precipitation.Lightning,
-                )
+            CloudGenus.Cumulus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.SnowPellets
+            )
+
+            CloudGenus.Cumulonimbus -> listOf(
+                Precipitation.Rain,
+                Precipitation.Snow,
+                Precipitation.SnowPellets,
+                Precipitation.Hail,
+                Precipitation.SmallHail,
+                Precipitation.Lightning
+            )
 
             else -> emptyList()
         }
+    }
 
     fun getPrecipitationChance(cloud: CloudGenus): Float {
         // Using average values from table 9: https://www.ideals.illinois.edu/bitstream/handle/2142/101973/ISWSRI-33.pdf?sequence=1&isAllowed=y
@@ -76,49 +72,42 @@ internal class CloudService {
         }
     }
 
-    fun getHeightRange(
-        level: CloudLevel,
-        location: Coordinate,
-    ): Range<Distance> {
+    fun getHeightRange(level: CloudLevel, location: Coordinate): Range<Distance> {
         if (level == CloudLevel.Low) {
             return Range(
                 Distance.from(0f, DistanceUnits.Kilometers),
-                Distance.from(2f, DistanceUnits.Kilometers),
+                Distance.from(2f, DistanceUnits.Kilometers)
             )
         }
 
         val region = Geography.getRegion(location)
-        val highStart =
-            when (region) {
-                Region.Polar -> 3f
-                Region.Temperate -> 5f
-                Region.Tropical -> 6f
-            }
+        val highStart = when (region) {
+            Region.Polar -> 3f
+            Region.Temperate -> 5f
+            Region.Tropical -> 6f
+        }
 
-        val highEnd =
-            when (region) {
-                Region.Polar -> 8f
-                Region.Temperate -> 14f
-                Region.Tropical -> 18f
-            }
+        val highEnd = when (region) {
+            Region.Polar -> 8f
+            Region.Temperate -> 14f
+            Region.Tropical -> 18f
+        }
 
         return when (level) {
-            CloudLevel.Mid ->
-                Range(
-                    Distance.from(2f, DistanceUnits.Kilometers),
-                    Distance.from(highStart, DistanceUnits.Kilometers),
-                )
+            CloudLevel.Mid -> Range(
+                Distance.from(2f, DistanceUnits.Kilometers),
+                Distance.from(highStart, DistanceUnits.Kilometers)
+            )
 
-            else ->
-                Range(
-                    Distance.from(highStart, DistanceUnits.Kilometers),
-                    Distance.from(highEnd, DistanceUnits.Kilometers),
-                )
+            else -> Range(
+                Distance.from(highStart, DistanceUnits.Kilometers),
+                Distance.from(highEnd, DistanceUnits.Kilometers)
+            )
         }
     }
 
-    fun getCloudCover(percent: Float): CloudCover =
-        when {
+    fun getCloudCover(percent: Float): CloudCover {
+        return when {
             percent < 0.01f -> {
                 CloudCover.NoClouds
             }
@@ -143,4 +132,6 @@ internal class CloudService {
                 CloudCover.Overcast
             }
         }
+    }
+
 }

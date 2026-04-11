@@ -6,19 +6,16 @@ import com.kylecorry.sol.math.Vector2
 class IterativeSimpleExtremaFinder(
     initialStep: Double,
     finalStep: Double,
-    levels: Int = 2,
+    levels: Int = 2
 ) : IExtremaFinder {
-    private val stepSizes =
-        (1..levels).map {
-            initialStep + (finalStep - initialStep) * (it - 1) / (levels - 1).toDouble()
-        }
+
+    private val stepSizes = (1..levels).map {
+        initialStep + (finalStep - initialStep) * (it - 1) / (levels - 1).toDouble()
+    }
 
     private val initialFinder = SimpleExtremaFinder(initialStep)
 
-    override fun find(
-        range: Range<Double>,
-        fn: (x: Double) -> Double,
-    ): List<Extremum> {
+    override fun find(range: Range<Double>, fn: (x: Double) -> Double): List<Extremum> {
         // Get the initial extremas
         var extremas = initialFinder.find(range, fn)
 
@@ -32,7 +29,7 @@ class IterativeSimpleExtremaFinder(
     private fun fineTune(
         extremas: List<Extremum>,
         fn: (x: Double) -> Double,
-        level: Int,
+        level: Int
     ): List<Extremum> {
         val nextExtremas = mutableListOf<Extremum>()
         for (extrema in extremas) {
@@ -42,17 +39,14 @@ class IterativeSimpleExtremaFinder(
                     nextRange,
                     fn,
                     level,
-                    extrema.isHigh,
-                ),
+                    extrema.isHigh
+                )
             )
         }
         return nextExtremas
     }
 
-    private fun createRange(
-        extremum: Extremum,
-        stepSize: Double,
-    ): Range<Double> {
+    private fun createRange(extremum: Extremum, stepSize: Double): Range<Double> {
         val start = extremum.point.x - stepSize
         val end = extremum.point.x + stepSize
         return Range(start, end)
@@ -62,7 +56,7 @@ class IterativeSimpleExtremaFinder(
         range: Range<Double>,
         fn: (x: Double) -> Double,
         level: Int,
-        isHigh: Boolean,
+        isHigh: Boolean
     ): Extremum {
         val step = stepSizes[level]
         var targetX = range.start
@@ -91,7 +85,7 @@ class IterativeSimpleExtremaFinder(
 
         return Extremum(
             Vector2(targetX.toFloat(), targetY.toFloat()),
-            isHigh,
+            isHigh
         )
     }
 }

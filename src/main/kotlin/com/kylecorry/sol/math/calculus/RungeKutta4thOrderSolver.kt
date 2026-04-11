@@ -4,11 +4,12 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector
 
 class RungeKutta4thOrderSolver : ODESolver {
+
     override fun solve(
         x: Range<Float>,
         stepSize: Float,
         initialY: Vector,
-        derivative: (x: Float, y: Vector) -> Vector,
+        derivative: (x: Float, y: Vector) -> Vector
     ): List<Pair<Float, Vector>> {
         // https://www.geeksforgeeks.org/dsa/runge-kutta-4th-order-method-solve-differential-equation/
         val results = mutableListOf<Pair<Float, Vector>>()

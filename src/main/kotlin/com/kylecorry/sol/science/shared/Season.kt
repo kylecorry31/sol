@@ -4,5 +4,5 @@ enum class Season {
     Winter,
     Spring,
     Summer,
-    Fall,
+    Fall
 }

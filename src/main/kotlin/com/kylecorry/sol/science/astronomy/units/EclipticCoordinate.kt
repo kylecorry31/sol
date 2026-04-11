@@ -9,35 +9,31 @@ import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import kotlin.math.asin
 import kotlin.math.atan2
 
-internal class EclipticCoordinate(
-    _eclipticLatitude: Double,
-    _eclipticLongitude: Double,
-) {
+internal class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) {
     val eclipticLatitude = wrap(_eclipticLatitude, -90.0, 90.0)
     val eclipticLongitude = wrap(_eclipticLongitude, 0.0, 360.0)
 
     fun toEquatorial(eclipticObliquity: Double): EquatorialCoordinate {
-        val rightAscension =
-            atan2(
-                sinDegrees(eclipticLongitude) * cosDegrees(eclipticObliquity) - tanDegrees(eclipticLatitude) *
-                    sinDegrees(
-                        eclipticObliquity,
-                    ),
-                cosDegrees(eclipticLongitude),
-            ).toDegrees()
+        val rightAscension = atan2(
+            sinDegrees(eclipticLongitude) * cosDegrees(eclipticObliquity) - tanDegrees(eclipticLatitude) * sinDegrees(
+                eclipticObliquity
+            ),
+            cosDegrees(eclipticLongitude)
+        ).toDegrees()
 
-        val declination =
-            asin(
-                sinDegrees(eclipticLatitude) * cosDegrees(eclipticObliquity) + cosDegrees(eclipticLatitude) *
-                    sinDegrees(
-                        eclipticObliquity,
-                    ) * sinDegrees(eclipticLongitude),
-            ).toDegrees()
+        val declination = asin(
+            sinDegrees(eclipticLatitude) * cosDegrees(eclipticObliquity) + cosDegrees(eclipticLatitude) * sinDegrees(
+                eclipticObliquity
+            ) * sinDegrees(eclipticLongitude)
+        ).toDegrees()
 
         return EquatorialCoordinate(declination, rightAscension)
+
     }
 
-    fun toEquatorial(ut: UniversalTime): EquatorialCoordinate = toEquatorial(getObliquityOfTheEcliptic(ut))
+    fun toEquatorial(ut: UniversalTime): EquatorialCoordinate {
+        return toEquatorial(getObliquityOfTheEcliptic(ut))
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -57,6 +53,7 @@ internal class EclipticCoordinate(
         return result
     }
 
+
     companion object {
         fun getObliquityOfTheEcliptic(ut: UniversalTime): Double {
             val e0 = 23.439292
@@ -66,7 +63,7 @@ internal class EclipticCoordinate(
 
         fun fromEquatorial(
             equatorial: EquatorialCoordinate,
-            ut: UniversalTime,
+            ut: UniversalTime
         ): EclipticCoordinate {
             val e = getObliquityOfTheEcliptic(ut)
             val alpha = equatorial.rightAscension
@@ -77,10 +74,9 @@ internal class EclipticCoordinate(
             val t = t0 - t1
             val lat = asin(t).toDegrees()
             val y =
-                sinDegrees(alpha) * cosDegrees(e) + tanDegrees(delta) *
-                    sinDegrees(
-                        e,
-                    )
+                sinDegrees(alpha) * cosDegrees(e) + tanDegrees(delta) * sinDegrees(
+                    e
+                )
 
             val x = cosDegrees(alpha)
 
@@ -93,5 +89,8 @@ internal class EclipticCoordinate(
 
             return EclipticCoordinate(lat, lon)
         }
+
     }
+
+
 }

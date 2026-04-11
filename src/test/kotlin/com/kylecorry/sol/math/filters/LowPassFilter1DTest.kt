@@ -1,9 +1,11 @@
 package com.kylecorry.sol.math.filters
 
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
+import org.junit.jupiter.api.Assertions.*
+
 class LowPassFilter1DTest {
+
     @Test
     fun filter() {
         val data = listOf(0f, 1f, 2f, 3f)

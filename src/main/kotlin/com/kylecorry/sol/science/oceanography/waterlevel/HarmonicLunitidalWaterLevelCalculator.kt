@@ -9,16 +9,18 @@ import java.time.ZonedDateTime
 
 class HarmonicLunitidalWaterLevelCalculator(
     lunitidalInterval: Duration,
-    location: Coordinate = Coordinate.zero,
+    location: Coordinate = Coordinate.zero
 ) : IWaterLevelCalculator {
-    private val harmonic =
-        TidalHarmonic(
-            TideConstituent.M2,
-            1f,
-            ((Time.hours(lunitidalInterval) - location.longitude / 15) * TideConstituent.M2.speed).toFloat(),
-        )
+
+    private val harmonic = TidalHarmonic(
+        TideConstituent.M2,
+        1f,
+        ((Time.hours(lunitidalInterval) - location.longitude / 15) * TideConstituent.M2.speed).toFloat()
+    )
 
     private val harmonicCalculator = HarmonicWaterLevelCalculator(listOf(harmonic))
 
-    override fun calculate(time: ZonedDateTime): Float = harmonicCalculator.calculate(time)
+    override fun calculate(time: ZonedDateTime): Float {
+        return harmonicCalculator.calculate(time)
+    }
 }

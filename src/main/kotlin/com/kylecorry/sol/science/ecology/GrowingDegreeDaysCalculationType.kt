@@ -9,5 +9,5 @@ enum class GrowingDegreeDaysCalculationType {
     /**
      * Uses the minimum and maximum temperature, but if min < base it will use base instead of min
      */
-    BaseMax,
+    BaseMax
 }

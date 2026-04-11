@@ -11,6 +11,7 @@ import java.time.Duration
 import java.time.LocalDate
 
 class DurationTriggerTest {
+
     @Test
     fun triggersAfterDurationFromBaseTriggerDate() {
         val baseTrigger = DateThresholdTrigger(LocalDate.of(2024, 1, 2))
@@ -42,23 +43,24 @@ class DurationTriggerTest {
         assertEquals(1, baseTrigger.resetCount)
     }
 
-    private fun factors(date: LocalDate): LifecycleEventFactors =
-        LifecycleEventFactors(
+    private fun factors(date: LocalDate): LifecycleEventFactors {
+        return LifecycleEventFactors(
             lengthOfDay = Duration.ofHours(12),
             temperature = Range(Temperature.celsius(0f), Temperature.celsius(0f)),
-            date = date,
+            date = date
         )
-
-    private class DateThresholdTrigger(
-        private val startDate: LocalDate,
-    ) : LifecycleEventTrigger {
-        override fun isTriggered(factors: LifecycleEventFactors): Boolean = factors.date >= startDate
     }
 
-    private class OneDayTrigger(
-        private val triggerDate: LocalDate,
-    ) : LifecycleEventTrigger {
-        override fun isTriggered(factors: LifecycleEventFactors): Boolean = factors.date == triggerDate
+    private class DateThresholdTrigger(private val startDate: LocalDate) : LifecycleEventTrigger {
+        override fun isTriggered(factors: LifecycleEventFactors): Boolean {
+            return factors.date >= startDate
+        }
+    }
+
+    private class OneDayTrigger(private val triggerDate: LocalDate) : LifecycleEventTrigger {
+        override fun isTriggered(factors: LifecycleEventFactors): Boolean {
+            return factors.date == triggerDate
+        }
     }
 
     private class ResetTrackingTrigger : LifecycleEventTrigger {

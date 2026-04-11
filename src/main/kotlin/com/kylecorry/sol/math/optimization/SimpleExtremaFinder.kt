@@ -4,14 +4,9 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
 import kotlin.math.min
 
-class SimpleExtremaFinder(
-    private val step: Double = 1.0,
-) : IExtremaFinder,
-    IListExtremaFinder {
-    override fun find(
-        range: Range<Double>,
-        fn: (x: Double) -> Double,
-    ): List<Extremum> {
+class SimpleExtremaFinder(private val step: Double = 1.0) : IExtremaFinder, IListExtremaFinder {
+
+    override fun find(range: Range<Double>, fn: (x: Double) -> Double): List<Extremum> {
         val extrema = mutableListOf<Extremum>()
         var previous = fn(range.start - step)
         var x = range.start
@@ -64,4 +59,5 @@ class SimpleExtremaFinder(
         }
         return extrema
     }
+
 }

@@ -2,9 +2,8 @@ package com.kylecorry.sol.math.filters
 
 import kotlin.math.abs
 
-class ProximityChangeFilter(
-    private val changeThreshold: Float,
-) {
+class ProximityChangeFilter(private val changeThreshold: Float) {
+
     private var lastValid: Float = Float.NaN
 
     fun filter(measurement: Float): Float {
@@ -20,4 +19,5 @@ class ProximityChangeFilter(
 
         return lastValid
     }
+
 }

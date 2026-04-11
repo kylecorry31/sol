@@ -1,8 +1,6 @@
 package com.kylecorry.sol.math.filters
 
-class LowPassFilter1D(
-    var alpha: Float,
-) : IFilter1D {
+class LowPassFilter1D(var alpha: Float) : IFilter1D {
     override fun filter(data: List<Float>): List<Float> {
         if (data.isEmpty()) {
             return emptyList()

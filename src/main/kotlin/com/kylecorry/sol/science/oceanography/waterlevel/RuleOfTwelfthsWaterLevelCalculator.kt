@@ -8,8 +8,9 @@ import java.time.ZonedDateTime
 
 class RuleOfTwelfthsWaterLevelCalculator(
     private val first: Tide,
-    private val second: Tide,
+    private val second: Tide
 ) : IWaterLevelCalculator {
+
     private val wave by lazy {
         val firstVec = Vector2(getX(first.time), first.height ?: (if (first.isHigh) 1f else -1f))
         val secondVec =
@@ -17,7 +18,12 @@ class RuleOfTwelfthsWaterLevelCalculator(
         Trigonometry.connect(firstVec, secondVec)
     }
 
-    override fun calculate(time: ZonedDateTime): Float = wave.calculate(getX(time))
+    override fun calculate(time: ZonedDateTime): Float {
+        return wave.calculate(getX(time))
+    }
 
-    private fun getX(time: ZonedDateTime): Float = hoursBetween(first.time, time)
+    private fun getX(time: ZonedDateTime): Float {
+        return hoursBetween(first.time, time)
+    }
+
 }

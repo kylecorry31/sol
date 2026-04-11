@@ -38,6 +38,7 @@ open class LatLon {
     }
 
     fun add(that: LatLon): LatLon {
+
         val lat = Angle.normalizedLatitude(this.latitude.add(that.latitude))
         val lon = Angle.normalizedLongitude(this.longitude.add(that.longitude))
 
@@ -45,6 +46,7 @@ open class LatLon {
     }
 
     fun subtract(that: LatLon): LatLon {
+
         val lat = Angle.normalizedLatitude(this.latitude.subtract(that.latitude))
         val lon = Angle.normalizedLongitude(this.longitude.subtract(that.longitude))
 

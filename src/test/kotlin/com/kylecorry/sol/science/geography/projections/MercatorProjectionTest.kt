@@ -14,13 +14,10 @@ import java.util.stream.Stream
 import kotlin.math.PI
 
 internal class MercatorProjectionTest {
+
     @ParameterizedTest
     @MethodSource("provideToCoordinate")
-    fun toCoordinate(
-        x: Float,
-        y: Float,
-        expected: Coordinate,
-    ) {
+    fun toCoordinate(x: Float, y: Float, expected: Coordinate) {
         val projection = MercatorProjection()
         val coordinate = projection.toCoordinate(Vector2(x, y))
         assertThat(coordinate).isCloseTo(expected, 0.5f)
@@ -28,11 +25,7 @@ internal class MercatorProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideToPixels")
-    fun toPixels(
-        coordinate: Coordinate,
-        expectedX: Float,
-        expectedY: Float,
-    ) {
+    fun toPixels(coordinate: Coordinate, expectedX: Float, expectedY: Float) {
         val projection = MercatorProjection()
         val pixels = projection.toPixels(coordinate)
         assertThat(pixels.x).isCloseTo(expectedX, 0.5f)
@@ -52,22 +45,14 @@ internal class MercatorProjectionTest {
         "80, 0.1736482",
         "-80, 0.1736482",
     )
-    fun getScaleForLatitude(
-        latitude: Double,
-        expected: Float,
-    ) {
+    fun getScaleForLatitude(latitude: Double, expected: Float) {
         val scale = MercatorProjection.getScaleForLatitude(latitude)
         assertThat(scale).isCloseTo(expected, 0.0001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideScaledToCoordinate")
-    fun toCoordinateScaled(
-        scale: Float,
-        x: Float,
-        y: Float,
-        expected: Coordinate,
-    ) {
+    fun toCoordinateScaled(scale: Float, x: Float, y: Float, expected: Coordinate) {
         val projection = MercatorProjection(scale)
         val coordinate = projection.toCoordinate(Vector2(x, y))
         assertThat(coordinate).isCloseTo(expected, 0.5f)
@@ -75,12 +60,7 @@ internal class MercatorProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideScaledToPixels")
-    fun toPixelsScaled(
-        scale: Float,
-        coordinate: Coordinate,
-        expectedX: Float,
-        expectedY: Float,
-    ) {
+    fun toPixelsScaled(scale: Float, coordinate: Coordinate, expectedX: Float, expectedY: Float) {
         val projection = MercatorProjection(scale)
         val pixels = projection.toPixels(coordinate)
         assertThat(pixels.x).isCloseTo(expectedX, 0.0001f)
@@ -89,8 +69,8 @@ internal class MercatorProjectionTest {
 
     companion object {
         @JvmStatic
-        fun provideToCoordinate(): Stream<Arguments> =
-            Stream.of(
+        fun provideToCoordinate(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(0f, 0f, Coordinate.zero),
                 Arguments.of(0f, 0.17542583f, Coordinate(10.0, 0.0)),
                 Arguments.of(0f, -0.17542583f, Coordinate(-10.0, 0.0)),
@@ -109,10 +89,11 @@ internal class MercatorProjectionTest {
                 Arguments.of(200f.toRadians(), 0f, Coordinate(0.0, -160.0)),
                 Arguments.of((-200f).toRadians(), 0f, Coordinate(0.0, 160.0)),
             )
+        }
 
         @JvmStatic
-        fun provideToPixels(): Stream<Arguments> =
-            Stream.of(
+        fun provideToPixels(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(Coordinate.zero, 0f, 0f),
                 Arguments.of(Coordinate(10.0, 0.0), 0f, 0.17542583f),
                 Arguments.of(Coordinate(-10.0, 0.0), 0f, -0.17542583f),
@@ -131,19 +112,23 @@ internal class MercatorProjectionTest {
                 Arguments.of(Coordinate(0.0, 160.0), 160f.toRadians(), 0f),
                 Arguments.of(Coordinate(0.0, -160.0), (-160f).toRadians(), 0f),
             )
+        }
 
         @JvmStatic
-        fun provideScaledToCoordinate(): Stream<Arguments> =
-            Stream.of(
+        fun provideScaledToCoordinate(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(2f, 20f.toRadians(), 0.35085166f, Coordinate(10.0, 10.0)),
                 Arguments.of(2f, (-20f).toRadians(), -0.35085166f, Coordinate(-10.0, -10.0)),
             )
+        }
 
         @JvmStatic
-        fun provideScaledToPixels(): Stream<Arguments> =
-            Stream.of(
+        fun provideScaledToPixels(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(2f, Coordinate(10.0, 10.0), 20f.toRadians(), 0.35085166f),
                 Arguments.of(2f, Coordinate(-10.0, -10.0), (-20f).toRadians(), -0.35085166f),
             )
+        }
     }
+
 }

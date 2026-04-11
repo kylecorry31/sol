@@ -14,6 +14,7 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 internal class TrigonometryTest {
+
     @ParameterizedTest
     @CsvSource(
         "0, 0, true, 0",
@@ -39,11 +40,12 @@ internal class TrigonometryTest {
         originalAngle: Float,
         start: Float,
         isCounterClockwise: Boolean,
-        expected: Float,
+        expected: Float
     ) {
         val actual = Trigonometry.remapUnitAngle(originalAngle, start, isCounterClockwise)
         assertEquals(expected, actual, 0.0001f)
     }
+
 
     @ParameterizedTest
     @CsvSource(
@@ -71,7 +73,7 @@ internal class TrigonometryTest {
         originalAngle: Float,
         start: Float,
         isCounterClockwise: Boolean,
-        expected: Float,
+        expected: Float
     ) {
         val actual = Trigonometry.toUnitAngle(originalAngle, start, isCounterClockwise)
         assertEquals(expected, actual, 0.0001f)
@@ -84,12 +86,7 @@ internal class TrigonometryTest {
         "1, 0, -1, 1",
         "1, 1, 0, 2",
     )
-    fun getRangeY(
-        amplitude: Float,
-        verticalOffset: Float,
-        expectedMin: Float,
-        expectedMax: Float,
-    ) {
+    fun getRangeY(amplitude: Float, verticalOffset: Float, expectedMin: Float, expectedMax: Float) {
         val wave = CosineWave(amplitude, 1f, 0f, verticalOffset)
         val range = Trigonometry.getRangeY(wave)
         assertEquals(expectedMin, range.start, 0.0001f)
@@ -98,12 +95,11 @@ internal class TrigonometryTest {
 
     @Test
     fun getCombinationRangeY() {
-        val waves =
-            listOf(
-                CosineWave(1f, 1f, 0f, 0f),
-                CosineWave(2f, 3f, 1f, 1f),
-                CosineWave(3f, 2f, 0f, 0f),
-            )
+        val waves = listOf(
+            CosineWave(1f, 1f, 0f, 0f),
+            CosineWave(2f, 3f, 1f, 1f),
+            CosineWave(3f, 2f, 0f, 0f)
+        )
 
         val range = Trigonometry.getCombinationRangeY(waves)
 
@@ -124,79 +120,57 @@ internal class TrigonometryTest {
 
     @ParameterizedTest
     @MethodSource("provideDeltaAngle")
-    fun deltaAngle(
-        angle1: Float,
-        angle2: Float,
-        expected: Float,
-    ) {
+    fun deltaAngle(angle1: Float, angle2: Float, expected: Float) {
         val actual = Trigonometry.deltaAngle(angle1, angle2)
         assertEquals(expected, actual, 0.00001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideTanDegrees")
-    fun tanDegreesDouble(
-        angle: Double,
-        expected: Double,
-    ) {
+    fun tanDegreesDouble(angle: Double, expected: Double) {
         val actual = Trigonometry.tanDegrees(angle)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideTanDegrees")
-    fun tanDegreesFloat(
-        angle: Double,
-        expected: Double,
-    ) {
+    fun tanDegreesFloat(angle: Double, expected: Double) {
         val actual = Trigonometry.tanDegrees(angle.toFloat())
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideSinDegrees")
-    fun sinDegreesDouble(
-        angle: Double,
-        expected: Double,
-    ) {
+    fun sinDegreesDouble(angle: Double, expected: Double) {
         val actual = Trigonometry.sinDegrees(angle)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideSinDegrees")
-    fun sinDegreesFloat(
-        angle: Double,
-        expected: Double,
-    ) {
+    fun sinDegreesFloat(angle: Double, expected: Double) {
         val actual = Trigonometry.sinDegrees(angle.toFloat())
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideCosDegrees")
-    fun cosDegreesDouble(
-        angle: Double,
-        expected: Double,
-    ) {
+    fun cosDegreesDouble(angle: Double, expected: Double) {
         val actual = Trigonometry.cosDegrees(angle)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideCosDegrees")
-    fun cosDegreesFloat(
-        angle: Double,
-        expected: Double,
-    ) {
+    fun cosDegreesFloat(angle: Double, expected: Double) {
         val actual = Trigonometry.cosDegrees(angle.toFloat())
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
     companion object {
         @JvmStatic
-        fun provideDeltaAngle(): Stream<Arguments> =
-            Stream.of(
+        fun provideDeltaAngle(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(0.0f, 0.0f, 0.0f),
                 Arguments.of(15.0f, 15.0f, 0.0f),
                 Arguments.of(15.0f, 25.0f, 10.0f),
@@ -210,35 +184,39 @@ internal class TrigonometryTest {
                 Arguments.of(-10.0f, 180.0f, -170.0f),
                 Arguments.of(0.0f, 180.0f, 180.0f),
             )
+        }
 
         @JvmStatic
-        fun provideTanDegrees(): Stream<Arguments> =
-            Stream.of(
+        fun provideTanDegrees(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(45.0, tan(Math.toRadians(45.0))),
                 Arguments.of(80.0, tan(Math.toRadians(80.0))),
                 Arguments.of(0.0, tan(Math.toRadians(0.0))),
                 Arguments.of(-80.0, tan(Math.toRadians(-80.0))),
                 Arguments.of(720.0, tan(Math.toRadians(720.0))),
             )
+        }
 
         @JvmStatic
-        fun provideSinDegrees(): Stream<Arguments> =
-            Stream.of(
+        fun provideSinDegrees(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(45.0, sin(Math.toRadians(45.0))),
                 Arguments.of(90.0, sin(Math.toRadians(90.0))),
                 Arguments.of(0.0, sin(Math.toRadians(0.0))),
                 Arguments.of(-90.0, sin(Math.toRadians(-90.0))),
                 Arguments.of(720.0, sin(Math.toRadians(720.0))),
             )
+        }
 
         @JvmStatic
-        fun provideCosDegrees(): Stream<Arguments> =
-            Stream.of(
+        fun provideCosDegrees(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(45.0, cos(Math.toRadians(45.0))),
                 Arguments.of(90.0, cos(Math.toRadians(90.0))),
                 Arguments.of(0.0, cos(Math.toRadians(0.0))),
                 Arguments.of(-90.0, cos(Math.toRadians(-90.0))),
                 Arguments.of(720.0, cos(Math.toRadians(720.0))),
             )
+        }
     }
 }

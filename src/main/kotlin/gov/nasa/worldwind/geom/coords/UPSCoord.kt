@@ -19,8 +19,9 @@ class UPSCoord(
     val longitude: Angle,
     val hemisphere: String?,
     val easting: Double,
-    val northing: Double,
+    val northing: Double
 ) {
+
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append(if (AVKey.NORTH == hemisphere) "N" else "S")
@@ -30,29 +31,19 @@ class UPSCoord(
     }
 
     companion object {
-        fun fromLatLon(
-            latitude: Angle,
-            longitude: Angle,
-        ): UPSCoord {
+        fun fromLatLon(latitude: Angle, longitude: Angle): UPSCoord {
             val converter = UPSCoordConverter()
             val err = converter.convertGeodeticToUPS(latitude.radians, longitude.radians)
 
             require(err == UPSCoordConverter.UPS_NO_ERROR.toLong()) { "UPS Conversion Error" }
 
             return UPSCoord(
-                latitude,
-                longitude,
-                converter.hemisphere,
-                converter.easting,
-                converter.northing,
+                latitude, longitude, converter.hemisphere,
+                converter.easting, converter.northing
             )
         }
 
-        fun fromUPS(
-            hemisphere: String?,
-            easting: Double,
-            northing: Double,
-        ): UPSCoord {
+        fun fromUPS(hemisphere: String?, easting: Double, northing: Double): UPSCoord {
             val converter = UPSCoordConverter()
             val err = converter.convertUPSToGeodetic(hemisphere, easting, northing)
 
@@ -61,9 +52,7 @@ class UPSCoord(
             return UPSCoord(
                 Angle.fromRadians(converter.latitude),
                 Angle.fromRadians(converter.longitude),
-                hemisphere,
-                easting,
-                northing,
+                hemisphere, easting, northing
             )
         }
     }

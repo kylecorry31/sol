@@ -5,18 +5,18 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class NewtonInterpolatorTest {
+
     @Test
     fun interpolate() {
-        val interpolator =
-            NewtonInterpolator(
-                listOf(
-                    Vector2(0f, 0f),
-                    Vector2(1f, 1f),
-                    Vector2(2f, 8f),
-                    Vector2(3f, 27f),
-                    Vector2(4f, 64f),
-                ),
+        val interpolator = NewtonInterpolator(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(1f, 1f),
+                Vector2(2f, 8f),
+                Vector2(3f, 27f),
+                Vector2(4f, 64f)
             )
+        )
         assertEquals(0f, interpolator.interpolate(0f))
         assertEquals(1f, interpolator.interpolate(1f))
         assertEquals(8f, interpolator.interpolate(2f))
@@ -32,17 +32,16 @@ class NewtonInterpolatorTest {
 
     @Test
     fun firstOrderInterpolation() {
-        val interpolator =
-            NewtonInterpolator(
-                listOf(
-                    Vector2(0f, 0f),
-                    Vector2(1f, 1f),
-                    Vector2(2f, 8f),
-                    Vector2(3f, 27f),
-                    Vector2(4f, 64f),
-                ),
-                1,
-            )
+        val interpolator = NewtonInterpolator(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(1f, 1f),
+                Vector2(2f, 8f),
+                Vector2(3f, 27f),
+                Vector2(4f, 64f)
+            ),
+            1
+        )
         assertEquals(0f, interpolator.interpolate(0f))
         assertEquals(1f, interpolator.interpolate(1f))
         assertEquals(2f, interpolator.interpolate(2f))
@@ -55,17 +54,16 @@ class NewtonInterpolatorTest {
 
     @Test
     fun secondOrderInterpolation() {
-        val interpolator =
-            NewtonInterpolator(
-                listOf(
-                    Vector2(0f, 0f),
-                    Vector2(1f, 1f),
-                    Vector2(2f, 8f),
-                    Vector2(3f, 27f),
-                    Vector2(4f, 64f),
-                ),
-                2,
-            )
+        val interpolator = NewtonInterpolator(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(1f, 1f),
+                Vector2(2f, 8f),
+                Vector2(3f, 27f),
+                Vector2(4f, 64f)
+            ),
+            2
+        )
         assertEquals(0f, interpolator.interpolate(0f))
         assertEquals(1f, interpolator.interpolate(1f))
         assertEquals(8f, interpolator.interpolate(2f))

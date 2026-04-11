@@ -34,18 +34,19 @@ internal object ForecastHelper {
         return mutableConditions.distinct()
     }
 
-    fun getPressureSystem(pressure: Pressure): PressureSystem? =
-        if (Meteorology.isHighPressure(pressure)) {
+    fun getPressureSystem(pressure: Pressure): PressureSystem? {
+        return if (Meteorology.isHighPressure(pressure)) {
             PressureSystem.High
         } else if (Meteorology.isLowPressure(pressure)) {
             PressureSystem.Low
         } else {
             null
         }
+    }
 
     fun getTendency(
         pressures: List<Reading<Pressure>>,
-        threshold: Float,
+        threshold: Float
     ): PressureTendency {
         if (pressures.size < 2) {
             return PressureTendency(PressureCharacteristic.Steady, 0f)
@@ -54,24 +55,21 @@ internal object ForecastHelper {
         val pressure = pressures.last()
 
         val targetTime = pressure.time.minus(Duration.ofHours(3))
-        val lastPressure =
-            pressures.minBy {
-                if (it == pressure) {
-                    Long.MAX_VALUE
-                } else {
-                    Duration
-                        .between(
-                            it.time,
-                            targetTime,
-                        ).abs()
-                        .seconds
-                }
+        val lastPressure = pressures.minBy {
+            if (it == pressure) {
+                Long.MAX_VALUE
+            } else {
+                Duration.between(
+                    it.time,
+                    targetTime
+                ).abs().seconds
             }
+        }
         return Meteorology.getTendency(
             lastPressure.value,
             pressure.value,
             Duration.between(lastPressure.time, pressure.time),
-            threshold,
+            threshold
         )
     }
 

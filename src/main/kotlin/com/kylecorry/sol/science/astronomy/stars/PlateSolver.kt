@@ -12,12 +12,13 @@ internal class PlateSolver(
     private val tolerance: Float = 0.04f,
     private val minMatches: Int = 5,
     private val numNeighbors: Int = 3,
-    private val minMagnitude: Float = 4f,
+    private val minMagnitude: Float = 4f
 ) {
+
     fun solve(
         readings: List<AltitudeAzimuth>,
         time: ZonedDateTime,
-        approximateLocation: Coordinate = Time.getLocationFromTimeZone(time.zone),
+        approximateLocation: Coordinate = Time.getLocationFromTimeZone(time.zone)
     ): List<DetectedStar> {
         if (readings.size < numNeighbors + 1) {
             // Not enough readings to solve
@@ -35,20 +36,15 @@ internal class PlateSolver(
         val queue = readingsQuads.toMutableList()
         while (queue.isNotEmpty()) {
             val reading = queue.removeAt(0)
-            val possibleMatches =
-                catalogQuads
-                    .map {
-                        it to getConfidence(reading.second, it.second.second)
-                    }.sortedByDescending { it.second }
-                    .take(6)
+            val possibleMatches = catalogQuads.map {
+                it to getConfidence(reading.second, it.second.second)
+            }.sortedByDescending { it.second }.take(6)
 
             // Go through each possible match and see if it is a better match than what is recorded
             var mostConfidentMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
             for (possibleMatch in possibleMatches) {
                 val confidence = possibleMatch.second
-                if (matches.none { it.star == possibleMatch.first.first } ||
-                    confidence > matches.first { it.star == possibleMatch.first.first }.confidence
-                ) {
+                if (matches.none { it.star == possibleMatch.first.first } || confidence > matches.first { it.star == possibleMatch.first.first }.confidence) {
                     val existing = matches.filter { it.star == possibleMatch.first.first }
                     matches.removeAll(existing)
                     queue.addAll(readingsQuads.filter { q -> existing.any { q.first == it.reading } })
@@ -61,10 +57,9 @@ internal class PlateSolver(
                 continue
             }
 
-            val count =
-                reading.second.zip(mostConfidentMatch.second.second).count { (a, b) ->
-                    (a - b).absoluteValue < tolerance
-                }
+            val count = reading.second.zip(mostConfidentMatch.second.second).count { (a, b) ->
+                (a - b).absoluteValue < tolerance
+            }
 
             if (count >= minMatches) {
                 val confidence = getConfidence(reading.second, mostConfidentMatch.second.second)
@@ -72,8 +67,8 @@ internal class PlateSolver(
                     DetectedStar(
                         mostConfidentMatch.first,
                         reading.first,
-                        confidence,
-                    ),
+                        confidence
+                    )
                 )
             }
         }
@@ -84,7 +79,7 @@ internal class PlateSolver(
     private fun getAllQuads(
         stars: List<Star>,
         time: ZonedDateTime,
-        approximateLocation: Coordinate,
+        approximateLocation: Coordinate
     ): List<Pair<Star, Pair<AltitudeAzimuth, FloatArray>>> {
         val degreesOfSeparation = 10f
         val degreesStep = 0.2f
@@ -93,16 +88,12 @@ internal class PlateSolver(
         // Remove stars that are way below the horizon
         // TODO: Also remove stars that are way out of sight based on the input readings
         // NOTE: Magnitude is inverted, so lower is brighter
-        val starReadings =
-            stars
-                .filter { it.magnitude <= minMagnitude }
-                .map {
-                    it to
-                        AltitudeAzimuth(
-                            Astronomy.getStarAltitude(it, time, approximateLocation, true),
-                            Astronomy.getStarAzimuth(it, time, approximateLocation).value,
-                        )
-                }.filter { it.second.altitude > -10 }
+        val starReadings = stars.filter { it.magnitude <= minMagnitude }.map {
+            it to AltitudeAzimuth(
+                Astronomy.getStarAltitude(it, time, approximateLocation, true),
+                Astronomy.getStarAzimuth(it, time, approximateLocation).value
+            )
+        }.filter { it.second.altitude > -10 }
 
         val quads = mutableListOf<Pair<Star, Pair<AltitudeAzimuth, FloatArray>>>()
         while (currentSeparation <= degreesOfSeparation) {
@@ -111,9 +102,9 @@ internal class PlateSolver(
                     getQuads(
                         starReadings.map { it.second },
                         currentSeparation,
-                        currentSeparation + 80f,
-                    ),
-                ),
+                        currentSeparation + 80f
+                    )
+                )
             )
             currentSeparation += degreesStep
         }
@@ -125,33 +116,30 @@ internal class PlateSolver(
     private fun getQuads(
         readings: List<AltitudeAzimuth>,
         minSeparation: Float = 0f, // Minimum angular separation in degrees
-        maxSeparation: Float = 180f, // Maximum angular separation in degrees
+        maxSeparation: Float = 180f // Maximum angular separation in degrees
     ): List<Pair<AltitudeAzimuth, FloatArray>> {
         val quads = mutableListOf<Pair<AltitudeAzimuth, FloatArray>>()
         for (i in readings.indices) {
             val reading = readings[i]
 
             // Find all neighbors within the specified angular separation range
-            val neighbors =
-                readings
-                    .mapIndexedNotNull { j, neighbor ->
-                        if (i != j) {
-                            val distance =
-                                Trigonometry.angularDistance(
-                                    reading.azimuth,
-                                    reading.altitude,
-                                    neighbor.azimuth,
-                                    neighbor.altitude,
-                                )
-                            if (distance in minSeparation..maxSeparation) {
-                                Pair(neighbor, distance)
-                            } else {
-                                null
-                            }
-                        } else {
-                            null
-                        }
-                    }.sortedBy { it.second }
+            val neighbors = readings.mapIndexedNotNull { j, neighbor ->
+                if (i != j) {
+                    val distance = Trigonometry.angularDistance(
+                        reading.azimuth,
+                        reading.altitude,
+                        neighbor.azimuth,
+                        neighbor.altitude
+                    )
+                    if (distance in minSeparation..maxSeparation) {
+                        Pair(neighbor, distance)
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            }.sortedBy { it.second }
 
             val quad = listOf(reading) + neighbors.take(numNeighbors).map { it.first }
 
@@ -164,8 +152,8 @@ internal class PlateSolver(
                             quad[j].azimuth,
                             quad[j].altitude,
                             quad[k].azimuth,
-                            quad[k].altitude,
-                        ),
+                            quad[k].altitude
+                        )
                     )
                 }
             }
@@ -181,14 +169,10 @@ internal class PlateSolver(
         return quads
     }
 
-    private fun getConfidence(
-        v1: FloatArray,
-        v2: FloatArray,
-    ): Float {
-        val percentDifferences =
-            v1.zip(v2).map { (a, b) ->
-                (a - b).absoluteValue / max(a, b)
-            }
+    private fun getConfidence(v1: FloatArray, v2: FloatArray): Float {
+        val percentDifferences = v1.zip(v2).map { (a, b) ->
+            (a - b).absoluteValue / max(a, b)
+        }
 
         return 1 - percentDifferences.max()
     }

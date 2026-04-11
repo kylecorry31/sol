@@ -7,11 +7,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object DiscreteFourierTransform {
-    fun single(
-        x: List<Float>,
-        y: List<Float>,
-        frequency: Float,
-    ): ComplexNumber {
+
+    fun single(x: List<Float>, y: List<Float>, frequency: Float): ComplexNumber {
         Guards.isNotEmpty(x, "x")
         Guards.isNotEmpty(y, "y")
         Guards.isPositive(frequency, "frequency")
@@ -35,7 +32,7 @@ object DiscreteFourierTransform {
         x: List<Float>,
         y: List<Float>,
         frequencies: Range<Float>,
-        interval: Float,
+        interval: Float
     ): List<ComplexNumber> {
         Guards.isPositive(interval, "interval")
         // Other guards are in single
@@ -50,4 +47,5 @@ object DiscreteFourierTransform {
 
         return complexNumbers
     }
+
 }

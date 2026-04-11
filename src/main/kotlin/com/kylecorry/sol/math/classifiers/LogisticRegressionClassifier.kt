@@ -13,8 +13,9 @@ import kotlin.math.ln
 class LogisticRegressionClassifier(
     private val input: Int,
     private val output: Int,
-    private var weights: Matrix = Matrix.create(input, output) { _, _ -> Math.random().toFloat() },
+    private var weights: Matrix = Matrix.create(input, output) { _, _ -> Math.random().toFloat() }
 ) : IClassifier {
+
     override fun classify(x: List<Float>): List<Float> {
         val input = Matrix.create(1, x.size) { _, c -> x[c] }
         return classify(input).getRow(0).toList()
@@ -31,15 +32,14 @@ class LogisticRegressionClassifier(
         epochs: Int = 100,
         learningRate: Float = 0.1f,
         batchSize: Int = input.size,
-        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> },
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
         val x = input.map { Matrix.row(values = it.toFloatArray()) }
-        val y =
-            output.map {
-                Matrix.row(
-                    values = Lists.oneHot(it, this.output, 1f, 0f).toFloatArray(),
-                )
-            }
+        val y = output.map {
+            Matrix.row(
+                values = Lists.oneHot(it, this.output, 1f, 0f).toFloatArray()
+            )
+        }
         return fit(x, y, epochs, learningRate, batchSize, onEpochCompleteFn)
     }
 
@@ -49,7 +49,7 @@ class LogisticRegressionClassifier(
         epochs: Int = 100,
         learningRate: Float = 0.1f,
         batchSize: Int = input.size,
-        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> },
+        onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
         if (input.size != output.size) {
             throw IllegalArgumentException("Input and output have the same number of elements")
@@ -63,15 +63,11 @@ class LogisticRegressionClassifier(
         val outputSize = output.first().rows() to output.first().columns()
 
         if (inputSize.second != this.input) {
-            throw IllegalArgumentException(
-                "Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${this.input}",
-            )
+            throw IllegalArgumentException("Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${this.input}")
         }
 
         if (outputSize.second != this.output) {
-            throw IllegalArgumentException(
-                "Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${this.output}",
-            )
+            throw IllegalArgumentException("Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${this.output}")
         }
 
         if (input.any { it.rows() != inputSize.first || it.columns() != inputSize.second }) {
@@ -101,31 +97,28 @@ class LogisticRegressionClassifier(
         return totalError
     }
 
-    fun dump(): Matrix = weights.mapped { it }
+    fun dump(): Matrix {
+        return weights.mapped { it }
+    }
 
     fun load(weights: Matrix) {
         this.weights = weights
     }
 
-    private fun crossEntropy(
-        x: Matrix,
-        y: Matrix,
-    ): Float {
+    private fun crossEntropy(x: Matrix, y: Matrix): Float {
         val predictions = classify(x)
         return y.multiply(-1f).multiply(predictions.mapped { ln(it) }).sum() / y.rows()
     }
 
-    private fun crossEntropyGradient(
-        x: Matrix,
-        y: Matrix,
-    ): Matrix {
+    private fun crossEntropyGradient(x: Matrix, y: Matrix): Matrix {
         val n = y.rows()
         val predictions = classify(x).subtract(y)
         return x.transpose().dot(predictions).divide(n.toFloat())
     }
 
     companion object {
-        fun fromWeights(weights: Matrix): LogisticRegressionClassifier =
-            LogisticRegressionClassifier(weights.rows(), weights.columns(), weights)
+        fun fromWeights(weights: Matrix): LogisticRegressionClassifier {
+            return LogisticRegressionClassifier(weights.rows(), weights.columns(), weights)
+        }
     }
 }

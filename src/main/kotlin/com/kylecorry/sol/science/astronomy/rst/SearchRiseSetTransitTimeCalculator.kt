@@ -20,18 +20,17 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         location: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        withParallax: Boolean,
+        withParallax: Boolean
     ): RiseSetTransitTimes {
         var time = date.atStartOfDay()
         val currentDate = date.toLocalDate()
-        val parameters =
-            SearchParameters(
-                locator,
-                location,
-                standardAltitude,
-                withRefraction,
-                withParallax,
-            )
+        val parameters = SearchParameters(
+            locator,
+            location,
+            standardAltitude,
+            withRefraction,
+            withParallax
+        )
         // Initialize the first altitude
         val yesterdayAltitude = getAltitude(parameters, time.minusHours(1))
         var lastAltitude = getAltitude(parameters, time)
@@ -78,74 +77,61 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         // Narrow down the times to within 1 minute
         val precision = Duration.ofMinutes(1)
 
-        val rise =
-            riseTimeRange?.let {
-                AstroSearch
-                    .findStart(
-                        Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
-                        precision,
-                    ) { time ->
-                        getAltitude(parameters, time.toEpochMilli()) >= standardAltitude
-                    }?.atZone(date.zone)
-            }
+        val rise = riseTimeRange?.let {
+            AstroSearch.findStart(
+                Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
+                precision
+            ) { time ->
+                getAltitude(parameters, time.toEpochMilli()) >= standardAltitude
+            }?.atZone(date.zone)
+        }
 
-        val set =
-            setTimeRange?.let {
-                AstroSearch
-                    .findEnd(
-                        Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
-                        precision,
-                    ) { time ->
-                        getAltitude(parameters, time.toEpochMilli()) >= standardAltitude
-                    }?.atZone(date.zone)
-            }
+        val set = setTimeRange?.let {
+            AstroSearch.findEnd(
+                Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
+                precision
+            ) { time ->
+                getAltitude(parameters, time.toEpochMilli()) >= standardAltitude
+            }?.atZone(date.zone)
+        }
 
-        val transit =
-            transitTimeRange?.let {
-                val peak =
-                    AstroSearch
-                        .findPeak(
-                            Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
-                            precision,
-                        ) { time ->
-                            getAltitude(parameters, time.toEpochMilli())
-                        }.atZone(date.zone)
+        val transit = transitTimeRange?.let {
+            val peak = AstroSearch.findPeak(
+                Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
+                precision
+            ) { time ->
+                getAltitude(parameters, time.toEpochMilli())
+            }.atZone(date.zone)
 
-                if (getAltitude(parameters, peak) >= standardAltitude) {
-                    peak
-                } else {
-                    null
-                }
+            if (getAltitude(parameters, peak) >= standardAltitude) {
+                peak
+            } else {
+                null
             }
+        }
 
         return RiseSetTransitTimes(rise, transit, set)
     }
 
-    private fun getAltitude(
-        searchParameters: SearchParameters,
-        time: Long,
-    ): Float {
+    private fun getAltitude(searchParameters: SearchParameters, time: Long): Float {
         val ut = LocalDateTime.ofEpochSecond(time / 1000, 0, ZoneOffset.UTC)
         return AstroUtils.getAltitude(
             searchParameters.locator,
             ut,
             searchParameters.location,
             searchParameters.withRefraction,
-            searchParameters.withParallax,
+            searchParameters.withParallax
         )
     }
 
-    private fun getAltitude(
-        searchParameters: SearchParameters,
-        time: ZonedDateTime,
-    ): Float {
+    private fun getAltitude(searchParameters: SearchParameters, time: ZonedDateTime): Float {
         val ut = time.toUniversalTime()
         return AstroUtils.getAltitude(
             searchParameters.locator,
             ut,
             searchParameters.location,
             searchParameters.withRefraction,
-            searchParameters.withParallax,
+            searchParameters.withParallax
         )
     }
 
@@ -154,6 +140,6 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         val location: Coordinate,
         val standardAltitude: Double,
         val withRefraction: Boolean,
-        val withParallax: Boolean,
+        val withParallax: Boolean
     )
 }

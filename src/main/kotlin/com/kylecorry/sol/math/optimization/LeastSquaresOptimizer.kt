@@ -22,7 +22,7 @@ class LeastSquaresOptimizer {
             point.mapIndexed { j, value ->
                 (guess[j] - value) / distance * weightingFn(index, point, errors[index])
             }
-        },
+        }
     ): List<Float> {
         if (points.size < 2) {
             return points.firstOrNull() ?: emptyList()
@@ -31,28 +31,19 @@ class LeastSquaresOptimizer {
         require(points.size == errors.size) { "The number of points and errors must be equal." }
 
         // Initial guess for the observer location (average of the points)
-        val guess =
-            initialValue?.toMutableList() ?: points[0]
-                .mapIndexed { index, _ ->
-                    points.map { it[index] }.average().toFloat()
-                }.toMutableList()
+        val guess = initialValue?.toMutableList() ?: points[0].mapIndexed { index, _ ->
+            points.map { it[index] }.average().toFloat()
+        }.toMutableList()
 
         for (i in 0 until maxIterations) {
-            val f =
-                Vector(
-                    points
-                        .mapIndexed { i, point ->
-                            (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])
-                        }.toFloatArray(),
-                )
 
-            val jacobian =
-                Matrix.create(
-                    points
-                        .mapIndexed { i, point ->
-                            jacobianFn(i, point, guess).toTypedArray()
-                        }.toTypedArray(),
-                )
+            val f = Vector(points.mapIndexed { i, point ->
+                (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])
+            }.toFloatArray())
+
+            val jacobian = Matrix.create(points.mapIndexed { i, point ->
+                jacobianFn(i, point, guess).toTypedArray()
+            }.toTypedArray())
 
             val step = LinearAlgebra.leastSquares(jacobian, f)
 
@@ -75,4 +66,5 @@ class LeastSquaresOptimizer {
 
         return guess
     }
+
 }

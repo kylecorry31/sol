@@ -9,12 +9,7 @@ import java.util.stream.Stream
 internal class WeightTest {
     @ParameterizedTest
     @MethodSource("provideConversions")
-    fun convertTo(
-        weight: Float,
-        weightUnits: WeightUnits,
-        expected: Float,
-        expectedUnits: WeightUnits,
-    ) {
+    fun convertTo(weight: Float, weightUnits: WeightUnits, expected: Float, expectedUnits: WeightUnits) {
         val converted = Weight.from(weight, weightUnits).convertTo(expectedUnits)
         assertEquals(expectedUnits, converted.units)
         assertEquals(expected, converted.value, 0.00001f)
@@ -27,7 +22,7 @@ internal class WeightTest {
         units: WeightUnits,
         amount: Number,
         expected: Float,
-        expectedUnits: WeightUnits,
+        expectedUnits: WeightUnits
     ) {
         val multiplied = Weight.from(weight, units) * amount
         assertEquals(expectedUnits, multiplied.units)
@@ -42,7 +37,7 @@ internal class WeightTest {
         other: Float,
         otherUnits: WeightUnits,
         expected: Float,
-        expectedUnits: WeightUnits,
+        expectedUnits: WeightUnits
     ) {
         val added = Weight.from(weight, units) + Weight.from(other, otherUnits)
         assertEquals(expectedUnits, added.units)
@@ -50,9 +45,10 @@ internal class WeightTest {
     }
 
     companion object {
+
         @JvmStatic
-        fun provideConversions(): Stream<Arguments> =
-            Stream.of(
+        fun provideConversions(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(2f, WeightUnits.Pounds, 0.907185f, WeightUnits.Kilograms),
                 Arguments.of(3f, WeightUnits.Kilograms, 3000f, WeightUnits.Grams),
                 Arguments.of(4f, WeightUnits.Ounces, 0.25f, WeightUnits.Pounds),
@@ -62,21 +58,25 @@ internal class WeightTest {
                 Arguments.of(1f, WeightUnits.Grams, 1000f, WeightUnits.Milligrams),
                 Arguments.of(1f, WeightUnits.Stone, 6.350293f, WeightUnits.Kilograms),
             )
+        }
 
         @JvmStatic
-        fun provideTimes(): Stream<Arguments> =
-            Stream.of(
+        fun provideTimes(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(2f, WeightUnits.Pounds, 2, 4f, WeightUnits.Pounds),
                 Arguments.of(3f, WeightUnits.Kilograms, 0.5f, 1.5f, WeightUnits.Kilograms),
-                Arguments.of(4f, WeightUnits.Ounces, -3, 12f, WeightUnits.Ounces),
+                Arguments.of(4f, WeightUnits.Ounces, -3, 12f, WeightUnits.Ounces)
             )
+        }
 
         @JvmStatic
-        fun provideAdd(): Stream<Arguments> =
-            Stream.of(
+        fun provideAdd(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(2f, WeightUnits.Pounds, 2f, WeightUnits.Pounds, 4f, WeightUnits.Pounds),
                 Arguments.of(3f, WeightUnits.Kilograms, 500f, WeightUnits.Grams, 3.5f, WeightUnits.Kilograms),
                 Arguments.of(500f, WeightUnits.Grams, 3f, WeightUnits.Kilograms, 3500f, WeightUnits.Grams),
             )
+        }
+
     }
 }

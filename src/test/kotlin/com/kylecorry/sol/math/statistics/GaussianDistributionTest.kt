@@ -5,19 +5,16 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class GaussianDistributionTest {
+
     @ParameterizedTest
     @CsvSource(
         "0, 1, 1",
         "0, 2, 4",
         "1, 1, 1",
         "1, 2, 4",
-        "0, 4, 16",
+        "0, 4, 16"
     )
-    fun getVariance(
-        mean: Float,
-        standardDeviation: Float,
-        expected: Float,
-    ) {
+    fun getVariance(mean: Float, standardDeviation: Float, expected: Float) {
         val distribution = GaussianDistribution(mean, standardDeviation)
         assertEquals(expected, distribution.variance)
     }
@@ -34,12 +31,7 @@ class GaussianDistributionTest {
         "1, 1, 1, 0.3989423",
         "1, 1, 2, 0.2419707",
     )
-    fun probability(
-        mean: Float,
-        standardDeviation: Float,
-        x: Float,
-        expected: Float,
-    ) {
+    fun probability(mean: Float, standardDeviation: Float, x: Float, expected: Float) {
         val distribution = GaussianDistribution(mean, standardDeviation)
         assertEquals(expected, distribution.probability(x), 0.0001f)
     }

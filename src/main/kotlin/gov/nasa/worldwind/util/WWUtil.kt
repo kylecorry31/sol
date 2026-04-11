@@ -12,5 +12,7 @@ object WWUtil {
      *
      * @return true if the reference is null or is a zero-length [String].
      */
-    fun isEmpty(s: Any?): Boolean = s == null || (s is String && s.isEmpty())
+    fun isEmpty(s: Any?): Boolean {
+        return s == null || (s is String && s.isEmpty())
+    }
 }

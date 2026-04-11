@@ -6,20 +6,23 @@ import com.kylecorry.sol.units.Coordinate
 internal class EquatorialCoordinate(
     _declination: Double,
     _rightAscension: Double,
-    val isApparent: Boolean = false,
+    val isApparent: Boolean = false
 ) {
     val declination = wrap(_declination, -90.0, 90.0)
     val rightAscension = wrap(_rightAscension, 0.0, 360.0)
 
     val rightAscensionHours = rightAscension / 15
 
-    fun getHourAngle(siderealTime: SiderealTime): Double = wrap(siderealTime.hours - rightAscensionHours, 0.0, 24.0)
+    fun getHourAngle(siderealTime: SiderealTime): Double {
+        return wrap(siderealTime.hours - rightAscensionHours, 0.0, 24.0)
+    }
 
-    fun getZenithCoordinate(ut: UniversalTime): Coordinate =
-        Coordinate(
+    fun getZenithCoordinate(ut: UniversalTime): Coordinate {
+        return Coordinate(
             declination,
-            Coordinate.toLongitude(-timeToAngle(getHourAngle(ut.toSiderealTime(true)), 0, 0)),
+            Coordinate.toLongitude(-timeToAngle(getHourAngle(ut.toSiderealTime(true)), 0, 0))
         )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -43,16 +46,20 @@ internal class EquatorialCoordinate(
         fun fromHourAngle(
             declination: Double,
             hourAngle: Double,
-            siderealTime: SiderealTime,
-        ): EquatorialCoordinate =
-            fromRightAscensionHours(
+            siderealTime: SiderealTime
+        ): EquatorialCoordinate {
+            return fromRightAscensionHours(
                 declination,
-                siderealTime.hours - hourAngle,
+                siderealTime.hours - hourAngle
             )
+        }
 
         fun fromRightAscensionHours(
             declination: Double,
-            rightAscensionHours: Double,
-        ): EquatorialCoordinate = EquatorialCoordinate(declination, rightAscensionHours * 15)
+            rightAscensionHours: Double
+        ): EquatorialCoordinate {
+            return EquatorialCoordinate(declination, rightAscensionHours * 15)
+        }
     }
+
 }

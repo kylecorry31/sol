@@ -7,5 +7,5 @@ data class WeatherForecast(
     val conditions: List<WeatherCondition>,
     val front: WeatherFront? = null,
     val system: PressureSystem? = null,
-    val tendency: PressureTendency? = null,
+    val tendency: PressureTendency? = null
 )

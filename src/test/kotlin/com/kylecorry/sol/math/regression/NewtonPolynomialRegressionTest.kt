@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class NewtonPolynomialRegressionTest {
+
     @ParameterizedTest
     @CsvSource(
         "'2x + 1', '2x + 1', 1",
@@ -24,13 +25,9 @@ class NewtonPolynomialRegressionTest {
         "'x^3', 'x^3', 3",
         "'4x - 5', '4x - 5', 1",
         // Lower order than required, it will approximate
-        "'x^2 + 2x + 1', '3x + 1', 1",
+        "'x^2 + 2x + 1', '3x + 1', 1"
     )
-    fun testFit(
-        sourcePolynomial: String,
-        expectedPolynomial: String,
-        order: Int,
-    ) {
+    fun testFit(sourcePolynomial: String, expectedPolynomial: String, order: Int) {
         val sourcePoly = Polynomial.of(sourcePolynomial)
         val points = (0..10).map { x -> Vector2(x.toFloat(), sourcePoly.evaluate(x.toFloat())) }
 

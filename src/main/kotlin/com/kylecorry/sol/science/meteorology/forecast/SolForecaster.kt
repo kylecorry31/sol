@@ -16,6 +16,7 @@ import java.time.Instant
 import kotlin.math.absoluteValue
 
 internal object SolForecaster : Forecaster {
+
     private val thunderstormMinTemperature = Temperature.fahrenheit(55f).celsius()
     private val cloudPrecipitationCalculator = CloudPrecipitationCalculator()
 
@@ -50,7 +51,7 @@ internal object SolForecaster : Forecaster {
 
     private fun getCurrentCloudConditions(
         clouds: List<Reading<CloudGenus?>>,
-        time: Instant,
+        time: Instant
     ): WeatherCondition? {
         val last = clouds.lastOrNull() ?: return null
         if (Duration.between(last.time, time).abs() > Duration.ofHours(3)) {
@@ -60,13 +61,12 @@ internal object SolForecaster : Forecaster {
             return WeatherCondition.Clear
         }
 
-        val overcastClouds =
-            listOf(
-                CloudGenus.Stratus,
-                CloudGenus.Nimbostratus,
-                CloudGenus.Stratocumulus,
-                CloudGenus.Altostratus,
-            )
+        val overcastClouds = listOf(
+            CloudGenus.Stratus,
+            CloudGenus.Nimbostratus,
+            CloudGenus.Stratocumulus,
+            CloudGenus.Altostratus
+        )
         if (overcastClouds.contains(last.value)) {
             return WeatherCondition.Overcast
         }
@@ -80,17 +80,15 @@ internal object SolForecaster : Forecaster {
         time: Instant,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
-        location: Coordinate,
+        location: Coordinate
     ): List<WeatherForecast> {
-        val pressures =
-            observations
-                .filterIsInstance<WeatherObservation.Pressure>()
-                .map { it.asReading() }
+        val pressures = observations
+            .filterIsInstance<WeatherObservation.Pressure>()
+            .map { it.asReading() }
 
-        val clouds =
-            observations
-                .filterIsInstance<WeatherObservation.CloudGenus>()
-                .map { it.asReading() }
+        val clouds = observations
+            .filterIsInstance<WeatherObservation.CloudGenus>()
+            .map { it.asReading() }
 
         return forecast(
             pressures,
@@ -98,7 +96,7 @@ internal object SolForecaster : Forecaster {
             dailyTemperatureRange,
             time,
             pressureChangeThreshold,
-            pressureStormChangeThreshold,
+            pressureStormChangeThreshold
         )
     }
 
@@ -108,17 +106,16 @@ internal object SolForecaster : Forecaster {
         dailyTemperatureRange: Range<Temperature>? = null,
         time: Instant = Instant.now(),
         pressureChangeThreshold: Float = 1.5f,
-        pressureStormChangeThreshold: Float = 2f,
+        pressureStormChangeThreshold: Float = 2f
     ): List<WeatherForecast> {
-        val forecast =
-            forecastHelper(
-                pressures,
-                clouds,
-                dailyTemperatureRange,
-                time,
-                pressureChangeThreshold,
-                pressureStormChangeThreshold,
-            )
+        val forecast = forecastHelper(
+            pressures,
+            clouds,
+            dailyTemperatureRange,
+            time,
+            pressureChangeThreshold,
+            pressureStormChangeThreshold
+        )
 
         // There are current conditions, so just return the forecast
         if (forecast.first().conditions.isNotEmpty()) {
@@ -129,15 +126,14 @@ internal object SolForecaster : Forecaster {
         var startTime = getNextStartTime(time, pressures, clouds)
         val maxTime = time.minus(noChangeMaxHistory)
         while (startTime != null && startTime.isAfter(maxTime)) {
-            val previous =
-                forecastHelper(
-                    pressures,
-                    clouds,
-                    dailyTemperatureRange,
-                    startTime,
-                    pressureChangeThreshold,
-                    pressureStormChangeThreshold,
-                )
+            val previous = forecastHelper(
+                pressures,
+                clouds,
+                dailyTemperatureRange,
+                startTime,
+                pressureChangeThreshold,
+                pressureStormChangeThreshold
+            )
 
             // Get the conditions of the previous prediction, starting with the furthest out prediction
             val conditions =
@@ -162,20 +158,21 @@ internal object SolForecaster : Forecaster {
     private fun getNextStartTime(
         time: Instant,
         pressures: List<Reading<Pressure>>,
-        clouds: List<Reading<CloudGenus?>>,
+        clouds: List<Reading<CloudGenus?>>
     ): Instant? {
         val times = pressures.map { it.time } + clouds.map { it.time }
         return Time.getClosestPastTime(time, times)
     }
 
-    private fun List<WeatherForecast>.withCurrentConditions(conditions: List<WeatherCondition>): List<WeatherForecast> =
-        mapIndexed { index, value ->
+    private fun List<WeatherForecast>.withCurrentConditions(conditions: List<WeatherCondition>): List<WeatherForecast> {
+        return mapIndexed { index, value ->
             if (index == 0) {
                 value.copy(conditions = conditions)
             } else {
                 value
             }
         }
+    }
 
     private fun forecastHelper(
         pressures: List<Reading<Pressure>>,
@@ -183,7 +180,7 @@ internal object SolForecaster : Forecaster {
         dailyTemperatureRange: Range<Temperature>? = null,
         time: Instant = Instant.now(),
         pressureChangeThreshold: Float = 1.5f,
-        pressureStormChangeThreshold: Float = 2f,
+        pressureStormChangeThreshold: Float = 2f
     ): List<WeatherForecast> {
         val history = Duration.ofHours(48)
         val cloudsUpToDateDuration = Duration.ofHours(24)
@@ -210,12 +207,7 @@ internal object SolForecaster : Forecaster {
         val isColdFront = cloudColdFront || tendency.characteristic.isRising
         val isWarmFront = !isColdFront && (tendency.characteristic.isFalling || cloudWarmFront)
 
-        if (!tendency.characteristic.isRising &&
-            (
-                cloudColdFront ||
-                    (tendency.characteristic.isFalling && tendency.amount.absoluteValue >= pressureStormChangeThreshold.absoluteValue)
-            )
-        ) {
+        if (!tendency.characteristic.isRising && (cloudColdFront || (tendency.characteristic.isFalling && tendency.amount.absoluteValue >= pressureStormChangeThreshold.absoluteValue))) {
             conditions.add(WeatherCondition.Storm)
             val temp = dailyTemperatureRange?.end?.celsius() ?: Temperature.zero
             if (isColdFront && temp > thunderstormMinTemperature) {
@@ -233,17 +225,11 @@ internal object SolForecaster : Forecaster {
 
         val currentCloudConditions = getCurrentCloudConditions(filteredClouds, time)
 
-        if (currentCloudConditions == null &&
-            system == PressureSystem.High &&
-            (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isRising)
-        ) {
+        if (currentCloudConditions == null && system == PressureSystem.High && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isRising)) {
             conditions.add(WeatherCondition.Clear)
         }
 
-        if (currentCloudConditions == null &&
-            system == PressureSystem.Low &&
-            (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isFalling)
-        ) {
+        if (currentCloudConditions == null && system == PressureSystem.Low && (tendency.characteristic == PressureCharacteristic.Steady || tendency.characteristic.isFalling)) {
             conditions.add(WeatherCondition.Overcast)
         }
 
@@ -252,57 +238,46 @@ internal object SolForecaster : Forecaster {
         }
 
         // After
-        if ((isColdFront && system != PressureSystem.Low) ||
-            (currentCloudConditions != null && system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)
-        ) {
+        if ((isColdFront && system != PressureSystem.Low) || (currentCloudConditions != null && system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)) {
             afterConditions.add(WeatherCondition.Clear)
         }
 
-        if (isWarmFront &&
-            system != PressureSystem.High ||
-            (currentCloudConditions != null && system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)
-        ) {
+        if (isWarmFront && system != PressureSystem.High || (currentCloudConditions != null && system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)) {
             afterConditions.add(WeatherCondition.Overcast)
         }
 
-        val front =
-            if (isColdFront) {
-                WeatherFront.Cold
-            } else if (isWarmFront) {
-                WeatherFront.Warm
-            } else {
-                null
-            }
+        val front = if (isColdFront) {
+            WeatherFront.Cold
+        } else if (isWarmFront) {
+            WeatherFront.Warm
+        } else {
+            null
+        }
 
         val afterSystem =
-            if ((isColdFront && system != PressureSystem.Low) ||
-                (system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)
-            ) {
+            if ((isColdFront && system != PressureSystem.Low) || (system == PressureSystem.High && tendency.characteristic == PressureCharacteristic.Steady)) {
                 PressureSystem.High
-            } else if ((isWarmFront && system != PressureSystem.High) ||
-                (system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)
-            ) {
+            } else if ((isWarmFront && system != PressureSystem.High) || (system == PressureSystem.Low && tendency.characteristic == PressureCharacteristic.Steady)) {
                 PressureSystem.Low
             } else {
                 null
             }
 
+
         // TODO: Now, soon, and later buckets (or predict next X hours)
-        val now =
-            WeatherForecast(
-                null,
-                ForecastHelper.addSecondaryConditions(conditions, dailyTemperatureRange),
-                front,
-                system,
-                tendency,
-            )
-        val after =
-            WeatherForecast(
-                null,
-                ForecastHelper.addSecondaryConditions(afterConditions, dailyTemperatureRange),
-                null,
-                afterSystem,
-            )
+        val now = WeatherForecast(
+            null,
+            ForecastHelper.addSecondaryConditions(conditions, dailyTemperatureRange),
+            front,
+            system,
+            tendency
+        )
+        val after = WeatherForecast(
+            null,
+            ForecastHelper.addSecondaryConditions(afterConditions, dailyTemperatureRange),
+            null,
+            afterSystem
+        )
 
         val arrivalTime = getArrivalTime(time, now, filteredClouds)
 
@@ -312,13 +287,13 @@ internal object SolForecaster : Forecaster {
     private fun getArrivalTime(
         time: Instant,
         forecast: WeatherForecast,
-        clouds: List<Reading<CloudGenus?>>,
+        clouds: List<Reading<CloudGenus?>>
     ): Instant? {
+
         val hasSkyCondition =
-            forecast.conditions.contains(WeatherCondition.Clear) ||
-                forecast.conditions.contains(
-                    WeatherCondition.Overcast,
-                )
+            forecast.conditions.contains(WeatherCondition.Clear) || forecast.conditions.contains(
+                WeatherCondition.Overcast
+            )
         val isSteady = forecast.tendency?.characteristic == PressureCharacteristic.Steady
         val hasSingleCondition = forecast.conditions.size == 1
         val hasWindCondition = forecast.conditions.contains(WeatherCondition.Wind)

@@ -48,7 +48,10 @@ class Angle : Comparable<Angle?> {
      *
      * @throws IllegalArgumentException if angle is null.
      */
-    fun add(angle: Angle): Angle = fromDegrees(this.degrees + angle.degrees)
+    fun add(angle: Angle): Angle {
+
+        return fromDegrees(this.degrees + angle.degrees)
+    }
 
     /**
      * Obtains the difference of these two angles. Does not accept a null argument. This method is not commutative.
@@ -60,21 +63,28 @@ class Angle : Comparable<Angle?> {
      *
      * @throws IllegalArgumentException if angle is null.
      */
-    fun subtract(angle: Angle): Angle = fromDegrees(this.degrees - angle.degrees)
+    fun subtract(angle: Angle): Angle {
+
+        return fromDegrees(this.degrees - angle.degrees)
+    }
 
     /**
      * Obtains the sine of this angle.
      *
      * @return the trigonometric sine of this angle.
      */
-    fun sin(): Double = kotlin.math.sin(this.radians)
+    fun sin(): Double {
+        return kotlin.math.sin(this.radians)
+    }
 
     /**
      * Obtains the cosine of this angle.
      *
      * @return the trigonometric cosine of this angle.
      */
-    fun cos(): Double = kotlin.math.cos(this.radians)
+    fun cos(): Double {
+        return kotlin.math.cos(this.radians)
+    }
 
     /**
      * Compares this [Angle] with another. Returns a negative integer if this is the smaller angle, a positive
@@ -101,7 +111,9 @@ class Angle : Comparable<Angle?> {
      *
      * @return the value of this angle in degrees and as a `String`.
      */
-    override fun toString(): String = this.degrees.toString() + '\u00B0'
+    override fun toString(): String {
+        return this.degrees.toString() + '\u00B0'
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -117,6 +129,7 @@ class Angle : Comparable<Angle?> {
     }
 
     companion object {
+
         /** Represents an angle of zero degrees  */
         val ZERO: Angle = fromDegrees(0.0)
 
@@ -130,7 +143,9 @@ class Angle : Comparable<Angle?> {
          *
          * @return a new angle, whose size in degrees is given by `degrees`
          */
-        fun fromDegrees(degrees: Double): Angle = Angle(degrees, DEGREES_TO_RADIANS * degrees)
+        fun fromDegrees(degrees: Double): Angle {
+            return Angle(degrees, DEGREES_TO_RADIANS * degrees)
+        }
 
         /**
          * Obtains an angle from a specified number of radians.
@@ -139,63 +154,39 @@ class Angle : Comparable<Angle?> {
          *
          * @return a new angle, whose size in radians is given by `radians`.
          */
-        fun fromRadians(radians: Double): Angle = Angle(RADIANS_TO_DEGREES * radians, radians)
+        fun fromRadians(radians: Double): Angle {
+            return Angle(RADIANS_TO_DEGREES * radians, radians)
+        }
 
         private const val HALF_PI = PI / 2
 
         fun fromDegreesLatitude(degrees: Double): Angle {
             var degrees = degrees
-            degrees =
-                if (degrees < -90) {
-                    -90.0
-                } else if (degrees > 90) {
-                    90.0
-                } else {
-                    degrees
-                }
+            degrees = if (degrees < -90) -90.0 else if (degrees > 90) 90.0 else degrees
             var radians: Double = DEGREES_TO_RADIANS * degrees
-            radians =
-                if (radians < -HALF_PI) {
-                    -HALF_PI
-                } else if (radians > HALF_PI) {
-                    HALF_PI
-                } else {
-                    radians
-                }
+            radians = if (radians < -HALF_PI) -HALF_PI else if (radians > HALF_PI) HALF_PI else radians
 
             return Angle(degrees, radians)
         }
 
         fun fromDegreesLongitude(degrees: Double): Angle {
             var degrees = degrees
-            degrees =
-                if (degrees < -180) {
-                    -180.0
-                } else if (degrees > 180) {
-                    180.0
-                } else {
-                    degrees
-                }
+            degrees = if (degrees < -180) -180.0 else if (degrees > 180) 180.0 else degrees
             var radians: Double = DEGREES_TO_RADIANS * degrees
-            radians =
-                if (radians < -PI) {
-                    -PI
-                } else if (radians > PI) {
-                    PI
-                } else {
-                    radians
-                }
+            radians = if (radians < -PI) -PI else if (radians > PI) PI else radians
 
             return Angle(degrees, radians)
         }
 
-        fun asin(sine: Double): Angle = fromRadians(kotlin.math.asin(sine))
+        fun asin(sine: Double): Angle {
+            return fromRadians(kotlin.math.asin(sine))
+        }
 
-        fun acos(cosine: Double): Angle { // Tom: this method is not used, should we delete it? (13th Dec 06)
+        fun acos(cosine: Double): Angle {   //Tom: this method is not used, should we delete it? (13th Dec 06)
             return fromRadians(kotlin.math.acos(cosine))
         }
 
-        fun atan(tan: Double): Angle { // Tom: this method is not used, should we delete it? (13th Dec 06)
+        fun atan(tan: Double): Angle {   //Tom: this method is not used, should we delete it? (13th Dec 06)
             return fromRadians(kotlin.math.atan(tan))
         }
 
@@ -209,10 +200,9 @@ class Angle : Comparable<Angle?> {
          *
          * @throws IllegalArgumentException if `a` or `b` is null
          */
-        fun average(
-            a: Angle,
-            b: Angle,
-        ): Angle = fromDegrees(0.5 * (a.degrees + b.degrees))
+        fun average(a: Angle, b: Angle): Angle {
+            return fromDegrees(0.5 * (a.degrees + b.degrees))
+        }
 
         /**
          * Obtains the average of three angles. The order of parameters does not matter.
@@ -225,46 +215,34 @@ class Angle : Comparable<Angle?> {
          *
          * @throws IllegalArgumentException if `a`, `b` or `c` is null.
          */
-        fun average(
-            a: Angle,
-            b: Angle,
-            c: Angle,
-        ): Angle = fromDegrees((a.degrees + b.degrees + c.degrees) / 3)
+        fun average(a: Angle, b: Angle, c: Angle): Angle {
+            return fromDegrees((a.degrees + b.degrees + c.degrees) / 3)
+        }
 
         private fun normalizedDegreesLatitude(degrees: Double): Double {
             val lat = degrees % 180
-            return if (lat > 90) {
-                180 - lat
-            } else if (lat < -90) {
-                -180 - lat
-            } else {
-                lat
-            }
+            return if (lat > 90) 180 - lat else if (lat < -90) -180 - lat else lat
         }
 
         private fun normalizedDegreesLongitude(degrees: Double): Double {
             val lon = degrees % 360
-            return if (lon > 180) {
-                lon - 360
-            } else if (lon < -180) {
-                360 + lon
-            } else {
-                lon
-            }
+            return if (lon > 180) lon - 360 else if (lon < -180) 360 + lon else lon
         }
 
-        fun normalizedLatitude(unnormalizedAngle: Angle): Angle = fromDegrees(normalizedDegreesLatitude(unnormalizedAngle.degrees))
+        fun normalizedLatitude(unnormalizedAngle: Angle): Angle {
+            return fromDegrees(normalizedDegreesLatitude(unnormalizedAngle.degrees))
+        }
 
-        fun normalizedLongitude(unnormalizedAngle: Angle): Angle = fromDegrees(normalizedDegreesLongitude(unnormalizedAngle.degrees))
+        fun normalizedLongitude(unnormalizedAngle: Angle): Angle {
+            return fromDegrees(normalizedDegreesLongitude(unnormalizedAngle.degrees))
+        }
 
-        fun max(
-            a: Angle,
-            b: Angle,
-        ): Angle = if (a.degrees >= b.degrees) a else b
+        fun max(a: Angle, b: Angle): Angle {
+            return if (a.degrees >= b.degrees) a else b
+        }
 
-        fun min(
-            a: Angle,
-            b: Angle,
-        ): Angle = if (a.degrees <= b.degrees) a else b
+        fun min(a: Angle, b: Angle): Angle {
+            return if (a.degrees <= b.degrees) a else b
+        }
     }
 }

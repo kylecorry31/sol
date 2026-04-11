@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
 internal class RandomExtensionsTest {
+
     @Test
     fun nextGaussianHasBoundedAttempts() {
-        val random =
-            object : Random() {
-                override fun nextBits(bitCount: Int): Int = 0
+        val random = object : Random() {
+            override fun nextBits(bitCount: Int): Int {
+                return 0
             }
+        }
 
         assertThrows(IllegalStateException::class.java) {
             random.nextGaussian()

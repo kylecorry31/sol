@@ -18,7 +18,9 @@ const val JD_2000 = 2451545.0
 /**
  * Julian centuries since 2000
  */
-fun UniversalTime.toJulianCenturies(): Double = (toJulianDay() - JD_2000) / 36525.0
+fun UniversalTime.toJulianCenturies(): Double {
+    return (toJulianDay() - JD_2000) / 36525.0
+}
 
 fun UniversalTime.toJulianDay(includeTime: Boolean = true): Double {
     var Y = year.toDouble()
@@ -73,23 +75,28 @@ internal fun UniversalTime.toSiderealTime(apparent: Boolean = false): GreenwichS
     return GreenwichSiderealTime(gst)
 }
 
-fun ZonedDateTime.toUniversalTime(): UniversalTime = toUTCLocal()
+fun ZonedDateTime.toUniversalTime(): UniversalTime {
+    return toUTCLocal()
+}
 
-fun UniversalTime.atZeroHour(): UniversalTime = toLocalDate().atStartOfDay()
+fun UniversalTime.atZeroHour(): UniversalTime {
+    return toLocalDate().atStartOfDay()
+}
 
-fun Instant.toUniversalTime(): UniversalTime = utc().toUniversalTime()
+fun Instant.toUniversalTime(): UniversalTime {
+    return utc().toUniversalTime()
+}
 
 fun fromJulianDay(jd: Double): UniversalTime {
     val f = (jd + 0.5) % 1
     val z = (jd + 0.5) - f
 
-    val a =
-        if (z < 2299161) {
-            z
-        } else {
-            val alpha = floor((z - 1867216.25) / 36524.25)
-            z + 1 + alpha - floor(alpha / 4)
-        }
+    val a = if (z < 2299161) {
+        z
+    } else {
+        val alpha = floor((z - 1867216.25) / 36524.25)
+        z + 1 + alpha - floor(alpha / 4)
+    }
 
     val b = a + 1524
     val c = floor((b - 122.1) / 365.25)
@@ -103,26 +110,28 @@ fun fromJulianDay(jd: Double): UniversalTime {
     val minutes = (hours - hour) * 60
     val minute = floor(minutes).toInt()
     val seconds = floor((minutes - minute) * 60).toInt()
-    val month =
-        if (e < 14) {
-            e - 1
-        } else {
-            e - 13
-        }.toInt()
+    val month = if (e < 14) {
+        e - 1
+    } else {
+        e - 13
+    }.toInt()
 
-    val year =
-        if (month > 2) {
-            c - 4716
-        } else {
-            c - 4715
-        }.toInt()
+    val year = if (month > 2) {
+        c - 4716
+    } else {
+        c - 4715
+    }.toInt()
 
     return LocalDateTime.of(year, month, dayOfMonth, hour, minute, seconds)
 }
 
-fun UniversalTime.toLocal(zone: ZoneId): ZonedDateTime = atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
+fun UniversalTime.toLocal(zone: ZoneId): ZonedDateTime {
+    return atZone(ZoneId.of("UTC")).withZoneSameInstant(zone)
+}
 
-fun UniversalTime.toInstant(): Instant = atZone(ZoneId.of("UTC")).toInstant()
+fun UniversalTime.toInstant(): Instant {
+    return atZone(ZoneId.of("UTC")).toInstant()
+}
 
 fun ut0hOnDate(date: ZonedDateTime): UniversalTime {
     val localDate = date.toLocalDate()
@@ -138,12 +147,10 @@ fun ut0hOnDate(date: ZonedDateTime): UniversalTime {
     return date.toUniversalTime().atZeroHour()
 }
 
-fun LocalTime.toDuration(): Duration =
-    Duration
-        .ofHours(hour.toLong())
-        .plusMinutes(minute.toLong())
-        .plusSeconds(second.toLong())
-        .plusNanos(nano.toLong())
+fun LocalTime.toDuration(): Duration {
+    return Duration.ofHours(hour.toLong()).plusMinutes(minute.toLong())
+        .plusSeconds(second.toLong()).plusNanos(nano.toLong())
+}
 
 fun LocalTime.toDecimalHours(): Double {
     val hours = hour.toDouble()
@@ -153,7 +160,9 @@ fun LocalTime.toDecimalHours(): Double {
     return hours + minutes + seconds + nanos
 }
 
-fun Duration.toLocalTime(): LocalTime = LocalTime.MIN.plus(this)
+fun Duration.toLocalTime(): LocalTime {
+    return LocalTime.MIN.plus(this)
+}
 
 fun Duration.toDecimal(): Double {
     val millis = toMillis()
@@ -162,29 +171,27 @@ fun Duration.toDecimal(): Double {
     return minutes / 60.0
 }
 
-fun Duration.toDegrees(): Double = toDecimal() * 15.0
+fun Duration.toDegrees(): Double {
+    return toDecimal() * 15.0
+}
 
-fun Duration.toRadians(): Double = toDegrees().toRadians()
+fun Duration.toRadians(): Double {
+    return toDegrees().toRadians()
+}
 
-fun degreesToTime(degrees: Double): Duration = Time.hours(degrees / 15)
+fun degreesToTime(degrees: Double): Duration {
+    return Time.hours(degrees / 15)
+}
 
-fun dmsToTime(
-    degrees: Int,
-    minutes: Int,
-    seconds: Number,
-): Duration {
+fun dmsToTime(degrees: Int, minutes: Int, seconds: Number): Duration {
     val d = degrees + minutes / 60.0 + seconds.toDouble() / 3600.0
     return degreesToTime(d)
 }
 
-fun timeToAngle(
-    hours: Number,
-    minutes: Number,
-    seconds: Number,
-): Double = timeToDecimal(hours, minutes, seconds) * 15
+fun timeToAngle(hours: Number, minutes: Number, seconds: Number): Double {
+    return timeToDecimal(hours, minutes, seconds) * 15
+}
 
-fun timeToDecimal(
-    hours: Number,
-    minutes: Number,
-    seconds: Number,
-): Double = hours.toDouble() + minutes.toDouble() / 60.0 + seconds.toDouble() / 3600.0
+fun timeToDecimal(hours: Number, minutes: Number, seconds: Number): Double {
+    return hours.toDouble() + minutes.toDouble() / 60.0 + seconds.toDouble() / 3600.0
+}

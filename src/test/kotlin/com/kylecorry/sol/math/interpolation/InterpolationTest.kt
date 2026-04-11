@@ -11,26 +11,25 @@ import java.util.stream.Stream
 import kotlin.math.abs
 
 class InterpolationTest {
+
     @Test
     fun resample() {
-        val points =
-            listOf(
-                Vector2(0f, 0f),
-                Vector2(1f, 1f),
-                Vector2(2f, 8f),
-                Vector2(3f, 27f),
-                Vector2(4f, 64f),
-            )
+        val points = listOf(
+            Vector2(0f, 0f),
+            Vector2(1f, 1f),
+            Vector2(2f, 8f),
+            Vector2(3f, 27f),
+            Vector2(4f, 64f)
+        )
         val interpolator = LinearInterpolator(points)
         val resampled = Interpolation.resample(interpolator, 0f, 2f, 0.5f)
-        val expected =
-            listOf(
-                Vector2(0f, 0f),
-                Vector2(0.5f, 0.5f),
-                Vector2(1f, 1f),
-                Vector2(1.5f, 4.5f),
-                Vector2(2f, 8f),
-            )
+        val expected = listOf(
+            Vector2(0f, 0f),
+            Vector2(0.5f, 0.5f),
+            Vector2(1f, 1f),
+            Vector2(1.5f, 4.5f),
+            Vector2(2f, 8f)
+        )
         assertEquals(expected.size, resampled.size)
         for (i in expected.indices) {
             assertEquals(expected[i].x, resampled[i].x, 0.0001f)
@@ -157,17 +156,15 @@ class InterpolationTest {
 
     @Test
     fun getIsoline() {
-        val grid =
-            listOf(
-                listOf(Vector2(0f, 0f) to 0f, Vector2(1f, 0f) to 0f, Vector2(2f, 0f) to 0f),
-                listOf(Vector2(0f, 1f) to 0f, Vector2(1f, 1f) to 1f, Vector2(2f, 1f) to 0f),
-                listOf(Vector2(0f, 2f) to 0f, Vector2(1f, 2f) to 0f, Vector2(2f, 2f) to 0f),
-            )
+        val grid = listOf(
+            listOf(Vector2(0f, 0f) to 0f, Vector2(1f, 0f) to 0f, Vector2(2f, 0f) to 0f),
+            listOf(Vector2(0f, 1f) to 0f, Vector2(1f, 1f) to 1f, Vector2(2f, 1f) to 0f),
+            listOf(Vector2(0f, 2f) to 0f, Vector2(1f, 2f) to 0f, Vector2(2f, 2f) to 0f)
+        )
 
-        val isolines =
-            Interpolation.getIsoline(grid, 0.5f) { pct, a, b ->
-                Vector2(a.x + (b.x - a.x) * pct, a.y + (b.y - a.y) * pct)
-            }
+        val isolines = Interpolation.getIsoline(grid, 0.5f) { pct, a, b ->
+            Vector2(a.x + (b.x - a.x) * pct, a.y + (b.y - a.y) * pct)
+        }
 
         assertEquals(4, isolines.size)
 
@@ -183,28 +180,20 @@ class InterpolationTest {
         y1: Float,
         x2: Float,
         y2: Float,
-        threshold: Float = 0.001f,
+        threshold: Float = 0.001f
     ) {
         val start = segment.start
         val end = segment.end
 
-        val match1 = (
-            abs(start.x - x1) < threshold &&
-                abs(start.y - y1) < threshold &&
-                abs(end.x - x2) < threshold &&
-                abs(end.y - y2) < threshold
-        )
+        val match1 = (abs(start.x - x1) < threshold && abs(start.y - y1) < threshold &&
+                abs(end.x - x2) < threshold && abs(end.y - y2) < threshold)
 
-        val match2 = (
-            abs(start.x - x2) < threshold &&
-                abs(start.y - y2) < threshold &&
-                abs(end.x - x1) < threshold &&
-                abs(end.y - y1) < threshold
-        )
+        val match2 = (abs(start.x - x2) < threshold && abs(start.y - y2) < threshold &&
+                abs(end.x - x1) < threshold && abs(end.y - y1) < threshold)
 
         assertTrue(
             match1 || match2,
-            "Expected ($x1, $y1)-($x2, $y2) but got (${start.x}, ${start.y})-(${end.x}, ${end.y})",
+            "Expected ($x1, $y1)-($x2, $y2) but got (${start.x}, ${start.y})-(${end.x}, ${end.y})"
         )
     }
 
@@ -213,58 +202,34 @@ class InterpolationTest {
         assertEquals(
             0.876125,
             Interpolation.catmullRom(0.18125, 0.884226, 0.877366, 0.870531),
-            0.0000005,
+            0.0000005
         )
     }
 
     @ParameterizedTest
     @MethodSource("provideNorm")
-    fun normDouble(
-        value: Double,
-        min: Double,
-        max: Double,
-        shouldClamp: Boolean,
-        expected: Double,
-    ) {
+    fun normDouble(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
         val actual = Interpolation.norm(value, min, max, shouldClamp)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideNorm")
-    fun normFloat(
-        value: Double,
-        min: Double,
-        max: Double,
-        shouldClamp: Boolean,
-        expected: Double,
-    ) {
+    fun normFloat(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
         val actual = Interpolation.norm(value.toFloat(), min.toFloat(), max.toFloat(), shouldClamp)
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLerp")
-    fun lerpDouble(
-        value: Double,
-        min: Double,
-        max: Double,
-        shouldClamp: Boolean,
-        expected: Double,
-    ) {
+    fun lerpDouble(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
         val actual = Interpolation.lerp(value, min, max, shouldClamp)
         assertEquals(expected, actual, 0.00001)
     }
 
     @ParameterizedTest
     @MethodSource("provideLerp")
-    fun lerpFloat(
-        value: Double,
-        min: Double,
-        max: Double,
-        shouldClamp: Boolean,
-        expected: Double,
-    ) {
+    fun lerpFloat(value: Double, min: Double, max: Double, shouldClamp: Boolean, expected: Double) {
         val actual = Interpolation.lerp(value.toFloat(), min.toFloat(), max.toFloat(), shouldClamp)
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
@@ -278,7 +243,7 @@ class InterpolationTest {
         newMin: Double,
         newMax: Double,
         shouldClamp: Boolean,
-        expected: Double,
+        expected: Double
     ) {
         val actual = Interpolation.map(value, min, max, newMin, newMax, shouldClamp)
         assertEquals(expected, actual, 0.00001)
@@ -293,24 +258,23 @@ class InterpolationTest {
         newMin: Double,
         newMax: Double,
         shouldClamp: Boolean,
-        expected: Double,
+        expected: Double
     ) {
-        val actual =
-            Interpolation.map(
-                value.toFloat(),
-                min.toFloat(),
-                max.toFloat(),
-                newMin.toFloat(),
-                newMax.toFloat(),
-                shouldClamp,
-            )
+        val actual = Interpolation.map(
+            value.toFloat(),
+            min.toFloat(),
+            max.toFloat(),
+            newMin.toFloat(),
+            newMax.toFloat(),
+            shouldClamp
+        )
         assertEquals(expected.toFloat(), actual, 0.00001f)
     }
 
     companion object {
         @JvmStatic
-        fun provideNorm(): Stream<Arguments> =
-            Stream.of(
+        fun provideNorm(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(0.1, 0.0, 1.0, false, 0.1),
                 Arguments.of(0.0, 0.0, 1.0, false, 0.0),
                 Arguments.of(1.0, 0.0, 1.0, false, 1.0),
@@ -324,10 +288,11 @@ class InterpolationTest {
                 Arguments.of(0.5, 0.0, 1.0, true, 0.5),
                 Arguments.of(2.0, 0.0, 1.0, true, 1.0),
             )
+        }
 
         @JvmStatic
-        fun provideLerp(): Stream<Arguments> =
-            Stream.of(
+        fun provideLerp(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(0.1, 0.0, 1.0, false, 0.1),
                 Arguments.of(0.0, 0.0, 1.0, false, 0.0),
                 Arguments.of(1.0, 0.0, 1.0, false, 1.0),
@@ -341,10 +306,11 @@ class InterpolationTest {
                 Arguments.of(0.5, 0.0, 1.0, true, 0.5),
                 Arguments.of(2.0, 0.0, 1.0, true, 1.0),
             )
+        }
 
         @JvmStatic
-        fun provideMap(): Stream<Arguments> =
-            Stream.of(
+        fun provideMap(): Stream<Arguments> {
+            return Stream.of(
                 Arguments.of(0.1, 0.0, 1.0, 2.0, 4.0, false, 2.2),
                 Arguments.of(0.0, 0.0, 1.0, 2.0, 4.0, false, 2.0),
                 Arguments.of(1.0, 0.0, 1.0, 2.0, 4.0, false, 4.0),
@@ -358,5 +324,6 @@ class InterpolationTest {
                 Arguments.of(0.5, 0.0, 1.0, 2.0, 4.0, true, 3.0),
                 Arguments.of(2.0, 0.0, 1.0, 2.0, 4.0, true, 4.0),
             )
+        }
     }
 }

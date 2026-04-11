@@ -10,16 +10,14 @@ import java.time.Duration
 import java.time.LocalDate
 
 class PhotoperiodTriggerTest {
+
     @ParameterizedTest
     @CsvSource(
         "12, false",
         "13, true",
-        "11, false",
+        "11, false"
     )
-    fun aboveTriggeredWhenDayLengthIsAboveThreshold(
-        dayLengthHours: Long,
-        isTriggered: Boolean,
-    ) {
+    fun aboveTriggeredWhenDayLengthIsAboveThreshold(dayLengthHours: Long, isTriggered: Boolean) {
         val trigger = PhotoperiodTrigger(Duration.ofHours(12), above = true)
         val factors = factors(dayLengthHours)
         assertEquals(isTriggered, trigger.isTriggered(factors))
@@ -29,21 +27,19 @@ class PhotoperiodTriggerTest {
     @CsvSource(
         "12, false",
         "11, true",
-        "13, false",
+        "13, false"
     )
-    fun belowTriggeredWhenDayLengthIsBelowThreshold(
-        dayLengthHours: Long,
-        isTriggered: Boolean,
-    ) {
+    fun belowTriggeredWhenDayLengthIsBelowThreshold(dayLengthHours: Long, isTriggered: Boolean) {
         val trigger = PhotoperiodTrigger(Duration.ofHours(12), above = false)
         val factors = factors(dayLengthHours)
         assertEquals(isTriggered, trigger.isTriggered(factors))
     }
 
-    private fun factors(dayLengthHours: Long): LifecycleEventFactors =
-        LifecycleEventFactors(
+    private fun factors(dayLengthHours: Long): LifecycleEventFactors {
+        return LifecycleEventFactors(
             lengthOfDay = Duration.ofHours(dayLengthHours),
             temperature = Range(Temperature.celsius(0f), Temperature.celsius(0f)),
-            date = LocalDate.now(),
+            date = LocalDate.now()
         )
+    }
 }

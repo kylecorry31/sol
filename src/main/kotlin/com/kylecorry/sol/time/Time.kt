@@ -1,5 +1,6 @@
 package com.kylecorry.sol.time
 
+import com.kylecorry.sol.math.MathExtensions.roundNearest
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Reading
@@ -10,6 +11,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 object Time {
+
     fun hours(hours: Double): Duration {
         val minutes = hours * 60
         val seconds = minutes * 60
@@ -17,118 +19,146 @@ object Time {
         return Duration.ofMillis(millis.toLong())
     }
 
-    fun hours(duration: Duration): Double = duration.toMillis() / 1000.0 / 60.0 / 60.0
+    fun hours(duration: Duration): Double {
+        return duration.toMillis() / 1000.0 / 60.0 / 60.0
+    }
 
-    fun LocalDateTime.toZonedDateTime(): ZonedDateTime = ZonedDateTime.of(this, ZoneId.systemDefault())
+    fun LocalDateTime.toZonedDateTime(): ZonedDateTime {
+        return ZonedDateTime.of(this, ZoneId.systemDefault())
+    }
 
-    fun LocalDateTime.toUTC(): ZonedDateTime = ZonedDateTime.of(this, ZoneId.of("UTC"))
+    fun LocalDateTime.toUTC(): ZonedDateTime {
+        return ZonedDateTime.of(this, ZoneId.of("UTC"))
+    }
 
-    fun LocalDateTime.toEpochMillis(): Long = this.toZonedDateTime().toInstant().toEpochMilli()
+    fun LocalDateTime.toEpochMillis(): Long {
+        return this.toZonedDateTime().toInstant().toEpochMilli()
+    }
 
-    fun ZonedDateTime.atStartOfDay(): ZonedDateTime = ZonedDateTime.of(this.toLocalDate(), LocalTime.MIN, this.zone)
+    fun ZonedDateTime.atStartOfDay(): ZonedDateTime {
+        return ZonedDateTime.of(this.toLocalDate(), LocalTime.MIN, this.zone)
+    }
 
-    fun ZonedDateTime.atEndOfDay(): ZonedDateTime = ZonedDateTime.of(this.toLocalDate(), LocalTime.MAX, this.zone)
+    fun ZonedDateTime.atEndOfDay(): ZonedDateTime {
+        return ZonedDateTime.of(this.toLocalDate(), LocalTime.MAX, this.zone)
+    }
 
-    fun LocalDate.atEndOfDay(): LocalDateTime = atTime(LocalTime.MAX)
+    fun LocalDate.atEndOfDay(): LocalDateTime {
+        return atTime(LocalTime.MAX)
+    }
 
-    fun LocalDateTime.plusHours(hours: Double): LocalDateTime = this.plus(hours(hours))
+    fun LocalDateTime.plusHours(hours: Double): LocalDateTime {
+        return this.plus(hours(hours))
+    }
 
-    fun ZonedDateTime.toUTCLocal(): LocalDateTime = LocalDateTime.ofInstant(this.toInstant(), ZoneId.of("UTC"))
+    fun ZonedDateTime.toUTCLocal(): LocalDateTime {
+        return LocalDateTime.ofInstant(this.toInstant(), ZoneId.of("UTC"))
+    }
 
-    fun Instant.utc(): ZonedDateTime = ZonedDateTime.ofInstant(this, ZoneId.of("UTC"))
+    fun Instant.utc(): ZonedDateTime {
+        return ZonedDateTime.ofInstant(this, ZoneId.of("UTC"))
+    }
 
-    fun Instant.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(this, ZoneId.systemDefault())
+    fun Instant.toZonedDateTime(): ZonedDateTime {
+        return ZonedDateTime.ofInstant(this, ZoneId.systemDefault())
+    }
 
-    fun Instant.isInPast(): Boolean = this < Instant.now()
+    fun Instant.isInPast(): Boolean {
+        return this < Instant.now()
+    }
 
-    fun Instant.isOlderThan(duration: Duration): Boolean = Duration.between(this, Instant.now()) > duration
+    fun Instant.isOlderThan(duration: Duration): Boolean {
+        return Duration.between(this, Instant.now()) > duration
+    }
 
-    fun duration(
-        hours: Long = 0L,
-        minutes: Long = 0L,
-        seconds: Long = 0L,
-    ): Duration = Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+    fun duration(hours: Long = 0L, minutes: Long = 0L, seconds: Long = 0L): Duration {
+        return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+    }
 
-    fun Instant.hoursUntil(other: Instant): Float = Duration.between(this, other).seconds / (60f * 60f)
+    fun Instant.hoursUntil(other: Instant): Float {
+        return Duration.between(this, other).seconds / (60f * 60f)
+    }
 
-    fun LocalDate.daysUntil(other: LocalDate): Long = Duration.between(this.atStartOfDay(), other.atStartOfDay()).toDays()
+    fun LocalDate.daysUntil(other: LocalDate): Long {
+        return Duration.between(this.atStartOfDay(), other.atStartOfDay()).toDays()
+    }
 
-    fun Instant.plusHours(hours: Long): Instant = plus(Duration.ofHours(hours))
+    fun Instant.plusHours(hours: Long): Instant {
+        return plus(Duration.ofHours(hours))
+    }
 
     fun getClosestPastTime(
         currentTime: Instant,
-        times: List<Instant?>,
-    ): Instant? =
-        times
-            .filterNotNull()
-            .filter { it.isBefore(currentTime) }
+        times: List<Instant?>
+    ): Instant? {
+        return times.filterNotNull().filter { it.isBefore(currentTime) }
             .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
 
     fun getClosestPastTime(
         currentTime: LocalDateTime,
-        times: List<LocalDateTime?>,
-    ): LocalDateTime? =
-        times
-            .filterNotNull()
-            .filter { it.isBefore(currentTime) }
+        times: List<LocalDateTime?>
+    ): LocalDateTime? {
+        return times.filterNotNull().filter { it.isBefore(currentTime) }
             .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
 
     fun getClosestFutureTime(
         currentTime: LocalDateTime,
-        times: List<LocalDateTime?>,
-    ): LocalDateTime? =
-        times
-            .filterNotNull()
-            .filter { it.isAfter(currentTime) }
+        times: List<LocalDateTime?>
+    ): LocalDateTime? {
+        return times.filterNotNull().filter { it.isAfter(currentTime) }
             .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
 
     fun getClosestTime(
         currentTime: ZonedDateTime,
-        times: List<ZonedDateTime?>,
-    ): ZonedDateTime? = times.filterNotNull().minByOrNull { Duration.between(it, currentTime).abs() }
+        times: List<ZonedDateTime?>
+    ): ZonedDateTime? {
+        return times.filterNotNull().minByOrNull { Duration.between(it, currentTime).abs() }
+    }
 
     fun getClosestFutureTime(
         currentTime: ZonedDateTime,
-        times: List<ZonedDateTime?>,
-    ): ZonedDateTime? =
-        times
-            .filterNotNull()
-            .filter { it.isAfter(currentTime) }
+        times: List<ZonedDateTime?>
+    ): ZonedDateTime? {
+        return times.filterNotNull().filter { it.isAfter(currentTime) }
             .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
 
     fun getClosestPastTime(
         currentTime: ZonedDateTime,
-        times: List<ZonedDateTime?>,
-    ): ZonedDateTime? =
-        times
-            .filterNotNull()
-            .filter { it.isBefore(currentTime) }
+        times: List<ZonedDateTime?>
+    ): ZonedDateTime? {
+        return times.filterNotNull().filter { it.isBefore(currentTime) }
             .minByOrNull { Duration.between(it, currentTime).abs() }
+    }
 
-    fun hoursBetween(
-        first: Temporal,
-        second: Temporal,
-    ): Float = Duration.between(first, second).seconds / 3600f
+    fun hoursBetween(first: Temporal, second: Temporal): Float {
+        return Duration.between(first, second).seconds / 3600f
+    }
 
     inline fun <T> getReadings(
         date: LocalDate,
         zone: ZoneId,
         step: Duration,
-        valueFn: (time: ZonedDateTime) -> T,
-    ): List<Reading<T>> =
-        getReadings(
+        valueFn: (time: ZonedDateTime) -> T
+    ): List<Reading<T>> {
+        return getReadings(
             date.atStartOfDay().atZone(zone),
             date.atEndOfDay().atZone(zone),
             step,
-            valueFn,
+            valueFn
         )
+    }
 
     inline fun <T> getReadings(
         start: ZonedDateTime,
         end: ZonedDateTime,
         step: Duration,
-        valueFn: (time: ZonedDateTime) -> T,
+        valueFn: (time: ZonedDateTime) -> T
     ): List<Reading<T>> {
+
         if (step.isZero || step.isNegative) {
             return emptyList()
         }
@@ -144,7 +174,7 @@ object Time {
 
     inline fun <T> getYearlyValues(
         year: Int,
-        valueProvider: (date: LocalDate) -> T,
+        valueProvider: (date: LocalDate) -> T
     ): List<Pair<LocalDate, T>> {
         val values = mutableListOf<Pair<LocalDate, T>>()
         var date = LocalDate.of(year, Month.JANUARY, 1)
@@ -163,13 +193,17 @@ object Time {
         return Duration.between(start.time, end.time)
     }
 
-    fun isDaylightSavings(time: ZonedDateTime): Boolean = time.zone.rules.isDaylightSavings(time.toInstant())
+    fun isDaylightSavings(time: ZonedDateTime): Boolean {
+        return time.zone.rules.isDaylightSavings(time.toInstant())
+    }
 
-    fun getDaylightSavings(time: ZonedDateTime): Duration = time.zone.rules.getDaylightSavings(time.toInstant())
+    fun getDaylightSavings(time: ZonedDateTime): Duration {
+        return time.zone.rules.getDaylightSavings(time.toInstant())
+    }
 
     fun getDaylightSavingsTransitions(
         zone: ZoneId,
-        year: Int,
+        year: Int
     ): List<Pair<ZonedDateTime, Duration>> {
         val dates = mutableListOf<Pair<ZonedDateTime, Duration>>()
         var date = ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, zone)
@@ -226,13 +260,21 @@ object Time {
         return this.plusNanos(roundedNanos - totalNanos).truncatedTo(ChronoUnit.MINUTES)
     }
 
-    fun LocalDateTime.plusMillis(millis: Long): LocalDateTime = this.plusNanos(millis * 1000000L)
+    fun LocalDateTime.plusMillis(millis: Long): LocalDateTime {
+        return this.plusNanos(millis * 1000000L)
+    }
 
-    fun ZonedDateTime.plusMillis(millis: Long): ZonedDateTime = this.plusNanos(millis * 1000000L)
+    fun ZonedDateTime.plusMillis(millis: Long): ZonedDateTime {
+        return this.plusNanos(millis * 1000000L)
+    }
 
-    fun getSolarTimeOffset(longitude: Double): Duration = hours(longitude / 15)
+    fun getSolarTimeOffset(longitude: Double): Duration {
+        return hours(longitude / 15)
+    }
 
-    fun getLongitudeFromSolarTimeOffset(offset: Duration): Double = hours(offset) * 15
+    fun getLongitudeFromSolarTimeOffset(offset: Duration): Double {
+        return hours(offset) * 15
+    }
 
     fun getApproximateTimeZone(location: Coordinate): ZoneId {
         val offset = getSolarTimeOffset(location.longitude)
@@ -247,14 +289,9 @@ object Time {
             return lookupLocation
         }
 
-        val offset =
-            Duration.ofSeconds(
-                zone.rules
-                    .getStandardOffset(Instant.now())
-                    .totalSeconds
-                    .toLong(),
-            )
+        val offset = Duration.ofSeconds(zone.rules.getStandardOffset(Instant.now()).totalSeconds.toLong())
         val timezoneLongitude = getLongitudeFromSolarTimeOffset(offset)
         return Coordinate(0.0, timezoneLongitude)
     }
+
 }

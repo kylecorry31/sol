@@ -6,13 +6,9 @@ import com.kylecorry.sol.math.regression.ITimeSeriesPredictor
 
 class TimeSeriesEnsemble(
     private val predictors: List<ITimeSeriesPredictor>,
-    private val confidenceIntervalSize: Float = 0.95f,
+    private val confidenceIntervalSize: Float = 0.95f
 ) {
-    fun predictNext(
-        samples: List<Vector2>,
-        n: Int,
-        step: Float? = null,
-    ): List<ConfidenceInterval<Vector2>> {
+    fun predictNext(samples: List<Vector2>, n: Int, step: Float? = null): List<ConfidenceInterval<Vector2>> {
         val predictions = predictors.map { it.predictNext(samples, n, step) }
         val result = mutableListOf<ConfidenceInterval<Vector2>>()
         for (i in 0 until n) {
@@ -27,8 +23,8 @@ class TimeSeriesEnsemble(
                     Vector2(x, interval.value),
                     Vector2(x, interval.lower),
                     Vector2(x, interval.upper),
-                    interval.confidence,
-                ),
+                    interval.confidence
+                )
             )
         }
         return result

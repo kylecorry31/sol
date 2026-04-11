@@ -1,17 +1,18 @@
 package com.kylecorry.sol.math.calculus
 
+import com.kylecorry.sol.math.arithmetic.Arithmetic.cube
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.algebra.Polynomial
 import com.kylecorry.sol.math.algebra.QuadraticEquation
-import com.kylecorry.sol.math.arithmetic.Arithmetic.cube
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 internal class CalculusTest {
+
     @Test
     fun derivativeLinear() {
         val eq = LinearEquation(2f, 5f)
@@ -37,12 +38,12 @@ internal class CalculusTest {
         assertEquals(
             gradFn1(1.0),
             Calculus.derivative(1.0, step = 0.000001, fn = fn1),
-            0.0001,
+            0.0001
         )
         assertEquals(
             gradFn2(4.0),
             Calculus.derivative(4.0, step = 0.000001, fn = fn2),
-            0.0001,
+            0.0001
         )
     }
 
@@ -57,23 +58,23 @@ internal class CalculusTest {
         assertEquals(
             gradFn1(1.0, 3.0).first,
             Calculus.derivative(1.0, 3.0, step = 0.000001, fn = fn1).first,
-            0.0001,
+            0.0001
         )
         assertEquals(
             gradFn1(1.0, 3.0).second,
             Calculus.derivative(1.0, 3.0, step = 0.000001, fn = fn1).second,
-            0.0001,
+            0.0001
         )
 
         assertEquals(
             gradFn2(4.0, 3.0).first,
             Calculus.derivative(4.0, 3.0, step = 0.000001, fn = fn2).first,
-            0.0001,
+            0.0001
         )
         assertEquals(
             gradFn2(4.0, 3.0).second,
             Calculus.derivative(4.0, 3.0, step = 0.000001, fn = fn2).second,
-            0.0001,
+            0.0001
         )
     }
 
@@ -81,25 +82,23 @@ internal class CalculusTest {
     @CsvSource(
         "1",
         "2",
-        "3",
+        "3"
     )
     fun derivativeSamples(finiteDifferenceOrder: Int) {
         // y = x^2
         val polynomial = Polynomial.of("x^2")
         val derivativePolynomial = polynomial.derivative()
 
-        val samples =
-            (1..1000).map {
-                val x = it / 100f
-                Vector2(x, polynomial.evaluate(x))
-            }
+        val samples = (1..1000).map {
+            val x = it / 100f
+            Vector2(x, polynomial.evaluate(x))
+        }
 
         val derivative = Calculus.derivative(samples, finiteDifferenceOrder)
 
-        val expected =
-            samples.map {
-                Vector2(it.x, derivativePolynomial.evaluate(it.x))
-            }
+        val expected = samples.map {
+            Vector2(it.x, derivativePolynomial.evaluate(it.x))
+        }
 
         for (i in derivative.indices) {
             assertEquals(expected[i].x, derivative[i].x, 0.01f, "X at index $i")
@@ -115,7 +114,7 @@ internal class CalculusTest {
         assertEquals(
             integralFn1(5.0) - integralFn1(1.0),
             Calculus.integral(1.0, 5.0, step = 0.000001, fn = fn1),
-            0.0001,
+            0.0001
         )
     }
 
@@ -126,17 +125,16 @@ internal class CalculusTest {
         assertEquals(
             0.01125,
             Calculus.integral(0.0, 0.15, step = 0.1, fn = fn),
-            0.000001,
+            0.000001
         )
     }
 
     @Test
     fun derivativeSamplesShortInputHighOrderFallsBackToAvailableStencil() {
-        val samples =
-            listOf(
-                Vector2(0f, 0f),
-                Vector2(1f, 1f),
-            )
+        val samples = listOf(
+            Vector2(0f, 0f),
+            Vector2(1f, 1f)
+        )
 
         val derivative = Calculus.derivative(samples, finiteDifferenceOrder = 3)
 
@@ -146,6 +144,7 @@ internal class CalculusTest {
         assertEquals(1f, derivative[0].y, 0.0001f)
         assertEquals(1f, derivative[1].y, 0.0001f)
     }
+
 
     @Test
     fun root() {
