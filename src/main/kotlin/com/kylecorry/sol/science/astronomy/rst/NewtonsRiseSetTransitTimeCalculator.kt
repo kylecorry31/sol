@@ -31,7 +31,42 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         withRefraction: Boolean,
         withParallax: Boolean
     ): RiseSetTransitTimes {
+        val maxAttempts = if (withRefraction) 2 else 1
+        var rise: ZonedDateTime? = null
+        var transit: ZonedDateTime? = null
+        var set: ZonedDateTime? = null
 
+        for (attempt in 0 until maxAttempts) {
+            val currentWithRefraction = if (attempt == 0) withRefraction else false
+            val calculated = calculateHelper(
+                locator,
+                date,
+                location,
+                standardAltitude,
+                currentWithRefraction,
+                withParallax
+            )
+
+            rise = rise ?: calculated.rise
+            transit = transit ?: calculated.transit
+            set = set ?: calculated.set
+
+            if (rise != null && transit != null && set != null) {
+                break
+            }
+        }
+
+        return RiseSetTransitTimes(rise, transit, set)
+    }
+
+    private fun calculateHelper(
+        locator: ICelestialLocator,
+        date: ZonedDateTime,
+        location: Coordinate,
+        standardAltitude: Double,
+        withRefraction: Boolean,
+        withParallax: Boolean
+    ): RiseSetTransitTimes {
         val ld = date.toLocalDate()
 
         // Get today's times
@@ -78,43 +113,26 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                 locator
             )
 
-        val rise = listOfNotNull(
-            today.rise,
-            todayAtNoon.rise,
-            yesterday.rise,
-            tomorrow.rise
-        ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
-        val transit = listOfNotNull(
-            today.transit,
-            todayAtNoon.transit,
-            yesterday.transit,
-            tomorrow.transit
-        ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
-        val set = listOfNotNull(
-            today.set,
-            todayAtNoon.set,
-            yesterday.set,
-            tomorrow.set
-        ).firstOrNull { it.toLocalDate() == date.toLocalDate() }
-
-        // Handle the case where a rise or set is close to the horizon and refraction is messing it up
-        if (withRefraction && (rise == null || transit == null || set == null)) {
-            val calculated = calculate(
-                locator,
-                date,
-                location,
-                standardAltitude,
-                false,
-                withParallax
-            )
-            return RiseSetTransitTimes(
-                rise ?: calculated.rise,
-                transit ?: calculated.transit,
-                set ?: calculated.set
-            )
-        }
-
-        return RiseSetTransitTimes(rise, transit, set)
+        return RiseSetTransitTimes(
+            listOfNotNull(
+                today.rise,
+                todayAtNoon.rise,
+                yesterday.rise,
+                tomorrow.rise
+            ).firstOrNull { it.toLocalDate() == ld },
+            listOfNotNull(
+                today.transit,
+                todayAtNoon.transit,
+                yesterday.transit,
+                tomorrow.transit
+            ).firstOrNull { it.toLocalDate() == ld },
+            listOfNotNull(
+                today.set,
+                todayAtNoon.set,
+                yesterday.set,
+                tomorrow.set
+            ).firstOrNull { it.toLocalDate() == ld }
+        )
     }
 
     private fun getTransitTimesHelper(
