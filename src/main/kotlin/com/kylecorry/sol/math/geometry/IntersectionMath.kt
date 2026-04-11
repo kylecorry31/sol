@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.algebra.QuadraticEquation
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
+import kotlin.math.absoluteValue
 
 internal object IntersectionMath {
 
@@ -28,15 +29,25 @@ internal object IntersectionMath {
     }
 
     fun getIntersection(line1: Line, line2: Line): Vector2? {
-        val intercepts = line1.intercept() - line2.intercept()
-        val slopes = line2.slope() - line1.slope()
+        val p = line1.start
+        val r = line1.end - line1.start
+        val q = line2.start
+        val s = line2.end - line2.start
 
-        if (Arithmetic.isZero(slopes)) {
+        val denominator = cross(r, s)
+        if (Arithmetic.isZero(denominator)) {
             return null
         }
 
-        val x = intercepts / slopes
-        return Vector2(x, line1.equation().evaluate(x))
+        val qMinusP = q - p
+        val t = cross(qMinusP, s) / denominator
+        val u = cross(qMinusP, r) / denominator
+
+        if (!isBetweenZeroAndOne(t) || !isBetweenZeroAndOne(u)) {
+            return null
+        }
+
+        return Vector2(p.x + t * r.x, p.y + t * r.y)
     }
 
     fun getIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
@@ -103,5 +114,13 @@ internal object IntersectionMath {
         val minY = minOf(a.y, b.y)
         val maxY = maxOf(a.y, b.y)
         return intersection.filter { it.x in minX..maxX && it.y in minY..maxY }
+    }
+
+    private fun cross(a: Vector2, b: Vector2): Float {
+        return a.x * b.y - a.y * b.x
+    }
+
+    private fun isBetweenZeroAndOne(value: Float, tolerance: Float = 0.00001f): Boolean {
+        return value >= -tolerance && value <= 1f + tolerance || value.absoluteValue < tolerance
     }
 }

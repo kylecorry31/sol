@@ -86,6 +86,20 @@ internal class GeometryTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideLineLineIntersections")
+    fun getIntersectionLineLine(line1: Line, line2: Line, expected: Vector2?) {
+        val actual = Geometry.getIntersection(line1, line2)
+
+        if (expected == null) {
+            assertNull(actual)
+            assertFalse(Geometry.intersects(line1, line2))
+        } else {
+            assertEquals(expected, actual!!, 0.00001f)
+            assertTrue(Geometry.intersects(line1, line2))
+        }
+    }
+
+    @ParameterizedTest
     @CsvSource(
         "0, 0, 0, 0",
         "3, 1, 3, 1",
@@ -223,6 +237,48 @@ internal class GeometryTest {
     }
 
     companion object {
+        @JvmStatic
+        fun provideLineLineIntersections(): Stream<Arguments> {
+            return Stream.of(
+                // Diagonal segments crossing at midpoint
+                Arguments.of(
+                    Line(Vector2(0f, 0f), Vector2(4f, 4f)),
+                    Line(Vector2(0f, 4f), Vector2(4f, 0f)),
+                    Vector2(2f, 2f)
+                ),
+                // Vertical segment crossing horizontal segment
+                Arguments.of(
+                    Line(Vector2(0f, 0f), Vector2(4f, 0f)),
+                    Line(Vector2(2f, -2f), Vector2(2f, 2f)),
+                    Vector2(2f, 0f)
+                ),
+                // Segments touching at a shared endpoint
+                Arguments.of(
+                    Line(Vector2(0f, 0f), Vector2(2f, 2f)),
+                    Line(Vector2(2f, 2f), Vector2(4f, 0f)),
+                    Vector2(2f, 2f)
+                ),
+                // Infinite lines cross, but the segments do not reach the crossing point
+                Arguments.of(
+                    Line(Vector2(0f, 0f), Vector2(1f, 1f)),
+                    Line(Vector2(2f, 0f), Vector2(2f, 3f)),
+                    null
+                ),
+                // Parallel horizontal segments with vertical separation
+                Arguments.of(
+                    Line(Vector2(0f, 0f), Vector2(4f, 0f)),
+                    Line(Vector2(0f, 1f), Vector2(4f, 1f)),
+                    null
+                ),
+                // Collinear horizontal segments with a gap between them
+                Arguments.of(
+                    Line(Vector2(0f, 0f), Vector2(1f, 0f)),
+                    Line(Vector2(2f, 0f), Vector2(3f, 0f)),
+                    null
+                )
+            )
+        }
+
         @JvmStatic
         fun provideScaleToFit(): Stream<Arguments> {
             return Stream.of(
