@@ -375,7 +375,7 @@ object Astronomy {
         return getAboveHorizonTimes(
             location,
             time,
-            Duration.ofHours(6),
+            nextRiseOffset,
             { loc, t -> isMoonUp(t, loc, withRefraction, withParallax) },
             { loc, t -> getMoonEvents(t, loc, withRefraction, withParallax) }
         )
