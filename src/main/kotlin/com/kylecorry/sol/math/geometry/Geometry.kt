@@ -22,7 +22,7 @@ object Geometry {
                     line.start.x,
                     sqrt(square(circle.radius) - square(line.start.x - circle.center.x)) + circle.center.y
                 )
-                val bottom = top.copy(y = -top.y)
+                val bottom = top.copy(y = 2 * circle.center.y - top.y)
                 val lineTop = line.top()
                 val lineBottom = line.bottom()
 

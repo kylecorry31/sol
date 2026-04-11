@@ -57,6 +57,7 @@ internal class GeometryTest {
         val line2 = Line(Vector2(-5f, -6f), Vector2(4f, 3f))
         val line3 = Line(Vector2(0.5f, 1f), Vector2(0.5f, -1f))
         val line4 = Line(Vector2(1f, 0f), Vector2(2f, 2f))
+        val line5 = Line(Vector2(4f, 0f), Vector2(4f, 6f))
 
         // TODO: Add test where line is outside circle, but points to circle
 
@@ -69,6 +70,7 @@ internal class GeometryTest {
         val intersection4 = Geometry.getIntersection(line1, circle2)
         val intersection5 = Geometry.getIntersection(line3, circle1)
         val intersection6 = Geometry.getIntersection(line4, circle1)
+        val intersection7 = Geometry.getIntersection(line5, circle2)
 
         assertEquals(Line(Vector2(0f, 0f), Vector2(1f, 0f)), intersection1!!, 0.00001f)
         assertEquals(Line(Vector2(0f, -1f), Vector2(1f, 0f)), intersection2!!, 0.00001f)
@@ -79,6 +81,7 @@ internal class GeometryTest {
             0.00001f
         )
         assertEquals(Line(Vector2(1f, 0f), Vector2(1f, 0f)), intersection6!!, 0.00001f)
+        assertEquals(Line(Vector2(4f, 5f), Vector2(4f, 1f)), intersection7!!, 0.00001f)
         assertNull(intersection4)
     }
 
