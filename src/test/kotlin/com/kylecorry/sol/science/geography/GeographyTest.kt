@@ -350,6 +350,12 @@ class GeographyTest {
                     Coordinate.zero,
                     Coordinate(0.0, 2.0),
                     Distance.meters(-1.11198e5f).value
+                ),
+                Arguments.of(
+                    Coordinate(0.0, 2.0),
+                    Coordinate.zero,
+                    Coordinate(0.0, 2.0),
+                    Coordinate.zero.distanceTo(Coordinate(0.0, 2.0))
                 )
             )
         }

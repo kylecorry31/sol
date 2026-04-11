@@ -573,7 +573,7 @@ object Geography {
         }
 
         if (point == end) {
-            return Distance.meters(point.distanceTo(end))
+            return Distance.meters(start.distanceTo(end))
         }
 
         val startToPoint = haversine(start, point, EARTH_AVERAGE_RADIUS)
