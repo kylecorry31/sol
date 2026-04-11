@@ -18,6 +18,15 @@ import java.util.stream.Stream
 
 internal class OceanographyTest {
     @Test
+    fun getLunitidalInterval() {
+        val location = Coordinate(42.0, -72.0)
+        val time = ZonedDateTime.of(2026, 4, 17, 14, 53, 0, 0, ZoneId.of("America/New_York"))
+
+        val interval = Oceanography.getLunitidalInterval(time, location)
+        assertEquals(Duration.ofMinutes(120), interval?.toMinutes()?.let { Duration.ofMinutes(it) })
+    }
+
+    @Test
     fun getTidalRange() {
         val cases = listOf(
             Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 6, 0), TidalRange.Neap),
