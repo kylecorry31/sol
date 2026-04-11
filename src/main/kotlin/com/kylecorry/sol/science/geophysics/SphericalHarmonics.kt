@@ -55,7 +55,7 @@ internal class SphericalHarmonics(
             var gcY = 0f
             var gcZ = 0f
 
-            for (n in 1 until maxN) {
+            for (n in 1..<maxN) {
                 for (m in 0..n) {
                     // Adjust for time
                     val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
@@ -96,7 +96,7 @@ internal class SphericalHarmonics(
             val maxN = gCoefficients.size
             var scalar = 0f
 
-            for (n in 1 until maxN) {
+            for (n in 1..<maxN) {
                 for (m in 0..n) {
                     // Adjust for time
                     val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
@@ -134,7 +134,7 @@ internal class SphericalHarmonics(
         val relativeRadiusPower = FloatArray(maxN + 2)
         relativeRadiusPower[0] = 1.0f
         relativeRadiusPower[1] = EARTH_REFERENCE_RADIUS_KM / mGcRadiusKm
-        for (i in 2 until relativeRadiusPower.size) {
+        for (i in 2..<relativeRadiusPower.size) {
             relativeRadiusPower[i] = relativeRadiusPower[i - 1] * relativeRadiusPower[1]
         }
 
@@ -145,7 +145,7 @@ internal class SphericalHarmonics(
         cosMLon[0] = 1.0f
         sinMLon[1] = sin(mGcLongitudeRad)
         cosMLon[1] = cos(mGcLongitudeRad)
-        for (m in 2 until maxN) {
+        for (m in 2..<maxN) {
             val x = m shr 1
             sinMLon[m] = sinMLon[m - x] * cosMLon[x] + cosMLon[m - x] * sinMLon[x]
             cosMLon[m] = cosMLon[m - x] * cosMLon[x] - sinMLon[m - x] * sinMLon[x]

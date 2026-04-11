@@ -91,7 +91,7 @@ internal object NumericDifferentiation {
         val derivative = mutableListOf<Vector2>()
         // First point needs forward difference
         derivative.add(stencilDifference(values, 0, FORWARD_STENCILS[endpointOrder]!!))
-        for (j in 1 until values.size - 1) {
+        for (j in 1..<values.size - 1) {
             val neighbors = min(j, values.size - 1 - j)
             val centerOrder = min(actualOrder, neighbors)
             derivative.add(stencilDifference(values, j, CENTRAL_STENCILS[centerOrder]!!))

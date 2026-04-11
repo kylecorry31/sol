@@ -48,7 +48,7 @@ object Arithmetic {
 
 
         var total = 1
-        for (i in 0 until power) {
+        for (i in 0..<power) {
             total *= x
         }
 

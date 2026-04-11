@@ -52,7 +52,7 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
             }
 
             // Check if it just rose past the standard altitude
-            if (lastAltitude <= standardAltitude && altitude > standardAltitude) {
+            if (standardAltitude in lastAltitude.toDouble()..<altitude.toDouble()) {
                 riseTimeRange = Range(time.minusHours(intervalHours), time)
             }
 

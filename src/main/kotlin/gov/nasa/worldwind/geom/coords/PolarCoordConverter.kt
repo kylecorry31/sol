@@ -286,8 +286,8 @@ internal constructor() {
                 pow_es = ((1.0 - essin) / (1.0 + essin)).pow(es_OVER_2)
                 t = tan(PI_Over_4 - Latitude / 2.0) / pow_es
 
-                if (abs(abs(Polar_Origin_Lat) - PI_OVER_2) > 1.0e-10) rho = Polar_a_mc * t / tc
-                else rho = two_Polar_a * t / e4
+                rho = if (abs(abs(Polar_Origin_Lat) - PI_OVER_2) > 1.0e-10) Polar_a_mc * t / tc
+                else two_Polar_a * t / e4
 
 
                 if (Southern_Hemisphere != 0.0) {
@@ -330,10 +330,10 @@ internal constructor() {
         val min_northing = Polar_False_Northing - Polar_Delta_Northing
         val max_northing = Polar_False_Northing + Polar_Delta_Northing
 
-        if (Easting > max_easting || Easting < min_easting) { /* Easting out of range */
+        if (Easting !in min_easting..max_easting) { /* Easting out of range */
             Error_Code = Error_Code or POLAR_EASTING_ERROR
         }
-        if (Northing > max_northing || Northing < min_northing) { /* Northing out of range */
+        if (Northing !in min_northing..max_northing) { /* Northing out of range */
             Error_Code = Error_Code or POLAR_NORTHING_ERROR
         }
 
@@ -361,8 +361,8 @@ internal constructor() {
                     dx *= -1.0
                 }
 
-                if (abs(abs(Polar_Origin_Lat) - PI_OVER_2) > 1.0e-10) t = rho * tc / (Polar_a_mc)
-                else t = rho * e4 / (two_Polar_a)
+                t = if (abs(abs(Polar_Origin_Lat) - PI_OVER_2) > 1.0e-10) rho * tc / (Polar_a_mc)
+                else rho * e4 / (two_Polar_a)
                 PHI = PI_OVER_2 - 2.0 * atan(t)
                 while (abs(PHI - tempPHI) > 1.0e-10) {
                     tempPHI = PHI
@@ -407,9 +407,9 @@ internal constructor() {
         const val POLAR_RADIUS_ERROR: Long = 0x0100
 
         private const val PI = 3.14159265358979323
-        private val PI_OVER_2: Double = PI / 2.0
-        private val PI_Over_4: Double = PI / 4.0
-        private val TWO_PI: Double = 2.0 * PI
+        private const val PI_OVER_2: Double = PI / 2.0
+        private const val PI_Over_4: Double = PI / 4.0
+        private const val TWO_PI: Double = 2.0 * PI
     }
 }
 

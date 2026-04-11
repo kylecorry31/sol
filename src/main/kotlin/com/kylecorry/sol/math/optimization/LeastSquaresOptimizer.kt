@@ -31,11 +31,11 @@ class LeastSquaresOptimizer {
         require(points.size == errors.size) { "The number of points and errors must be equal." }
 
         // Initial guess for the observer location (average of the points)
-        val guess = initialValue?.toMutableList() ?: points[0].mapIndexed { index, _ ->
+        val guess = initialValue?.toMutableList() ?: List(points[0].size) { index ->
             points.map { it[index] }.average().toFloat()
         }.toMutableList()
 
-        for (i in 0 until maxIterations) {
+        for (i in 0..<maxIterations) {
 
             val f = Vector(points.mapIndexed { i, point ->
                 (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])

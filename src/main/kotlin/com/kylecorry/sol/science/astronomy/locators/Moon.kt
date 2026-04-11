@@ -143,7 +143,7 @@ internal class Moon : ICelestialLocator {
         val phaseAngle = getMoonPhaseAngle(ut)
         val illumination = getMoonIllumination(phaseAngle).toFloat()
 
-        for (phase in MoonTruePhase.values()) {
+        for (phase in MoonTruePhase.entries) {
             if (phase.startAngle <= phaseAngle && phase.endAngle >= phaseAngle) {
                 return MoonPhase(phase, illumination, phaseAngle.toFloat())
             }

@@ -139,7 +139,7 @@ object EastingNorthingConversion {
         var iterations = 0
 
         while (delta > 0.00001 && iterations < MAX_TO_LAT_LON_ITERATIONS) {
-            latPrime = ((coordN - n0 - m) / (a * f0)) + latPrime
+            latPrime += ((coordN - n0 - m) / (a * f0))
 
             m = b * f0 * ((1 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (latPrime - lat0)
                     - (3.0 * n + 3.0 * n2 + (21.0 / 8.0) * n3)

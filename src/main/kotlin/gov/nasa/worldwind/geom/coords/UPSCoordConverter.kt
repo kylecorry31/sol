@@ -235,13 +235,13 @@ internal constructor() {
         const val UPS_NORTHING_ERROR: Int = 0x0010
 
         private const val PI = 3.14159265358979323
-        private val MAX_LAT: Double = (PI * 90) / 180.0 // 90 degrees in radians
+        private const val MAX_LAT: Double = (PI * 90) / 180.0 // 90 degrees in radians
 
         // Min and max latitude values accepted
-        private val MIN_NORTH_LAT: Double = 72 * PI / 180.0 // 83.5
-        private val MIN_SOUTH_LAT: Double = -72 * PI / 180.0 // -79.5
+        private const val MIN_NORTH_LAT: Double = 72 * PI / 180.0 // 83.5
+        private const val MIN_SOUTH_LAT: Double = -72 * PI / 180.0 // -79.5
 
-        private val MAX_ORIGIN_LAT: Double = (81.114528 * PI) / 180.0
+        private const val MAX_ORIGIN_LAT: Double = (81.114528 * PI) / 180.0
         private const val MIN_EAST_NORTH = 0.0
         private const val MAX_EAST_NORTH = 4000000.0
     }

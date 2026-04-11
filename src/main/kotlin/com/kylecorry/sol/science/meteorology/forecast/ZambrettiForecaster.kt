@@ -145,9 +145,9 @@ internal object ZambrettiForecaster : Forecaster {
             else -> 0
         }
 
-        val seasonAdjustment = when {
-            season == Season.Winter && tendency.amount <= -changeThreshold -> -1
-            season == Season.Summer && tendency.amount >= changeThreshold -> 1
+        val seasonAdjustment = when (season) {
+            Season.Winter if tendency.amount <= -changeThreshold -> -1
+            Season.Summer if tendency.amount >= changeThreshold -> 1
             else -> 0
         }
 

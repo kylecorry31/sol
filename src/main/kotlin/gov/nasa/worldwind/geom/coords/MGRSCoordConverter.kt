@@ -66,8 +66,8 @@ internal class MGRSCoordConverter {
     ) {
         override fun toString(): String {
             return "MGRS: " + zone + " " +
-                    alphabet.get(latitudeBand) + " " +
-                    alphabet.get(squareLetter1) + alphabet.get(squareLetter2) + " " +
+                    alphabet[latitudeBand] + " " +
+                    alphabet[squareLetter1] + alphabet[squareLetter2] + " " +
                     easting + " " +
                     northing + " " +
                     "(" + precision + ")"
@@ -115,7 +115,6 @@ internal class MGRSCoordConverter {
         var num_digits: Int
         val num_letters: Int
         var i = 0
-        var j = 0
         var error_code = MGRS_NO_ERROR.toLong()
 
         var zone = 0
@@ -124,11 +123,11 @@ internal class MGRSCoordConverter {
         var northing: Long = 0
         var precision = 0
 
-        while (i < MGRSString.length && MGRSString.get(i) == ' ') {
+        while (i < MGRSString.length && MGRSString[i] == ' ') {
             i++ /* skip any leading blanks */
         }
-        j = i
-        while (i < MGRSString.length && Character.isDigit(MGRSString.get(i))) {
+        var j: Int = i
+        while (i < MGRSString.length && Character.isDigit(MGRSString[i])) {
             i++
         }
         num_digits = i - j
@@ -139,33 +138,32 @@ internal class MGRSCoordConverter {
         } else error_code = error_code or MGRS_STRING_ERROR.toLong()
         j = i
 
-        while (i < MGRSString.length && Character.isLetter(MGRSString.get(i))) {
+        while (i < MGRSString.length && Character.isLetter(MGRSString[i])) {
             i++
         }
         num_letters = i - j
         if (num_letters == 3) {
             /* get letters */
-            letters[0] = alphabet.indexOf(MGRSString.get(j).uppercaseChar())
+            letters[0] = alphabet.indexOf(MGRSString[j].uppercaseChar())
             if ((letters[0] == LETTER_I) || (letters[0] == LETTER_O)) error_code =
                 error_code or MGRS_STRING_ERROR.toLong()
-            letters[1] = alphabet.indexOf(MGRSString.get(j + 1).uppercaseChar())
+            letters[1] = alphabet.indexOf(MGRSString[j + 1].uppercaseChar())
             if ((letters[1] == LETTER_I) || (letters[1] == LETTER_O)) error_code =
                 error_code or MGRS_STRING_ERROR.toLong()
-            letters[2] = alphabet.indexOf(MGRSString.get(j + 2).uppercaseChar())
+            letters[2] = alphabet.indexOf(MGRSString[j + 2].uppercaseChar())
             if ((letters[2] == LETTER_I) || (letters[2] == LETTER_O)) error_code =
                 error_code or MGRS_STRING_ERROR.toLong()
         } else error_code = error_code or MGRS_STRING_ERROR.toLong()
         j = i
-        while (i < MGRSString.length && Character.isDigit(MGRSString.get(i))) {
+        while (i < MGRSString.length && Character.isDigit(MGRSString[i])) {
             i++
         }
         num_digits = i - j
         if ((num_digits <= 10) && (num_digits % 2 == 0)) {
-            /* get easting, northing and precision */
-            val n: Int
             val multiplier: Double
             /* get easting & northing */
-            n = num_digits / 2
+            /* get easting, northing and precision */
+            val n: Int = num_digits / 2
             precision = n
             if (n > 0) {
                 easting = MGRSString.substring(j, j + n).toInt().toLong()
@@ -203,19 +201,17 @@ internal class MGRSCoordConverter {
      */
     private fun checkZone(MGRSString: String): Long {
         var i = 0
-        var j = 0
-        var num_digits = 0
         var error_code = MGRS_NO_ERROR.toLong()
 
         /* skip any leading blanks */
-        while (i < MGRSString.length && MGRSString.get(i) == ' ') {
+        while (i < MGRSString.length && MGRSString[i] == ' ') {
             i++
         }
-        j = i
-        while (i < MGRSString.length && Character.isDigit(MGRSString.get(i))) {
+        var j: Int = i
+        while (i < MGRSString.length && Character.isDigit(MGRSString[i])) {
             i++
         }
-        num_digits = i - j
+        var num_digits: Int = i - j
         if (num_digits > 2) error_code = error_code or MGRS_STRING_ERROR.toLong()
         else if (num_digits <= 0) error_code = error_code or MGRS_NOZONE_WARNING.toLong()
 
@@ -282,13 +278,13 @@ internal class MGRSCoordConverter {
     private fun convertMGRSToUTM(MGRSString: String): UTMCoord? {
         var grid_easting: Double /* Easting for 100,000 meter grid square      */
         var grid_northing: Double /* Northing for 100,000 meter grid square     */
-        var latitude = 0.0
-        var divisor = 1.0
+        var latitude: Double
+        var divisor: Double
         var error_code = MGRS_NO_ERROR.toLong()
 
-        var hemisphere = AVKey.NORTH
-        var easting = 0.0
-        var northing = 0.0
+        var hemisphere: String
+        var easting: Double
+        var northing: Double
         var UTM: UTMCoord? = null
 
         val MGRS = breakMGRSString(MGRSString)
@@ -298,8 +294,8 @@ internal class MGRSCoordConverter {
                 if ((MGRS.latitudeBand == LETTER_X) && ((MGRS.zone == 32) || (MGRS.zone == 34) || (MGRS.zone == 36))) error_code =
                     error_code or MGRS_STRING_ERROR.toLong()
                 else {
-                    if (MGRS.latitudeBand < LETTER_N) hemisphere = AVKey.SOUTH
-                    else hemisphere = AVKey.NORTH
+                    hemisphere = if (MGRS.latitudeBand < LETTER_N) AVKey.SOUTH
+                    else AVKey.NORTH
 
                     getGridValues(MGRS.zone.toLong())
 
@@ -530,30 +526,28 @@ internal class MGRSCoordConverter {
         var grid_easting: Double /* Easting used to derive 2nd letter of MGRS   */
         var grid_northing: Double /* Northing used to derive 3rd letter of MGRS  */
         val letters = LongArray(MGRS_LETTERS) /* Number location of 3 letters in alphabet    */
-        val divisor: Double
-        val error_code: Long
 
         /* Round easting and northing values */
-        divisor = 10.0.pow((5 - Precision).toDouble())
+        val divisor: Double = 10.0.pow((5 - Precision).toDouble())
         Easting = roundMGRS(Easting / divisor) * divisor
         Northing = roundMGRS(Northing / divisor) * divisor
 
         getGridValues(Zone)
 
-        error_code = getLatitudeLetter(Latitude)
+        val error_code: Long = getLatitudeLetter(Latitude)
         letters[0] = this.lastLetter
 
         if (error_code == MGRS_NO_ERROR.toLong()) {
             grid_northing = Northing
-            if (grid_northing == 1e7) grid_northing = grid_northing - 1.0
+            if (grid_northing == 1e7) grid_northing -= 1.0
 
             while (grid_northing >= TWOMIL) {
-                grid_northing = grid_northing - TWOMIL
+                grid_northing -= TWOMIL
             }
-            grid_northing = grid_northing + false_northing //smithjl
+            grid_northing += false_northing //smithjl
 
             if (grid_northing >= TWOMIL)  //smithjl
-                grid_northing = grid_northing - TWOMIL //smithjl
+                grid_northing -= TWOMIL //smithjl
 
 
             letters[2] = (grid_northing / ONEHT).toLong()
@@ -562,8 +556,7 @@ internal class MGRSCoordConverter {
             if (letters[2] > LETTER_N) letters[2] = letters[2] + 1
 
             grid_easting = Easting
-            if (((letters[0] == LETTER_V.toLong()) && (Zone == 31L)) && (grid_easting == 500000.0)) grid_easting =
-                grid_easting - 1.0 /* SUBTRACT 1 METER */
+            if (((letters[0] == LETTER_V.toLong()) && (Zone == 31L)) && (grid_easting == 500000.0)) grid_easting -= 1.0 /* SUBTRACT 1 METER */
 
             letters[1] = ltr2_low_value + ((grid_easting / ONEHT).toLong() - 1)
             if ((ltr2_low_value == LETTER_J.toLong()) && (letters[1] > LETTER_N)) letters[1] = letters[1] + 1
@@ -585,36 +578,39 @@ internal class MGRSCoordConverter {
      */
     private fun getGridValues(zone: Long) {
         var set_number: Long /* Set number (1-6) based on UTM zone number */
-        val aa_pattern: Long /* Pattern based on ellipsoid code */
 
         set_number = zone % 6
 
         if (set_number == 0L) set_number = 6
 
-        if (MGRS_Ellipsoid_Code.compareTo(CLARKE_1866) == 0 || MGRS_Ellipsoid_Code.compareTo(CLARKE_1880) == 0 || MGRS_Ellipsoid_Code.compareTo(
+        val aa_pattern: Long = if (MGRS_Ellipsoid_Code.compareTo(CLARKE_1866) == 0 || MGRS_Ellipsoid_Code.compareTo(CLARKE_1880) == 0 || MGRS_Ellipsoid_Code.compareTo(
                 BESSEL_1841
             ) == 0 || MGRS_Ellipsoid_Code.compareTo(BESSEL_1841_NAMIBIA) == 0
-        ) aa_pattern = 0L
-        else aa_pattern = 1L
+        ) 0L
+        else 1L /* Pattern based on ellipsoid code */
 
-        if ((set_number == 1L) || (set_number == 4L)) {
-            ltr2_low_value = LETTER_A.toLong()
-            ltr2_high_value = LETTER_H.toLong()
-        } else if ((set_number == 2L) || (set_number == 5L)) {
-            ltr2_low_value = LETTER_J.toLong()
-            ltr2_high_value = LETTER_R.toLong()
-        } else if ((set_number == 3L) || (set_number == 6L)) {
-            ltr2_low_value = LETTER_S.toLong()
-            ltr2_high_value = LETTER_Z.toLong()
+        when (set_number) {
+            1L, 4L -> {
+                ltr2_low_value = LETTER_A.toLong()
+                ltr2_high_value = LETTER_H.toLong()
+            }
+            2L, 5L -> {
+                ltr2_low_value = LETTER_J.toLong()
+                ltr2_high_value = LETTER_R.toLong()
+            }
+            3L, 6L -> {
+                ltr2_low_value = LETTER_S.toLong()
+                ltr2_high_value = LETTER_Z.toLong()
+            }
         }
 
         /* False northing at A for second letter of grid square */
-        if (aa_pattern == 1L) {
-            if ((set_number % 2) == 0L) false_northing = 500000.0 //smithjl was 1500000
-            else false_northing = 0.0
+        false_northing = if (aa_pattern == 1L) {
+            if ((set_number % 2) == 0L) 500000.0 //smithjl was 1500000
+            else 0.0
         } else {
-            if ((set_number % 2) == 0L) false_northing = 1500000.0 //smithjl was 500000
-            else false_northing = 1000000.00
+            if ((set_number % 2) == 0L) 1500000.0 //smithjl was 500000
+            else 1000000.00
         }
     }
 
@@ -631,7 +627,7 @@ internal class MGRSCoordConverter {
         var error_code = MGRS_NO_ERROR.toLong()
         val lat_deg: Double = latitude * RAD_TO_DEG
 
-        if (lat_deg >= 72 && lat_deg < 84.5) lastLetter = LETTER_X.toLong()
+        if (lat_deg in 72.0..<84.5) lastLetter = LETTER_X.toLong()
         else if (lat_deg > -80.5 && lat_deg < 72) {
             temp = ((latitude + (80.0 * DEG_TO_RAD)) / (8.0 * DEG_TO_RAD)) + 1.0e-12
             // lastLetter = Latitude_Band_Table.get((int) temp).letter;
@@ -651,11 +647,10 @@ internal class MGRSCoordConverter {
      */
     private fun roundMGRS(value: Double): Double {
         val ivalue = floor(value)
-        var ival: Long
         val fraction = value - ivalue
 
         // double fraction = modf (value, &ivalue);
-        ival = (ivalue).toLong()
+        var ival: Long = (ivalue).toLong()
         if ((fraction > 0.5) || ((fraction == 0.5) && (ival % 2 == 1L))) ival++
         return ival.toDouble()
     }
@@ -680,55 +675,49 @@ internal class MGRSCoordConverter {
     ): Long {
         var Easting = Easting
         var Northing = Northing
-        var j: Int
-        val divisor: Double
-        val east: Long
-        val north: Long
         val error_code = MGRS_NO_ERROR.toLong()
 
         if (Zone != 0L) this.mgrsString = String.format("%02d", Zone)
         else this.mgrsString = "  "
 
-        j = 0
+        var j = 0
         while (j < 3) {
-            if (Letters[j] < 0 || Letters[j] > 26) return MGRS_ZONE_ERROR.toLong()
-            this.mgrsString = this.mgrsString + alphabet.get(Letters[j].toInt())
+            if (Letters[j] !in 0..26) return MGRS_ZONE_ERROR.toLong()
+            this.mgrsString += alphabet[Letters[j].toInt()]
             j++
         }
 
-        divisor = 10.0.pow((5 - Precision).toDouble())
-        Easting = Easting % 100000.0
+        val divisor: Double = 10.0.pow((5 - Precision).toDouble())
+        Easting %= 100000.0
         if (Easting >= 99999.5) Easting = 99999.0
-        east = (Easting / divisor).toLong()
+        val east: Long = (Easting / divisor).toLong()
 
         // Here we need to only use the number requesting in the precision
         val iEast = east.toInt()
         var sEast = iEast.toString()
         if (sEast.length > Precision) sEast = sEast.substring(0, Precision.toInt() - 1)
         else {
-            var i: Int
             val length = sEast.length
-            i = 0
+            var i = 0
             while (i < Precision - length) {
-                sEast = "0" + sEast
+                sEast = "0$sEast"
                 i++
             }
         }
         this.mgrsString = this.mgrsString + " " + sEast
 
-        Northing = Northing % 100000.0
+        Northing %= 100000.0
         if (Northing >= 99999.5) Northing = 99999.0
-        north = (Northing / divisor).toLong()
+        val north: Long = (Northing / divisor).toLong()
 
         val iNorth = north.toInt()
         var sNorth = iNorth.toString()
         if (sNorth.length > Precision) sNorth = sNorth.substring(0, Precision.toInt() - 1)
         else {
-            var i: Int
             val length = sNorth.length
-            i = 0
+            var i = 0
             while (i < Precision - length) {
-                sNorth = "0" + sNorth
+                sNorth = "0$sNorth"
                 i++
             }
         }
@@ -754,7 +743,7 @@ internal class MGRSCoordConverter {
         val false_northing: Double /* False northing for 3rd letter              */
         var grid_easting: Double /* easting for 100,000 meter grid square      */
         var grid_northing: Double /* northing for 100,000 meter grid square     */
-        var index = 0
+        var index: Int
         var error_code = MGRS_NO_ERROR.toLong()
 
         val hemisphere: String?
@@ -800,25 +789,25 @@ internal class MGRSCoordConverter {
 
             if (error_code == MGRS_NO_ERROR.toLong()) {
                 grid_northing = mgrs.squareLetter2.toDouble() * ONEHT + false_northing
-                if (mgrs.squareLetter2 > LETTER_I) grid_northing = grid_northing - ONEHT
+                if (mgrs.squareLetter2 > LETTER_I) grid_northing -= ONEHT
 
-                if (mgrs.squareLetter2 > LETTER_O) grid_northing = grid_northing - ONEHT
+                if (mgrs.squareLetter2 > LETTER_O) grid_northing -= ONEHT
 
                 grid_easting = ((mgrs.squareLetter1) - ltr2_low_value).toDouble() * ONEHT + false_easting
                 if (ltr2_low_value != LETTER_A.toLong()) {
-                    if (mgrs.squareLetter1 > LETTER_L) grid_easting = grid_easting - 300000.0
+                    if (mgrs.squareLetter1 > LETTER_L) grid_easting -= 300000.0
 
-                    if (mgrs.squareLetter1 > LETTER_U) grid_easting = grid_easting - 200000.0
+                    if (mgrs.squareLetter1 > LETTER_U) grid_easting -= 200000.0
                 } else {
-                    if (mgrs.squareLetter1 > LETTER_C) grid_easting = grid_easting - 200000.0
+                    if (mgrs.squareLetter1 > LETTER_C) grid_easting -= 200000.0
 
-                    if (mgrs.squareLetter1 > LETTER_I) grid_easting = grid_easting - ONEHT
+                    if (mgrs.squareLetter1 > LETTER_I) grid_easting -= ONEHT
 
-                    if (mgrs.squareLetter1 > LETTER_L) grid_easting = grid_easting - 300000.0
+                    if (mgrs.squareLetter1 > LETTER_L) grid_easting -= 300000.0
                 }
 
-                easting = grid_easting + easting
-                northing = grid_northing + northing
+                easting += grid_easting
+                northing += grid_northing
                 return UPSCoord.fromUPS(hemisphere, easting, northing)
             }
         }
@@ -842,10 +831,10 @@ internal class MGRSCoordConverter {
         private const val MGRS_UPS_ERROR = 0x2000
 
         private const val PI = 3.14159265358979323
-        private val PI_OVER_2: Double = (PI / 2.0e0)
+        private const val PI_OVER_2: Double = (PI / 2.0e0)
         private const val MAX_PRECISION = 5
-        private val MIN_UTM_LAT: Double = (-80 * PI) / 180.0 // -80 degrees in radians
-        private val MAX_UTM_LAT: Double = (84 * PI) / 180.0 // 84 degrees in radians
+        private const val MIN_UTM_LAT: Double = (-80 * PI) / 180.0 // -80 degrees in radians
+        private const val MAX_UTM_LAT: Double = (84 * PI) / 180.0 // 84 degrees in radians
         const val DEG_TO_RAD: Double = 0.017453292519943295 // PI/180
         private const val RAD_TO_DEG = 57.29577951308232087 // 180/PI
 

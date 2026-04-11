@@ -308,7 +308,7 @@ object Geography {
         var cosLambda = 0.0
         var sinLambda = 0.0
         var lambda = L // initial guess
-        for (iter in 0 until MAXITERS) {
+        for (iter in 0..<MAXITERS) {
             val lambdaOrig = lambda
             cosLambda = cos(lambda)
             sinLambda = sin(lambda)

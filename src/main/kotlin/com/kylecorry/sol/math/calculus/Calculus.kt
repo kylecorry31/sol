@@ -109,7 +109,7 @@ object Calculus {
         threshold: Double = 0.0
     ): Double {
         var x = guess
-        for (i in 0 until maxIterations) {
+        for (i in 0..<maxIterations) {
             val delta = fn(x) / fnPrime(x)
             x -= delta
             if (abs(delta) < threshold) break

@@ -700,8 +700,8 @@ class LinearAlgebraTest {
         assertEquals(m1.rows(), m2.rows())
         assertEquals(m1.columns(), m2.columns())
 
-        for (r in 0 until m1.rows()) {
-            for (c in 0 until m1.columns()) {
+        for (r in 0..<m1.rows()) {
+            for (c in 0..<m1.columns()) {
                 assertEquals(m1[r, c], m2[r, c], tolerance)
             }
         }

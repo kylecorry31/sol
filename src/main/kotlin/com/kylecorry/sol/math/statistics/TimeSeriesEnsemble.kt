@@ -11,7 +11,7 @@ class TimeSeriesEnsemble(
     fun predictNext(samples: List<Vector2>, n: Int, step: Float? = null): List<ConfidenceInterval<Vector2>> {
         val predictions = predictors.map { it.predictNext(samples, n, step) }
         val result = mutableListOf<ConfidenceInterval<Vector2>>()
-        for (i in 0 until n) {
+        for (i in 0..<n) {
             val x = predictions.firstOrNull()?.getOrNull(i)?.x ?: continue
             val values = predictions.mapNotNull { it.getOrNull(i)?.y }
             if (values.isEmpty()) {

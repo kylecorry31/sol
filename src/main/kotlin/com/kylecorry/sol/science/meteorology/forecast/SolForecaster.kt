@@ -187,9 +187,9 @@ internal object SolForecaster : Forecaster {
         val oldest = time.minus(history)
         val cloudsUpToDateTime = time.minus(cloudsUpToDateDuration)
         val filteredPressures =
-            pressures.filter { it.time <= time && it.time >= oldest }.sortedBy { it.time }
+            pressures.filter { it.time in oldest..time }.sortedBy { it.time }
         var filteredClouds =
-            clouds.filter { it.time <= time && it.time >= oldest }.sortedBy { it.time }
+            clouds.filter { it.time in oldest..time }.sortedBy { it.time }
 
         // Don't look at clouds if none were logged in the last 24 hours
         if (filteredClouds.none { it.time >= cloudsUpToDateTime }) {

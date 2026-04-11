@@ -51,7 +51,7 @@ class RDPFilter<T>(
         }
 
         val filtered = ArrayList<T>(keptCount)
-        for (i in 0 until size) {
+        for (i in 0..<size) {
             if (keep[i]) {
                 filtered.add(points[i])
             }

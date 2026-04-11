@@ -212,10 +212,10 @@ internal class TMCoordConverter {
         if ((Longitude < (TranMerc_Origin_Long - MAX_DELTA_LONG))
             || (Longitude > (TranMerc_Origin_Long + MAX_DELTA_LONG))
         ) {
-            if (Longitude < 0) temp_Long = Longitude + 2 * PI
-            else temp_Long = Longitude
-            if (TranMerc_Origin_Long < 0) temp_Origin = TranMerc_Origin_Long + 2 * PI
-            else temp_Origin = TranMerc_Origin_Long
+            temp_Long = if (Longitude < 0) Longitude + 2 * PI
+            else Longitude
+            temp_Origin = if (TranMerc_Origin_Long < 0) TranMerc_Origin_Long + 2 * PI
+            else TranMerc_Origin_Long
             if ((temp_Long < (temp_Origin - MAX_DELTA_LONG))
                 || (temp_Long > (temp_Origin + MAX_DELTA_LONG))
             ) Error_Code = Error_Code or TRANMERC_LON_ERROR.toLong()
@@ -381,7 +381,7 @@ internal class TMCoordConverter {
                         + TranMerc_ep * sin(8.0 * ftphi))
                 // sr = SPHSR(ftphi);
                 sr = this.a * (1e0 - TranMerc_es) / sqrt(1e0 - TranMerc_es * sin(ftphi).pow(2.0)).pow(3.0)
-                ftphi = ftphi + (tmd - t10) / sr
+                ftphi += (tmd - t10) / sr
                 i++
             }
 
@@ -474,9 +474,9 @@ internal class TMCoordConverter {
         const val TRANMERC_LON_WARNING: Int = 0x0200
 
         private const val PI = 3.14159265358979323 /* PI     */
-        val PI_OVER: Double = (PI / 2.0) /* PI over 2 */
-        private val MAX_LAT: Double = ((PI * 89.99) / 180.0) /* 90 degrees in radians */
-        private val MAX_DELTA_LONG: Double = ((PI * 90) / 180.0) /* 90 degrees in radians */
+        const val PI_OVER: Double = (PI / 2.0) /* PI over 2 */
+        private const val MAX_LAT: Double = ((PI * 89.99) / 180.0) /* 90 degrees in radians */
+        private const val MAX_DELTA_LONG: Double = ((PI * 90) / 180.0) /* 90 degrees in radians */
         private const val MIN_SCALE_FACTOR = 0.3
         private const val MAX_SCALE_FACTOR = 3.0
     }

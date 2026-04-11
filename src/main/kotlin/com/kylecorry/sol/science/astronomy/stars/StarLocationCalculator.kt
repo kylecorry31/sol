@@ -96,7 +96,7 @@ internal class StarLocationCalculator {
         var lat = constrainLatitude(approximateLocation?.latitude ?: timezoneLocation.latitude)
         var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
 
-        for (i in 0 until 20) {
+        for (i in 0..<20) {
             val expectedAltitudes = starReadings.map {
                 getStarAltitude(it.star, it.time, Coordinate(lat, lon), true)
             }

@@ -18,7 +18,7 @@ internal class BearingTest {
 
     @Test
     fun from(){
-        for (direction in CompassDirection.values()){
+        for (direction in CompassDirection.entries){
             val bearing = Bearing.from(direction)
             assertEquals(direction.azimuth, bearing.value)
         }

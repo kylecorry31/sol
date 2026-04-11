@@ -41,7 +41,7 @@ object Lists {
     }
 
     fun isIncreasingX(data: List<Vector2>): Boolean {
-        for (i in 1 until data.size) {
+        for (i in 1..<data.size) {
             if (data[i].x < data[i - 1].x) {
                 return false
             }

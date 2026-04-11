@@ -57,7 +57,7 @@ class HillClimbingOptimizer(
         var minPosition = position
         var minValue = fn(position)
 
-        for (angle in 0 until 360 step 90) {
+        for (angle in 0..<360 step 90) {
             val x = position.first + cosDegrees(angle.toDouble()) * step
             val y = position.second + sinDegrees(angle.toDouble()) * step
 

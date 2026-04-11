@@ -84,7 +84,7 @@ internal class OceanographyTest {
             Triple(37, 0.015240000000000002f, 106.4f)
         ).mapNotNull {
             val (order, amplitude, phase) = it
-            val constituent = TideConstituent.entries.firstOrNull { it.id == order.toLong() }
+            val constituent = TideConstituent.entries.firstOrNull { constituent -> constituent.id == order.toLong() }
             if (constituent == null) {
                 null
             } else {
@@ -275,11 +275,6 @@ internal class OceanographyTest {
         }
 
         file.writeText(levels.joinToString(","))
-    }
-
-    @Test
-    fun getWaterLevel() {
-
     }
 
 

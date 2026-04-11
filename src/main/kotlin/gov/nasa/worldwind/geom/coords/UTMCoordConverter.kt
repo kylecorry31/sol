@@ -248,8 +248,8 @@ internal class UTMCoordConverter {
 
         //private final static double MIN_LAT = ((-80.5 * PI) / 180.0); /* -80.5 degrees in radians    */
         //private final static double MAX_LAT = ((84.5 * PI) / 180.0);  /* 84.5 degrees in radians     */
-        private val MIN_LAT: Double = ((-82 * PI) / 180.0) /* -82 degrees in radians    */
-        private val MAX_LAT: Double = ((86 * PI) / 180.0) /* 86 degrees in radians     */
+        private const val MIN_LAT: Double = ((-82 * PI) / 180.0) /* -82 degrees in radians    */
+        private const val MAX_LAT: Double = ((86 * PI) / 180.0) /* 86 degrees in radians     */
 
         private const val MIN_EASTING = 100000
         private const val MAX_EASTING = 900000

@@ -146,7 +146,7 @@ internal class PlateSolver(
             // Calculate the distances between each pair in the quad
             val distances = mutableListOf<Float>()
             for (j in quad.indices) {
-                for (k in j + 1 until quad.size) {
+                for (k in j + 1..<quad.size) {
                     distances.add(
                         Trigonometry.angularDistance(
                             quad[j].azimuth,

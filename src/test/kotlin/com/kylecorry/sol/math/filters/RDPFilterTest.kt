@@ -3,11 +3,9 @@ package com.kylecorry.sol.math.filters
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.geometry.Line
-import com.kylecorry.sol.tests.performanceTest
 import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
 
 internal class RDPFilterTest {
 

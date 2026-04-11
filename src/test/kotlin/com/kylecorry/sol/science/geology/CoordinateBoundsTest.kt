@@ -5,7 +5,6 @@ import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.Coordinate
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource

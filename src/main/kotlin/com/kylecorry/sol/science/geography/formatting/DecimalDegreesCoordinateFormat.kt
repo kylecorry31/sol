@@ -12,7 +12,7 @@ class DecimalDegreesCoordinateFormat(private val precision: Int = 6) : Coordinat
     }
 
     override fun parse(text: String): Coordinate? {
-        val regex = Regex("^(-?\\d+(?:[.,]\\d+)?)°?[,\\s]+(-?\\d+(?:[.,]\\d+)?)°?\$")
+        val regex = Regex("^(-?\\d+(?:[.,]\\d+)?)°?[,\\s]+(-?\\d+(?:[.,]\\d+)?)°?$")
         val matches = regex.find(text.trim()) ?: return null
         val latitude = matches.groupValues[1].toDoubleCompat() ?: return null
         val longitude = matches.groupValues[2].toDoubleCompat() ?: return null

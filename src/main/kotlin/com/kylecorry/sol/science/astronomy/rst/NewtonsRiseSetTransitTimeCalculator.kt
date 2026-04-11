@@ -36,7 +36,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         var transit: ZonedDateTime? = null
         var set: ZonedDateTime? = null
 
-        for (attempt in 0 until maxAttempts) {
+        for (attempt in 0..<maxAttempts) {
             val currentWithRefraction = if (attempt == 0) withRefraction else false
             val calculated = calculateHelper(
                 locator,
@@ -228,7 +228,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         var m2 = wrap(m0 + H / 360, 0.0, 1.0)
         val date = ut.toLocalDate()
 
-        for (i in 0 until iterations) {
+        for (i in 0..<iterations) {
             val sidereal0 =
                 GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m0) / 15)
             val sidereal1 =

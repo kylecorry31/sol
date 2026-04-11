@@ -10,7 +10,7 @@ internal object AstroSearch {
     /**
      * The maximum number of iterations to perform when searching for an event
      */
-    private val maxIterations = 100
+    private const val MAX_ITERATIONS = 100
 
     /**
      * Finds the start time of an event. The range should start before the event and end during the event.
@@ -26,7 +26,7 @@ internal object AstroSearch {
         var iterations = 0
         var wasFound = predicate(right)
 
-        while (Duration.between(left, right) > precision && iterations < maxIterations) {
+        while (Duration.between(left, right) > precision && iterations < MAX_ITERATIONS) {
             val mid = left.plusMillis((right.toEpochMilli() - left.toEpochMilli()) / 2)
             if (predicate(mid)) {
                 wasFound = true
@@ -58,7 +58,7 @@ internal object AstroSearch {
         var iterations = 0
         var wasFound = predicate(left)
 
-        while (Duration.between(left, right) > precision && iterations < maxIterations) {
+        while (Duration.between(left, right) > precision && iterations < MAX_ITERATIONS) {
             val mid = left.plusMillis((right.toEpochMilli() - left.toEpochMilli()) / 2)
             if (predicate(mid)) {
                 wasFound = true
@@ -88,7 +88,7 @@ internal object AstroSearch {
         var left = range.start
         var right = range.end
         var iterations = 0
-        while (Duration.between(left, right) > precision && iterations < maxIterations) {
+        while (Duration.between(left, right) > precision && iterations < MAX_ITERATIONS) {
             val remaining = Duration.between(left, right).toMillis()
             val midLeft = left.plusMillis(remaining / 3)
             val midRight = left.plusMillis(remaining * 2 / 3)

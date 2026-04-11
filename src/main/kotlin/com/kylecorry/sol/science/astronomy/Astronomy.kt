@@ -172,7 +172,7 @@ object Astronomy {
         } else if (sunrise != null && sunset == null) {
             // Sun rises but doesn't set
             return Duration.between(sunrise, startOfDay.plusDays(1))
-        } else if (sunset != null && sunrise == null) {
+        } else if (sunrise == null) {
             // Sun sets but doesn't rise
             return Duration.between(startOfDay, sunset)
         } else {
@@ -445,7 +445,7 @@ object Astronomy {
 
         val solarLongitude = getSolarLongitude(date)
 
-        for (shower in MeteorShower.values()) {
+        for (shower in MeteorShower.entries) {
             if (deltaAngle(solarLongitude, shower.solarLongitude).absoluteValue > 2) {
                 continue
             }

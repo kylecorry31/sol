@@ -213,7 +213,7 @@ object Statistics {
         val weight = 1 / confusion.rows().toFloat()
 
         var total = 0.0
-        for (row in 0 until confusion.rows()) {
+        for (row in 0..<confusion.rows()) {
             val subtotal = confusion.getColumn(row).sum()
             total += f1Score(confusion, row) * if (weighted) subtotal / all else weight
         }
@@ -293,7 +293,7 @@ object Statistics {
 
         val filtered = mutableListOf(measurements.first())
 
-        for (i in 1 until measurements.lastIndex) {
+        for (i in 1..<measurements.lastIndex) {
             val before = measurements[i - 1]
             val current = measurements[i]
             val after = measurements[i + 1]

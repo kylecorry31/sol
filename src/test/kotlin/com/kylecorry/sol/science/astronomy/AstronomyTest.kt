@@ -225,7 +225,7 @@ class AstronomyTest {
         val gl = Coordinate(76.7667, -18.6667)
         val ri = Coordinate(41.915, -71.671)
         parametrized(
-            listOf<List<Any?>>(
+            listOf(
                 listOf(
                     LocalDateTime.of(2020, Month.SEPTEMBER, 13, 9, 0),
                     ny,
@@ -277,7 +277,7 @@ class AstronomyTest {
         val ny = Coordinate(40.7128, -74.0060)
         val gl = Coordinate(76.7667, -18.6667)
         parametrized(
-            listOf<List<Any?>>(
+            listOf(
                 listOf(
                     LocalDateTime.of(2020, Month.SEPTEMBER, 13, 6, 0),
                     ny,
@@ -836,13 +836,13 @@ class AstronomyTest {
     fun canGetLocationFromStarsAltitudeOnly(numberOfStars: Int, hasFix: Boolean) {
         val location = Coordinate(42.0, -72.0)
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
-        val stars = STAR_CATALOG.filter { it.magnitude < 2.5 }.map { star ->
+        val stars = STAR_CATALOG.asSequence().filter { it.magnitude < 2.5 }.map { star ->
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
         }.sortedBy { it.second.value }
             .map { it.first }
-            .take(numberOfStars)
+            .take(numberOfStars).toList()
 
         val readings = stars.map {
             val altitude = Astronomy.getStarAltitude(it, time, location, true)
@@ -875,13 +875,13 @@ class AstronomyTest {
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
         val altitudeBias = if (numberOfStars > 2) 1f else 0f
         val azimuthBias = if (numberOfStars > 2) 3f else 0f
-        val stars = STAR_CATALOG.filter { it.magnitude < 2.5 }.map { star ->
+        val stars = STAR_CATALOG.asSequence().filter { it.magnitude < 2.5 }.map { star ->
             val altitude = Astronomy.getStarAltitude(star, time, location, true)
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
         }.sortedBy { it.second.value }
             .map { it.first }
-            .take(numberOfStars)
+            .take(numberOfStars).toList()
 
         val readings = stars.map {
             val altitude = Astronomy.getStarAltitude(it, time, location, true) + altitudeBias

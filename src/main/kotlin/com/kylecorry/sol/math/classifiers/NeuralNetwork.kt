@@ -100,7 +100,7 @@ class NeuralNetwork(
         var totalError = 0f
         val randomized = input.zip(output).shuffled()
         val batches = randomized.batch(batchSize)
-        for (epoch in 0 until epochs) {
+        for (epoch in 0..<epochs) {
             for (n in batches.indices) {
                 totalError = 0f
                 val batch = batches[n].unzip()
@@ -139,7 +139,7 @@ class NeuralNetwork(
 
     private fun squaredError(x: Matrix, y: Matrix, regularization: Float): Float {
         val y_ = predict(x)
-        val sumSquareWeights = layers.sumOfFloat { it.weights.mapped { it.pow(2) }.sum() }
+        val sumSquareWeights = layers.sumOfFloat { it.weights.mapped { weight -> weight.pow(2) }.sum() }
         return 0.5f * y_.subtract(y).mapped { it.pow(2) }
             .sum() / layers.first().inputSize + regularization / 2 * sumSquareWeights
     }
@@ -168,7 +168,7 @@ class NeuralNetwork(
     class LayerWeights(val weights: Matrix, val bias: Matrix) {
         fun format(): String {
             val builder = StringBuilder()
-            for (row in 0 until weights.rows()) {
+            for (row in 0..<weights.rows()) {
                 val weightRow = weights.getRow(row)
                 val biasRow = bias.getRow(row)
                 builder.appendLine(weightRow.joinToString(",") + "," + biasRow.joinToString(","))
@@ -180,7 +180,7 @@ class NeuralNetwork(
         companion object {
             fun parse(data: String): LayerWeights {
                 val parsed = data.split("\n").map {
-                    val row = it.split(",").mapNotNull { it.toFloatOrNull() }
+                    val row = it.split(",").mapNotNull { cell -> cell.toFloatOrNull() }
                     row.take(row.size - 1).toTypedArray() to row.takeLast(1).toTypedArray()
                 }
                 val weights = Matrix.create(parsed.map { it.first }.toTypedArray())
@@ -253,7 +253,7 @@ class NeuralNetwork(
                 return Layer(
                     input,
                     output,
-                    { it.mapColumns { Statistics.softmax(it.toList()).toFloatArray() } },
+                    { it.mapColumns { col -> Statistics.softmax(col.toList()).toFloatArray() } },
                     { it.mapColumns(grad) },
                     isClassifier = true
                 )

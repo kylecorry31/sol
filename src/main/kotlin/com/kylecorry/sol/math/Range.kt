@@ -30,7 +30,7 @@ data class Range<T : Comparable<T>>(val start: T, val end: T) {
             }
 
             var intersection: Range<T>? = ranges[0]
-            for (i in 1 until ranges.size) {
+            for (i in 1..<ranges.size) {
                 val range = ranges[i]
                 val newIntersection = intersection?.intersection(range)
                 intersection = if (newIntersection == null) {

@@ -36,7 +36,7 @@ class SimulatedAnnealingOptimizer(
 
         var t = startingTemperature
 
-        for (i in 0 until maxIterations) {
+        for (i in 0..<maxIterations) {
             if (t < minimumTemperature) {
                 break
             }

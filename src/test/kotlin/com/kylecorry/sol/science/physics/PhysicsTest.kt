@@ -49,8 +49,6 @@ class PhysicsTest {
             maxAngle = 1f
         )
 
-        val launchAngle = initialVelocityVector.angle()
-
         val trajectory = Physics.getTrajectory2D(
             initialPosition = Vector2(0f, -scopeHeight),
             initialVelocity = initialVelocityVector,

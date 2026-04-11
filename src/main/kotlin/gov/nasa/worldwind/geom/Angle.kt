@@ -118,9 +118,8 @@ class Angle : Comparable<Angle?> {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Angle) return false
-        val angle = other
 
-        return angle.degrees == this.degrees
+        return other.degrees == this.degrees
     }
 
     override fun hashCode(): Int {

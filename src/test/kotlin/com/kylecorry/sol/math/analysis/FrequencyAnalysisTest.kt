@@ -1,7 +1,6 @@
 package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.ComplexNumber
-import com.kylecorry.sol.tests.performanceTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.sin

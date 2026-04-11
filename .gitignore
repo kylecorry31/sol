@@ -67,7 +67,6 @@ temp/
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
-*.iml
 *.ipr
 
 # Android studio 3.1+ serialized cache file

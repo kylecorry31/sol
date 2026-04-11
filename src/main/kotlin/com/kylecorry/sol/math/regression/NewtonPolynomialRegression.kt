@@ -31,10 +31,10 @@ class NewtonPolynomialRegression(private val order: Int) : PolynomialRegression 
     ): Array<Float> {
         val n = order + 1
         val a = Array(n) { 0f }
-        for (i in 0 until n) {
+        for (i in 0..<n) {
             a[i] = points[i].y
         }
-        for (j in 1 until n) {
+        for (j in 1..<n) {
             for (i in n - 1 downTo j) {
                 a[i] = (a[i] - a[i - 1]) / (points[i].x - points[i - j].x)
             }

@@ -16,7 +16,7 @@ class KNNClassifier(
         val xArr = x.toTypedArray()
 
         val tempNeighbors = mutableListOf<Pair<Array<Int>, Float>>()
-        for (row in 0 until input.rows()) {
+        for (row in 0..<input.rows()) {
             tempNeighbors.add(labels[row] to distance(xArr, input.getRow(row).toTypedArray()))
         }
         val neighbors = tempNeighbors.sortedBy { it.second }.take(k)

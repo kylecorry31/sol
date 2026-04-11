@@ -81,7 +81,7 @@ class LogisticRegressionClassifier(
         var totalError = 0f
         val randomized = input.zip(output).shuffled()
         val batches = randomized.batch(batchSize)
-        for (epoch in 0 until epochs) {
+        for (epoch in 0..<epochs) {
             for (n in batches.indices) {
                 totalError = 0f
                 val batch = batches[n].unzip()

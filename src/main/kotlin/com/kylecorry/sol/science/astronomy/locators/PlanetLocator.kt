@@ -56,7 +56,7 @@ internal class PlanetLocator(private val planet: Planet) : ICelestialLocator {
         return coordinate.toEquatorial(ut)
     }
 
-    override fun getDistance(ut: UniversalTime): Distance? {
+    override fun getDistance(ut: UniversalTime): Distance {
         return Distance.kilometers(
             (149597871.0 * getDistanceAU(
                 getHeliocentricPosition(planet, ut),

@@ -1,6 +1,5 @@
 package com.kylecorry.sol.time
 
-import com.kylecorry.sol.math.MathExtensions.roundNearest
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Reading

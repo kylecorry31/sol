@@ -64,7 +64,7 @@ object CartesianConversion {
 
         val e2 = (a.pow(2) - b.pow(2)) / a.pow(2)
 
-        var lon = atan(y / x)
+        val lon = atan(y / x)
 
         val p = sqrt(x.pow(2) + y.pow(2))
         var lat = atan(z / p * (1 - e2))
