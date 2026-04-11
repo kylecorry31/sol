@@ -71,6 +71,14 @@ class TimeTest {
     }
 
     @Test
+    fun localToEpochMillisPreservesMilliseconds() {
+        val time = LocalDateTime.of(2020, Month.JANUARY, 1, 12, 0, 0, 123_000_000)
+        val expected = time.toZonedDateTime().toInstant().toEpochMilli()
+        val actual = time.toEpochMillis()
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun zonedAtStartOfDay() {
         val time = ZonedDateTime.of(2020, 1, 1, 12, 0, 0, 0, ZoneId.systemDefault())
         val expected = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault())

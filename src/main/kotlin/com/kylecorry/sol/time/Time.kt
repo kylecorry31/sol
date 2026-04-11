@@ -32,7 +32,7 @@ object Time {
     }
 
     fun LocalDateTime.toEpochMillis(): Long {
-        return this.toZonedDateTime().toEpochSecond() * 1000
+        return this.toZonedDateTime().toInstant().toEpochMilli()
     }
 
     fun ZonedDateTime.atStartOfDay(): ZonedDateTime {
