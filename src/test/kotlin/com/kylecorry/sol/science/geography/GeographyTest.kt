@@ -102,6 +102,33 @@ class GeographyTest {
     }
 
     @Test
+    fun trilaterateReturnsNoLocationsForImpossibleTwoReadingGeometry() {
+        val readings = listOf(
+            Geofence(Coordinate(0.0, 0.0), Distance.nauticalMiles(1f)),
+            Geofence(Coordinate(0.0, 0.0), Distance.nauticalMiles(2f))
+        )
+
+        val result = Geography.trilaterate(readings)
+
+        assertEquals(emptyList<Coordinate>(), result.locations)
+        assertEquals(null, result.biasDegrees)
+    }
+
+    @Test
+    fun trilaterateReturnsNoLocationsForSingularThreeReadingGeometry() {
+        val readings = listOf(
+            Geofence(Coordinate(10.0, 20.0), Distance.nauticalMiles(1f)),
+            Geofence(Coordinate(10.0, 20.0), Distance.nauticalMiles(2f)),
+            Geofence(Coordinate(10.0, 20.0), Distance.nauticalMiles(3f))
+        )
+
+        val result = Geography.trilaterate(readings)
+
+        assertEquals(emptyList<Coordinate>(), result.locations)
+        assertEquals(null, result.biasDegrees)
+    }
+
+    @Test
     fun triangulateSelf() {
         val pointA = Coordinate(40.0, 10.0)
         val bearingA = Bearing.from(220f)

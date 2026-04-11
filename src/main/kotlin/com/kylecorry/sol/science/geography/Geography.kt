@@ -169,30 +169,42 @@ object Geography {
 
         val errors = readings.map { it.radius.convertTo(DistanceUnits.NauticalMiles).value / 60f }
 
-        val result = optimizer.optimize(
-            readings.map {
-                listOf(
-                    it.center.latitude.toFloat(),
-                    it.center.longitude.toFloat()
-                ) + if (calculateBias) listOf(0f) else emptyList()
-            },
-            errors,
-            maxIterations = 200,
-            dampingFactor = 1f,
-            tolerance = 0.000001f,
-            weightingFn = weightingFn,
-            distanceFn = distanceFnWithCorrection,
-            jacobianFn = { index, point, guess ->
-                val distance = distanceFn(point, guess)
-                point.mapIndexed { j, value ->
-                    if (j < 2) {
-                        deltaAngle(value, guess[j]) / distance * weightingFn(index, point, errors[index])
-                    } else {
-                        1f
+        val result = try {
+            optimizer.optimize(
+                readings.map {
+                    listOf(
+                        it.center.latitude.toFloat(),
+                        it.center.longitude.toFloat()
+                    ) + if (calculateBias) listOf(0f) else emptyList()
+                },
+                errors,
+                maxIterations = 200,
+                dampingFactor = 1f,
+                tolerance = 0.000001f,
+                weightingFn = weightingFn,
+                distanceFn = distanceFnWithCorrection,
+                jacobianFn = { index, point, guess ->
+                    val distance = distanceFn(point, guess)
+                    point.mapIndexed { j, value ->
+                        if (j < 2) {
+                            if (distance == 0f) {
+                                0f
+                            } else {
+                                deltaAngle(value, guess[j]) / distance * weightingFn(index, point, errors[index])
+                            }
+                        } else {
+                            1f
+                        }
                     }
                 }
-            }
-        )
+            )
+        } catch (_: IllegalStateException) {
+            return TrilaterationResult(emptyList())
+        }
+
+        if (result.any { !it.isFinite() }) {
+            return TrilaterationResult(emptyList())
+        }
 
         return TrilaterationResult(
             listOf(
@@ -219,13 +231,26 @@ object Geography {
         val x1 = Vector3Precise.from(cartesianPoints[0].toDoubleArray())
         val x2 = Vector3Precise.from(cartesianPoints[1].toDoubleArray())
         val q = x1.dot(x2) / square(scale)
-        val a = (cos(radii[0]) - cos(radii[1]) * q) / (1 - q * q)
-        val b = (cos(radii[1]) - cos(radii[0]) * q) / (1 - q * q)
+        val denominator = 1 - q * q
+        if (abs(denominator) < 1e-12) {
+            return emptyList()
+        }
+
+        val a = (cos(radii[0]) - cos(radii[1]) * q) / denominator
+        val b = (cos(radii[1]) - cos(radii[0]) * q) / denominator
         val n = x1.cross(x2)
+        val nDot = n.dot(n)
+        if (abs(nDot) < 1e-12) {
+            return emptyList()
+        }
 
         val x0 = x1.times(a) + x2.times(b)
+        val discriminant = (square(scale) - x0.dot(x0)) / nDot
+        if (!discriminant.isFinite() || discriminant < 0) {
+            return emptyList()
+        }
 
-        val t = sqrt((square(scale) - x0.dot(x0)) / n.dot(n))
+        val t = sqrt(discriminant)
 
         val p1 = (x0 + n.times(t)).times(1 / scale)
         val p2 = (x0 - n.times(t)).times(1 / scale)
@@ -235,6 +260,10 @@ object Geography {
 
         val latitude2 = (atan2(p2.z, sqrt(square(p2.x) + square(p2.y)))).toDegrees()
         val longitude2 = (atan2(p2.y, p2.x)).toDegrees()
+
+        if (!latitude1.isFinite() || !longitude1.isFinite() || !latitude2.isFinite() || !longitude2.isFinite()) {
+            return emptyList()
+        }
 
         return listOf(Coordinate.constrained(latitude1, longitude1), Coordinate.constrained(latitude2, longitude2))
     }
