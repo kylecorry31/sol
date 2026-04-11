@@ -36,10 +36,10 @@ data class Rectangle(val left: Float, val top: Float, val right: Float, val bott
     }
 
     fun intersects(rectangle: Rectangle): Boolean {
-        return contains(rectangle.topLeft) ||
-                contains(rectangle.topRight) ||
-                contains(rectangle.bottomLeft) ||
-                contains(rectangle.bottomRight)
+        return left <= rectangle.right &&
+                right >= rectangle.left &&
+                bottom <= rectangle.top &&
+                top >= rectangle.bottom
     }
 
     fun rotate(angle: Float, center: Vector2 = this.center): Rectangle {
