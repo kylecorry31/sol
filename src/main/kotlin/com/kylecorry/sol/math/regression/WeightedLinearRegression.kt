@@ -43,6 +43,8 @@ class WeightedLinearRegression(data: List<Vector2>, weights: List<Float>, accura
             sumXY += yi * xiw
         }
 
+        require(sumWeights > 0){ "Weights must be greater than zero." }
+
         val meanX = sumX / sumWeights
         val meanY = sumY / sumWeights
         val meanXY = sumXY / sumWeights
