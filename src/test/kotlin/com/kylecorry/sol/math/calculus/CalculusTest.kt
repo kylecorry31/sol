@@ -119,6 +119,17 @@ internal class CalculusTest {
     }
 
     @Test
+    fun integral1VarPartialStep() {
+        val fn = { x: Double -> x }
+
+        assertEquals(
+            0.01125,
+            Calculus.integral(0.0, 0.15, step = 0.1, fn = fn),
+            0.000001
+        )
+    }
+
+    @Test
     fun root() {
         val fn = { x: Double -> square(x) - 9 }
         val root1 = Calculus.root(fn, guess = 0.1, maxIterations = 15)

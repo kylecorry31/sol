@@ -84,16 +84,11 @@ object Calculus {
         var x = start
         var startValue = fn(x)
         while (x < end) {
-            val endValue = fn(x + step)
-            total += step * (startValue + endValue) / 2
+            val nextX = min(x + step, end)
+            val endValue = fn(nextX)
+            total += (nextX - x) * (startValue + endValue) / 2
             startValue = endValue
-            x += step
-        }
-
-        // Add up the last piece
-        if (x < end) {
-            val endValue = fn(end)
-            total += (end - x) * (startValue + endValue) / 2
+            x = nextX
         }
 
         return multiplier * total
