@@ -85,6 +85,22 @@ internal class GeometryTest {
         assertNull(intersection4)
     }
 
+    @Test
+    fun getConnectedLinesHandlesClosedLoops() {
+        val segments = listOf(
+            Vector2(0f, 0f) to Vector2(1f, 0f),
+            Vector2(1f, 0f) to Vector2(1f, 1f),
+            Vector2(1f, 1f) to Vector2(0f, 1f),
+            Vector2(0f, 1f) to Vector2(0f, 0f)
+        )
+
+        val lines = Geometry.getConnectedLines(segments)
+
+        assertEquals(1, lines.size)
+        assertEquals(5, lines.first().size)
+        assertEquals(lines.first().first(), lines.first().last())
+    }
+
     @ParameterizedTest
     @MethodSource("provideLineLineIntersections")
     fun getIntersectionLineLine(line1: Line, line2: Line, expected: Vector2?) {

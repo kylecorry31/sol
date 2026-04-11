@@ -341,13 +341,13 @@ object Geometry {
             var tail = seg.second
 
             // Grow the line forward
-            while (true) {
+            repeat(segments.size) {
                 var nextIdx = startMap[tail]?.firstOrNull { !visited[it] }
                 val nextSeg = if (nextIdx != null) {
                     visited[nextIdx] = true
                     segments[nextIdx]
                 } else {
-                    nextIdx = endMap[tail]?.firstOrNull { !visited[it] } ?: break
+                    nextIdx = endMap[tail]?.firstOrNull { !visited[it] } ?: return@repeat
                     visited[nextIdx] = true
                     segments[nextIdx].second to segments[nextIdx].first // Reverse the segment
                 }
@@ -357,13 +357,13 @@ object Geometry {
             }
 
             // Grow the line backward
-            while (true) {
+            repeat(segments.size) {
                 var prevIdx = endMap[head]?.firstOrNull { !visited[it] }
                 val prevSeg = if (prevIdx != null) {
                     visited[prevIdx] = true
                     segments[prevIdx]
                 } else {
-                    prevIdx = startMap[head]?.firstOrNull { !visited[it] } ?: break
+                    prevIdx = startMap[head]?.firstOrNull { !visited[it] } ?: return@repeat
                     visited[prevIdx] = true
                     segments[prevIdx].second to segments[prevIdx].first // Reverse the segment
                 }
