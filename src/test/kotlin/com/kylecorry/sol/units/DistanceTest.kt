@@ -1,6 +1,7 @@
 package com.kylecorry.sol.units
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
@@ -16,5 +17,12 @@ internal class DistanceTest {
         val distance = Distance.from(fromValue, DistanceUnits.entries.first { it.id == fromId })
         val converted = distance.convertTo(DistanceUnits.entries.first { it.id == toId })
         assertEquals(expected, converted.value, 0.00001f)
+    }
+
+    @Test
+    fun times() {
+        val multiplied = Distance.meters(10f) * 2f
+        assertEquals(DistanceUnits.Meters, multiplied.units)
+        assertEquals(20f, multiplied.value, 0.00001f)
     }
 }

@@ -20,7 +20,7 @@ value class Distance private constructor(private val measure: Measure) : Compara
     }
 
     operator fun times(multiplier: Float): Distance {
-        return from(multiplier * multiplier, units)
+        return from(value * multiplier, units)
     }
 
     override fun toString(): String {
