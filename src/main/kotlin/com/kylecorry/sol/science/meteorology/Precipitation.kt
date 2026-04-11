@@ -10,5 +10,5 @@ enum class Precipitation {
     SmallHail,
     IcePellets,
     SnowGrains,
-    Lightning
+    Lightning,
 }

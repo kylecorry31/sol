@@ -8,5 +8,5 @@ data class CelestialObservation(
     val altitude: Float,
     val angularDiameter: Float? = null,
     val visualMagnitude: Float? = null,
-    val distance: Distance? = null
+    val distance: Distance? = null,
 )

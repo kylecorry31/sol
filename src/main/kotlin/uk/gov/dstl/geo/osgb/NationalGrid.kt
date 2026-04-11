@@ -26,7 +26,7 @@ object NationalGrid {
     private class GridSquare(
         val reference: String,
         val easting: Double,
-        val northing: Double
+        val northing: Double,
     ) {
         /**
          * Is the given Easting-Northing pair inside this grid square?
@@ -41,9 +41,10 @@ object NationalGrid {
          * @param e Easting
          * @param n Northing
          */
-        fun inside(e: Double, n: Double): Boolean {
-            return northing <= n && n < northing + SIZE_M && easting <= e && e < easting + SIZE_M
-        }
+        fun inside(
+            e: Double,
+            n: Double,
+        ): Boolean = northing <= n && n < northing + SIZE_M && easting <= e && e < easting + SIZE_M
 
         /**
          * Return the offset of the provided absolute Easting-Northing within this grid square
@@ -58,9 +59,10 @@ object NationalGrid {
          * @param e Easting
          * @param n Northing
          */
-        fun offsetEastingNorthing(e: Double, n: Double): DoubleArray {
-            return doubleArrayOf(e - easting, n - northing)
-        }
+        fun offsetEastingNorthing(
+            e: Double,
+            n: Double,
+        ): DoubleArray = doubleArrayOf(e - easting, n - northing)
 
         /**
          * Convert an Easting-Northing from a relative (to this grid square) pair to an absolute pair
@@ -68,9 +70,10 @@ object NationalGrid {
          * @param e Easting
          * @param n Northing
          */
-        fun toEastingNorthing(e: Double, n: Double): DoubleArray {
-            return doubleArrayOf(e + easting, n + northing)
-        }
+        fun toEastingNorthing(
+            e: Double,
+            n: Double,
+        ): DoubleArray = doubleArrayOf(e + easting, n + northing)
     }
 
     private val GRID_SQUARES: Map<String, GridSquare>
@@ -78,7 +81,11 @@ object NationalGrid {
     init {
         val squares = mutableMapOf<String, GridSquare>()
 
-        fun addGridSquare(reference: String, x: Int, y: Int) {
+        fun addGridSquare(
+            reference: String,
+            x: Int,
+            y: Int,
+        ) {
             squares[reference] = GridSquare(reference, x * SIZE_M, y * SIZE_M)
         }
 
@@ -203,8 +210,9 @@ object NationalGrid {
         val trimmed = ng.trim()
         val ref = trimmed.substring(0, 2)
 
-        val gridSquare = GRID_SQUARES[ref]
-            ?: throw IllegalArgumentException("Invalid NG: $trimmed")
+        val gridSquare =
+            GRID_SQUARES[ref]
+                ?: throw IllegalArgumentException("Invalid NG: $trimmed")
 
         val list = splitOnWhitespace(trimmed.substring(2))
 
@@ -241,14 +249,14 @@ object NationalGrid {
     private fun splitConsolidated(s: String): Array<String> {
         if (s.length % 2 != 0) {
             throw IllegalArgumentException(
-                "Differing size of northing and easting, unable to determine valid ref $s"
+                "Differing size of northing and easting, unable to determine valid ref $s",
             )
         }
 
         val index = s.length / 2
         return arrayOf(
             s.substring(0, index), // Easting
-            s.substring(index) // Northing
+            s.substring(index), // Northing
         )
     }
 
@@ -260,11 +268,12 @@ object NationalGrid {
             t = t.substring(1)
         }
 
-        val c: Double = try {
-            t.toDouble()
-        } catch (nfe: NumberFormatException) {
-            return null
-        }
+        val c: Double =
+            try {
+                t.toDouble()
+            } catch (nfe: NumberFormatException) {
+                return null
+            }
 
         val multiplier = 10.0.pow(4 - precedingZeroes - floor(log10(c)))
         return c * multiplier
@@ -288,9 +297,9 @@ object NationalGrid {
         return null
     }
 
-    internal fun splitOnWhitespace(s: String): List<String> {
-        return s.split(Regex("\\h+"))
+    internal fun splitOnWhitespace(s: String): List<String> =
+        s
+            .split(Regex("\\h+"))
             .filter { it.isNotBlank() }
             .map { it.trim() }
-    }
 }

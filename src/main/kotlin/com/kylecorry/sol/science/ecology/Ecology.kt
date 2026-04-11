@@ -6,15 +6,17 @@ import java.time.Duration
 import java.time.LocalDate
 
 object Ecology {
-
     fun getGrowingDegreeDays(
         temperature: Range<Temperature>,
         baseTemperature: Temperature,
         limit: Float = Float.MAX_VALUE,
-        calculationType: GrowingDegreeDaysCalculationType = GrowingDegreeDaysCalculationType.MinMax
+        calculationType: GrowingDegreeDaysCalculationType = GrowingDegreeDaysCalculationType.MinMax,
     ): Float {
-
-        val max = temperature.end.celsius().value.coerceAtMost(limit)
+        val max =
+            temperature.end
+                .celsius()
+                .value
+                .coerceAtMost(limit)
         var min = temperature.start.celsius().value
 
         if (calculationType == GrowingDegreeDaysCalculationType.BaseMax && min < baseTemperature.celsius().value) {
@@ -29,9 +31,13 @@ object Ecology {
     fun getColdDegreeDays(
         temperature: Range<Temperature>,
         baseTemperature: Temperature,
-        limit: Float = Float.MAX_VALUE
+        limit: Float = Float.MAX_VALUE,
     ): Float {
-        val max = temperature.end.celsius().value.coerceAtMost(limit)
+        val max =
+            temperature.end
+                .celsius()
+                .value
+                .coerceAtMost(limit)
         val min = temperature.start.celsius().value
         val average = (max + min) / 2
         return (baseTemperature.celsius().value - average).coerceAtLeast(0f)
@@ -42,7 +48,7 @@ object Ecology {
         baseTemperature: Temperature,
         temperatureProvider: (LocalDate) -> Range<Temperature>,
         limit: Float = Float.MAX_VALUE,
-        calculationType: GrowingDegreeDaysCalculationType = GrowingDegreeDaysCalculationType.MinMax
+        calculationType: GrowingDegreeDaysCalculationType = GrowingDegreeDaysCalculationType.MinMax,
     ): List<Pair<LocalDate, Float>> {
         val earliestDate = dates.minOrNull() ?: return emptyList()
 
@@ -69,12 +75,13 @@ object Ecology {
                 startDate = startDate.plusYears(1)
                 cumulative = 0f
             }
-            cumulative += getGrowingDegreeDays(
-                temperatureProvider(currentDate),
-                baseTemperature,
-                limit,
-                calculationType
-            )
+            cumulative +=
+                getGrowingDegreeDays(
+                    temperatureProvider(currentDate),
+                    baseTemperature,
+                    limit,
+                    calculationType,
+                )
             if (currentDate in queue) {
                 queue.remove(currentDate)
                 gdd.add(Pair(currentDate, cumulative))
@@ -98,11 +105,12 @@ object Ecology {
             val temperature = temperatureProvider(date)
             val dayLength = dayLengthProvider(date)
 
-            val factors = LifecycleEventFactors(
-                dayLength,
-                temperature,
-                date
-            )
+            val factors =
+                LifecycleEventFactors(
+                    dayLength,
+                    temperature,
+                    date,
+                )
 
             for (event in events) {
                 if (event.trigger.isTriggered(factors)) {
@@ -134,7 +142,7 @@ object Ecology {
         year: Int,
         events: List<Pair<LocalDate, LifecycleEvent>>,
         activeStart: String,
-        activeEnd: String
+        activeEnd: String,
     ): List<Range<LocalDate>> {
         val activePeriods = mutableListOf<Range<LocalDate>>()
         var startDate: LocalDate = LocalDate.of(year, 1, 1)
@@ -155,5 +163,4 @@ object Ecology {
 
         return activePeriods
     }
-
 }

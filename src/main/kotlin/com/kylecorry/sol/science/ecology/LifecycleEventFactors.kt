@@ -8,5 +8,5 @@ import java.time.LocalDate
 data class LifecycleEventFactors(
     val lengthOfDay: Duration,
     val temperature: Range<Temperature>,
-    val date: LocalDate
+    val date: LocalDate,
 )

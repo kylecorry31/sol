@@ -9,8 +9,10 @@ import kotlin.math.*
 object Geometry {
     // INTERSECTIONS
 
-    fun getIntersection(line: Line, circle: Circle): Line? {
-
+    fun getIntersection(
+        line: Line,
+        circle: Circle,
+    ): Line? {
         if (contains(circle, line.start) && contains(circle, line.end)) {
             return line
         }
@@ -18,25 +20,28 @@ object Geometry {
         // Vertical line
         if (line.isVertical) {
             return if (circle.contains(Vector2(line.start.x, circle.center.y))) {
-                val top = Vector2(
-                    line.start.x,
-                    sqrt(square(circle.radius) - square(line.start.x - circle.center.x)) + circle.center.y
-                )
+                val top =
+                    Vector2(
+                        line.start.x,
+                        sqrt(square(circle.radius) - square(line.start.x - circle.center.x)) + circle.center.y,
+                    )
                 val bottom = top.copy(y = 2 * circle.center.y - top.y)
                 val lineTop = line.top()
                 val lineBottom = line.bottom()
 
-                val start = if (contains(circle, lineTop)) {
-                    lineTop
-                } else {
-                    top
-                }
+                val start =
+                    if (contains(circle, lineTop)) {
+                        lineTop
+                    } else {
+                        top
+                    }
 
-                val end = if (contains(circle, lineBottom)) {
-                    lineBottom
-                } else {
-                    bottom
-                }
+                val end =
+                    if (contains(circle, lineBottom)) {
+                        lineBottom
+                    } else {
+                        bottom
+                    }
 
                 if (!contains(line, start) || !contains(line, end)) {
                     return null
@@ -57,17 +62,19 @@ object Geometry {
         val lineLeft = line.left()
         val lineRight = line.right()
 
-        val start = if (contains(circle, lineLeft)) {
-            lineLeft
-        } else {
-            left
-        }
+        val start =
+            if (contains(circle, lineLeft)) {
+                lineLeft
+            } else {
+                left
+            }
 
-        val end = if (contains(circle, lineRight)) {
-            lineRight
-        } else {
-            right
-        }
+        val end =
+            if (contains(circle, lineRight)) {
+                lineRight
+            } else {
+                right
+            }
 
         if (!contains(line, start) || !contains(line, end)) {
             return null
@@ -76,29 +83,38 @@ object Geometry {
         return Line(start, end)
     }
 
-    fun getIntersection(line1: Line, line2: Line): Vector2? {
-        return IntersectionMath.getIntersection(line1, line2)
-    }
+    fun getIntersection(
+        line1: Line,
+        line2: Line,
+    ): Vector2? = IntersectionMath.getIntersection(line1, line2)
 
-    fun getIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
-        return IntersectionMath.getIntersection(line, rectangle)
-    }
+    fun getIntersection(
+        line: Line,
+        rectangle: Rectangle,
+    ): List<Vector2> = IntersectionMath.getIntersection(line, rectangle)
 
-    fun getIntersection(a: Vector2, b: Vector2, rectangle: Rectangle): List<Vector2> {
-        return IntersectionMath.getIntersection(a, b, rectangle)
-    }
+    fun getIntersection(
+        a: Vector2,
+        b: Vector2,
+        rectangle: Rectangle,
+    ): List<Vector2> = IntersectionMath.getIntersection(a, b, rectangle)
 
-    fun intersects(line: Line, circle: Circle): Boolean {
-        return getIntersection(line, circle) != null
-    }
+    fun intersects(
+        line: Line,
+        circle: Circle,
+    ): Boolean = getIntersection(line, circle) != null
 
-    fun intersects(line1: Line, line2: Line): Boolean {
-        return getIntersection(line1, line2) != null
-    }
+    fun intersects(
+        line1: Line,
+        line2: Line,
+    ): Boolean = getIntersection(line1, line2) != null
 
     // CONTAINS
 
-    fun contains(line: Line, point: Vector2): Boolean {
+    fun contains(
+        line: Line,
+        point: Vector2,
+    ): Boolean {
         // Vertical line
         if (line.isVertical) {
             return point.x == line.start.x && point.y >= line.bottom().y && point.y <= line.top().y
@@ -109,11 +125,15 @@ object Geometry {
         return (eval - point.y).absoluteValue < 0.00001f && point.x >= line.left().x && point.x <= line.right().x
     }
 
-    fun contains(circle: Circle, point: Vector2): Boolean {
-        return circle.center.distanceTo(point) <= circle.radius
-    }
+    fun contains(
+        circle: Circle,
+        point: Vector2,
+    ): Boolean = circle.center.distanceTo(point) <= circle.radius
 
-    fun contains(polygon: Polygon, point: Vector2): Boolean {
+    fun contains(
+        polygon: Polygon,
+        point: Vector2,
+    ): Boolean {
         var isContained = false
         val x0 = point.x
         val y0 = point.y
@@ -135,7 +155,10 @@ object Geometry {
         return isContained
     }
 
-    fun pointLineDistance(point: Vector2, line: Line): Float {
+    fun pointLineDistance(
+        point: Vector2,
+        line: Line,
+    ): Float {
         if (line.start == line.end) {
             return point.distanceTo(line.start)
         }
@@ -147,17 +170,22 @@ object Geometry {
         return numerator / denominator
     }
 
-    fun manhattanDistance(p1: List<Float>, p2: List<Float>): Float {
-        return p1.zip(p2).sumOfFloat { abs(it.first - it.second) }
-    }
+    fun manhattanDistance(
+        p1: List<Float>,
+        p2: List<Float>,
+    ): Float = p1.zip(p2).sumOfFloat { abs(it.first - it.second) }
 
-    fun euclideanDistance(p1: List<Float>, p2: List<Float>): Float {
-        return sqrt(p1.zip(p2).sumOfFloat { square(it.first - it.second) })
-    }
+    fun euclideanDistance(
+        p1: List<Float>,
+        p2: List<Float>,
+    ): Float = sqrt(p1.zip(p2).sumOfFloat { square(it.first - it.second) })
 
     // Area
 
-    fun getIntersectionArea(circle1: Circle, circle2: Circle): Float {
+    fun getIntersectionArea(
+        circle1: Circle,
+        circle2: Circle,
+    ): Float {
         // No intersection
         val d = circle1.center.distanceTo(circle2.center)
         if (d >= circle1.radius + circle2.radius) {
@@ -193,9 +221,10 @@ object Geometry {
      * @param line the line
      * @return the point snapped onto the line
      */
-    fun snapToLine(point: Vector2, line: Line): Vector2 {
-        return snapToLine(point.x, point.y, line.start.x, line.start.y, line.end.x, line.end.y)
-    }
+    fun snapToLine(
+        point: Vector2,
+        line: Line,
+    ): Vector2 = snapToLine(point.x, point.y, line.start.x, line.start.y, line.end.x, line.end.y)
 
     /**
      * Snap a 2D point onto the nearest part of a line
@@ -207,7 +236,14 @@ object Geometry {
      * @param y2 the y coordinate of the end of the line
      * @return the point snapped onto the line
      */
-    fun snapToLine(x: Float, y: Float, x1: Float, y1: Float, x2: Float, y2: Float): Vector2 {
+    fun snapToLine(
+        x: Float,
+        y: Float,
+        x1: Float,
+        y1: Float,
+        x2: Float,
+        y2: Float,
+    ): Vector2 {
         val ab = square(x2 - x1) + square(y2 - y1)
         val ap = square(x - x1) + square(y - y1)
         val bp = square(x - x2) + square(y - y2)
@@ -229,9 +265,15 @@ object Geometry {
      * @param z2 the z coordinate of the end of the line
      * @return the 3D point snapped onto the line
      */
-    fun snapToLine(point: Vector2, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float): Vector3 {
-        return snapToLine(point.x, point.y, x1, y1, z1, x2, y2, z2)
-    }
+    fun snapToLine(
+        point: Vector2,
+        x1: Float,
+        y1: Float,
+        z1: Float,
+        x2: Float,
+        y2: Float,
+        z2: Float,
+    ): Vector3 = snapToLine(point.x, point.y, x1, y1, z1, x2, y2, z2)
 
     /**
      * Snap a 2D point onto the nearest part of a 3D line
@@ -253,7 +295,7 @@ object Geometry {
         z1: Float,
         x2: Float,
         y2: Float,
-        z2: Float
+        z2: Float,
     ): Vector3 {
         val ab = square(x2 - x1) + square(y2 - y1)
         val ap = square(x - x1) + square(y - y1)
@@ -277,9 +319,15 @@ object Geometry {
      * @param z2 the z coordinate of the end of the line
      * @return the 3D point snapped onto the line
      */
-    fun snapToLine(point: Vector3, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float): Vector3 {
-        return snapToLine(point.x, point.y, point.z, x1, y1, z1, x2, y2, z2)
-    }
+    fun snapToLine(
+        point: Vector3,
+        x1: Float,
+        y1: Float,
+        z1: Float,
+        x2: Float,
+        y2: Float,
+        z2: Float,
+    ): Vector3 = snapToLine(point.x, point.y, point.z, x1, y1, z1, x2, y2, z2)
 
     /**
      * Snap a 3D point onto the nearest part of a 3D line
@@ -303,7 +351,7 @@ object Geometry {
         z1: Float,
         x2: Float,
         y2: Float,
-        z2: Float
+        z2: Float,
     ): Vector3 {
         val ab = square(x2 - x1) + square(y2 - y1) + square(z2 - z1)
         val ap = square(x - x1) + square(y - y1) + square(z - z1)
@@ -343,14 +391,15 @@ object Geometry {
             // Grow the line forward
             repeat(segments.size) {
                 var nextIdx = startMap[tail]?.firstOrNull { !visited[it] }
-                val nextSeg = if (nextIdx != null) {
-                    visited[nextIdx] = true
-                    segments[nextIdx]
-                } else {
-                    nextIdx = endMap[tail]?.firstOrNull { !visited[it] } ?: return@repeat
-                    visited[nextIdx] = true
-                    segments[nextIdx].second to segments[nextIdx].first // Reverse the segment
-                }
+                val nextSeg =
+                    if (nextIdx != null) {
+                        visited[nextIdx] = true
+                        segments[nextIdx]
+                    } else {
+                        nextIdx = endMap[tail]?.firstOrNull { !visited[it] } ?: return@repeat
+                        visited[nextIdx] = true
+                        segments[nextIdx].second to segments[nextIdx].first // Reverse the segment
+                    }
 
                 line.add(nextSeg.second)
                 tail = nextSeg.second
@@ -359,14 +408,15 @@ object Geometry {
             // Grow the line backward
             repeat(segments.size) {
                 var prevIdx = endMap[head]?.firstOrNull { !visited[it] }
-                val prevSeg = if (prevIdx != null) {
-                    visited[prevIdx] = true
-                    segments[prevIdx]
-                } else {
-                    prevIdx = startMap[head]?.firstOrNull { !visited[it] } ?: return@repeat
-                    visited[prevIdx] = true
-                    segments[prevIdx].second to segments[prevIdx].first // Reverse the segment
-                }
+                val prevSeg =
+                    if (prevIdx != null) {
+                        visited[prevIdx] = true
+                        segments[prevIdx]
+                    } else {
+                        prevIdx = startMap[head]?.firstOrNull { !visited[it] } ?: return@repeat
+                        visited[prevIdx] = true
+                        segments[prevIdx].second to segments[prevIdx].first // Reverse the segment
+                    }
                 line.add(0, prevSeg.first)
                 head = prevSeg.first
             }
@@ -381,8 +431,6 @@ object Geometry {
         width: Float,
         height: Float,
         maxWidth: Float,
-        maxHeight: Float
-    ): Float {
-        return min(maxWidth / width, maxHeight / height)
-    }
+        maxHeight: Float,
+    ): Float = min(maxWidth / width, maxHeight / height)
 }

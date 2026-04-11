@@ -1,13 +1,11 @@
 package com.kylecorry.sol.shared
 
 import com.kylecorry.sol.shared.ArrayUtils.swap
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class ArrayUtilsTest {
-
     @Test
     fun swap() {
         val arr = arrayOf(1, 2, 3)

@@ -1,6 +1,9 @@
 package com.kylecorry.sol.science.astronomy.stars
 
-class Constellation(val name: String, val lines: List<List<Int>>) {
+class Constellation(
+    val name: String,
+    val lines: List<List<Int>>,
+) {
     val allStarIds = lines.flatten().toSet()
 
     val starEdges: List<Pair<Star, Star>>
@@ -12,11 +15,7 @@ class Constellation(val name: String, val lines: List<List<Int>>) {
             }
         }
 
-    fun containsStar(star: Star): Boolean {
-        return allStarIds.contains(star.hipDesignation)
-    }
+    fun containsStar(star: Star): Boolean = allStarIds.contains(star.hipDesignation)
 }
 
-private fun star(hipDesignation: Int): Star {
-    return STAR_CATALOG_BY_HIP[hipDesignation]!!
-}
+private fun star(hipDesignation: Int): Star = STAR_CATALOG_BY_HIP[hipDesignation]!!

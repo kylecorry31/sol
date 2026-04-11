@@ -4,9 +4,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class ComplementaryFilterTest {
-
     @Test
-    fun complementaryFilter(){
+    fun complementaryFilter() {
         val filter = ComplementaryFilter(listOf(0.5f, 0.2f, 0.3f), 1f)
         assertEquals(1f, filter.value, 0.001f)
 
@@ -26,5 +25,4 @@ class ComplementaryFilterTest {
         filter.filter(listOf(3f, 6f, 12f))
         assertEquals(7f, filter.value, 0.001f)
     }
-
 }

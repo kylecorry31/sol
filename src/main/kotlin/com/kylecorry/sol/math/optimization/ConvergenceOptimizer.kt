@@ -8,13 +8,13 @@ class ConvergenceOptimizer(
     private val initialStep: Float,
     private val precision: Float,
     private val initialValue: Pair<Double, Double>? = null,
-    private val getOptimizer: (step: Float, initialValue: Pair<Double, Double>?) -> IOptimizer
+    private val getOptimizer: (step: Float, initialValue: Pair<Double, Double>?) -> IOptimizer,
 ) : IOptimizer {
     override fun optimize(
         xRange: Range<Double>,
         yRange: Range<Double>,
         maximize: Boolean,
-        fn: (Double, Double) -> Double
+        fn: (Double, Double) -> Double,
     ): Pair<Double, Double> {
         require(initialStep.isFinite() && initialStep > 0f) { "Initial step must be finite and greater than 0" }
         require(precision.isFinite() && precision > 0f) { "Precision must be finite and greater than 0" }

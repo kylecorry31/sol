@@ -3,7 +3,6 @@ package com.kylecorry.sol.math.geometry
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import org.junit.jupiter.api.Assertions.*
-
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -12,7 +11,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class GeometryTest {
-
     @Test
     fun containsCircle() {
         val circle1 = Circle(Vector2(0f, 0f), 1f)
@@ -25,15 +23,16 @@ internal class GeometryTest {
 
     @Test
     fun containsPolygonVector() {
-        val pentagon = Polygon(
-            listOf(
-                Vector2(0f, 0f),
-                Vector2(1f, 0f),
-                Vector2(1.5f, 1f),
-                Vector2(0.5f, 1.5f),
-                Vector2(-0.5f, 1f)
+        val pentagon =
+            Polygon(
+                listOf(
+                    Vector2(0f, 0f),
+                    Vector2(1f, 0f),
+                    Vector2(1.5f, 1f),
+                    Vector2(0.5f, 1.5f),
+                    Vector2(-0.5f, 1f),
+                ),
             )
-        )
 
         // Centered
         assertTrue(Geometry.contains(pentagon, Vector2(0.5f, 0.5f)))
@@ -78,7 +77,7 @@ internal class GeometryTest {
         assertEquals(
             Line(Vector2(0.5f, 0.866025f), Vector2(0.5f, -0.866025f)),
             intersection5!!,
-            0.00001f
+            0.00001f,
         )
         assertEquals(Line(Vector2(1f, 0f), Vector2(1f, 0f)), intersection6!!, 0.00001f)
         assertEquals(Line(Vector2(4f, 5f), Vector2(4f, 1f)), intersection7!!, 0.00001f)
@@ -87,12 +86,13 @@ internal class GeometryTest {
 
     @Test
     fun getConnectedLinesHandlesClosedLoops() {
-        val segments = listOf(
-            Vector2(0f, 0f) to Vector2(1f, 0f),
-            Vector2(1f, 0f) to Vector2(1f, 1f),
-            Vector2(1f, 1f) to Vector2(0f, 1f),
-            Vector2(0f, 1f) to Vector2(0f, 0f)
-        )
+        val segments =
+            listOf(
+                Vector2(0f, 0f) to Vector2(1f, 0f),
+                Vector2(1f, 0f) to Vector2(1f, 1f),
+                Vector2(1f, 1f) to Vector2(0f, 1f),
+                Vector2(0f, 1f) to Vector2(0f, 0f),
+            )
 
         val lines = Geometry.getConnectedLines(segments)
 
@@ -103,7 +103,11 @@ internal class GeometryTest {
 
     @ParameterizedTest
     @MethodSource("provideLineLineIntersections")
-    fun getIntersectionLineLine(line1: Line, line2: Line, expected: Vector2?) {
+    fun getIntersectionLineLine(
+        line1: Line,
+        line2: Line,
+        expected: Vector2?,
+    ) {
         val actual = Geometry.getIntersection(line1, line2)
 
         if (expected == null) {
@@ -128,9 +132,14 @@ internal class GeometryTest {
         // Above line
         "1, 1, 1.2, 0.4",
         // Below line
-        "1, -1, 0.6, 0.2"
+        "1, -1, 0.6, 0.2",
     )
-    fun snapToLine2DTo2D(x: Float, y: Float, expectedX: Float, expectedY: Float) {
+    fun snapToLine2DTo2D(
+        x: Float,
+        y: Float,
+        expectedX: Float,
+        expectedY: Float,
+    ) {
         val x1 = 0f
         val y1 = 0f
         val x2 = 3f
@@ -143,7 +152,7 @@ internal class GeometryTest {
         assertEquals(
             Vector2(expectedX, expectedY),
             Geometry.snapToLine(Vector2(x, y), Line(Vector2(x1, y1), Vector2(x2, y2))),
-            0.00001f
+            0.00001f,
         )
     }
 
@@ -160,9 +169,15 @@ internal class GeometryTest {
         // Above line
         "1, 1, 1.2, 0.4, 0.8",
         // Below line
-        "1, -1, 0.6, 0.2, 0.4"
+        "1, -1, 0.6, 0.2, 0.4",
     )
-    fun snapToLine2DTo3D(x: Float, y: Float, expectedX: Float, expectedY: Float, expectedZ: Float) {
+    fun snapToLine2DTo3D(
+        x: Float,
+        y: Float,
+        expectedX: Float,
+        expectedY: Float,
+        expectedZ: Float,
+    ) {
         val x1 = 0f
         val y1 = 0f
         val z1 = 0f
@@ -174,14 +189,14 @@ internal class GeometryTest {
         assertEquals(
             Vector3(expectedX, expectedY, expectedZ),
             Geometry.snapToLine(Vector2(x, y), x1, y1, z1, x2, y2, z2),
-            0.00001f
+            0.00001f,
         )
 
         // Objects
         assertEquals(
             Vector3(expectedX, expectedY, expectedZ),
             Geometry.snapToLine(Vector2(x, y), x1, y1, z1, x2, y2, z2),
-            0.00001f
+            0.00001f,
         )
     }
 
@@ -198,9 +213,16 @@ internal class GeometryTest {
         // Above line
         "1, 1, 1, 1.2857, 0.4286, 0.8571",
         // Below line
-        "1, -1, 0.8, 0.7714, 0.2571, 0.5143"
+        "1, -1, 0.8, 0.7714, 0.2571, 0.5143",
     )
-    fun snapToLine3DTo3D(x: Float, y: Float, z: Float, expectedX: Float, expectedY: Float, expectedZ: Float) {
+    fun snapToLine3DTo3D(
+        x: Float,
+        y: Float,
+        z: Float,
+        expectedX: Float,
+        expectedY: Float,
+        expectedZ: Float,
+    ) {
         val x1 = 0f
         val y1 = 0f
         val z1 = 0f
@@ -212,28 +234,40 @@ internal class GeometryTest {
         assertEquals(
             Vector3(expectedX, expectedY, expectedZ),
             Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2),
-            0.0001f
+            0.0001f,
         )
 
         // Objects
         assertEquals(
             Vector3(expectedX, expectedY, expectedZ),
             Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2),
-            0.0001f
+            0.0001f,
         )
     }
 
-    private fun assertEquals(expected: Line, actual: Line, delta: Float = 0f) {
+    private fun assertEquals(
+        expected: Line,
+        actual: Line,
+        delta: Float = 0f,
+    ) {
         assertEquals(expected.start, actual.start, delta)
         assertEquals(expected.end, actual.end, delta)
     }
 
-    private fun assertEquals(expected: Vector2, actual: Vector2, delta: Float = 0f) {
+    private fun assertEquals(
+        expected: Vector2,
+        actual: Vector2,
+        delta: Float = 0f,
+    ) {
         assertEquals(expected.x, actual.x, delta)
         assertEquals(expected.y, actual.y, delta)
     }
 
-    private fun assertEquals(expected: Vector3, actual: Vector3, delta: Float = 0f) {
+    private fun assertEquals(
+        expected: Vector3,
+        actual: Vector3,
+        delta: Float = 0f,
+    ) {
         assertEquals(expected.x, actual.x, delta)
         assertEquals(expected.y, actual.y, delta)
         assertEquals(expected.z, actual.z, delta)
@@ -246,7 +280,7 @@ internal class GeometryTest {
         height: Float,
         maxWidth: Float,
         maxHeight: Float,
-        expected: Float
+        expected: Float,
     ) {
         val actual = Geometry.scaleToFit(width, height, maxWidth, maxHeight)
         assertEquals(expected, actual, 0.00001f)
@@ -254,50 +288,49 @@ internal class GeometryTest {
 
     companion object {
         @JvmStatic
-        fun provideLineLineIntersections(): Stream<Arguments> {
-            return Stream.of(
+        fun provideLineLineIntersections(): Stream<Arguments> =
+            Stream.of(
                 // Diagonal segments crossing at midpoint
                 Arguments.of(
                     Line(Vector2(0f, 0f), Vector2(4f, 4f)),
                     Line(Vector2(0f, 4f), Vector2(4f, 0f)),
-                    Vector2(2f, 2f)
+                    Vector2(2f, 2f),
                 ),
                 // Vertical segment crossing horizontal segment
                 Arguments.of(
                     Line(Vector2(0f, 0f), Vector2(4f, 0f)),
                     Line(Vector2(2f, -2f), Vector2(2f, 2f)),
-                    Vector2(2f, 0f)
+                    Vector2(2f, 0f),
                 ),
                 // Segments touching at a shared endpoint
                 Arguments.of(
                     Line(Vector2(0f, 0f), Vector2(2f, 2f)),
                     Line(Vector2(2f, 2f), Vector2(4f, 0f)),
-                    Vector2(2f, 2f)
+                    Vector2(2f, 2f),
                 ),
                 // Infinite lines cross, but the segments do not reach the crossing point
                 Arguments.of(
                     Line(Vector2(0f, 0f), Vector2(1f, 1f)),
                     Line(Vector2(2f, 0f), Vector2(2f, 3f)),
-                    null
+                    null,
                 ),
                 // Parallel horizontal segments with vertical separation
                 Arguments.of(
                     Line(Vector2(0f, 0f), Vector2(4f, 0f)),
                     Line(Vector2(0f, 1f), Vector2(4f, 1f)),
-                    null
+                    null,
                 ),
                 // Collinear horizontal segments with a gap between them
                 Arguments.of(
                     Line(Vector2(0f, 0f), Vector2(1f, 0f)),
                     Line(Vector2(2f, 0f), Vector2(3f, 0f)),
-                    null
-                )
+                    null,
+                ),
             )
-        }
 
         @JvmStatic
-        fun provideScaleToFit(): Stream<Arguments> {
-            return Stream.of(
+        fun provideScaleToFit(): Stream<Arguments> =
+            Stream.of(
                 // Square destination
                 Arguments.of(2.0f, 2.0f, 2.0f, 2.0f, 1.0f),
                 Arguments.of(1.0f, 1.0f, 2.0f, 2.0f, 2.0f),
@@ -310,7 +343,6 @@ internal class GeometryTest {
                 Arguments.of(1.0f, 2.0f, 2.0f, 2.0f, 1.0f),
                 Arguments.of(1.0f, 0.5f, 2.0f, 2.0f, 2.0f),
                 Arguments.of(0.5f, 1.0f, 2.0f, 2.0f, 2.0f),
-
                 // Long destination
                 Arguments.of(2.0f, 2.0f, 4.0f, 2.0f, 1.0f),
                 Arguments.of(1.0f, 1.0f, 4.0f, 2.0f, 2.0f),
@@ -323,7 +355,6 @@ internal class GeometryTest {
                 Arguments.of(1.0f, 2.0f, 4.0f, 2.0f, 1.0f),
                 Arguments.of(1.0f, 0.5f, 4.0f, 2.0f, 4.0f),
                 Arguments.of(0.5f, 1.0f, 4.0f, 2.0f, 2.0f),
-
                 // Tall destination
                 Arguments.of(2.0f, 2.0f, 2.0f, 4.0f, 1.0f),
                 Arguments.of(1.0f, 1.0f, 2.0f, 4.0f, 2.0f),
@@ -337,6 +368,5 @@ internal class GeometryTest {
                 Arguments.of(1.0f, 0.5f, 2.0f, 4.0f, 2.0f),
                 Arguments.of(0.5f, 1.0f, 2.0f, 4.0f, 4.0f),
             )
-        }
     }
 }

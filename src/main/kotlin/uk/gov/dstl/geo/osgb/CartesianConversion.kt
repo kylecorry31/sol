@@ -35,7 +35,11 @@ object CartesianConversion {
      * @param b Semi-minor axis of the ellipsoid
      * @return Array of cartesian coordinates [x, y, z]
      */
-    fun fromLatLon(inputCoordinates: DoubleArray, a: Double, b: Double): DoubleArray {
+    fun fromLatLon(
+        inputCoordinates: DoubleArray,
+        a: Double,
+        b: Double,
+    ): DoubleArray {
         val lat = Math.toRadians(inputCoordinates[0])
         val lon = Math.toRadians(inputCoordinates[1])
         val height = inputCoordinates[2]
@@ -57,7 +61,12 @@ object CartesianConversion {
      * @param precision Precision to calculate the latitude to
      * @return Array of coordinates [lat, lon, ellipsoidHeight]
      */
-    fun toLatLon(inputCoordinates: DoubleArray, a: Double, b: Double, precision: Double): DoubleArray {
+    fun toLatLon(
+        inputCoordinates: DoubleArray,
+        a: Double,
+        b: Double,
+        precision: Double,
+    ): DoubleArray {
         val x = inputCoordinates[0]
         val y = inputCoordinates[1]
         val z = inputCoordinates[2]
@@ -109,7 +118,7 @@ object CartesianConversion {
         s: Double,
         rX: Double,
         rY: Double,
-        rZ: Double
+        rZ: Double,
     ): DoubleArray {
         val aX = inputCoordinates[0]
         val aY = inputCoordinates[1]

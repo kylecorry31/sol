@@ -10,7 +10,6 @@ import java.time.Duration
 import java.time.LocalDate
 
 class CumulativeColdDegreeDaysTriggerTest {
-
     @Test
     fun triggersWhenCumulativeCddReachesMinimum() {
         val trigger = CumulativeColdDegreeDaysTrigger(10f, baseTemperature = Temperature.celsius(10f))
@@ -40,22 +39,25 @@ class CumulativeColdDegreeDaysTriggerTest {
 
     @Test
     fun zeroCddResetHonorsZeroCountBeforeReset() {
-        val trigger = CumulativeColdDegreeDaysTrigger(
-            9f,
-            baseTemperature = Temperature.celsius(10f),
-            zeroCountBeforeReset = 2
-        )
+        val trigger =
+            CumulativeColdDegreeDaysTrigger(
+                9f,
+                baseTemperature = Temperature.celsius(10f),
+                zeroCountBeforeReset = 2,
+            )
 
         assertFalse(trigger.isTriggered(factors(0f, 10f)))
         assertFalse(trigger.isTriggered(factors(10f, 10f)))
         assertTrue(trigger.isTriggered(factors(0f, 10f)))
     }
 
-    private fun factors(lowC: Float, highC: Float): LifecycleEventFactors {
-        return LifecycleEventFactors(
+    private fun factors(
+        lowC: Float,
+        highC: Float,
+    ): LifecycleEventFactors =
+        LifecycleEventFactors(
             lengthOfDay = Duration.ofHours(12),
             temperature = Range(Temperature.celsius(lowC), Temperature.celsius(highC)),
-            date = LocalDate.now()
+            date = LocalDate.now(),
         )
-    }
 }

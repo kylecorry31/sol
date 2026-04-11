@@ -1,6 +1,9 @@
 package com.kylecorry.sol.units
 
-enum class VolumeUnits(val id: Int, val liters: Double) {
+enum class VolumeUnits(
+    val id: Int,
+    val liters: Double,
+) {
     Liters(1, 1.0),
     Milliliter(2, 0.001),
     USCups(3, 0.236588),

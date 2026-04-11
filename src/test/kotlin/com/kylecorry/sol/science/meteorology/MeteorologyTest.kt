@@ -17,10 +17,13 @@ import java.time.*
 import java.util.stream.Stream
 
 class MeteorologyTest {
-
     @ParameterizedTest
     @MethodSource("provideAltitudes")
-    fun altitude(pressure: Float, seaLevel: Float, altitude: Float) {
+    fun altitude(
+        pressure: Float,
+        seaLevel: Float,
+        altitude: Float,
+    ) {
         val actual = Meteorology.getAltitude(Pressure.hpa(pressure), Pressure.hpa(seaLevel))
         val expected = Distance.meters(altitude)
         assertThat(actual).isCloseTo(expected, 1f)
@@ -32,7 +35,7 @@ class MeteorologyTest {
         characteristic: PressureCharacteristic,
         tendencyAmount: Float,
         stormThresh: Float?,
-        expectedWeather: Weather
+        expectedWeather: Weather,
     ) {
         val tendency = PressureTendency(characteristic, tendencyAmount)
         val weather = Meteorology.forecast(tendency, stormThresh)
@@ -46,7 +49,7 @@ class MeteorologyTest {
         clouds: List<Reading<CloudGenus?>>,
         temperatures: Range<Temperature>?,
         now: WeatherForecast,
-        then: WeatherForecast
+        then: WeatherForecast,
     ) {
         val weather = Meteorology.forecast(pressures, clouds, temperatures, time = weatherTime)
         assertEquals(now, weather.first())
@@ -60,7 +63,7 @@ class MeteorologyTest {
         currentHpa: Float,
         duration: Duration,
         threshold: Float,
-        expectedTendency: PressureTendency
+        expectedTendency: PressureTendency,
     ) {
         val tendency = Meteorology.getTendency(Pressure.hpa(lastHpa), Pressure.hpa(currentHpa), duration, threshold)
         assertEquals(expectedTendency, tendency)
@@ -68,14 +71,21 @@ class MeteorologyTest {
 
     @ParameterizedTest
     @MethodSource("provideHeatIndex")
-    fun heatIndex(temperature: Float, humidity: Float, expected: Float) {
+    fun heatIndex(
+        temperature: Float,
+        humidity: Float,
+        expected: Float,
+    ) {
         val hi = Meteorology.getHeatIndex(temperature, humidity)
         assertEquals(expected, hi, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideHeatAlert")
-    fun heatAlert(heatIndex: Float, expected: HeatAlert) {
+    fun heatAlert(
+        heatIndex: Float,
+        expected: HeatAlert,
+    ) {
         val alert = Meteorology.getHeatAlert(heatIndex)
         assertEquals(expected, alert)
     }
@@ -90,66 +100,88 @@ class MeteorologyTest {
         "50.5, 10, 50.5",
         "0, 3, 0",
     )
-    fun getWindChill(temperature: Float, windSpeed: Float, expected: Float) {
-        val chill = Meteorology.getWindChill(
-            Temperature.fahrenheit(temperature),
-            Speed.from(windSpeed, DistanceUnits.Miles, TimeUnits.Hours)
-        )
+    fun getWindChill(
+        temperature: Float,
+        windSpeed: Float,
+        expected: Float,
+    ) {
+        val chill =
+            Meteorology.getWindChill(
+                Temperature.fahrenheit(temperature),
+                Speed.from(windSpeed, DistanceUnits.Miles, TimeUnits.Hours),
+            )
         assertEquals(expected, chill.value, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideDewPoint")
-    fun dewPoint(temperature: Float, humidity: Float, expected: Float) {
+    fun dewPoint(
+        temperature: Float,
+        humidity: Float,
+        expected: Float,
+    ) {
         val dew = Meteorology.getDewPoint(temperature, humidity)
         assertEquals(expected, dew, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikes")
-    fun lightningStrikes(lightning: Instant, thunder: Instant, expected: Float) {
+    fun lightningStrikes(
+        lightning: Instant,
+        thunder: Instant,
+        expected: Float,
+    ) {
         val distance = Meteorology.getLightningStrikeDistance(lightning, thunder)
         assertEquals(expected, distance, 0.5f)
     }
 
     @ParameterizedTest
     @MethodSource("provideLightningStrikeDistances")
-    fun lightningStrikeDanger(distanceMeters: Float, expected: Boolean) {
+    fun lightningStrikeDanger(
+        distanceMeters: Float,
+        expected: Boolean,
+    ) {
         val danger = Meteorology.isLightningStrikeDangerous(Distance.meters(distanceMeters))
         assertEquals(expected, danger)
     }
 
     @ParameterizedTest
     @MethodSource("provideSeasons")
-    fun seasons(expected: Season, isNorth: Boolean, date: LocalDate) {
-        val season = Meteorology.getSeason(
-            Coordinate(if (isNorth) 1.0 else -1.0, 0.0),
-            ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault())
-        )
+    fun seasons(
+        expected: Season,
+        isNorth: Boolean,
+        date: LocalDate,
+    ) {
+        val season =
+            Meteorology.getSeason(
+                Coordinate(if (isNorth) 1.0 else -1.0, 0.0),
+                ZonedDateTime.of(date, LocalTime.MIN, ZoneId.systemDefault()),
+            )
         assertEquals(expected, season)
     }
 
     @ParameterizedTest
     @CsvSource(
-        "20.0, 0.0, 0.0, 20.0",  // Same elevation - no change
-        "20.0, 0.0, 1000.0, 13.5",       // Higher elevation - should be colder
-        "0.0, 1000.0, 0.0, 6.5",         // Lower elevation - should be warmer
-        "-10.0, 0.0, 1000.0, -16.5",     // Higher elevation with negative base temp
-        "25.0, 100.0, 200.0, 24.35",     // Small elevation change
-        "15.0, 0.0, 5000.0, -17.5",      // Large elevation change
-        "0.0, 0.0, 50000.0, -273.15"     // Extreme elevation - clamped to absolute zero
+        "20.0, 0.0, 0.0, 20.0", // Same elevation - no change
+        "20.0, 0.0, 1000.0, 13.5", // Higher elevation - should be colder
+        "0.0, 1000.0, 0.0, 6.5", // Lower elevation - should be warmer
+        "-10.0, 0.0, 1000.0, -16.5", // Higher elevation with negative base temp
+        "25.0, 100.0, 200.0, 24.35", // Small elevation change
+        "15.0, 0.0, 5000.0, -17.5", // Large elevation change
+        "0.0, 0.0, 50000.0, -273.15", // Extreme elevation - clamped to absolute zero
     )
     fun temperatureAtElevation(
         temperatureCelsius: Float,
         baseElevationMeters: Float,
         destElevationMeters: Float,
-        expectedCelsius: Float
+        expectedCelsius: Float,
     ) {
-        val result = Meteorology.getTemperatureAtElevation(
-            Temperature.celsius(temperatureCelsius),
-            Distance.meters(baseElevationMeters),
-            Distance.meters(destElevationMeters)
-        )
+        val result =
+            Meteorology.getTemperatureAtElevation(
+                Temperature.celsius(temperatureCelsius),
+                Distance.meters(baseElevationMeters),
+                Distance.meters(destElevationMeters),
+            )
         assertEquals(expectedCelsius, result.celsius().value, 0.1f)
     }
 
@@ -165,377 +197,381 @@ class MeteorologyTest {
         pressureHpa: Float,
         altitudeMeters: Float,
         temperatureCelsius: Float?,
-        expectedPressureHpa: Float
+        expectedPressureHpa: Float,
     ) {
         val altitude = Distance.meters(altitudeMeters)
-        val reading = Meteorology.getSeaLevelPressure(
-            Pressure.hpa(pressureHpa),
-            altitude,
-            temperatureCelsius?.let { Temperature.celsius(it) })
+        val reading =
+            Meteorology.getSeaLevelPressure(
+                Pressure.hpa(pressureHpa),
+                altitude,
+                temperatureCelsius?.let { Temperature.celsius(it) },
+            )
         assertEquals(expectedPressureHpa, reading.hpa().value, 0.1f)
     }
 
     @ParameterizedTest
     @MethodSource("provideHighPressures")
-    fun isHigh(pressureHpa: Float, isHigh: Boolean) {
+    fun isHigh(
+        pressureHpa: Float,
+        isHigh: Boolean,
+    ) {
         val ret = Meteorology.isHighPressure(Pressure.hpa(pressureHpa))
         assertEquals(isHigh, ret)
     }
 
     @ParameterizedTest
     @MethodSource("provideLowPressures")
-    fun isLow(pressureHpa: Float, isLow: Boolean) {
+    fun isLow(
+        pressureHpa: Float,
+        isLow: Boolean,
+    ) {
         val ret = Meteorology.isLowPressure(Pressure.hpa(pressureHpa))
         assertEquals(isLow, ret)
     }
 
     @Test
     fun getKoppenGeigerClimateClassification() {
-        val tests = listOf(
-            //  Tropical
-            Triple(
-                "Af",
-                monthlyTemperatures(26f, 26f, 26f, 26f, 26f, 25f, 25f, 26f, 26f, 26f, 26f, 26f),
-                monthlyPrecipitation(
-                    240.8f,
-                    230f,
-                    256.2f,
-                    256.2f,
-                    212f,
-                    150.6f,
-                    121.2f,
-                    126.1f,
-                    147.5f,
-                    193.6f,
-                    205.8f,
-                    222.6f
-                )
-            ),
-            Triple(
-                "Am",
-                monthlyTemperatures(27f, 27f, 27f, 27f, 27f, 27f, 27f, 28f, 28f, 28f, 28f, 28f),
-                monthlyPrecipitation(
-                    228.5f,
-                    281.8f,
-                    279.5f,
-                    240.6f,
-                    153.9f,
-                    73.6f,
-                    45.8f,
-                    48f,
-                    67.6f,
-                    97.9f,
-                    122.6f,
-                    167.8f
-                )
-            ),
-            Triple(
-                "As",
-                monthlyTemperatures(22f, 23f, 22f, 22f, 21f, 19f, 19f, 21f, 23f, 23f, 22f, 22f),
-                monthlyPrecipitation(
-                    203.2f,
-                    178.9f,
-                    168.5f,
-                    82.3f,
-                    20.2f,
-                    6.2f,
-                    3.1f,
-                    9.8f,
-                    34.6f,
-                    103.3f,
-                    185.6f,
-                    220f
-                )
-            ),
-
-            // Dry
-            Triple(
-                "BWh",
-                monthlyTemperatures(12f, 15f, 20f, 25f, 30f, 32f, 32f, 31f, 30f, 24f, 18f, 13f),
-                monthlyPrecipitation(1.8f, 1.8f, 2.4f, 0.7f, 1.5f, 1.7f, 1.2f, 1.2f, 0.9f, 1.9f, 1f, 1.3f)
-            ),
-            Triple(
-                "BSk",
-                monthlyTemperatures(2f, 4f, 9f, 14f, 19f, 24f, 26f, 25f, 21f, 14f, 8f, 2f),
-                monthlyPrecipitation(
-                    3.9f,
-                    7.1f,
-                    19.4f,
-                    31.1f,
-                    54.6f,
-                    65.5f,
-                    54f,
-                    56f,
-                    43.7f,
-                    33f,
-                    15.3f,
-                    6.8f,
-                    69.8f,
-                    57.5f,
-                    26.6f,
-                    6.7f,
-                    1.2f,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    5.9f,
-                    26.8f,
-                    59.1f
-                )
-            ),
-
-            // Temperate
-            Triple(
-                "Csa",
-                monthlyTemperatures(10, 10, 11, 15, 19, 24, 26, 26, 22, 18, 14, 11),
-                monthlyPrecipitation(84.8, 80.9, 55.1, 33.7, 15.9, 6.1, 0.8, 1, 10.5, 34.4, 75.2, 97.5)
-            ),
-            Triple(
-                "Csb",
-                monthlyTemperatures(5, 6, 8, 11, 14, 17, 20, 20, 17, 12, 8, 4),
-                monthlyPrecipitation(
-                    188.9,
-                    167.6,
-                    145.5,
-                    100.6,
-                    63.3,
-                    41.1,
-                    12.8,
-                    13.6,
-                    44.3,
-                    114.1,
-                    223.2,
-                    221.9,
-                    61.4,
-                    27.5,
-                    0.9,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0.1,
-                    9.1,
-                    51.9
-                )
-            ),
-            Triple(
-                "Cwb",
-                monthlyTemperatures(10, 11, 13, 15, 16, 15, 14, 14, 14, 13, 11, 10),
-                monthlyPrecipitation(7.8, 6.2, 4.6, 8, 31.8, 110.5, 125.6, 121.1, 111.2, 42.5, 7.6, 2.2)
-            ),
-            Triple(
-                "Cfc",
-                monthlyTemperatures(1, 1, 1, 3, 7, 10, 11, 11, 8, 5, 3, 1),
-                monthlyPrecipitation(
-                    99,
-                    102,
-                    88,
-                    69,
-                    56,
-                    49,
-                    59,
-                    80,
-                    106,
-                    105,
-                    103,
-                    103,
-                    214,
-                    199,
-                    154,
-                    41,
-                    2,
-                    0,
-                    0,
-                    0,
-                    0,
-                    8,
-                    61,
-                    164
-                )
-            ),
-
-            // Continental
-            Triple(
-                "Dsa",
-                monthlyTemperatures(-1, 0, 5, 10, 15, 21, 25, 25, 20, 13, 6, 1),
-                monthlyPrecipitation(
-                    19,
-                    23,
-                    32,
-                    35,
-                    24,
-                    8,
-                    1,
-                    1,
-                    6,
-                    27,
-                    34,
-                    29,
-                    134,
-                    123,
-                    33,
-                    6,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    2,
-                    28,
-                    71
-                )
-            ),
-            Triple(
-                "Dsb",
-                monthlyTemperatures(-8, -7, -1, 6, 11, 16, 20, 20, 15, 8, 1, -5),
-                monthlyPrecipitation(
-                    4,
-                    6,
-                    23,
-                    46,
-                    43,
-                    19,
-                    8,
-                    5,
-                    12,
-                    34,
-                    31,
-                    13,
-                    310,
-                    362,
-                    187,
-                    44,
-                    1,
-                    0,
-                    0,
-                    0,
-                    0,
-                    5,
-                    70,
-                    254
-                )
-            ),
-            Triple(
-                "Dwc",
-                monthlyTemperatures(-23, -19, -9, 1, 9, 16, 18, 15, 8, -1, -12, -19),
-                monthlyPrecipitation(0, 0, 0, 6, 25, 49, 72, 66, 33, 6, 0, 0, 3, 6, 18, 43, 15, 1, 0, 0, 4, 29, 23, 6)
-            ),
-            Triple(
-                "Dfd",
-                monthlyTemperatures(-39, -31, -26, -17, -6, 5, 12, 10, 4, -6, -19, -27),
-                monthlyPrecipitation(
-                    0,
-                    0,
-                    0,
-                    0,
-                    10,
-                    38,
-                    56,
-                    53,
-                    43,
-                    13,
-                    1,
-                    0,
-                    136,
-                    131,
-                    75,
-                    168,
-                    178,
-                    46,
-                    0,
-                    0,
-                    32,
-                    134,
-                    138,
-                    83
-                )
-            ),
-
-            // Polar
-            Triple(
-                "ET",
-                monthlyTemperatures(-24, -25, -24, -16, -5, 2, 6, 4, -2, -10, -16, -21),
-                monthlyPrecipitation(
-                    0,
-                    0,
-                    0,
-                    0,
-                    3,
-                    17,
-                    38,
-                    43,
-                    16,
-                    3,
-                    1,
-                    1,
-                    23,
-                    22,
-                    17,
-                    33,
-                    34,
-                    19,
-                    2,
-                    17,
-                    82,
-                    148,
-                    78,
-                    42
-                )
-            ),
-            Triple(
-                "EF",
-                monthlyTemperatures(-24, -25, -24, -16, -5, -2, -1, -1, -2, -10, -16, -21),
-                monthlyPrecipitation(
-                    0,
-                    0,
-                    0,
-                    0,
-                    3,
-                    17,
-                    38,
-                    43,
-                    16,
-                    3,
-                    1,
-                    1,
-                    23,
-                    22,
-                    17,
-                    33,
-                    34,
-                    19,
-                    2,
-                    17,
-                    82,
-                    148,
-                    78,
-                    42
-                )
-            ),
-        )
+        val tests =
+            listOf(
+                //  Tropical
+                Triple(
+                    "Af",
+                    monthlyTemperatures(26f, 26f, 26f, 26f, 26f, 25f, 25f, 26f, 26f, 26f, 26f, 26f),
+                    monthlyPrecipitation(
+                        240.8f,
+                        230f,
+                        256.2f,
+                        256.2f,
+                        212f,
+                        150.6f,
+                        121.2f,
+                        126.1f,
+                        147.5f,
+                        193.6f,
+                        205.8f,
+                        222.6f,
+                    ),
+                ),
+                Triple(
+                    "Am",
+                    monthlyTemperatures(27f, 27f, 27f, 27f, 27f, 27f, 27f, 28f, 28f, 28f, 28f, 28f),
+                    monthlyPrecipitation(
+                        228.5f,
+                        281.8f,
+                        279.5f,
+                        240.6f,
+                        153.9f,
+                        73.6f,
+                        45.8f,
+                        48f,
+                        67.6f,
+                        97.9f,
+                        122.6f,
+                        167.8f,
+                    ),
+                ),
+                Triple(
+                    "As",
+                    monthlyTemperatures(22f, 23f, 22f, 22f, 21f, 19f, 19f, 21f, 23f, 23f, 22f, 22f),
+                    monthlyPrecipitation(
+                        203.2f,
+                        178.9f,
+                        168.5f,
+                        82.3f,
+                        20.2f,
+                        6.2f,
+                        3.1f,
+                        9.8f,
+                        34.6f,
+                        103.3f,
+                        185.6f,
+                        220f,
+                    ),
+                ),
+                // Dry
+                Triple(
+                    "BWh",
+                    monthlyTemperatures(12f, 15f, 20f, 25f, 30f, 32f, 32f, 31f, 30f, 24f, 18f, 13f),
+                    monthlyPrecipitation(1.8f, 1.8f, 2.4f, 0.7f, 1.5f, 1.7f, 1.2f, 1.2f, 0.9f, 1.9f, 1f, 1.3f),
+                ),
+                Triple(
+                    "BSk",
+                    monthlyTemperatures(2f, 4f, 9f, 14f, 19f, 24f, 26f, 25f, 21f, 14f, 8f, 2f),
+                    monthlyPrecipitation(
+                        3.9f,
+                        7.1f,
+                        19.4f,
+                        31.1f,
+                        54.6f,
+                        65.5f,
+                        54f,
+                        56f,
+                        43.7f,
+                        33f,
+                        15.3f,
+                        6.8f,
+                        69.8f,
+                        57.5f,
+                        26.6f,
+                        6.7f,
+                        1.2f,
+                        0f,
+                        0f,
+                        0f,
+                        0f,
+                        5.9f,
+                        26.8f,
+                        59.1f,
+                    ),
+                ),
+                // Temperate
+                Triple(
+                    "Csa",
+                    monthlyTemperatures(10, 10, 11, 15, 19, 24, 26, 26, 22, 18, 14, 11),
+                    monthlyPrecipitation(84.8, 80.9, 55.1, 33.7, 15.9, 6.1, 0.8, 1, 10.5, 34.4, 75.2, 97.5),
+                ),
+                Triple(
+                    "Csb",
+                    monthlyTemperatures(5, 6, 8, 11, 14, 17, 20, 20, 17, 12, 8, 4),
+                    monthlyPrecipitation(
+                        188.9,
+                        167.6,
+                        145.5,
+                        100.6,
+                        63.3,
+                        41.1,
+                        12.8,
+                        13.6,
+                        44.3,
+                        114.1,
+                        223.2,
+                        221.9,
+                        61.4,
+                        27.5,
+                        0.9,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0.1,
+                        9.1,
+                        51.9,
+                    ),
+                ),
+                Triple(
+                    "Cwb",
+                    monthlyTemperatures(10, 11, 13, 15, 16, 15, 14, 14, 14, 13, 11, 10),
+                    monthlyPrecipitation(7.8, 6.2, 4.6, 8, 31.8, 110.5, 125.6, 121.1, 111.2, 42.5, 7.6, 2.2),
+                ),
+                Triple(
+                    "Cfc",
+                    monthlyTemperatures(1, 1, 1, 3, 7, 10, 11, 11, 8, 5, 3, 1),
+                    monthlyPrecipitation(
+                        99,
+                        102,
+                        88,
+                        69,
+                        56,
+                        49,
+                        59,
+                        80,
+                        106,
+                        105,
+                        103,
+                        103,
+                        214,
+                        199,
+                        154,
+                        41,
+                        2,
+                        0,
+                        0,
+                        0,
+                        0,
+                        8,
+                        61,
+                        164,
+                    ),
+                ),
+                // Continental
+                Triple(
+                    "Dsa",
+                    monthlyTemperatures(-1, 0, 5, 10, 15, 21, 25, 25, 20, 13, 6, 1),
+                    monthlyPrecipitation(
+                        19,
+                        23,
+                        32,
+                        35,
+                        24,
+                        8,
+                        1,
+                        1,
+                        6,
+                        27,
+                        34,
+                        29,
+                        134,
+                        123,
+                        33,
+                        6,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        2,
+                        28,
+                        71,
+                    ),
+                ),
+                Triple(
+                    "Dsb",
+                    monthlyTemperatures(-8, -7, -1, 6, 11, 16, 20, 20, 15, 8, 1, -5),
+                    monthlyPrecipitation(
+                        4,
+                        6,
+                        23,
+                        46,
+                        43,
+                        19,
+                        8,
+                        5,
+                        12,
+                        34,
+                        31,
+                        13,
+                        310,
+                        362,
+                        187,
+                        44,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        5,
+                        70,
+                        254,
+                    ),
+                ),
+                Triple(
+                    "Dwc",
+                    monthlyTemperatures(-23, -19, -9, 1, 9, 16, 18, 15, 8, -1, -12, -19),
+                    monthlyPrecipitation(0, 0, 0, 6, 25, 49, 72, 66, 33, 6, 0, 0, 3, 6, 18, 43, 15, 1, 0, 0, 4, 29, 23, 6),
+                ),
+                Triple(
+                    "Dfd",
+                    monthlyTemperatures(-39, -31, -26, -17, -6, 5, 12, 10, 4, -6, -19, -27),
+                    monthlyPrecipitation(
+                        0,
+                        0,
+                        0,
+                        0,
+                        10,
+                        38,
+                        56,
+                        53,
+                        43,
+                        13,
+                        1,
+                        0,
+                        136,
+                        131,
+                        75,
+                        168,
+                        178,
+                        46,
+                        0,
+                        0,
+                        32,
+                        134,
+                        138,
+                        83,
+                    ),
+                ),
+                // Polar
+                Triple(
+                    "ET",
+                    monthlyTemperatures(-24, -25, -24, -16, -5, 2, 6, 4, -2, -10, -16, -21),
+                    monthlyPrecipitation(
+                        0,
+                        0,
+                        0,
+                        0,
+                        3,
+                        17,
+                        38,
+                        43,
+                        16,
+                        3,
+                        1,
+                        1,
+                        23,
+                        22,
+                        17,
+                        33,
+                        34,
+                        19,
+                        2,
+                        17,
+                        82,
+                        148,
+                        78,
+                        42,
+                    ),
+                ),
+                Triple(
+                    "EF",
+                    monthlyTemperatures(-24, -25, -24, -16, -5, -2, -1, -1, -2, -10, -16, -21),
+                    monthlyPrecipitation(
+                        0,
+                        0,
+                        0,
+                        0,
+                        3,
+                        17,
+                        38,
+                        43,
+                        16,
+                        3,
+                        1,
+                        1,
+                        23,
+                        22,
+                        17,
+                        33,
+                        34,
+                        19,
+                        2,
+                        17,
+                        82,
+                        148,
+                        78,
+                        42,
+                    ),
+                ),
+            )
 
         for ((classification, temperatures, precipitation) in tests) {
-            val climate = Meteorology.getKoppenGeigerClimateClassification(
-                temperatures,
-                precipitation
-            )
+            val climate =
+                Meteorology.getKoppenGeigerClimateClassification(
+                    temperatures,
+                    precipitation,
+                )
             assertEquals(classification, climate.code)
         }
     }
 
     companion object {
-
         @JvmStatic
-        fun provideAltitudes(): Stream<Arguments> {
-            return Stream.of(
+        fun provideAltitudes(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(1000f, 1000f, 0f),
                 Arguments.of(1100f, 1000f, -811.3525f),
                 Arguments.of(900f, 1000f, 879.9459f),
             )
-        }
 
         fun monthlyTemperatures(
             jan: Number,
@@ -549,9 +585,9 @@ class MeteorologyTest {
             sep: Number,
             oct: Number,
             nov: Number,
-            dec: Number
-        ): Map<Month, Temperature> {
-            return mapOf(
+            dec: Number,
+        ): Map<Month, Temperature> =
+            mapOf(
                 Month.JANUARY to Temperature.celsius(jan.toFloat()),
                 Month.FEBRUARY to Temperature.celsius(feb.toFloat()),
                 Month.MARCH to Temperature.celsius(mar.toFloat()),
@@ -563,9 +599,8 @@ class MeteorologyTest {
                 Month.SEPTEMBER to Temperature.celsius(sep.toFloat()),
                 Month.OCTOBER to Temperature.celsius(oct.toFloat()),
                 Month.NOVEMBER to Temperature.celsius(nov.toFloat()),
-                Month.DECEMBER to Temperature.celsius(dec.toFloat())
+                Month.DECEMBER to Temperature.celsius(dec.toFloat()),
             )
-        }
 
         fun monthlyPrecipitation(
             jan: Number,
@@ -591,9 +626,9 @@ class MeteorologyTest {
             sepSnow: Number = 0,
             octSnow: Number = 0,
             novSnow: Number = 0,
-            decSnow: Number = 0
-        ): Map<Month, Distance> {
-            return mapOf(
+            decSnow: Number = 0,
+        ): Map<Month, Distance> =
+            mapOf(
                 Month.JANUARY to Distance.from(jan.toFloat() + janSnow.toFloat() / 10, DistanceUnits.Millimeters),
                 Month.FEBRUARY to Distance.from(feb.toFloat() + febSnow.toFloat() / 10, DistanceUnits.Millimeters),
                 Month.MARCH to Distance.from(mar.toFloat() + marSnow.toFloat() / 10, DistanceUnits.Millimeters),
@@ -605,35 +640,32 @@ class MeteorologyTest {
                 Month.SEPTEMBER to Distance.from(sep.toFloat() + sepSnow.toFloat() / 10, DistanceUnits.Millimeters),
                 Month.OCTOBER to Distance.from(oct.toFloat() + octSnow.toFloat() / 10, DistanceUnits.Millimeters),
                 Month.NOVEMBER to Distance.from(nov.toFloat() + novSnow.toFloat() / 10, DistanceUnits.Millimeters),
-                Month.DECEMBER to Distance.from(dec.toFloat() + decSnow.toFloat() / 10, DistanceUnits.Millimeters)
+                Month.DECEMBER to Distance.from(dec.toFloat() + decSnow.toFloat() / 10, DistanceUnits.Millimeters),
             )
-        }
 
         @JvmStatic
-        fun provideLowPressures(): Stream<Arguments> {
-            return Stream.of(
+        fun provideLowPressures(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(1000f, true),
                 Arguments.of(1009.144f, true),
                 Arguments.of(1009.145f, false),
                 Arguments.of(1013f, false),
                 Arguments.of(1030f, false),
             )
-        }
 
         @JvmStatic
-        fun provideHighPressures(): Stream<Arguments> {
-            return Stream.of(
+        fun provideHighPressures(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(1000f, false),
                 Arguments.of(1013f, false),
                 Arguments.of(1022.688f, false),
                 Arguments.of(1022.689f, true),
                 Arguments.of(1030f, true),
             )
-        }
 
         @JvmStatic
-        fun provideSeaLevelPressure(): Stream<Arguments> {
-            return Stream.of(
+        fun provideSeaLevelPressure(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(0f, 0f, null, 0f),
                 Arguments.of(0f, 0f, 0f, 0f),
                 Arguments.of(1000f, -100f, null, 988.2f),
@@ -641,13 +673,12 @@ class MeteorologyTest {
                 Arguments.of(980f, 1000f, 15f, 1101.93f),
                 Arguments.of(1000f, -100f, 28f, 988.71f),
             )
-        }
 
         private val weatherTime = Instant.ofEpochSecond(100000)
 
         @JvmStatic
-        fun provideWeatherForecasts(): Stream<Arguments> {
-            return Stream.of(
+        fun provideWeatherForecasts(): Stream<Arguments> =
+            Stream.of(
                 // Pressure only - storm (warm temps)
                 Arguments.of(
                     pressures(1030f, 1021f),
@@ -661,12 +692,12 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
-                        WeatherCondition.Rain
+                        WeatherCondition.Rain,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // Pressure only - storm (cold temps)
                 Arguments.of(
@@ -681,12 +712,12 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
-                        WeatherCondition.Snow
+                        WeatherCondition.Snow,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // Pressure only - storm (slightly warm temps)
                 Arguments.of(
@@ -704,8 +735,8 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // Pressure only - storm (slightly cold temps)
                 Arguments.of(
@@ -723,8 +754,8 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // Pressure only - worsening slow
                 Arguments.of(
@@ -739,8 +770,8 @@ class MeteorologyTest {
                         WeatherCondition.Overcast,
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
                 // Pressure only - worsening fast
                 Arguments.of(
@@ -753,14 +784,13 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
-
                 // Pressure only - improving slow
                 Arguments.of(
                     pressures(1027f, 1030f),
@@ -770,12 +800,12 @@ class MeteorologyTest {
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Rising, 1f),
-                        WeatherCondition.Clear
+                        WeatherCondition.Clear,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // Pressure only - improving slow (not high pressure)
                 Arguments.of(
@@ -785,12 +815,12 @@ class MeteorologyTest {
                     weather(
                         WeatherFront.Cold,
                         null,
-                        PressureTendency(PressureCharacteristic.Rising, 1f)
+                        PressureTendency(PressureCharacteristic.Rising, 1f),
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // Pressure only - improving fast
                 Arguments.of(
@@ -802,13 +832,12 @@ class MeteorologyTest {
                         WeatherFront.Cold,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f),
-                        WeatherCondition.Wind
+                        WeatherCondition.Wind,
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
-
                 // clouds only - warm front
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
@@ -820,12 +849,12 @@ class MeteorologyTest {
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // clouds only - warm front (Ns)
                 Arguments.of(
@@ -838,12 +867,12 @@ class MeteorologyTest {
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // clouds only - cold front
                 Arguments.of(
@@ -860,12 +889,12 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
-                        WeatherCondition.Rain
+                        WeatherCondition.Rain,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // clouds only - cold front (Cb)
                 Arguments.of(
@@ -882,12 +911,12 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
-                        WeatherCondition.Rain
+                        WeatherCondition.Rain,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // clouds only - cold front (Cb only)
                 Arguments.of(
@@ -904,12 +933,12 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
-                        WeatherCondition.Rain
+                        WeatherCondition.Rain,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // clouds only - cold front (Cb, cold temps)
                 Arguments.of(
@@ -924,12 +953,12 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // clouds only - unknown front
                 Arguments.of(
@@ -942,11 +971,11 @@ class MeteorologyTest {
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
                 // clouds only - no front
                 Arguments.of(
@@ -958,13 +987,12 @@ class MeteorologyTest {
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
-
                 // no data
                 Arguments.of(
                     emptyList<Reading<Pressure>>(),
@@ -973,13 +1001,12 @@ class MeteorologyTest {
                     weather(
                         null,
                         null,
-                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
-
                 // warm front (slow)
                 Arguments.of(
                     pressures(1030f, 1027f),
@@ -991,11 +1018,11 @@ class MeteorologyTest {
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
                         WeatherCondition.Precipitation,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
                 // warm front (fast)
                 Arguments.of(
@@ -1009,12 +1036,12 @@ class MeteorologyTest {
                         PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // warm front (storm)
                 Arguments.of(
@@ -1029,12 +1056,12 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
                 // cold front (slow)
                 Arguments.of(
@@ -1049,12 +1076,12 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
                 // cold front (fast)
                 Arguments.of(
@@ -1069,11 +1096,11 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
-                        null
-                    )
+                        null,
+                    ),
                 ),
                 // cold front (storm)
                 Arguments.of(
@@ -1088,14 +1115,13 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
-
                 // Cold front (passing)
                 Arguments.of(
                     pressures(1027f, 1030f),
@@ -1105,14 +1131,13 @@ class MeteorologyTest {
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Rising, 1f),
-                        WeatherCondition.Clear
+                        WeatherCondition.Clear,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
-
                 // Overcast in high pressure
                 Arguments.of(
                     pressures(1030f, 1030f),
@@ -1123,14 +1148,13 @@ class MeteorologyTest {
                         null,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
-                    )
+                        WeatherCondition.Clear,
+                    ),
                 ),
-
                 // Clear in low pressure
                 Arguments.of(
                     pressures(1000f, 1000f),
@@ -1141,14 +1165,13 @@ class MeteorologyTest {
                         null,
                         PressureSystem.Low,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Clear
+                        WeatherCondition.Clear,
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
-                    )
+                        WeatherCondition.Overcast,
+                    ),
                 ),
-
                 // Unknown
                 Arguments.of(
                     pressures(1022f, 1022f),
@@ -1157,36 +1180,35 @@ class MeteorologyTest {
                     weather(
                         null,
                         null,
-                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
                     ),
-                    weatherLater(null)
+                    weatherLater(null),
                 ),
-
                 // Replaces unknown forecast (using pressure)
                 Arguments.of(
                     pressures(
                         1024f,
-                        1023f
-                    ).map { it.copy(time = it.time.minus(Duration.ofHours(6))) } + pressures(
-                        1022f,
-                        1022f
-                    ),
+                        1023f,
+                    ).map { it.copy(time = it.time.minus(Duration.ofHours(6))) } +
+                        pressures(
+                            1022f,
+                            1022f,
+                        ),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
                     weather(
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Clear
+                        WeatherCondition.Clear,
                     ),
-                    weatherLater(null)
+                    weatherLater(null),
                 ),
-
                 // Replaces unknown forecast (using clouds)
                 Arguments.of(
                     pressures(
                         1022f,
-                        1022f
+                        1022f,
                     ),
                     clouds(CloudGenus.Stratus).map { it.copy(time = it.time.minus(Duration.ofHours(6))) },
                     null,
@@ -1194,66 +1216,66 @@ class MeteorologyTest {
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
                     ),
-                    weatherLater(null)
-                )
+                    weatherLater(null),
+                ),
             )
-        }
 
-        private fun temperatures(low: Float, high: Float): Range<Temperature> {
-            return Range(Temperature.celsius(low), Temperature.celsius(high))
-        }
+        private fun temperatures(
+            low: Float,
+            high: Float,
+        ): Range<Temperature> = Range(Temperature.celsius(low), Temperature.celsius(high))
 
         private fun weatherLater(
             system: PressureSystem?,
-            vararg conditions: WeatherCondition
-        ): WeatherForecast {
-            return WeatherForecast(
+            vararg conditions: WeatherCondition,
+        ): WeatherForecast =
+            WeatherForecast(
                 null,
                 conditions.toList(),
                 null,
                 system,
-                null
+                null,
             )
-        }
 
         private fun weatherAt(
             time: Instant,
             front: WeatherFront?,
             system: PressureSystem?,
             tendency: PressureTendency,
-            vararg conditions: WeatherCondition
-        ): WeatherForecast {
-            return WeatherForecast(
+            vararg conditions: WeatherCondition,
+        ): WeatherForecast =
+            WeatherForecast(
                 time,
                 conditions.toList(),
                 front,
                 system,
-                tendency
+                tendency,
             )
-        }
 
         private fun weather(
             front: WeatherFront?,
             system: PressureSystem?,
             tendency: PressureTendency,
-            vararg conditions: WeatherCondition
-        ): WeatherForecast {
-            return WeatherForecast(
+            vararg conditions: WeatherCondition,
+        ): WeatherForecast =
+            WeatherForecast(
                 null,
                 conditions.toList(),
                 front,
                 system,
-                tendency
+                tendency,
             )
-        }
 
-        private fun pressures(last: Float, now: Float): List<Reading<Pressure>> {
+        private fun pressures(
+            last: Float,
+            now: Float,
+        ): List<Reading<Pressure>> {
             val time = weatherTime
             return listOf(
                 Reading(Pressure.hpa(last), time.minus(Duration.ofHours(3))),
-                Reading(Pressure.hpa(now), time)
+                Reading(Pressure.hpa(now), time),
             )
         }
 
@@ -1278,13 +1300,13 @@ class MeteorologyTest {
                     PressureCharacteristic.FallingFast,
                     -5 / 3f,
                     null,
-                    Weather.WorseningFast
+                    Weather.WorseningFast,
                 ),
                 Arguments.of(
                     PressureCharacteristic.FallingFast,
                     -4f,
                     -6f,
-                    Weather.WorseningFast
+                    Weather.WorseningFast,
                 ),
                 Arguments.of(PressureCharacteristic.Falling, -2f, -6f, Weather.WorseningSlow),
                 Arguments.of(PressureCharacteristic.Rising, 2f, -6f, Weather.ImprovingSlow),
@@ -1292,104 +1314,103 @@ class MeteorologyTest {
                     PressureCharacteristic.RisingFast,
                     8f,
                     -6f,
-                    Weather.ImprovingFast
+                    Weather.ImprovingFast,
                 ),
             )
         }
 
         @JvmStatic
-        fun provideTendencies(): Stream<Arguments> {
-            return Stream.of(
+        fun provideTendencies(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(
                     1000f,
                     1000f,
                     Duration.ofHours(3),
                     2f,
-                    PressureTendency(PressureCharacteristic.Steady, 0f)
+                    PressureTendency(PressureCharacteristic.Steady, 0f),
                 ),
                 Arguments.of(
                     1000f,
                     1001f,
                     Duration.ofHours(3),
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.Steady, 1 / 3f)
+                    PressureTendency(PressureCharacteristic.Steady, 1 / 3f),
                 ),
                 Arguments.of(
                     1000f,
                     1004f,
                     Duration.ofHours(3),
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f)
+                    PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f),
                 ),
                 Arguments.of(
                     1000f,
                     1003f,
                     Duration.ofHours(3),
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.Rising, 1f)
+                    PressureTendency(PressureCharacteristic.Rising, 1f),
                 ),
                 Arguments.of(
                     1004f,
                     1000f,
                     Duration.ofHours(3),
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f)
+                    PressureTendency(PressureCharacteristic.FallingFast, -4 / 3f),
                 ),
                 Arguments.of(
                     1002f,
                     1000f,
                     Duration.ofHours(3),
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
+                    PressureTendency(PressureCharacteristic.Falling, -2 / 3f),
                 ),
                 Arguments.of(
                     1002f,
                     1000f,
                     Duration.ofHours(3),
                     1 / 3f,
-                    PressureTendency(PressureCharacteristic.Falling, -2 / 3f)
+                    PressureTendency(PressureCharacteristic.Falling, -2 / 3f),
                 ),
                 Arguments.of(
                     1003f,
                     1000f,
                     Duration.ofHours(3),
                     1 / 3f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -1f)
+                    PressureTendency(PressureCharacteristic.FallingFast, -1f),
                 ),
                 Arguments.of(
                     1002f,
                     1000f,
                     Duration.ofHours(2),
                     1 / 3f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -1f)
+                    PressureTendency(PressureCharacteristic.FallingFast, -1f),
                 ),
                 Arguments.of(
                     1008f,
                     1000f,
                     Duration.ofHours(4),
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.FallingFast, -2f)
+                    PressureTendency(PressureCharacteristic.FallingFast, -2f),
                 ),
                 Arguments.of(
                     1000f,
                     1000f,
                     Duration.ZERO,
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.Steady, 0f)
+                    PressureTendency(PressureCharacteristic.Steady, 0f),
                 ),
                 Arguments.of(
                     1000.1f,
                     1000f,
                     Duration.ZERO,
                     2 / 3f,
-                    PressureTendency(PressureCharacteristic.Steady, 0f)
+                    PressureTendency(PressureCharacteristic.Steady, 0f),
                 ),
             )
-        }
 
         @JvmStatic
-        fun provideHeatIndex(): Stream<Arguments> {
-            return Stream.of(
+        fun provideHeatIndex(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(0f, 0f, 0f),
                 Arguments.of(1f, 0f, 1f),
                 Arguments.of(26f, 0f, 26f),
@@ -1399,11 +1420,10 @@ class MeteorologyTest {
                 Arguments.of(30f, 45f, 30f),
                 Arguments.of(36f, 60f, 48f),
             )
-        }
 
         @JvmStatic
-        fun provideHeatAlert(): Stream<Arguments> {
-            return Stream.of(
+        fun provideHeatAlert(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(-26f, HeatAlert.FrostbiteDanger),
                 Arguments.of(-25f, HeatAlert.FrostbiteDanger),
                 Arguments.of(-24f, HeatAlert.FrostbiteWarning),
@@ -1420,42 +1440,38 @@ class MeteorologyTest {
                 Arguments.of(50f, HeatAlert.HeatAlert),
                 Arguments.of(51f, HeatAlert.HeatDanger),
             )
-        }
 
         @JvmStatic
-        fun provideDewPoint(): Stream<Arguments> {
-            return Stream.of(
+        fun provideDewPoint(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(20f, 100f, 20f),
                 Arguments.of(21f, 90f, 19f),
                 Arguments.of(15f, 24f, -5f),
                 Arguments.of(16f, 10f, -16f),
             )
-        }
 
         @JvmStatic
-        fun provideLightningStrikes(): Stream<Arguments> {
-            return Stream.of(
+        fun provideLightningStrikes(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(1), 343f),
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(2), 686f),
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(10), 3430f),
                 Arguments.of(Instant.ofEpochSecond(0), Instant.ofEpochSecond(0), 0f),
                 Arguments.of(Instant.ofEpochSecond(1), Instant.ofEpochSecond(0), 0f),
             )
-        }
 
         @JvmStatic
-        fun provideLightningStrikeDistances(): Stream<Arguments> {
-            return Stream.of(
+        fun provideLightningStrikeDistances(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(Distance.kilometers(10f).meters().value, true),
                 Arguments.of(Distance.kilometers(10.1f).meters().value, false),
                 Arguments.of(10000f, true),
                 Arguments.of(100f, true),
             )
-        }
 
         @JvmStatic
-        fun provideSeasons(): Stream<Arguments> {
-            return Stream.of(
+        fun provideSeasons(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(Season.Summer, false, LocalDate.of(2021, 1, 1)),
                 Arguments.of(Season.Summer, false, LocalDate.of(2021, 2, 28)),
                 Arguments.of(Season.Fall, false, LocalDate.of(2021, 3, 1)),
@@ -1466,7 +1482,6 @@ class MeteorologyTest {
                 Arguments.of(Season.Spring, false, LocalDate.of(2021, 11, 30)),
                 Arguments.of(Season.Summer, false, LocalDate.of(2021, 12, 1)),
                 Arguments.of(Season.Summer, false, LocalDate.of(2021, 12, 31)),
-
                 Arguments.of(Season.Winter, true, LocalDate.of(2021, 1, 1)),
                 Arguments.of(Season.Winter, true, LocalDate.of(2021, 2, 28)),
                 Arguments.of(Season.Spring, true, LocalDate.of(2021, 3, 1)),
@@ -1478,8 +1493,5 @@ class MeteorologyTest {
                 Arguments.of(Season.Winter, true, LocalDate.of(2021, 12, 1)),
                 Arguments.of(Season.Winter, true, LocalDate.of(2021, 12, 31)),
             )
-        }
-
     }
-
 }

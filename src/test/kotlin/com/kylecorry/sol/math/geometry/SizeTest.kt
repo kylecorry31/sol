@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 internal class SizeTest {
-
     @ParameterizedTest
     @CsvSource(
         // Right angles
@@ -33,11 +32,10 @@ internal class SizeTest {
         height: Float,
         rotation: Float,
         expectedWidth: Float,
-        expectedHeight: Float
+        expectedHeight: Float,
     ) {
         val size = Size(width, height).rotate(rotation)
         assertEquals(expectedWidth, size.width, 0.0001f)
         assertEquals(expectedHeight, size.height, 0.0001f)
     }
-    
 }

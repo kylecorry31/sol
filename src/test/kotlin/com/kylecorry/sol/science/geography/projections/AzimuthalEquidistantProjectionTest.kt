@@ -9,7 +9,6 @@ import com.kylecorry.sol.units.Coordinate
 import org.junit.jupiter.api.Test
 
 class AzimuthalEquidistantProjectionTest {
-
     @Test
     fun toPixels() {
         val center = Coordinate(0.0, 0.0)
@@ -22,7 +21,7 @@ class AzimuthalEquidistantProjectionTest {
     }
 
     @Test
-    fun toPixelsScaled(){
+    fun toPixelsScaled() {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, scale = 2f)
         assertVector(Vector2.zero, projection.toPixels(center), 0.001f)
@@ -33,7 +32,7 @@ class AzimuthalEquidistantProjectionTest {
     }
 
     @Test
-    fun toPixelsFlipped(){
+    fun toPixelsFlipped() {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, isYFlipped = true)
         assertVector(Vector2.zero, projection.toPixels(center), 0.001f)
@@ -44,7 +43,7 @@ class AzimuthalEquidistantProjectionTest {
     }
 
     @Test
-    fun toPixelsOffset(){
+    fun toPixelsOffset() {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, centerPixel = Vector2(10f, 10f))
         assertVector(Vector2(10f, 10f), projection.toPixels(center), 0.001f)
@@ -66,7 +65,7 @@ class AzimuthalEquidistantProjectionTest {
     }
 
     @Test
-    fun toCoordinateScaled(){
+    fun toCoordinateScaled() {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, scale = 2f)
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2.zero), 1f)
@@ -77,7 +76,7 @@ class AzimuthalEquidistantProjectionTest {
     }
 
     @Test
-    fun toCoordinateFlipped(){
+    fun toCoordinateFlipped() {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, isYFlipped = true)
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2.zero), 1f)
@@ -88,7 +87,7 @@ class AzimuthalEquidistantProjectionTest {
     }
 
     @Test
-    fun toCoordinateOffset(){
+    fun toCoordinateOffset() {
         val center = Coordinate(0.0, 0.0)
         val projection = AzimuthalEquidistantProjection(center, centerPixel = Vector2(10f, 10f))
         assertThat(center).isCloseTo(projection.toCoordinate(Vector2(10f, 10f)), 1f)

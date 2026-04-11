@@ -1,13 +1,11 @@
 package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.trigonometry.SineWave
-
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class SineWaveTest {
-
     @ParameterizedTest
     @CsvSource(
         "1, 1, 0, 0, 0, 0",
@@ -24,7 +22,14 @@ class SineWaveTest {
         "1, 1, 1, 2, 0, 1.1585",
         "2, 4, 1, 1, 0, 2.5136",
     )
-    fun calculate(amplitude: Float, frequency: Float, horizontalShift: Float, verticalShift: Float, x: Float, expected: Float) {
+    fun calculate(
+        amplitude: Float,
+        frequency: Float,
+        horizontalShift: Float,
+        verticalShift: Float,
+        x: Float,
+        expected: Float,
+    ) {
         val wave = SineWave(amplitude, frequency, horizontalShift, verticalShift)
         val actual = wave.calculate(x)
         assertEquals(expected, actual, 0.0001f)

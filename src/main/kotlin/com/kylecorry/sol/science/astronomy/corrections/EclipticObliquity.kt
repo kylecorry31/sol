@@ -6,9 +6,7 @@ import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 
 internal object EclipticObliquity {
-    fun getTrueObliquityOfEcliptic(ut: UniversalTime): Double {
-        return getMeanObliquityOfEcliptic(ut) + getNutationInObliquity(ut)
-    }
+    fun getTrueObliquityOfEcliptic(ut: UniversalTime): Double = getMeanObliquityOfEcliptic(ut) + getNutationInObliquity(ut)
 
     fun getMeanObliquityOfEcliptic(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
@@ -29,7 +27,7 @@ internal object EclipticObliquity {
             7.12,
             27.87,
             5.79,
-            2.45
+            2.45,
         ) / 3600.0
     }
 
@@ -48,5 +46,4 @@ internal object EclipticObliquity {
         }
         return nutation / 36000000.0
     }
-
 }

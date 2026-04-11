@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class PolynomialTest {
-
     @Test
     fun evaluate() {
         // Test linear: 2x + 3
@@ -74,11 +73,12 @@ class PolynomialTest {
 
     @Test
     fun ofTerms() {
-        val poly = Polynomial.of(
-            PolynomialTerm(3f, 0),
-            PolynomialTerm(2f, 1),
-            PolynomialTerm(1f, 2)
-        )
+        val poly =
+            Polynomial.of(
+                PolynomialTerm(3f, 0),
+                PolynomialTerm(2f, 1),
+                PolynomialTerm(1f, 2),
+            )
         assertEquals(Polynomial.of("1x^2 + 2x + 3"), poly)
     }
 

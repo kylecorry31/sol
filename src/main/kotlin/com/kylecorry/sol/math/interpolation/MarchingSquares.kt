@@ -6,22 +6,22 @@ import kotlin.math.max
 import kotlin.math.min
 
 internal object MarchingSquares {
-
     fun <T> getIsoline(
         grid: List<List<Pair<T, Float>>>,
         threshold: Float,
         executor: Executor = SequentialExecutor(),
-        interpolator: (percent: Float, a: T, b: T) -> T
+        interpolator: (percent: Float, a: T, b: T) -> T,
     ): List<IsolineSegment<T>> {
         val calculators = mutableListOf<() -> List<IsolineSegment<T>>>()
         for (i in 0 until grid.size - 1) {
             for (j in 0 until grid[i].size - 1) {
-                val square = listOf(
-                    grid[i][j],
-                    grid[i][j + 1],
-                    grid[i + 1][j + 1],
-                    grid[i + 1][j]
-                )
+                val square =
+                    listOf(
+                        grid[i][j],
+                        grid[i][j + 1],
+                        grid[i + 1][j + 1],
+                        grid[i + 1][j],
+                    )
                 calculators.add {
                     marchingSquares(square, threshold, interpolator)
                 }
@@ -34,10 +34,9 @@ internal object MarchingSquares {
     private fun <T> marchingSquares(
         square: List<Pair<T, Float>>,
         threshold: Float,
-        interpolator: (Float, T, T) -> T
+        interpolator: (Float, T, T) -> T,
     ): List<IsolineSegment<T>> {
         val contourLines = mutableListOf<IsolineSegment<T>>()
-
 
         /**
          *
@@ -58,18 +57,20 @@ internal object MarchingSquares {
         val bd = getInterpolatedPoint(threshold, b, d, interpolator)
         val cd = getInterpolatedPoint(threshold, c, d, interpolator)
 
-        val cornersAsNumber = listOf(
-            if (a.second >= threshold) 1 else 0,
-            if (b.second >= threshold) 2 else 0,
-            if (c.second >= threshold) 4 else 0,
-            if (d.second >= threshold) 8 else 0
-        ).sum()
+        val cornersAsNumber =
+            listOf(
+                if (a.second >= threshold) 1 else 0,
+                if (b.second >= threshold) 2 else 0,
+                if (c.second >= threshold) 4 else 0,
+                if (d.second >= threshold) 8 else 0,
+            ).sum()
 
-        val perpendicularDirection = when (cornersAsNumber) {
-            0b1100, 0b1101, 0b0100, 0b0101, 0b0111, 0b0001 -> -90f
-            0b1000, 0b1110, 0b1011, 0b1010, 0b0011 -> 90f
-            else -> 0f
-        }
+        val perpendicularDirection =
+            when (cornersAsNumber) {
+                0b1100, 0b1101, 0b0100, 0b0101, 0b0111, 0b0001 -> -90f
+                0b1000, 0b1110, 0b1011, 0b1010, 0b0011 -> 90f
+                else -> 0f
+            }
 
         // If there are exactly 2 intersections, then there is 1 line
         val intersections = listOfNotNull(ab, ac, bd, cd)
@@ -89,7 +90,7 @@ internal object MarchingSquares {
         value: Float,
         a: Pair<T, Float>,
         b: Pair<T, Float>,
-        interpolator: (Float, T, T) -> T
+        interpolator: (Float, T, T) -> T,
     ): T? {
         val aAbove = a.second >= value
         val bAbove = b.second >= value
@@ -104,5 +105,4 @@ internal object MarchingSquares {
         }
         return interpolator(pct, a.first, b.first)
     }
-
 }

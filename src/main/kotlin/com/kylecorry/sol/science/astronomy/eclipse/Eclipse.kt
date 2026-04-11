@@ -8,7 +8,7 @@ data class Eclipse(
     val end: Instant,
     val magnitude: Float,
     val obscuration: Float,
-    val maximum: Instant = start.plus(Duration.between(start, end).dividedBy(2))
+    val maximum: Instant = start.plus(Duration.between(start, end).dividedBy(2)),
 ) {
     val duration: Duration = Duration.between(start, end)
 }

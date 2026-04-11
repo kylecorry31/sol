@@ -6,11 +6,7 @@ class SineWave(
     override val amplitude: Float,
     override val frequency: Float,
     override val horizontalShift: Float,
-    override val verticalShift: Float
+    override val verticalShift: Float,
 ) : Waveform {
-
-    override fun calculate(x: Float): Float {
-        return amplitude * sin(frequency * (x - horizontalShift)) + verticalShift
-    }
-
+    override fun calculate(x: Float): Float = amplitude * sin(frequency * (x - horizontalShift)) + verticalShift
 }

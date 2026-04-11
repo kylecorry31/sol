@@ -41,19 +41,24 @@ internal object OSGB36 {
      * @param lon Longitude in OSGB36 coordinates
      * @return Array of coordinates [lat, long] in WGS84
      */
-    fun toWGS84(lat: Double, lon: Double): DoubleArray {
-        val cartesian = CartesianConversion.fromLatLon(
-            doubleArrayOf(lat, lon, 0.0),
-            Constants.ELLIPSOID_AIRY1830_MAJORAXIS,
-            Constants.ELLIPSOID_AIRY1830_MINORAXIS
-        )
+    fun toWGS84(
+        lat: Double,
+        lon: Double,
+    ): DoubleArray {
+        val cartesian =
+            CartesianConversion.fromLatLon(
+                doubleArrayOf(lat, lon, 0.0),
+                Constants.ELLIPSOID_AIRY1830_MAJORAXIS,
+                Constants.ELLIPSOID_AIRY1830_MINORAXIS,
+            )
         val transformed = CartesianConversion.helmertTransformation(cartesian, -tX, -tY, -tZ, -s, -rX, -rY, -rZ)
-        val ret = CartesianConversion.toLatLon(
-            transformed,
-            Constants.ELLIPSOID_GRS80_MAJORAXIS,
-            Constants.ELLIPSOID_GRS80_MINORAXIS,
-            0.00000001
-        )
+        val ret =
+            CartesianConversion.toLatLon(
+                transformed,
+                Constants.ELLIPSOID_GRS80_MAJORAXIS,
+                Constants.ELLIPSOID_GRS80_MINORAXIS,
+                0.00000001,
+            )
 
         return doubleArrayOf(ret[0], ret[1])
     }
@@ -65,19 +70,24 @@ internal object OSGB36 {
      * @param lon Longitude in WGS84 coordinates
      * @return Array of coordinates [lat, lon] in OSGB36
      */
-    fun fromWGS84(lat: Double, lon: Double): DoubleArray {
-        val cartesian = CartesianConversion.fromLatLon(
-            doubleArrayOf(lat, lon, 0.0),
-            Constants.ELLIPSOID_GRS80_MAJORAXIS,
-            Constants.ELLIPSOID_GRS80_MINORAXIS
-        )
+    fun fromWGS84(
+        lat: Double,
+        lon: Double,
+    ): DoubleArray {
+        val cartesian =
+            CartesianConversion.fromLatLon(
+                doubleArrayOf(lat, lon, 0.0),
+                Constants.ELLIPSOID_GRS80_MAJORAXIS,
+                Constants.ELLIPSOID_GRS80_MINORAXIS,
+            )
         val transformed = CartesianConversion.helmertTransformation(cartesian, tX, tY, tZ, s, rX, rY, rZ)
-        val ret = CartesianConversion.toLatLon(
-            transformed,
-            Constants.ELLIPSOID_AIRY1830_MAJORAXIS,
-            Constants.ELLIPSOID_AIRY1830_MINORAXIS,
-            0.00000001
-        )
+        val ret =
+            CartesianConversion.toLatLon(
+                transformed,
+                Constants.ELLIPSOID_AIRY1830_MAJORAXIS,
+                Constants.ELLIPSOID_AIRY1830_MINORAXIS,
+                0.00000001,
+            )
 
         return doubleArrayOf(ret[0], ret[1])
     }

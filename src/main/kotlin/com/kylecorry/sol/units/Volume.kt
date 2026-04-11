@@ -1,7 +1,9 @@
 package com.kylecorry.sol.units
 
 @JvmInline
-value class Volume private constructor(private val measure: Measure) {
+value class Volume private constructor(
+    private val measure: Measure,
+) {
     val value: Float
         get() = measureValue(measure)
 
@@ -16,13 +18,12 @@ value class Volume private constructor(private val measure: Measure) {
         return from((l / newUnits.liters).toFloat(), newUnits)
     }
 
-    override fun toString(): String {
-        return "$value $units"
-    }
+    override fun toString(): String = "$value $units"
 
     companion object {
-        fun from(value: Float, unit: VolumeUnits): Volume {
-            return Volume(packMeasure(value, unit))
-        }
+        fun from(
+            value: Float,
+            unit: VolumeUnits,
+        ): Volume = Volume(packMeasure(value, unit))
     }
 }

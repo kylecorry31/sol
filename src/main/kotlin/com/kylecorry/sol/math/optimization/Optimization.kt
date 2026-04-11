@@ -4,12 +4,11 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.absoluteValue
 
 object Optimization {
-
     inline fun newtonRaphsonIteration(
         initialValue: Double = 0.0,
         tolerance: Double = Arithmetic.EPSILON_DOUBLE,
         maxIterations: Int = Int.MAX_VALUE,
-        crossinline calculate: (lastValue: Double) -> Double
+        crossinline calculate: (lastValue: Double) -> Double,
     ): Double {
         var lastValue = initialValue
         var iterations = 0
@@ -27,11 +26,9 @@ object Optimization {
         initialValue: Float = 0f,
         tolerance: Float = Arithmetic.EPSILON_FLOAT,
         maxIterations: Int = Int.MAX_VALUE,
-        crossinline calculate: (lastValue: Float) -> Float
-    ): Float {
-        return newtonRaphsonIteration(initialValue.toDouble(), tolerance.toDouble(), maxIterations) {
+        crossinline calculate: (lastValue: Float) -> Float,
+    ): Float =
+        newtonRaphsonIteration(initialValue.toDouble(), tolerance.toDouble(), maxIterations) {
             calculate(it.toFloat()).toDouble()
         }.toFloat()
-    }
-
 }

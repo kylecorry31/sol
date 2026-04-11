@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class LowPassFilterTest {
-
     @Test
     fun filter() {
         val filter = LowPassFilter(0.1f, 0f)

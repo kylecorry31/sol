@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 class DichotomousKeyTest {
-
     @Test
-    fun canGenerateQuestion(){
+    fun canGenerateQuestion() {
         val key = DichotomousKey.question("Q", DichotomousKey.answer("A"), DichotomousKey.answer("B"))
 
         assertEquals("Q", key.label)
@@ -17,7 +16,7 @@ class DichotomousKeyTest {
     }
 
     @Test
-    fun canGenerateAnswer(){
+    fun canGenerateAnswer() {
         val answer = DichotomousKey.answer("A")
         assertEquals("A", answer.label)
         assertEquals("A", answer.value)
@@ -26,5 +25,4 @@ class DichotomousKeyTest {
         assertEquals("B", answer2.label)
         assertEquals(123, answer2.value)
     }
-
 }

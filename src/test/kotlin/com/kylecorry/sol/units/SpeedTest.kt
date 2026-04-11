@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class SpeedTest {
-
     @ParameterizedTest
     @MethodSource("provideSpeedConversions")
     fun convertTo(
@@ -16,19 +15,18 @@ internal class SpeedTest {
         timeUnits: TimeUnits,
         expected: Float,
         expectedDistanceUnits: DistanceUnits,
-        expectedTimeUnits: TimeUnits
+        expectedTimeUnits: TimeUnits,
     ) {
         assertEquals(
             Speed.from(expected, expectedDistanceUnits, expectedTimeUnits),
-            Speed.from(speed, distanceUnits, timeUnits).convertTo(expectedDistanceUnits, expectedTimeUnits)
+            Speed.from(speed, distanceUnits, timeUnits).convertTo(expectedDistanceUnits, expectedTimeUnits),
         )
     }
 
     companion object {
-
         @JvmStatic
-        fun provideSpeedConversions(): Stream<Arguments> {
-            return Stream.of(
+        fun provideSpeedConversions(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(1f, DistanceUnits.Meters, TimeUnits.Seconds, 1f, DistanceUnits.Meters, TimeUnits.Seconds),
                 Arguments.of(
                     1f,
@@ -36,7 +34,7 @@ internal class SpeedTest {
                     TimeUnits.Seconds,
                     0.001f,
                     DistanceUnits.Meters,
-                    TimeUnits.Milliseconds
+                    TimeUnits.Milliseconds,
                 ),
                 Arguments.of(1f, DistanceUnits.Meters, TimeUnits.Seconds, 60f, DistanceUnits.Meters, TimeUnits.Minutes),
                 Arguments.of(1f, DistanceUnits.Meters, TimeUnits.Seconds, 3600f, DistanceUnits.Meters, TimeUnits.Hours),
@@ -47,7 +45,7 @@ internal class SpeedTest {
                     TimeUnits.Hours,
                     3657.5999f,
                     DistanceUnits.Centimeters,
-                    TimeUnits.Days
+                    TimeUnits.Days,
                 ),
                 Arguments.of(
                     86400f,
@@ -55,11 +53,8 @@ internal class SpeedTest {
                     TimeUnits.Days,
                     0.01f,
                     DistanceUnits.Meters,
-                    TimeUnits.Seconds
-                )
+                    TimeUnits.Seconds,
+                ),
             )
-        }
-
     }
-
 }

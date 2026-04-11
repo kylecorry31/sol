@@ -14,9 +14,10 @@ class LoessFilterTest {
 
         val actual = filter.filter(values.map { listOf(it.first) }, values.map { it.second })
 
-        val fitResiduals = actual.zip(values).sumOfFloat {
-            (it.second.second - it.first).pow(2)
-        }
+        val fitResiduals =
+            actual.zip(values).sumOfFloat {
+                (it.second.second - it.first).pow(2)
+            }
 
         assertEquals(0.0f, fitResiduals, 0.0001f)
     }
@@ -58,15 +59,17 @@ class LoessFilterTest {
     fun customDistanceFunction() {
         val values = (0..100).map { it.toFloat() to it.toFloat() }
 
-        val filter = LoessFilter(0.3f, 4) { p1, p2 ->
-            p1.zip(p2).sumOfFloat { (it.first - it.second).pow(2) }
-        }
+        val filter =
+            LoessFilter(0.3f, 4) { p1, p2 ->
+                p1.zip(p2).sumOfFloat { (it.first - it.second).pow(2) }
+            }
 
         val actual = filter.filter(values.map { listOf(it.first) }, values.map { it.second })
 
-        val fitResiduals = actual.zip(values).sumOfFloat {
-            (it.second.second - it.first).pow(2)
-        }
+        val fitResiduals =
+            actual.zip(values).sumOfFloat {
+                (it.second.second - it.first).pow(2)
+            }
 
         assertEquals(0.0f, fitResiduals, 0.0001f)
     }

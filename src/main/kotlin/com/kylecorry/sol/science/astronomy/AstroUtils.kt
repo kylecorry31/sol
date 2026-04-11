@@ -16,46 +16,43 @@ import kotlin.math.atan2
 
 // Algorithms from Jean Meeus (Astronomical Algorithms 2nd Edition)
 internal object AstroUtils {
-
     fun getAltitude(
         locator: ICelestialLocator,
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        withParallax: Boolean = false
-    ): Float {
-        return getLocation(
+        withParallax: Boolean = false,
+    ): Float =
+        getLocation(
             locator.getCoordinates(ut),
             ut,
             location,
             withRefraction,
-            if (withParallax) locator.getDistance(ut) else null
+            if (withParallax) locator.getDistance(ut) else null,
         ).altitude.toFloat()
-    }
 
     fun getAltitude(
         coordinate: EquatorialCoordinate,
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        distanceToBody: Distance? = null
-    ): Float {
-        return getLocation(coordinate, ut, location, withRefraction, distanceToBody).altitude.toFloat()
-    }
+        distanceToBody: Distance? = null,
+    ): Float = getLocation(coordinate, ut, location, withRefraction, distanceToBody).altitude.toFloat()
 
     fun getAzimuth(
         locator: ICelestialLocator,
         ut: UniversalTime,
         location: Coordinate,
-        withParallax: Boolean = false
+        withParallax: Boolean = false,
     ): Bearing {
-        val azimuth = getLocation(
-            locator.getCoordinates(ut),
-            ut,
-            location,
-            false,
-            if (withParallax) locator.getDistance(ut) else null
-        ).azimuth.toFloat()
+        val azimuth =
+            getLocation(
+                locator.getCoordinates(ut),
+                ut,
+                location,
+                false,
+                if (withParallax) locator.getDistance(ut) else null,
+            ).azimuth.toFloat()
         return Bearing.from(azimuth)
     }
 
@@ -63,7 +60,7 @@ internal object AstroUtils {
         coordinate: EquatorialCoordinate,
         ut: UniversalTime,
         location: Coordinate,
-        distanceToBody: Distance? = null
+        distanceToBody: Distance? = null,
     ): Bearing {
         val azimuth = getLocation(coordinate, ut, location, false, distanceToBody).azimuth.toFloat()
         return Bearing.from(azimuth)
@@ -74,7 +71,7 @@ internal object AstroUtils {
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        withParallax: Boolean = false
+        withParallax: Boolean = false,
     ): HorizonCoordinate {
         val coords = locator.getCoordinates(ut)
         val distance = if (withParallax) locator.getDistance(ut) else null
@@ -83,25 +80,29 @@ internal object AstroUtils {
             ut,
             location,
             withRefraction,
-            distance
+            distance,
         )
     }
 
     fun getParallacticAngle(
         locator: ICelestialLocator,
         ut: UniversalTime,
-        location: Coordinate
+        location: Coordinate,
     ): Float {
         val coords = locator.getCoordinates(ut)
         val hourAngle = coords.getHourAngle(ut.toSiderealTime().atLongitude(location.longitude)) * 15
         val latitude = location.latitude
         val declination = coords.declination
-        val q = atan2(
-            sinDegrees(hourAngle),
-            (tanDegrees(latitude) * cosDegrees(declination) - sinDegrees(declination) * cosDegrees(
-                hourAngle
-            ))
-        ).toDegrees()
+        val q =
+            atan2(
+                sinDegrees(hourAngle),
+                (
+                    tanDegrees(latitude) * cosDegrees(declination) - sinDegrees(declination) *
+                        cosDegrees(
+                            hourAngle,
+                        )
+                ),
+            ).toDegrees()
         return q.toFloat()
     }
 
@@ -110,13 +111,14 @@ internal object AstroUtils {
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        distanceToBody: Distance? = null
+        distanceToBody: Distance? = null,
     ): HorizonCoordinate {
-        val horizon = if (distanceToBody != null) {
-            HorizonCoordinate.fromEquatorial(coordinate, ut, location, distanceToBody)
-        } else {
-            HorizonCoordinate.fromEquatorial(coordinate, ut, location)
-        }
+        val horizon =
+            if (distanceToBody != null) {
+                HorizonCoordinate.fromEquatorial(coordinate, ut, location, distanceToBody)
+            } else {
+                HorizonCoordinate.fromEquatorial(coordinate, ut, location)
+            }
         return if (withRefraction) {
             horizon.withRefraction()
         } else {

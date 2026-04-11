@@ -6,7 +6,6 @@ import com.kylecorry.sol.units.Coordinate
 import java.time.ZonedDateTime
 
 internal class RobustRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
-
     private val newtons = NewtonsRiseSetTransitTimeCalculator()
     private val search = SearchRiseSetTransitTimeCalculator()
 
@@ -16,7 +15,7 @@ internal class RobustRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         location: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        withParallax: Boolean
+        withParallax: Boolean,
     ): RiseSetTransitTimes {
         val newtonsResult = newtons.calculate(locator, date, location, standardAltitude, withRefraction, withParallax)
 
@@ -30,7 +29,7 @@ internal class RobustRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         return RiseSetTransitTimes(
             newtonsResult.rise ?: searchResults.rise,
             newtonsResult.transit ?: searchResults.transit,
-            newtonsResult.set ?: searchResults.set
+            newtonsResult.set ?: searchResults.set,
         )
     }
 }

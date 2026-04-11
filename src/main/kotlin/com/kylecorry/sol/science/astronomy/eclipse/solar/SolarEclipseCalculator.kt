@@ -27,9 +27,8 @@ import kotlin.math.sqrt
  */
 internal class SolarEclipseCalculator(
     private val precision: Duration = Duration.ofMinutes(1),
-    maxDuration: Duration? = null
+    maxDuration: Duration? = null,
 ) : EclipseCalculator {
-
     private val sun = Sun()
     private val moon = Moon()
     private val provider = SolarEclipseParameterProvider()
@@ -39,7 +38,10 @@ internal class SolarEclipseCalculator(
     private val _maxDuration = maxDuration ?: Duration.ofDays(365 * 5)
     private val _minEclipseDuration = Duration.ofMinutes(1)
 
-    override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
+    override fun getNextEclipse(
+        after: Instant,
+        location: Coordinate,
+    ): Eclipse? {
         // Calculate the approximate time of the next eclipse
         val nextEclipseTime = getNextEclipseTime(after, location) ?: return null
 
@@ -50,32 +52,35 @@ internal class SolarEclipseCalculator(
         val maxTime = nextEclipseTime.plus(maxSearch)
 
         // Search for the start time of the eclipse
-        val start = AstroSearch.findStart(Range(minTime, nextEclipseTime), precision) { time ->
-            val ut = time.toUniversalTime()
-            if (shouldLog) {
-                println("$ut, Searching for start time")
+        val start =
+            AstroSearch.findStart(Range(minTime, nextEclipseTime), precision) { time ->
+                val ut = time.toUniversalTime()
+                if (shouldLog) {
+                    println("$ut, Searching for start time")
+                }
+
+                getVisibleMagnitude(ut, location).first > 0
+            } ?: return null
+
+        val end =
+            AstroSearch.findEnd(Range(nextEclipseTime, maxTime), precision) { time ->
+                val ut = time.toUniversalTime()
+                if (shouldLog) {
+                    println("$ut, Searching for end time")
+                }
+
+                getVisibleMagnitude(ut, location).first > 0
+            } ?: return null
+
+        val peak =
+            AstroSearch.findPeak(Range(start, end), precision) { time ->
+                val ut = time.toUniversalTime()
+                if (shouldLog) {
+                    println("$ut, Searching for peak time")
+                }
+
+                getVisibleMagnitude(ut, location).first
             }
-
-            getVisibleMagnitude(ut, location).first > 0
-        } ?: return null
-
-        val end = AstroSearch.findEnd(Range(nextEclipseTime, maxTime), precision) { time ->
-            val ut = time.toUniversalTime()
-            if (shouldLog) {
-                println("$ut, Searching for end time")
-            }
-
-            getVisibleMagnitude(ut, location).first > 0
-        } ?: return null
-
-        val peak = AstroSearch.findPeak(Range(start, end), precision) { time ->
-            val ut = time.toUniversalTime()
-            if (shouldLog) {
-                println("$ut, Searching for peak time")
-            }
-
-            getVisibleMagnitude(ut, location).first
-        }
 
         val peakUt = peak.toUniversalTime()
         val magnitude = getVisibleMagnitude(peakUt, location)
@@ -90,13 +95,15 @@ internal class SolarEclipseCalculator(
         return Eclipse(start, end, maxMagnitude, maxObscuration, peak)
     }
 
-    override fun getMagnitude(time: Instant, location: Coordinate): Float {
-        return getVisibleMagnitude(time.toUniversalTime(), location).first
-    }
+    override fun getMagnitude(
+        time: Instant,
+        location: Coordinate,
+    ): Float = getVisibleMagnitude(time.toUniversalTime(), location).first
 
-    override fun getObscuration(time: Instant, location: Coordinate): Float {
-        return getVisibleMagnitude(time.toUniversalTime(), location).second
-    }
+    override fun getObscuration(
+        time: Instant,
+        location: Coordinate,
+    ): Float = getVisibleMagnitude(time.toUniversalTime(), location).second
 
     /**
      * Get the approximate time of the next eclipse.
@@ -105,7 +112,10 @@ internal class SolarEclipseCalculator(
      * @param after The time to start searching after.
      * @param location The location to search for eclipses.
      */
-    private fun getNextEclipseTime(after: Instant, location: Coordinate): Instant? {
+    private fun getNextEclipseTime(
+        after: Instant,
+        location: Coordinate,
+    ): Instant? {
         val maxSearch = after.plus(_maxDuration)
 
         // Start at the given time
@@ -135,15 +145,16 @@ internal class SolarEclipseCalculator(
                 return null
             }
 
-            val visibleTime = AstroSearch.findEvent(Range(minimum, maximum), precision, start) {
-                val ut = it.toUniversalTime()
+            val visibleTime =
+                AstroSearch.findEvent(Range(minimum, maximum), precision, start) {
+                    val ut = it.toUniversalTime()
 
-                if (shouldLog) {
-                    println("$ut, Eclipse check")
+                    if (shouldLog) {
+                        println("$ut, Eclipse check")
+                    }
+
+                    getVisibleMagnitude(ut, location).first > 0
                 }
-
-                getVisibleMagnitude(ut, location).first > 0
-            }
 
             if (visibleTime != null) {
                 return visibleTime
@@ -166,15 +177,16 @@ internal class SolarEclipseCalculator(
     private fun getCoordinates(
         locator: ICelestialLocator,
         time: UniversalTime,
-        location: Coordinate
+        location: Coordinate,
     ): HorizonCoordinate {
         val coordinates = locator.getCoordinates(time)
-        return HorizonCoordinate.fromEquatorial(
-            coordinates,
-            time,
-            location,
-            locator.getDistance(time)!! // Supplying the distance for parallax
-        ).withRefraction()
+        return HorizonCoordinate
+            .fromEquatorial(
+                coordinates,
+                time,
+                location,
+                locator.getDistance(time)!!, // Supplying the distance for parallax
+            ).withRefraction()
     }
 
     /**
@@ -186,9 +198,8 @@ internal class SolarEclipseCalculator(
      */
     private fun getVisibleMagnitude(
         time: UniversalTime,
-        location: Coordinate
+        location: Coordinate,
     ): Pair<Float, Float> {
-
         val sunCoordinates = getCoordinates(sun, time, location)
         if (sunCoordinates.altitude <= 0) {
             return 0f to 0f
@@ -221,7 +232,7 @@ internal class SolarEclipseCalculator(
     private fun getMagnitude(
         angularDistance: Double,
         moonRadius: Double,
-        sunRadius: Double
+        sunRadius: Double,
     ): Pair<Float, Float> {
         // There is no eclipse, so return 0
         if (!isAnyEclipse(angularDistance, moonRadius, sunRadius)) {
@@ -290,10 +301,8 @@ internal class SolarEclipseCalculator(
     private fun isAnyEclipse(
         angularDistance: Double,
         moonRadius: Double,
-        sunRadius: Double
-    ): Boolean {
-        return angularDistance <= moonRadius + sunRadius
-    }
+        sunRadius: Double,
+    ): Boolean = angularDistance <= moonRadius + sunRadius
 
     /**
      * Check if there is a total eclipse. This is the case if the angular distance between the sun and moon is smaller than the difference of their radii.
@@ -306,9 +315,6 @@ internal class SolarEclipseCalculator(
     private fun isTotalEclipse(
         angularDistance: Double,
         moonRadius: Double,
-        sunRadius: Double
-    ): Boolean {
-        return angularDistance <= abs(moonRadius - sunRadius)
-    }
-
+        sunRadius: Double,
+    ): Boolean = angularDistance <= abs(moonRadius - sunRadius)
 }

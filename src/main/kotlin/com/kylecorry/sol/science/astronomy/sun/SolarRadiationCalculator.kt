@@ -10,7 +10,6 @@ import com.kylecorry.sol.units.Coordinate
 import kotlin.math.pow
 
 internal class SolarRadiationCalculator {
-
     private val sun = Sun()
 
     /**
@@ -22,7 +21,7 @@ internal class SolarRadiationCalculator {
         tilt: Float? = null,
         bearing: Bearing? = null,
         withRefraction: Boolean = false,
-        withParallax: Boolean = false
+        withParallax: Boolean = false,
     ): Double {
         val coords = AstroUtils.getLocation(sun, ut, location, withRefraction, withParallax)
         val altitude = coords.altitude
@@ -39,10 +38,10 @@ internal class SolarRadiationCalculator {
 
         val azimuth = coords.azimuth
 
-        return incident * (cosDegrees(altitude) * sinDegrees(tilt) * cosDegrees(bearing.value - azimuth) + sinDegrees(
-            altitude
-        ) * cosDegrees(tilt))
-
+        return incident * (
+            cosDegrees(altitude) * sinDegrees(tilt) * cosDegrees(bearing.value - azimuth) + sinDegrees(
+                altitude,
+            ) * cosDegrees(tilt)
+        )
     }
-
 }

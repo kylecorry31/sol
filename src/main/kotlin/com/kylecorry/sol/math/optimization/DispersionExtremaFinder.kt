@@ -7,9 +7,8 @@ import kotlin.math.max
 class DispersionExtremaFinder(
     private val lag: Int,
     private val threshold: Float,
-    private val influence: Float
+    private val influence: Float,
 ) : IListExtremaFinder {
-
     override fun find(values: List<Float>): List<Extremum> {
         if (values.size <= lag) {
             return emptyList()
@@ -65,5 +64,4 @@ class DispersionExtremaFinder(
         }
         return peaks
     }
-
 }

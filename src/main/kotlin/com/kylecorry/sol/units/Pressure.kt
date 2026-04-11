@@ -1,7 +1,9 @@
 package com.kylecorry.sol.units
 
 @JvmInline
-value class Pressure private constructor(private val measure: Measure) : Comparable<Pressure> {
+value class Pressure private constructor(
+    private val measure: Measure,
+) : Comparable<Pressure> {
     val value: Float
         get() = measureValue(measure)
 
@@ -17,13 +19,9 @@ value class Pressure private constructor(private val measure: Measure) : Compara
         return from(newPressure.toFloat(), toUnits)
     }
 
-    fun hpa(): Pressure {
-        return convertTo(PressureUnits.Hpa)
-    }
+    fun hpa(): Pressure = convertTo(PressureUnits.Hpa)
 
-    override fun toString(): String {
-        return "$value $units"
-    }
+    override fun toString(): String = "$value $units"
 
     override fun compareTo(other: Pressure): Int {
         val hpa = hpa().value
@@ -32,12 +30,11 @@ value class Pressure private constructor(private val measure: Measure) : Compara
     }
 
     companion object {
-        fun hpa(pressure: Float): Pressure {
-            return from(pressure, PressureUnits.Hpa)
-        }
+        fun hpa(pressure: Float): Pressure = from(pressure, PressureUnits.Hpa)
 
-        fun from(value: Float, unit: PressureUnits): Pressure {
-            return Pressure(packMeasure(value, unit))
-        }
+        fun from(
+            value: Float,
+            unit: PressureUnits,
+        ): Pressure = Pressure(packMeasure(value, unit))
     }
 }

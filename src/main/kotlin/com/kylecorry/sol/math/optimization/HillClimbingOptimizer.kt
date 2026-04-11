@@ -9,16 +9,15 @@ import kotlin.random.Random
 class HillClimbingOptimizer(
     private val step: Double = 1.0,
     private val maxIterations: Int = 1000,
-    private val initialValue: Pair<Double, Double>? = null
+    private val initialValue: Pair<Double, Double>? = null,
 ) : IOptimizer {
-
     private val random = Random(1)
 
     override fun optimize(
         xRange: Range<Double>,
         yRange: Range<Double>,
         maximize: Boolean,
-        fn: (x: Double, y: Double) -> Double
+        fn: (x: Double, y: Double) -> Double,
     ): Pair<Double, Double> {
         val myFn = { pos: Pair<Double, Double> ->
             if (maximize) {
@@ -51,9 +50,8 @@ class HillClimbingOptimizer(
         xRange: Range<Double>,
         yRange: Range<Double>,
         step: Double,
-        fn: (pos: Pair<Double, Double>) -> Double
+        fn: (pos: Pair<Double, Double>) -> Double,
     ): Pair<Double, Double> {
-
         var minPosition = position
         var minValue = fn(position)
 
@@ -70,10 +68,8 @@ class HillClimbingOptimizer(
                 minPosition = x to y
                 minValue = z
             }
-
         }
 
         return minPosition
     }
-
 }

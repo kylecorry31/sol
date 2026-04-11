@@ -21,23 +21,23 @@ import java.time.Duration
 import kotlin.math.*
 
 internal class Moon : ICelestialLocator {
-
     private val sun = Sun()
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
         val T = tt.toJulianCenturies()
-        val L = Trigonometry.normalizeAngle(
-            polynomial(
-                T,
-                218.3164477,
-                481267.88123421,
-                -0.0015786,
-                1 / 538841.0,
-                -1 / 65194000.0
+        val L =
+            Trigonometry.normalizeAngle(
+                polynomial(
+                    T,
+                    218.3164477,
+                    481267.88123421,
+                    -0.0015786,
+                    1 / 538841.0,
+                    -1 / 65194000.0,
+                ),
             )
-        )
 
         val D = getMeanElongation(tt)
 
@@ -59,27 +59,28 @@ internal class Moon : ICelestialLocator {
         var sumB = 0.0
 
         for (row in t47a) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
+            val eTerm =
+                when (row[1].absoluteValue) {
+                    1 -> E
+                    2 -> E2
+                    else -> 1.0
+                }
             sumL += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
         }
 
         for (row in t47b) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
+            val eTerm =
+                when (row[1].absoluteValue) {
+                    1 -> E
+                    2 -> E2
+                    else -> 1.0
+                }
             sumB += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
         }
 
         sumL += 3958 * sinDegrees(a1) + 1962 * sinDegrees(L - F) + 318 * sinDegrees(a2)
         sumB += -2235 * sinDegrees(L) + 382 * sinDegrees(a3) + 175 * sinDegrees(a1 - F) +
-                175 * sinDegrees(a1 + F) + 127 * sinDegrees(L - Mprime) - 115 * sinDegrees(L + Mprime)
-
+            175 * sinDegrees(a1 + F) + 127 * sinDegrees(L - Mprime) - 115 * sinDegrees(L + Mprime)
 
         val apparentLongitude =
             L + sumL / 1000000.0 + LongitudinalNutation.getNutationInLongitude(tt)
@@ -87,7 +88,7 @@ internal class Moon : ICelestialLocator {
         val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(tt)
 
         return EclipticCoordinate(eclipticLatitude, apparentLongitude).toEquatorial(
-            eclipticObliquity
+            eclipticObliquity,
         )
     }
 
@@ -106,18 +107,22 @@ internal class Moon : ICelestialLocator {
         var sumR = 0.0
 
         for (row in t47a) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
+            val eTerm =
+                when (row[1].absoluteValue) {
+                    1 -> E
+                    2 -> E2
+                    else -> 1.0
+                }
             sumR += row[5] * eTerm * cosDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
         }
         val distanceKm = 385000.56 + sumR / 1000
         return Distance.kilometers(distanceKm.toFloat())
     }
 
-    fun getAngularDiameter(ut: UniversalTime, location: Coordinate = Coordinate.zero): Double {
+    fun getAngularDiameter(
+        ut: UniversalTime,
+        location: Coordinate = Coordinate.zero,
+    ): Double {
         val distance = getDistance(ut).convertTo(DistanceUnits.Kilometers).value
         val s = 358743400 / distance
         val sinPi = 6378.14 / distance
@@ -134,8 +139,8 @@ internal class Moon : ICelestialLocator {
                 477198.8675055,
                 0.0087414,
                 1 / 69699.0,
-                -1 / 14712000.0
-            )
+                -1 / 14712000.0,
+            ),
         )
     }
 
@@ -159,14 +164,20 @@ internal class Moon : ICelestialLocator {
         return MoonPhase(MoonTruePhase.New, illumination, phaseAngle.toFloat())
     }
 
-    fun getNextMeanPhase(date: UniversalTime, moonTruePhase: MoonTruePhase): UniversalTime {
+    fun getNextMeanPhase(
+        date: UniversalTime,
+        moonTruePhase: MoonTruePhase,
+    ): UniversalTime {
         val k = getNextPhaseK(date, moonTruePhase)
         val t = k / 1236.85
         val jde = 2451550.09766 + 29.530588861 * k + polynomial(t, 0.0, 0.0, 0.00015437, -0.000000150, 0.00000000073)
         return fromJulianDay(jde)
     }
 
-    fun getNextPhaseK(date: UniversalTime, moonTruePhase: MoonTruePhase): Double {
+    fun getNextPhaseK(
+        date: UniversalTime,
+        moonTruePhase: MoonTruePhase,
+    ): Double {
         val year = date.year
         val day = date.dayOfYear / 365.25
         val hour = (date.hour / 24.0) / 365.25
@@ -174,16 +185,17 @@ internal class Moon : ICelestialLocator {
         val y = year + day + hour + minute
         val k = (y - 2000) * 12.3685
 
-        val ending = when (moonTruePhase) {
-            MoonTruePhase.New -> 0.0
-            MoonTruePhase.WaningCrescent -> 0.125
-            MoonTruePhase.ThirdQuarter -> 0.25
-            MoonTruePhase.WaningGibbous -> 0.375
-            MoonTruePhase.Full -> 0.5
-            MoonTruePhase.WaxingGibbous -> 0.625
-            MoonTruePhase.FirstQuarter -> 0.75
-            MoonTruePhase.WaxingCrescent -> 0.875
-        }
+        val ending =
+            when (moonTruePhase) {
+                MoonTruePhase.New -> 0.0
+                MoonTruePhase.WaningCrescent -> 0.125
+                MoonTruePhase.ThirdQuarter -> 0.25
+                MoonTruePhase.WaningGibbous -> 0.375
+                MoonTruePhase.Full -> 0.5
+                MoonTruePhase.WaxingGibbous -> 0.625
+                MoonTruePhase.FirstQuarter -> 0.75
+                MoonTruePhase.WaxingCrescent -> 0.875
+            }
 
         val intK = floor(k)
         val remainder = k % 1
@@ -195,7 +207,10 @@ internal class Moon : ICelestialLocator {
         }
     }
 
-    fun getTilt(date: UniversalTime, location: Coordinate): Float {
+    fun getTilt(
+        date: UniversalTime,
+        location: Coordinate,
+    ): Float {
         val parallacticAngle = AstroUtils.getParallacticAngle(this, date, location)
         val moonPositionAngle = getMoonPositionAngle(date)
         return (moonPositionAngle - parallacticAngle).toFloat()
@@ -211,7 +226,7 @@ internal class Moon : ICelestialLocator {
 
         return atan2(
             cos(sunDec) * sin(sunRA - moonRA),
-            sin(sunDec) * cos(moonDec) - cos(sunDec) * sin(moonDec) * cos(sunRA - moonRA)
+            sin(sunDec) * cos(moonDec) - cos(sunDec) * sin(moonDec) * cos(sunRA - moonRA),
         ).toDegrees()
     }
 
@@ -221,20 +236,21 @@ internal class Moon : ICelestialLocator {
         val Mp = getMeanAnomaly(ut)
 
         val i =
-            180 - D - 6.289 * sinDegrees(Mp) + 2.100 * sinDegrees(
-                M
-            ) - 1.274 * sinDegrees(2 * D - Mp) - 0.658 * sinDegrees(
-                2 * D
-            ) - 0.214 * sinDegrees(
-                2 * Mp
-            ) - 0.110 * sinDegrees(D)
+            180 - D - 6.289 * sinDegrees(Mp) + 2.100 *
+                sinDegrees(
+                    M,
+                ) - 1.274 * sinDegrees(2 * D - Mp) - 0.658 *
+                sinDegrees(
+                    2 * D,
+                ) - 0.214 *
+                sinDegrees(
+                    2 * Mp,
+                ) - 0.110 * sinDegrees(D)
 
         return (i + 180) % 360.0
     }
 
-    private fun getMoonIllumination(phaseAngle: Double): Double {
-        return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
-    }
+    private fun getMoonIllumination(phaseAngle: Double): Double = ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
 
     private fun getMeanElongation(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
@@ -245,8 +261,8 @@ internal class Moon : ICelestialLocator {
                 445267.1114034,
                 -0.0018819,
                 1 / 545868.0,
-                -1 / 113065000.0
-            )
+                -1 / 113065000.0,
+            ),
         )
     }
 
@@ -259,13 +275,13 @@ internal class Moon : ICelestialLocator {
                 483202.0175233,
                 -0.0036539,
                 -1 / 3526000.0,
-                1 / 863310000.0
-            )
+                1 / 863310000.0,
+            ),
         )
     }
 
-    private fun table47a(): Array<Array<Int>> {
-        return arrayOf(
+    private fun table47a(): Array<Array<Int>> =
+        arrayOf(
             arrayOf(0, 0, 1, 0, 6288774, -20905355),
             arrayOf(2, 0, -1, 0, 1274027, -3699111),
             arrayOf(2, 0, 0, 0, 658314, -2955968),
@@ -325,12 +341,11 @@ internal class Moon : ICelestialLocator {
             arrayOf(0, 2, 1, 0, -323, 1165),
             arrayOf(1, 1, -1, 0, 299, 0),
             arrayOf(2, 0, 3, 0, 294, 0),
-            arrayOf(2, 0, -1, -2, 0, 8752)
+            arrayOf(2, 0, -1, -2, 0, 8752),
         )
-    }
 
-    private fun table47b(): Array<Array<Int>> {
-        return arrayOf(
+    private fun table47b(): Array<Array<Int>> =
+        arrayOf(
             arrayOf(0, 0, 0, 1, 5128122),
             arrayOf(0, 0, 1, 1, 280602),
             arrayOf(0, 0, 1, -1, 277693),
@@ -390,8 +405,6 @@ internal class Moon : ICelestialLocator {
             arrayOf(4, 0, 1, -1, 132),
             arrayOf(1, 0, -1, -1, -119),
             arrayOf(4, -1, 0, -1, 115),
-            arrayOf(2, -2, 0, 1, 107)
+            arrayOf(2, -2, 0, 1, 107),
         )
-    }
-
 }

@@ -7,9 +7,8 @@ import java.time.LocalDate
 class DurationTrigger(
     private val baseTrigger: LifecycleEventTrigger,
     private val duration: Duration,
-    private val resetWhenBaseNotTriggered: Boolean = false
+    private val resetWhenBaseNotTriggered: Boolean = false,
 ) : LifecycleEventTrigger {
-
     private var triggerDate: LocalDate? = null
 
     override fun isTriggered(factors: LifecycleEventFactors): Boolean {

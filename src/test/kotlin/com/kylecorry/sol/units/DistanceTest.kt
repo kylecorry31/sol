@@ -6,14 +6,18 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 internal class DistanceTest {
-
     @ParameterizedTest
     @CsvSource(
         "1, 1, 6, 0.00001",
         "1, 1, 9, 10",
-        "10, 0.5, 9, 12.7"
+        "10, 0.5, 9, 12.7",
     )
-    fun convertTo(fromId: Int, fromValue: Float, toId: Int, expected: Float) {
+    fun convertTo(
+        fromId: Int,
+        fromValue: Float,
+        toId: Int,
+        expected: Float,
+    ) {
         val distance = Distance.from(fromValue, DistanceUnits.entries.first { it.id == fromId })
         val converted = distance.convertTo(DistanceUnits.entries.first { it.id == toId })
         assertEquals(expected, converted.value, 0.00001f)

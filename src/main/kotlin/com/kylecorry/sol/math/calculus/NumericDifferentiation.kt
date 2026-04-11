@@ -6,56 +6,67 @@ import kotlin.math.max
 import kotlin.math.min
 
 internal object NumericDifferentiation {
-
-    private val FORWARD_STENCILS = mapOf(
-        1 to Stencil(
-            intArrayOf(0, 1),
-            floatArrayOf(-1f, 1f)
-        ),
-        2 to Stencil(
-            intArrayOf(0, 1, 2),
-            floatArrayOf(-3f / 2f, 2f, -1f / 2f)
-        ),
-        3 to Stencil(
-            intArrayOf(0, 1, 2, 3),
-            floatArrayOf(-11f / 6f, 3f, -3f / 2f, 1f / 3f)
+    private val FORWARD_STENCILS =
+        mapOf(
+            1 to
+                Stencil(
+                    intArrayOf(0, 1),
+                    floatArrayOf(-1f, 1f),
+                ),
+            2 to
+                Stencil(
+                    intArrayOf(0, 1, 2),
+                    floatArrayOf(-3f / 2f, 2f, -1f / 2f),
+                ),
+            3 to
+                Stencil(
+                    intArrayOf(0, 1, 2, 3),
+                    floatArrayOf(-11f / 6f, 3f, -3f / 2f, 1f / 3f),
+                ),
         )
-    )
 
-    private val CENTRAL_STENCILS = mapOf(
-        1 to Stencil(
-            intArrayOf(-1, 1),
-            floatArrayOf(-0.5f, 0.5f)
-        ),
-        2 to Stencil(
-            intArrayOf(-2, -1, 1, 2),
-            floatArrayOf(1f / 12f, -2f / 3f, 2f / 3f, -1f / 12f)
-        ),
-        3 to Stencil(
-            intArrayOf(-3, -2, -1, 1, 2, 3),
-            floatArrayOf(-1f / 60f, 3f / 20f, -3f / 4f, 3f / 4f, -3f / 20f, 1f / 60f)
+    private val CENTRAL_STENCILS =
+        mapOf(
+            1 to
+                Stencil(
+                    intArrayOf(-1, 1),
+                    floatArrayOf(-0.5f, 0.5f),
+                ),
+            2 to
+                Stencil(
+                    intArrayOf(-2, -1, 1, 2),
+                    floatArrayOf(1f / 12f, -2f / 3f, 2f / 3f, -1f / 12f),
+                ),
+            3 to
+                Stencil(
+                    intArrayOf(-3, -2, -1, 1, 2, 3),
+                    floatArrayOf(-1f / 60f, 3f / 20f, -3f / 4f, 3f / 4f, -3f / 20f, 1f / 60f),
+                ),
         )
-    )
 
-    private val BACKWARD_STENCILS = mapOf(
-        1 to Stencil(
-            intArrayOf(-1, 0),
-            floatArrayOf(-1f, 1f)
-        ),
-        2 to Stencil(
-            intArrayOf(-2, -1, 0),
-            floatArrayOf(1f / 2f, -2f, 3f / 2f)
-        ),
-        3 to Stencil(
-            intArrayOf(-3, -2, -1, 0),
-            floatArrayOf(-1f / 3f, 3f / 2f, -3f, 11f / 6f)
+    private val BACKWARD_STENCILS =
+        mapOf(
+            1 to
+                Stencil(
+                    intArrayOf(-1, 0),
+                    floatArrayOf(-1f, 1f),
+                ),
+            2 to
+                Stencil(
+                    intArrayOf(-2, -1, 0),
+                    floatArrayOf(1f / 2f, -2f, 3f / 2f),
+                ),
+            3 to
+                Stencil(
+                    intArrayOf(-3, -2, -1, 0),
+                    floatArrayOf(-1f / 3f, 3f / 2f, -3f, 11f / 6f),
+                ),
         )
-    )
 
     private fun stencilDifference(
         values: List<Vector2>,
         i: Int,
-        stencil: Stencil
+        stencil: Stencil,
     ): Vector2 {
         // TODO: dx multiplier
         var derivative = 0f
@@ -81,7 +92,10 @@ internal object NumericDifferentiation {
         return Vector2(x, derivative / dx)
     }
 
-    fun finiteDifference(values: List<Vector2>, order: Int = 1): List<Vector2> {
+    fun finiteDifference(
+        values: List<Vector2>,
+        order: Int = 1,
+    ): List<Vector2> {
         if (values.size < 2) {
             return emptyList()
         }
@@ -106,7 +120,6 @@ internal object NumericDifferentiation {
 
     class Stencil(
         val indices: IntArray,
-        val coefficients: FloatArray
+        val coefficients: FloatArray,
     )
-
 }

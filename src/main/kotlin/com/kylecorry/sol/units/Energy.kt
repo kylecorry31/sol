@@ -1,7 +1,9 @@
 package com.kylecorry.sol.units
 
 @JvmInline
-value class Energy private constructor(private val measure: Measure) {
+value class Energy private constructor(
+    private val measure: Measure,
+) {
     val value: Float
         get() = measureValue(measure)
 
@@ -16,17 +18,14 @@ value class Energy private constructor(private val measure: Measure) {
         return from((joules / newUnits.joules).toFloat(), newUnits)
     }
 
-    override fun toString(): String {
-        return "$value $units"
-    }
+    override fun toString(): String = "$value $units"
 
-    fun joules(): Energy {
-        return convertTo(EnergyUnits.Joules)
-    }
+    fun joules(): Energy = convertTo(EnergyUnits.Joules)
 
     companion object {
-        fun from(value: Float, units: EnergyUnits): Energy {
-            return Energy(packMeasure(value, units))
-        }
+        fun from(
+            value: Float,
+            units: EnergyUnits,
+        ): Energy = Energy(packMeasure(value, units))
     }
 }

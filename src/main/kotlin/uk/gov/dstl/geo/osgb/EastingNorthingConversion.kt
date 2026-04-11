@@ -49,7 +49,7 @@ object EastingNorthingConversion {
         e0: Double,
         f0: Double,
         lat0: Double,
-        lon0: Double
+        lon0: Double,
     ): DoubleArray {
         val lat = Math.toRadians(inputCoordinates[0])
         val lon = Math.toRadians(inputCoordinates[1])
@@ -68,17 +68,20 @@ object EastingNorthingConversion {
         val rho = a * f0 * (1 - e2) * eSinPhi.pow(-1.5)
         val eta2 = (nu / rho) - 1
 
-        val m = b * f0 * ((1 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (lat - lat0Rad)
-                - (3.0 * n + 3.0 * n2 + (21.0 / 8.0) * n3)
-                    * sin(lat - lat0Rad)
-                    * cos(lat + lat0Rad)
-                + ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3)
-                    * sin(2.0 * (lat - lat0Rad))
-                    * cos(2.0 * (lat + lat0Rad))
-                - (35.0 / 24.0)
-                    * n3
-                    * sin(3.0 * (lat - lat0Rad))
-                    * cos(3.0 * (lat + lat0Rad)))
+        val m =
+            b * f0 * (
+                (1 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (lat - lat0Rad) -
+                    (3.0 * n + 3.0 * n2 + (21.0 / 8.0) * n3) *
+                    sin(lat - lat0Rad) *
+                    cos(lat + lat0Rad) +
+                    ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) *
+                    sin(2.0 * (lat - lat0Rad)) *
+                    cos(2.0 * (lat + lat0Rad)) -
+                    (35.0 / 24.0) *
+                    n3
+                    * sin(3.0 * (lat - lat0Rad)) *
+                    cos(3.0 * (lat + lat0Rad))
+            )
 
         val i = m + n0
         val ii = (nu / 2) * sin(lat) * cos(lat)
@@ -86,11 +89,14 @@ object EastingNorthingConversion {
         val iiiA = (nu / 720) * sin(lat) * cos(lat).pow(5) * (61 - 58 * tan(lat).pow(2) + tan(lat).pow(4))
         val iv = nu * cos(lat)
         val v = (nu / 6) * cos(lat).pow(3) * ((nu / rho) - tan(lat).pow(2))
-        val vi = (nu / 120) * cos(lat).pow(5) * (5
-                - 18 * tan(lat).pow(2)
-                + tan(lat).pow(4)
-                + 14 * eta2
-                - 58 * (tan(lat).pow(2)) * eta2)
+        val vi =
+            (nu / 120) * cos(lat).pow(5) * (
+                5 -
+                    18 * tan(lat).pow(2) +
+                    tan(lat).pow(4) +
+                    14 * eta2 -
+                    58 * (tan(lat).pow(2)) * eta2
+            )
 
         val retN = i + ii * (lon - lon0Rad).pow(2) + iii * (lon - lon0Rad).pow(4) + iiiA * (lon - lon0Rad).pow(6)
         val retE = e0 + iv * (lon - lon0Rad) + v * (lon - lon0Rad).pow(3) + vi * (lon - lon0Rad).pow(5)
@@ -119,7 +125,7 @@ object EastingNorthingConversion {
         e0: Double,
         f0: Double,
         lat0Degrees: Double,
-        lon0Degrees: Double
+        lon0Degrees: Double,
     ): DoubleArray {
         val coordE = inputCoordinates[0]
         val coordN = inputCoordinates[1]
@@ -141,17 +147,19 @@ object EastingNorthingConversion {
         while (delta > 0.00001 && iterations < MAX_TO_LAT_LON_ITERATIONS) {
             latPrime = ((coordN - n0 - m) / (a * f0)) + latPrime
 
-            m = b * f0 * ((1 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (latPrime - lat0)
-                    - (3.0 * n + 3.0 * n2 + (21.0 / 8.0) * n3)
-                        * sin(latPrime - lat0)
-                        * cos(latPrime + lat0)
-                    + ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3)
-                        * sin(2.0 * (latPrime - lat0))
-                        * cos(2.0 * (latPrime + lat0))
-                    - (35.0 / 24.0)
-                        * n3
-                        * sin(3.0 * (latPrime - lat0))
-                        * cos(3.0 * (latPrime + lat0)))
+            m = b * f0 * (
+                (1 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (latPrime - lat0) -
+                    (3.0 * n + 3.0 * n2 + (21.0 / 8.0) * n3) *
+                    sin(latPrime - lat0) *
+                    cos(latPrime + lat0) +
+                    ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) *
+                    sin(2.0 * (latPrime - lat0)) *
+                    cos(2.0 * (latPrime + lat0)) -
+                    (35.0 / 24.0) *
+                    n3
+                    * sin(3.0 * (latPrime - lat0)) *
+                    cos(3.0 * (latPrime + lat0))
+            )
 
             delta = abs(coordN - n0 - m)
             iterations++
@@ -165,22 +173,34 @@ object EastingNorthingConversion {
         val eta2 = (nu / rho) - 1
 
         val vii = tan(latPrime) / (2.0 * rho * nu)
-        val viii = (tan(latPrime) / (24.0 * rho * nu.pow(3))) * (5.0
-                + 3.0 * tan(latPrime).pow(2)
-                + eta2
-                - 9.0 * tan(latPrime).pow(2) * eta2)
-        val ix = (tan(latPrime) / (720.0 * rho * nu.pow(5))) * (61.0
-                + 90.0 * tan(latPrime).pow(2)
-                + 45.0 * tan(latPrime).pow(4))
+        val viii =
+            (tan(latPrime) / (24.0 * rho * nu.pow(3))) * (
+                5.0 +
+                    3.0 * tan(latPrime).pow(2) +
+                    eta2 -
+                    9.0 * tan(latPrime).pow(2) * eta2
+            )
+        val ix =
+            (tan(latPrime) / (720.0 * rho * nu.pow(5))) * (
+                61.0 +
+                    90.0 * tan(latPrime).pow(2) +
+                    45.0 * tan(latPrime).pow(4)
+            )
         val x = 1.0 / (cos(latPrime) * nu)
         val xi = (1.0 / (6.0 * cos(latPrime) * nu.pow(3))) * (nu / rho + 2.0 * tan(latPrime).pow(2))
-        val xii = (1.0 / (120.0 * cos(latPrime) * nu.pow(5))) * (5.0
-                + 28.0 * tan(latPrime).pow(2)
-                + 24.0 * tan(latPrime).pow(4))
-        val xiiA = (1.0 / (5040.0 * cos(latPrime) * nu.pow(7))) * (61.0
-                + 662.0 * tan(latPrime).pow(2)
-                + 1320.0 * tan(latPrime).pow(4)
-                + 720.0 * tan(latPrime).pow(6))
+        val xii =
+            (1.0 / (120.0 * cos(latPrime) * nu.pow(5))) * (
+                5.0 +
+                    28.0 * tan(latPrime).pow(2) +
+                    24.0 * tan(latPrime).pow(4)
+            )
+        val xiiA =
+            (1.0 / (5040.0 * cos(latPrime) * nu.pow(7))) * (
+                61.0 +
+                    662.0 * tan(latPrime).pow(2) +
+                    1320.0 * tan(latPrime).pow(4) +
+                    720.0 * tan(latPrime).pow(6)
+            )
 
         val dE = coordE - e0
 

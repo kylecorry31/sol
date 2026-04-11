@@ -29,9 +29,8 @@ class LoessFilter2D(
     private val accuracy: Float = 1e-12f,
     private val minimumSpanSize: Int = 0,
     private val maximumSpanSize: Int = Int.MAX_VALUE,
-    private val maximumSpanDistance: Float? = null
+    private val maximumSpanDistance: Float? = null,
 ) : IFilter2D {
-
     /**
      * Smooth the data, the output will have the same x values as the input
      */
@@ -48,17 +47,18 @@ class LoessFilter2D(
         val wasResorted = !Lists.isIncreasingX(data)
         var sortOrder = data.indices.toList()
 
-        val sortedData = if (wasResorted) {
-            sortOrder = Lists.sortIndices(data.map { it.x })
-            Lists.reorder(data, sortOrder)
-        } else {
-            data
-        }.map {
-            Vector2(
-                Interpolation.norm(it.x, rangeX.start, rangeX.end),
-                Interpolation.norm(it.y, rangeY.start, rangeY.end)
-            )
-        }
+        val sortedData =
+            if (wasResorted) {
+                sortOrder = Lists.sortIndices(data.map { it.x })
+                Lists.reorder(data, sortOrder)
+            } else {
+                data
+            }.map {
+                Vector2(
+                    Interpolation.norm(it.x, rangeX.start, rangeX.end),
+                    Interpolation.norm(it.y, rangeY.start, rangeY.end),
+                )
+            }
 
         val weights = MutableList(n) { 1f }
         val res = sortedData.toMutableList()
@@ -80,19 +80,22 @@ class LoessFilter2D(
                 }
 
                 val nearest =
-                    sortedData.subList(interval.first, interval.second).mapIndexed { index, p ->
-                        Triple(p, abs(point.x - p.x), interval.first + index)
-                    }.sortedBy { it.second }
+                    sortedData
+                        .subList(interval.first, interval.second)
+                        .mapIndexed { index, p ->
+                            Triple(p, abs(point.x - p.x), interval.first + index)
+                        }.sortedBy { it.second }
 
                 val maxDistance = mappedMaxDistance ?: nearest.last().second
 
-                val w = nearest.map {
-                    if (Arithmetic.isZero(maxDistance)) {
-                        1f
-                    } else {
-                        tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                val w =
+                    nearest.map {
+                        if (Arithmetic.isZero(maxDistance)) {
+                            1f
+                        } else {
+                            tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                        }
                     }
-                }
 
                 val regression = WeightedLinearRegression(nearest.map { it.first }, w, accuracy)
 
@@ -112,11 +115,12 @@ class LoessFilter2D(
 
             for (i in sortedData.indices) {
                 val a = residuals[i] / (6 * medianResidual)
-                robustnessWeights[i] = if (a >= 1) {
-                    0f
-                } else {
-                    (1 - a * a).pow(2)
-                }
+                robustnessWeights[i] =
+                    if (a >= 1) {
+                        0f
+                    } else {
+                        (1 - a * a).pow(2)
+                    }
             }
         }
 
@@ -127,12 +131,15 @@ class LoessFilter2D(
         }.map {
             Vector2(
                 Interpolation.lerp(it.x, rangeX.start, rangeX.end),
-                Interpolation.lerp(it.y, rangeY.start, rangeY.end)
+                Interpolation.lerp(it.y, rangeY.start, rangeY.end),
             )
         }
     }
 
-    private fun getNearest(points: List<Vector2>, i: Int): Pair<Int, Int> {
+    private fun getNearest(
+        points: List<Vector2>,
+        i: Int,
+    ): Pair<Int, Int> {
         val size = floor(span * points.size).toInt().coerceIn(minimumSpanSize, maximumSpanSize)
         var start = i
         var end = i
@@ -153,7 +160,6 @@ class LoessFilter2D(
             }
         }
         return start to end
-
     }
 
     private fun tricube(x: Float): Float {
@@ -162,5 +168,4 @@ class LoessFilter2D(
         }
         return (1 - x.pow(3)).pow(3)
     }
-
 }

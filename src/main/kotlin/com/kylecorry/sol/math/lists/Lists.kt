@@ -3,7 +3,6 @@ package com.kylecorry.sol.math.lists
 import com.kylecorry.sol.math.Vector2
 
 object Lists {
-
     fun <T : Comparable<T>> argmax(values: List<T>): Int {
         if (values.isEmpty()) {
             return -1
@@ -36,9 +35,12 @@ object Lists {
         return minIndex
     }
 
-    fun <T> oneHot(value: Int, classes: Int, on: T, off: T): List<T> {
-        return List(classes) { if (it == value) on else off }
-    }
+    fun <T> oneHot(
+        value: Int,
+        classes: Int,
+        on: T,
+        off: T,
+    ): List<T> = List(classes) { if (it == value) on else off }
 
     fun isIncreasingX(data: List<Vector2>): Boolean {
         for (i in 1 until data.size) {
@@ -49,8 +51,12 @@ object Lists {
         return true
     }
 
-    fun <T> reorder(data: List<T>, indices: List<Int>, inverse: Boolean = false): List<T> {
-        return if (inverse) {
+    fun <T> reorder(
+        data: List<T>,
+        indices: List<Int>,
+        inverse: Boolean = false,
+    ): List<T> =
+        if (inverse) {
             val newIndices = MutableList(indices.size) { it }
             for (i in indices.indices) {
                 val index = indices[i]
@@ -65,17 +71,18 @@ object Lists {
             }
             newData
         }
-    }
 
-    fun <T : Comparable<T>> sortIndices(data: List<T>): List<Int> {
-        return data.mapIndexed { index, value ->
-            index to value
-        }.sortedBy { it.second }.map { it.first }
-    }
+    fun <T : Comparable<T>> sortIndices(data: List<T>): List<Int> =
+        data
+            .mapIndexed { index, value ->
+                index to value
+            }.sortedBy { it.second }
+            .map { it.first }
 
-    fun <T : Comparable<T>> sortIndicesDescending(data: List<T>): List<Int> {
-        return data.mapIndexed { index, value ->
-            index to value
-        }.sortedByDescending { it.second }.map { it.first }
-    }
+    fun <T : Comparable<T>> sortIndicesDescending(data: List<T>): List<Int> =
+        data
+            .mapIndexed { index, value ->
+                index to value
+            }.sortedByDescending { it.second }
+            .map { it.first }
 }

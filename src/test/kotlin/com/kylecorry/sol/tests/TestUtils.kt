@@ -3,28 +3,37 @@ package com.kylecorry.sol.tests
 import assertk.assertThat
 import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import assertk.assertions.isLessThan
 import assertk.assertions.prop
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import org.junit.jupiter.api.Assertions.*
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
-fun assertk.Assert<Coordinate>.isCloseTo(other: Coordinate, meters: Float) {
+fun assertk.Assert<Coordinate>.isCloseTo(
+    other: Coordinate,
+    meters: Float,
+) {
     prop("distance") {
         it.distanceTo(other)
     }.isLessThan(meters)
 }
 
-fun assertk.Assert<Distance>.isCloseTo(other: Distance, tolerance: Float) {
+fun assertk.Assert<Distance>.isCloseTo(
+    other: Distance,
+    tolerance: Float,
+) {
     prop("units", Distance::units).isEqualTo(other.units)
     prop("value", Distance::value).isCloseTo(other.value, tolerance)
 }
 
-fun <T> parametrized(cases: Collection<T>, test: (case: T) -> Unit) {
+fun <T> parametrized(
+    cases: Collection<T>,
+    test: (case: T) -> Unit,
+) {
     for (case in cases) {
         test(case)
     }
@@ -33,7 +42,7 @@ fun <T> parametrized(cases: Collection<T>, test: (case: T) -> Unit) {
 fun assertDate(
     expected: ZonedDateTime?,
     actual: ZonedDateTime?,
-    maxDifference: Duration
+    maxDifference: Duration,
 ) {
     if (expected == null) {
         assertNull(actual)
@@ -47,7 +56,7 @@ fun assertDate(
 fun assertDate(
     expected: LocalDateTime?,
     actual: LocalDateTime?,
-    maxDifference: Duration
+    maxDifference: Duration,
 ) {
     if (expected == null) {
         assertNull(actual)
@@ -61,8 +70,8 @@ fun assertDate(
 fun assertDuration(
     expected: Duration?,
     actual: Duration?,
-    maxDifference: Duration
-){
+    maxDifference: Duration,
+) {
     if (expected == null) {
         assertNull(actual)
     } else {
@@ -75,13 +84,16 @@ fun assertDuration(
 fun assertVector(
     expected: Vector2,
     actual: Vector2,
-    tolerance: Float
-){
+    tolerance: Float,
+) {
     assertThat(actual.x).isCloseTo(expected.x, tolerance)
     assertThat(actual.y).isCloseTo(expected.y, tolerance)
 }
 
-inline fun performanceTest(repetitions: Int, crossinline test: () -> Unit) {
+inline fun performanceTest(
+    repetitions: Int,
+    crossinline test: () -> Unit,
+) {
     val start = System.currentTimeMillis()
     repeat(repetitions) { test() }
     val timePerTest = (System.currentTimeMillis() - start).toFloat() / repetitions

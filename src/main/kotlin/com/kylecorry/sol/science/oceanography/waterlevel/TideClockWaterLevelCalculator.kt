@@ -12,9 +12,8 @@ class TideClockWaterLevelCalculator(
     private val reference: Tide,
     private val frequency: Float = TideConstituent.M2.speed,
     private val amplitude: Float = 1f,
-    private val z0: Float = 0f
+    private val z0: Float = 0f,
 ) : IWaterLevelCalculator {
-
     private val wave = getWave()
 
     override fun calculate(time: ZonedDateTime): Float {
@@ -26,5 +25,4 @@ class TideClockWaterLevelCalculator(
         val amplitude = if (!reference.isHigh) -amplitude else amplitude
         return CosineWave(amplitude, frequency.toRadians(), 0f, z0)
     }
-
 }

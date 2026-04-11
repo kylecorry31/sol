@@ -6,5 +6,5 @@ internal data class LunarEclipseParameters(
     val maximum: Instant,
     val minDistanceFromCenter: Double,
     val umbralConeRadius: Double,
-    val n: Double
+    val n: Double,
 )

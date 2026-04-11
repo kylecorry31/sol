@@ -1,12 +1,11 @@
 package com.kylecorry.sol.math
 
-class RingBuffer<T>(val capacity: Int) {
-
+class RingBuffer<T>(
+    val capacity: Int,
+) {
     private val list = mutableListOf<T>()
 
-    fun isFull(): Boolean {
-        return list.size == capacity
-    }
+    fun isFull(): Boolean = list.size == capacity
 
     val size: Int
         get() = list.size
@@ -22,8 +21,5 @@ class RingBuffer<T>(val capacity: Int) {
         list.clear()
     }
 
-    fun toList(): List<T> {
-        return list.toList()
-    }
-
+    fun toList(): List<T> = list.toList()
 }

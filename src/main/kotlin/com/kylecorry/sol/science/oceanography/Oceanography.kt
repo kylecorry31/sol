@@ -13,14 +13,13 @@ import java.time.Duration
 import java.time.ZonedDateTime
 
 object Oceanography {
-
     const val DENSITY_SALT_WATER = 1023.6f
     const val DENSITY_FRESH_WATER = 997.0474f
 
     fun getDepth(
         pressure: Pressure,
         seaLevelPressure: Pressure,
-        isSaltWater: Boolean = true
+        isSaltWater: Boolean = true,
     ): Distance {
         if (pressure <= seaLevelPressure) {
             return Distance.from(0f, DistanceUnits.Meters)
@@ -28,13 +27,15 @@ object Oceanography {
 
         val waterDensity = if (isSaltWater) DENSITY_SALT_WATER else DENSITY_FRESH_WATER
         val pressureDiff =
-            pressure.convertTo(PressureUnits.Hpa).value - seaLevelPressure.convertTo(
-                PressureUnits.Hpa
-            ).value
+            pressure.convertTo(PressureUnits.Hpa).value -
+                seaLevelPressure
+                    .convertTo(
+                        PressureUnits.Hpa,
+                    ).value
 
         return Distance.from(
             pressureDiff * 100 / (Geophysics.GRAVITY * waterDensity),
-            DistanceUnits.Meters
+            DistanceUnits.Meters,
         )
     }
 
@@ -67,12 +68,13 @@ object Oceanography {
         waterLevelCalculator: IWaterLevelCalculator,
         start: ZonedDateTime,
         end: ZonedDateTime,
-        extremaFinder: IExtremaFinder = NoisyExtremaFinder(1.0, 10)
+        extremaFinder: IExtremaFinder = NoisyExtremaFinder(1.0, 10),
     ): List<Tide> {
         val range = Duration.between(start, end).toMinutes()
-        val extrema = extremaFinder.find(Range(0.0, range.toDouble())) {
-            waterLevelCalculator.calculate(start.plusMinutes(it.toLong())).toDouble()
-        }
+        val extrema =
+            extremaFinder.find(Range(0.0, range.toDouble())) {
+                waterLevelCalculator.calculate(start.plusMinutes(it.toLong())).toDouble()
+            }
         return extrema.map { Tide(start.plusMinutes(it.point.x.toLong()), it.isHigh, it.point.y) }
     }
 
@@ -82,7 +84,10 @@ object Oceanography {
      * @param location The location of the tide. If not provided, the interval will be calculated for the prime meridian.
      * @return The lunitidal interval or null if it could not be calculated
      */
-    fun getLunitidalInterval(highTideTime: ZonedDateTime, location: Coordinate = Coordinate.zero): Duration? {
+    fun getLunitidalInterval(
+        highTideTime: ZonedDateTime,
+        location: Coordinate = Coordinate.zero,
+    ): Duration? {
         // Step 1: Get the time of the moon transit prior to the high tide
         val over = getLastMoonTransit(location, highTideTime)
         val under = getLastMoonUnderfootTime(location, highTideTime)
@@ -106,7 +111,7 @@ object Oceanography {
      */
     fun getMeanLunitidalInterval(
         highTideTimes: List<ZonedDateTime>,
-        location: Coordinate = Coordinate.zero
+        location: Coordinate = Coordinate.zero,
     ): Duration? {
         // TODO: Give more weight to tides closer to full/new moon?
         val intervals = highTideTimes.mapNotNull { getLunitidalInterval(it, location) }
@@ -136,7 +141,10 @@ object Oceanography {
         return averageDuration
     }
 
-    private fun getLastMoonTransit(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
+    private fun getLastMoonTransit(
+        location: Coordinate,
+        time: ZonedDateTime,
+    ): ZonedDateTime? {
         val todayMoon = Astronomy.getMoonEvents(time, location).transit
         val yesterdayMoon = Astronomy.getMoonEvents(time.minusDays(1), location).transit
         val tomorrowMoon = Astronomy.getMoonEvents(time.plusDays(1), location).transit
@@ -144,7 +152,8 @@ object Oceanography {
         return Time.getClosestPastTime(time, listOf(yesterdayMoon, todayMoon, tomorrowMoon))
     }
 
-    private fun getLastMoonUnderfootTime(location: Coordinate, time: ZonedDateTime): ZonedDateTime? {
-        return getLastMoonTransit(location.antipode, time)
-    }
+    private fun getLastMoonUnderfootTime(
+        location: Coordinate,
+        time: ZonedDateTime,
+    ): ZonedDateTime? = getLastMoonTransit(location.antipode, time)
 }

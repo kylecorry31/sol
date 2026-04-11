@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class WeightedLinearRegressionTest {
-
     @Test
     fun requiresNonZeroWeights() {
         assertThrows<IllegalArgumentException> {
@@ -13,9 +12,9 @@ class WeightedLinearRegressionTest {
                 listOf(
                     Vector2(0f, 1f),
                     Vector2(1f, 3f),
-                    Vector2(2f, 5f)
+                    Vector2(2f, 5f),
                 ),
-                listOf(0f, 0f, 0f)
+                listOf(0f, 0f, 0f),
             )
         }
     }

@@ -15,18 +15,20 @@ import java.time.ZoneId
 import kotlin.math.absoluteValue
 
 internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator {
-    override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse? {
-        return getNextEclipseHelper(after.minus(Duration.ofDays(20)), after, location, 100)
-    }
+    override fun getNextEclipse(
+        after: Instant,
+        location: Coordinate,
+    ): Eclipse? = getNextEclipseHelper(after.minus(Duration.ofDays(20)), after, location, 100)
 
     protected abstract fun getMagnitudeThreshold(): Double
+
     protected abstract fun getSemiDuration(parameters: LunarEclipseParameters): Duration
 
     private fun getNextEclipseHelper(
         after: Instant,
         atLeastInstant: Instant,
         location: Coordinate,
-        iterationsRemaining: Int
+        iterationsRemaining: Int,
     ): Eclipse? {
         if (iterationsRemaining == 0) {
             return null
@@ -47,17 +49,18 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
                 parameters.maximum.plus(Duration.ofDays(10)),
                 atLeastInstant,
                 location,
-                iterationsRemaining - 1
+                iterationsRemaining - 1,
             )
         }
 
         // It is a total eclipse
         val semiDuration = getSemiDuration(parameters)
 
-        val time = Range(
-            parameters.maximum - semiDuration,
-            parameters.maximum + semiDuration,
-        )
+        val time =
+            Range(
+                parameters.maximum - semiDuration,
+                parameters.maximum + semiDuration,
+            )
 
         val isAfterInstant = time.end.isAfter(atLeastInstant)
         if (!isAfterInstant) {
@@ -65,7 +68,7 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
                 parameters.maximum.plus(Duration.ofDays(10)),
                 atLeastInstant,
                 location,
-                iterationsRemaining - 1
+                iterationsRemaining - 1,
             )
         }
 
@@ -82,23 +85,25 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
 
             if (!upAtStart) {
                 // Find the moon rise time
-                val moonRise = Astronomy.getNextMoonrise(
-                    time.start.toZonedDateTime(),
-                    location,
-                    withRefraction = true,
-                    withParallax = true
-                )
+                val moonRise =
+                    Astronomy.getNextMoonrise(
+                        time.start.toZonedDateTime(),
+                        location,
+                        withRefraction = true,
+                        withParallax = true,
+                    )
                 start = moonRise?.toInstant() ?: start
             }
 
             if (!upAtEnd) {
                 // Find moon set time
-                val moonSet = Astronomy.getNextMoonset(
-                    time.start.toZonedDateTime(),
-                    location,
-                    withRefraction = true,
-                    withParallax = true
-                )
+                val moonSet =
+                    Astronomy.getNextMoonset(
+                        time.start.toZonedDateTime(),
+                        location,
+                        withRefraction = true,
+                        withParallax = true,
+                    )
                 end = moonSet?.toInstant() ?: end
             }
 
@@ -110,16 +115,17 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
             parameters.maximum.plus(Duration.ofDays(10)),
             atLeastInstant,
             location,
-            iterationsRemaining - 1
+            iterationsRemaining - 1,
         )
     }
 
-    override fun getMagnitude(time: Instant, location: Coordinate): Float? {
-        return null
-    }
+    override fun getMagnitude(
+        time: Instant,
+        location: Coordinate,
+    ): Float? = null
 
-    override fun getObscuration(time: Instant, location: Coordinate): Float? {
-        return null
-    }
-
+    override fun getObscuration(
+        time: Instant,
+        location: Coordinate,
+    ): Float? = null
 }

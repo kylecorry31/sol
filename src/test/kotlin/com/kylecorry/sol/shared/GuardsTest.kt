@@ -1,11 +1,9 @@
 package com.kylecorry.sol.shared
 
 import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.assertThrows
 
 class GuardsTest {
-
     @Test
     fun isPositive() {
         assertThrows<IllegalArgumentException> {

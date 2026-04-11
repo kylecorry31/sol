@@ -7,14 +7,16 @@ import kotlin.math.abs
 class GoldenSearchExtremaFinder(
     private val initialStep: Double,
     private val tolerance: Double,
-    finderProducer: (step: Double) -> IExtremaFinder = { SimpleExtremaFinder(it) }
+    finderProducer: (step: Double) -> IExtremaFinder = { SimpleExtremaFinder(it) },
 ) : IExtremaFinder {
-
     private val initialFinder = finderProducer(initialStep)
 
     private val goldenRatio = 1.61803398875
 
-    override fun find(range: Range<Double>, fn: (x: Double) -> Double): List<Extremum> {
+    override fun find(
+        range: Range<Double>,
+        fn: (x: Double) -> Double,
+    ): List<Extremum> {
         // Get the initial extremas
         val extremas = initialFinder.find(range, fn).toMutableList()
 
@@ -30,8 +32,10 @@ class GoldenSearchExtremaFinder(
         return extremas
     }
 
-
-    private fun createRange(extremum: Extremum, stepSize: Double): Range<Double> {
+    private fun createRange(
+        extremum: Extremum,
+        stepSize: Double,
+    ): Range<Double> {
         val start = extremum.point.x - stepSize
         val end = extremum.point.x + stepSize
         return Range(start, end)
@@ -41,7 +45,7 @@ class GoldenSearchExtremaFinder(
     private fun goldenRatioSearch(
         range: Range<Double>,
         fn: (x: Double) -> Double,
-        isHigh: Boolean
+        isHigh: Boolean,
     ): Extremum {
         var a = range.start
         var b = range.end

@@ -3,9 +3,7 @@ package com.kylecorry.sol.science.geology
 import kotlin.math.absoluteValue
 
 internal class AvalancheRiskClassifier {
-
     fun classify(inclination: Float): AvalancheRisk {
-
         val absAngle = inclination.absoluteValue
 
         return when {
@@ -22,5 +20,4 @@ internal class AvalancheRiskClassifier {
             }
         }
     }
-
 }

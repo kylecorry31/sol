@@ -6,5 +6,6 @@ import com.kylecorry.sol.units.Distance
 
 internal interface ICelestialLocator {
     fun getCoordinates(ut: UniversalTime): EquatorialCoordinate
+
     fun getDistance(ut: UniversalTime): Distance?
 }

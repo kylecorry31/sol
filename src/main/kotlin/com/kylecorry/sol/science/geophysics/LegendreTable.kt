@@ -21,7 +21,10 @@ package com.kylecorry.sol.science.geophysics
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal class LegendreTable(maxN: Int, thetaRad: Float) {
+internal class LegendreTable(
+    maxN: Int,
+    thetaRad: Float,
+) {
     val mP: Array<FloatArray> = Array(maxN + 1) { FloatArray(it + 1) }
     val mPDeriv: Array<FloatArray> = Array(maxN + 1) { FloatArray(it + 1) }
 

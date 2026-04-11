@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy.rst
 
-
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.interpolation.Interpolation
@@ -22,14 +21,13 @@ import kotlin.math.abs
 import kotlin.math.acos
 
 internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
-
     override fun calculate(
         locator: ICelestialLocator,
         date: ZonedDateTime,
         location: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        withParallax: Boolean
+        withParallax: Boolean,
     ): RiseSetTransitTimes {
         val maxAttempts = if (withRefraction) 2 else 1
         var rise: ZonedDateTime? = null
@@ -38,14 +36,15 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
 
         for (attempt in 0 until maxAttempts) {
             val currentWithRefraction = if (attempt == 0) withRefraction else false
-            val calculated = calculateHelper(
-                locator,
-                date,
-                location,
-                standardAltitude,
-                currentWithRefraction,
-                withParallax
-            )
+            val calculated =
+                calculateHelper(
+                    locator,
+                    date,
+                    location,
+                    standardAltitude,
+                    currentWithRefraction,
+                    withParallax,
+                )
 
             rise = rise ?: calculated.rise
             transit = transit ?: calculated.transit
@@ -65,7 +64,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         location: Coordinate,
         standardAltitude: Double,
         withRefraction: Boolean,
-        withParallax: Boolean
+        withParallax: Boolean,
     ): RiseSetTransitTimes {
         val ld = date.toLocalDate()
 
@@ -77,21 +76,26 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                 standardAltitude,
                 withRefraction,
                 withParallax,
-                locator
+                locator,
             )
         if (today.rise?.toLocalDate() == ld && today.transit?.toLocalDate() == ld && today.set?.toLocalDate() == ld) {
             return today
         }
 
         // Get today's times (at noon) - this is needed around DST changes in the UK (I'm not 100% sure why - seems to occur when getting the UT 0)
-        val todayAtNoon = getTransitTimesHelper(
-            date.withHour(12).withMinute(0).withSecond(0).withNano(0),
-            location,
-            standardAltitude,
-            withRefraction,
-            withParallax,
-            locator
-        )
+        val todayAtNoon =
+            getTransitTimesHelper(
+                date
+                    .withHour(12)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .withNano(0),
+                location,
+                standardAltitude,
+                withRefraction,
+                withParallax,
+                locator,
+            )
 
         // Today's times didn't contain all the events / were on the wrong day, check the surrounding days
         val yesterday =
@@ -101,7 +105,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                 standardAltitude,
                 withRefraction,
                 withParallax,
-                locator
+                locator,
             )
         val tomorrow =
             getTransitTimesHelper(
@@ -110,7 +114,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                 standardAltitude,
                 withRefraction,
                 withParallax,
-                locator
+                locator,
             )
 
         return RiseSetTransitTimes(
@@ -118,20 +122,20 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                 today.rise,
                 todayAtNoon.rise,
                 yesterday.rise,
-                tomorrow.rise
+                tomorrow.rise,
             ).firstOrNull { it.toLocalDate() == ld },
             listOfNotNull(
                 today.transit,
                 todayAtNoon.transit,
                 yesterday.transit,
-                tomorrow.transit
+                tomorrow.transit,
             ).firstOrNull { it.toLocalDate() == ld },
             listOfNotNull(
                 today.set,
                 todayAtNoon.set,
                 yesterday.set,
-                tomorrow.set
-            ).firstOrNull { it.toLocalDate() == ld }
+                tomorrow.set,
+            ).firstOrNull { it.toLocalDate() == ld },
         )
     }
 
@@ -141,7 +145,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         standardAltitude: Double,
         withRefraction: Boolean,
         withParallax: Boolean,
-        locator: ICelestialLocator
+        locator: ICelestialLocator,
     ): RiseSetTransitTimes {
         val ut = ut0hOnDate(date)
         val uty = ut0hOnDate(date.minusDays(1))
@@ -152,19 +156,24 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         val distance = if (withParallax) locator.getDistance(ut) else null
         val distancey = if (withParallax) locator.getDistance(uty) else null
         val distancet = if (withParallax) locator.getDistance(utt) else null
-        val times = getRiseSetTransitTimes(
-            ut,
-            coordinate,
-            standardAltitude,
-            withRefraction,
-            Triple(astroCoordsy, astroCoords, astroCoordst),
-            if (distance != null && distancey != null && distancet != null) Triple(
-                distance,
-                distancey,
-                distancet
-            ) else null
-        )
-            ?: return RiseSetTransitTimes(null, null, null)
+        val times =
+            getRiseSetTransitTimes(
+                ut,
+                coordinate,
+                standardAltitude,
+                withRefraction,
+                Triple(astroCoordsy, astroCoords, astroCoordst),
+                if (distance != null && distancey != null && distancet != null) {
+                    Triple(
+                        distance,
+                        distancey,
+                        distancet,
+                    )
+                } else {
+                    null
+                },
+            )
+                ?: return RiseSetTransitTimes(null, null, null)
 
         val rise = ut.plusHours(times.first).toLocal(date.zone)
         val transit = ut.plusHours(times.second).toLocal(date.zone)
@@ -183,11 +192,12 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
     private fun getMeanSiderealTime(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val theta0 =
-            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * Arithmetic.square(
-                T
-            ) - Arithmetic.cube(
-                T
-            ) / 38710000.0
+            280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 *
+                Arithmetic.square(
+                    T,
+                ) - Arithmetic.cube(
+                    T,
+                ) / 38710000.0
         return wrap(theta0, 0.0, 360.0)
     }
 
@@ -197,14 +207,16 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         standardAltitude: Double,
         withRefraction: Boolean,
         coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>,
-        distances: Triple<Distance, Distance, Distance>?
+        distances: Triple<Distance, Distance, Distance>?,
     ): Triple<Double, Double, Double>? {
         val apparentSidereal = getApparentSiderealTime(ut)
         val deltaT = TerrestrialTime.getDeltaT(ut.year)
         val cosH =
-            (sinDegrees(standardAltitude) - sinDegrees(location.latitude) * sinDegrees(coordinates.second.declination)) / (cosDegrees(
-                location.latitude
-            ) * cosDegrees(coordinates.second.declination))
+            (sinDegrees(standardAltitude) - sinDegrees(location.latitude) * sinDegrees(coordinates.second.declination)) / (
+                cosDegrees(
+                    location.latitude,
+                ) * cosDegrees(coordinates.second.declination)
+            )
 
         if (cosH >= 1) {
             // Always down
@@ -219,11 +231,12 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         val iterations = 20
         val doneThresh = 0.0001
 
-        var m0 = wrap(
-            (coordinates.second.rightAscension - location.longitude - apparentSidereal) / 360.0,
-            0.0,
-            1.0
-        )
+        var m0 =
+            wrap(
+                (coordinates.second.rightAscension - location.longitude - apparentSidereal) / 360.0,
+                0.0,
+                1.0,
+            )
         var m1 = wrap(m0 - H / 360, 0.0, 1.0)
         var m2 = wrap(m0 + H / 360, 0.0, 1.0)
         val date = ut.toLocalDate()
@@ -260,7 +273,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                     sidereal1.toUniversalTime(date),
                     location,
                     withRefraction,
-                    d1
+                    d1,
                 )
             val altitude2 =
                 AstroUtils.getAltitude(
@@ -268,18 +281,24 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
                     sidereal2.toUniversalTime(date),
                     location,
                     withRefraction,
-                    d2
+                    d2,
                 )
 
             val dm0 = -hourAngle0 / 360
             val dm1 =
-                (altitude1 - standardAltitude) / (360 * cosDegrees(c1.declination) * cosDegrees(
-                    location.latitude
-                ) * sinDegrees(hourAngle1))
+                (altitude1 - standardAltitude) / (
+                    360 * cosDegrees(c1.declination) *
+                        cosDegrees(
+                            location.latitude,
+                        ) * sinDegrees(hourAngle1)
+                )
             val dm2 =
-                (altitude2 - standardAltitude) / (360 * cosDegrees(c2.declination) * cosDegrees(
-                    location.latitude
-                ) * sinDegrees(hourAngle2))
+                (altitude2 - standardAltitude) / (
+                    360 * cosDegrees(c2.declination) *
+                        cosDegrees(
+                            location.latitude,
+                        ) * sinDegrees(hourAngle2)
+                )
 
             m0 = wrap(m0 + dm0, 0.0, 1.0)
             m1 = wrap(m1 + dm1, 0.0, 1.0)
@@ -297,27 +316,28 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         return Triple(riseHour, transitHour, setHour)
     }
 
-
     private fun interpolateCoordinate(
         value: Double,
         first: EquatorialCoordinate,
         second: EquatorialCoordinate,
-        third: EquatorialCoordinate
+        third: EquatorialCoordinate,
     ): EquatorialCoordinate {
-        val normalizedRas = normalizeRightAscensions(
-            Triple(
-                first.rightAscension,
-                second.rightAscension,
-                third.rightAscension
+        val normalizedRas =
+            normalizeRightAscensions(
+                Triple(
+                    first.rightAscension,
+                    second.rightAscension,
+                    third.rightAscension,
+                ),
             )
-        )
 
-        val ra = Interpolation.catmullRom(
-            value,
-            normalizedRas.first,
-            normalizedRas.second,
-            normalizedRas.third
-        )
+        val ra =
+            Interpolation.catmullRom(
+                value,
+                normalizedRas.first,
+                normalizedRas.second,
+                normalizedRas.third,
+            )
 
         val declination =
             Interpolation.catmullRom(value, first.declination, second.declination, third.declination)
@@ -329,30 +349,32 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         value: Double,
         first: Distance,
         second: Distance,
-        third: Distance
+        third: Distance,
     ): Distance {
-        val distance = Interpolation.catmullRom(
-            value,
-            first.value.toDouble(),
-            second.value.toDouble(),
-            third.value.toDouble()
-        )
+        val distance =
+            Interpolation.catmullRom(
+                value,
+                first.value.toDouble(),
+                second.value.toDouble(),
+                third.value.toDouble(),
+            )
         return Distance.from(distance.toFloat(), first.units)
     }
 
     private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {
         val ra1 = rightAscensions.first
-        val ra2 = if (rightAscensions.second < ra1) {
-            rightAscensions.second + 360
-        } else {
-            rightAscensions.second
-        }
-        val ra3 = if (rightAscensions.third < ra2) {
-            rightAscensions.third + 360
-        } else {
-            rightAscensions.third
-        }
+        val ra2 =
+            if (rightAscensions.second < ra1) {
+                rightAscensions.second + 360
+            } else {
+                rightAscensions.second
+            }
+        val ra3 =
+            if (rightAscensions.third < ra2) {
+                rightAscensions.third + 360
+            } else {
+                rightAscensions.third
+            }
         return Triple(ra1, ra2, ra3)
     }
-
 }

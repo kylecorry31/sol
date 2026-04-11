@@ -14,7 +14,10 @@ object Ensemble {
             .map { ConfidenceScore(it.key, it.value.size / total.toFloat()) }
     }
 
-    fun continuous(values: List<Float>, confidenceIntervalSize: Float = 0.95f): ConfidenceInterval<Float> {
+    fun continuous(
+        values: List<Float>,
+        confidenceIntervalSize: Float = 0.95f,
+    ): ConfidenceInterval<Float> {
         val median = Statistics.median(values)
         val lower = Statistics.quantile(values, 1f - confidenceIntervalSize)
         val upper = Statistics.quantile(values, confidenceIntervalSize)

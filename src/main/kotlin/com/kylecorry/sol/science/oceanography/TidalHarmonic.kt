@@ -1,8 +1,15 @@
 package com.kylecorry.sol.science.oceanography
 
-data class TidalHarmonic(val constituent: TideConstituent, val amplitude: Float, val phase: Float)
+data class TidalHarmonic(
+    val constituent: TideConstituent,
+    val amplitude: Float,
+    val phase: Float,
+)
 
-enum class TideConstituent(val id: Long, val speed: Float) {
+enum class TideConstituent(
+    val id: Long,
+    val speed: Float,
+) {
     M2(1, 28.984104f),
     S2(2, 30f),
     N2(3, 28.43973f),
@@ -40,5 +47,5 @@ enum class TideConstituent(val id: Long, val speed: Float) {
     K2(35, 30.082138f),
     M8(36, 115.93642f),
     MS4(37, 58.984104f),
-    Z0(0, 0f)
+    Z0(0, 0f),
 }

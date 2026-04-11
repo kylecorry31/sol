@@ -5,13 +5,12 @@ import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.statistics.Statistics
 
-class LinearRegression(data: List<Vector2>) : IRegression1D {
-
+class LinearRegression(
+    data: List<Vector2>,
+) : IRegression1D {
     val equation = fit(data)
 
-    override fun predict(x: Float): Float {
-        return equation.evaluate(x)
-    }
+    override fun predict(x: Float): Float = equation.evaluate(x)
 
     // The linear case is more efficient than the matrix operations
     private fun fit(data: List<Vector2>): LinearEquation {
@@ -39,5 +38,4 @@ class LinearRegression(data: List<Vector2>) : IRegression1D {
         val intercept = yBar - xBar * slope
         return LinearEquation(slope, intercept)
     }
-
 }

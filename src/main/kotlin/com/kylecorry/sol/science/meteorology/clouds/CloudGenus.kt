@@ -1,6 +1,10 @@
 package com.kylecorry.sol.science.meteorology.clouds
 
-enum class CloudGenus(val id: Long, val level: CloudLevel, val categories: Array<CloudCategory>) {
+enum class CloudGenus(
+    val id: Long,
+    val level: CloudLevel,
+    val categories: Array<CloudCategory>,
+) {
     // https://www.weather.gov/jetstream/basicten
     Cirrus(1, CloudLevel.High, arrayOf(CloudCategory.Cirro)),
     Cirrocumulus(2, CloudLevel.High, arrayOf(CloudCategory.Cirro, CloudCategory.Cumulo)),
@@ -11,5 +15,5 @@ enum class CloudGenus(val id: Long, val level: CloudLevel, val categories: Array
     Stratus(7, CloudLevel.Low, arrayOf(CloudCategory.Strato)),
     Stratocumulus(8, CloudLevel.Low, arrayOf(CloudCategory.Strato, CloudCategory.Cumulo)),
     Cumulus(9, CloudLevel.Low, arrayOf(CloudCategory.Cumulo)),
-    Cumulonimbus(10, CloudLevel.Low, arrayOf(CloudCategory.Cumulo, CloudCategory.Nimbo))
+    Cumulonimbus(10, CloudLevel.Low, arrayOf(CloudCategory.Cumulo, CloudCategory.Nimbo)),
 }

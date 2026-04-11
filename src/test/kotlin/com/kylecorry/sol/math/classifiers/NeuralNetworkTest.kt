@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test
 import kotlin.math.sin
 
 internal class NeuralNetworkTest {
-
     @Test
     fun canLoadWeights() {
-        val network = NeuralNetwork(
-            listOf(
-                NeuralNetwork.Layer.linear(3, 5),
-                NeuralNetwork.Layer.softmax(5, 2)
+        val network =
+            NeuralNetwork(
+                listOf(
+                    NeuralNetwork.Layer.linear(3, 5),
+                    NeuralNetwork.Layer.softmax(5, 2),
+                ),
             )
-        )
 
         val weights = """0.39372277,0.6588374,0.11174718,0.1
 0.6232503,0.12853253,0.90093297,0.1
@@ -29,7 +29,6 @@ internal class NeuralNetworkTest {
 
         network.load(weights.split("\n\n").map { NeuralNetwork.LayerWeights.parse(it) })
 
-
         val prediction = network.predict(listOf(1f, 2f, 3f))
 
         assertEquals(2, prediction.size)
@@ -39,12 +38,13 @@ internal class NeuralNetworkTest {
 
     @Test
     fun canDumpWeights() {
-        val network = NeuralNetwork(
-            listOf(
-                NeuralNetwork.Layer.linear(3, 5),
-                NeuralNetwork.Layer.softmax(5, 2)
+        val network =
+            NeuralNetwork(
+                listOf(
+                    NeuralNetwork.Layer.linear(3, 5),
+                    NeuralNetwork.Layer.softmax(5, 2),
+                ),
             )
-        )
 
         val weights = """0.39372277,0.6588374,0.11174718,0.1
 0.6232503,0.12853253,0.90093297,0.1
@@ -64,42 +64,49 @@ internal class NeuralNetworkTest {
 
     @Test
     fun train() {
-        val network = NeuralNetwork(
-            listOf(
-                NeuralNetwork.Layer.leakyRelu(2, 5),
-                NeuralNetwork.Layer.sigmoid(5, 5),
-                NeuralNetwork.Layer.softmax(5, 2)
+        val network =
+            NeuralNetwork(
+                listOf(
+                    NeuralNetwork.Layer.leakyRelu(2, 5),
+                    NeuralNetwork.Layer.sigmoid(5, 5),
+                    NeuralNetwork.Layer.softmax(5, 2),
+                ),
             )
-        )
 
         val x = (0..100).map { Matrix.row(it / 100f, it / 50f) }
 
-        val y = (0..100).map {
-            val res = sin(it / 100f) * sin(it / 50f)
-            val classification = if (res < 0f) 0f else 1f
-            Matrix.row(classification, 1 - classification)
-        }
+        val y =
+            (0..100).map {
+                val res = sin(it / 100f) * sin(it / 50f)
+                val classification = if (res < 0f) 0f else 1f
+                Matrix.row(classification, 1 - classification)
+            }
 
-        val before = (0..100).map {
-            val res = sin(it / 100f) * sin(it / 50f)
-            val classification = if (res < 0f) 0f else 1f
-            val expected = listOf(classification, 1 - classification)
-            Statistics.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
-        }.average()
+        val before =
+            (0..100)
+                .map {
+                    val res = sin(it / 100f) * sin(it / 50f)
+                    val classification = if (res < 0f) 0f else 1f
+                    val expected = listOf(classification, 1 - classification)
+                    Statistics.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
+                }.average()
 
-        val error = network.fit(
-            x,
-            y,
-            epochs = 2000,
-            learningRate = 0.05f
-        )
+        val error =
+            network.fit(
+                x,
+                y,
+                epochs = 2000,
+                learningRate = 0.05f,
+            )
 
-        val after = (0..100).map {
-            val res = sin(it / 100f) * sin(it / 50f)
-            val classification = if (res < 0f) 0f else 1f
-            val expected = listOf(classification, 1 - classification)
-            Statistics.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
-        }.average()
+        val after =
+            (0..100)
+                .map {
+                    val res = sin(it / 100f) * sin(it / 50f)
+                    val classification = if (res < 0f) 0f else 1f
+                    val expected = listOf(classification, 1 - classification)
+                    Statistics.rmse(network.predict(listOf(it / 100f, it / 50f)), expected)
+                }.average()
 
         assertTrue(before > after)
         assertTrue(error < 0.01f)

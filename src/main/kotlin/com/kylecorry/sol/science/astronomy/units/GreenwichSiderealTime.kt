@@ -4,8 +4,9 @@ import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.time.Time
 import java.time.LocalDate
 
-internal class GreenwichSiderealTime(_hours: Double) : SiderealTime(_hours, 0.0) {
-
+internal class GreenwichSiderealTime(
+    _hours: Double,
+) : SiderealTime(_hours, 0.0) {
     fun toUniversalTime(date: LocalDate): UniversalTime {
         val time = date.atStartOfDay()
         val jd = time.toJulianDay()

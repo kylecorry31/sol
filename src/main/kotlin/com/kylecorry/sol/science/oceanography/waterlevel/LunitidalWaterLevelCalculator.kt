@@ -13,9 +13,8 @@ class LunitidalWaterLevelCalculator(
     private val lunitidalInterval: Duration,
     private val location: Coordinate = Coordinate.zero,
     private val lowLunitidalInterval: Duration? = null,
-    private val waterLevelRange: Range<Float>? = null
+    private val waterLevelRange: Range<Float>? = null,
 ) : IWaterLevelCalculator {
-
     private val moonTransits = RingBuffer<ZonedDateTime>(24)
 
     private val antipodeLocation = location.antipode
@@ -32,31 +31,35 @@ class LunitidalWaterLevelCalculator(
             return 0f
         }
 
-        val calculator = if (previous.isHigh == next.isHigh) {
-            val durationBetween = Duration.between(previous.time, next.time)
-            val low = previous.time.plus(durationBetween.dividedBy(2))
-            if (low.isBefore(time)) {
-                getCalculator(
-                    Tide.low(low, waterLevelRange?.start),
-                    Tide.high(next.time, waterLevelRange?.end)
-                )
+        val calculator =
+            if (previous.isHigh == next.isHigh) {
+                val durationBetween = Duration.between(previous.time, next.time)
+                val low = previous.time.plus(durationBetween.dividedBy(2))
+                if (low.isBefore(time)) {
+                    getCalculator(
+                        Tide.low(low, waterLevelRange?.start),
+                        Tide.high(next.time, waterLevelRange?.end),
+                    )
+                } else {
+                    getCalculator(
+                        Tide.high(previous.time, waterLevelRange?.end),
+                        Tide.low(low, waterLevelRange?.start),
+                    )
+                }
             } else {
                 getCalculator(
-                    Tide.high(previous.time, waterLevelRange?.end),
-                    Tide.low(low, waterLevelRange?.start)
+                    previous,
+                    next,
                 )
             }
-        } else {
-            getCalculator(
-                previous,
-                next,
-            )
-        }
 
         return calculator.calculate(time)
     }
 
-    private fun getCalculator(previous: Tide, next: Tide): IWaterLevelCalculator {
+    private fun getCalculator(
+        previous: Tide,
+        next: Tide,
+    ): IWaterLevelCalculator {
         synchronized(this) {
             if (cachedCalculator != null && cachedCalculatorTideStart == previous && cachedCalculatorTideEnd == next) {
                 return cachedCalculator!!
@@ -69,8 +72,8 @@ class LunitidalWaterLevelCalculator(
         }
     }
 
-    private fun getPreviousTide(time: ZonedDateTime): Tide? {
-        return if (lowLunitidalInterval != null) {
+    private fun getPreviousTide(time: ZonedDateTime): Tide? =
+        if (lowLunitidalInterval != null) {
             val previousLow = getLowTide(time, false)
             val previousHigh = getHighTide(time, false)
             Time.getClosestPastTime(time, listOf(previousLow, previousHigh))?.let {
@@ -92,10 +95,9 @@ class LunitidalWaterLevelCalculator(
                 }
             }
         }
-    }
 
-    private fun getNextTide(time: ZonedDateTime): Tide? {
-        return if (lowLunitidalInterval != null) {
+    private fun getNextTide(time: ZonedDateTime): Tide? =
+        if (lowLunitidalInterval != null) {
             val nextLow = getLowTide(time, true)
             val nextHigh = getHighTide(time, true)
             Time.getClosestFutureTime(time, listOf(nextLow, nextHigh))?.let {
@@ -117,9 +119,12 @@ class LunitidalWaterLevelCalculator(
                 }
             }
         }
-    }
 
-    private fun getTide(time: ZonedDateTime, isHigh: Boolean, isNext: Boolean): ZonedDateTime? {
+    private fun getTide(
+        time: ZonedDateTime,
+        isHigh: Boolean,
+        isNext: Boolean,
+    ): ZonedDateTime? {
         val interval =
             if (isHigh) lunitidalInterval else (lowLunitidalInterval ?: lunitidalInterval)
         val tides = getTideTimes(time, interval)
@@ -130,29 +135,33 @@ class LunitidalWaterLevelCalculator(
         }
     }
 
-    private fun getHighTide(time: ZonedDateTime, isNext: Boolean): ZonedDateTime? {
-        return getTide(time, true, isNext)
-    }
+    private fun getHighTide(
+        time: ZonedDateTime,
+        isNext: Boolean,
+    ): ZonedDateTime? = getTide(time, true, isNext)
 
-    private fun getLowTide(time: ZonedDateTime, isNext: Boolean): ZonedDateTime? {
-        return getTide(time, false, isNext)
-    }
+    private fun getLowTide(
+        time: ZonedDateTime,
+        isNext: Boolean,
+    ): ZonedDateTime? = getTide(time, false, isNext)
 
-    private fun getUpperMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        return Astronomy.getMoonEvents(time, location).transit
-    }
+    private fun getUpperMoonTransit(time: ZonedDateTime): ZonedDateTime? = Astronomy.getMoonEvents(time, location).transit
 
-    private fun getLowerMoonTransit(time: ZonedDateTime): ZonedDateTime? {
-        return Astronomy.getMoonEvents(
-            time.withZoneSameInstant(
-                Time.getApproximateTimeZone(
-                    antipodeLocation
-                )
-            ), antipodeLocation
-        ).transit
-    }
+    private fun getLowerMoonTransit(time: ZonedDateTime): ZonedDateTime? =
+        Astronomy
+            .getMoonEvents(
+                time.withZoneSameInstant(
+                    Time.getApproximateTimeZone(
+                        antipodeLocation,
+                    ),
+                ),
+                antipodeLocation,
+            ).transit
 
-    private fun getTideTimes(time: ZonedDateTime, interval: Duration): List<ZonedDateTime> {
+    private fun getTideTimes(
+        time: ZonedDateTime,
+        interval: Duration,
+    ): List<ZonedDateTime> {
         val shortCircuitDuration = Duration.ofHours(14)
         val tides = moonTransits.toList().map { it.plus(interval) }.toMutableList()
 
@@ -181,13 +190,15 @@ class LunitidalWaterLevelCalculator(
                 val closest =
                     Time.getClosestPastTime(
                         time,
-                        listOf(beforeUpper?.plus(interval), beforeLower?.plus(interval))
+                        listOf(beforeUpper?.plus(interval), beforeLower?.plus(interval)),
                     )
 
-                if (closest != null && closest.isBefore(time) && closest.isAfter(
+                if (closest != null &&
+                    closest.isBefore(time) &&
+                    closest.isAfter(
                         time.minus(
-                            shortCircuitDuration
-                        )
+                            shortCircuitDuration,
+                        ),
                     )
                 ) {
                     before = closest
@@ -216,13 +227,15 @@ class LunitidalWaterLevelCalculator(
                 val closest =
                     Time.getClosestFutureTime(
                         time,
-                        listOf(afterUpper?.plus(interval), afterLower?.plus(interval))
+                        listOf(afterUpper?.plus(interval), afterLower?.plus(interval)),
                     )
 
-                if (closest != null && closest.isAfter(time) && closest.isBefore(
+                if (closest != null &&
+                    closest.isAfter(time) &&
+                    closest.isBefore(
                         time.plus(
-                            shortCircuitDuration
-                        )
+                            shortCircuitDuration,
+                        ),
                     )
                 ) {
                     after = closest

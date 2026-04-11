@@ -8,10 +8,13 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class AzimuthCalculatorTest {
-
     @ParameterizedTest
     @MethodSource("provideVectors")
-    fun calculate(gravity: Vector3, magnetic: Vector3, expected: Float?) {
+    fun calculate(
+        gravity: Vector3,
+        magnetic: Vector3,
+        expected: Float?,
+    ) {
         val bearing = AzimuthCalculator.calculate(gravity, magnetic)?.value
 
         if (bearing == null || expected == null) {
@@ -20,13 +23,12 @@ internal class AzimuthCalculatorTest {
         }
 
         assertEquals(expected, bearing, 0.5f)
-
     }
 
     companion object {
         @JvmStatic
-        fun provideVectors(): Stream<Arguments> {
-            return Stream.of(
+        fun provideVectors(): Stream<Arguments> =
+            Stream.of(
                 // Held flat
                 Arguments.of(Vector3(0f, 0f, 9.81f), Vector3(0f, 16f, -51f), 0f),
                 Arguments.of(Vector3(0f, 0f, 9.81f), Vector3(16f, 0f, -51f), 270f),
@@ -51,8 +53,7 @@ internal class AzimuthCalculatorTest {
                 // Invalid
                 Arguments.of(Vector3(0f, 0f, 0f), Vector3(0f, -51f, 16f), null),
                 Arguments.of(Vector3(0f, 0f, 10f), Vector3(0f, 0f, 0f), null),
-                Arguments.of(Vector3(10f, 10f, 10f), Vector3(10f, 10f, 10f), null)
+                Arguments.of(Vector3(10f, 10f, 10f), Vector3(10f, 10f, 10f), null),
             )
-        }
     }
 }

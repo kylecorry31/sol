@@ -2,8 +2,11 @@ package com.kylecorry.sol.math.interpolation
 
 import com.kylecorry.sol.math.Vector2
 
-class LinearInterpolator(points: List<Vector2>) : Interpolator {
+class LinearInterpolator(
+    points: List<Vector2>,
+) : Interpolator {
     private val sortedPoints = points.sortedBy { it.x }
+
     override fun interpolate(x: Float): Float {
         if (sortedPoints.isEmpty()) {
             return 0f

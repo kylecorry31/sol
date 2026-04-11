@@ -1,3 +1,7 @@
 package com.kylecorry.sol.science.astronomy.moon
 
-data class MoonPhase(val phase: MoonTruePhase, val illumination: Float, val angle: Float)
+data class MoonPhase(
+    val phase: MoonTruePhase,
+    val illumination: Float,
+    val angle: Float,
+)

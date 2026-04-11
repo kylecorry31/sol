@@ -8,9 +8,8 @@ import kotlin.math.abs
  */
 class RDPFilter<T>(
     private val epsilon: Float,
-    private val crossTrackDistance: (point: T, start: T, end: T) -> Float
+    private val crossTrackDistance: (point: T, start: T, end: T) -> Float,
 ) {
-
     fun filter(points: List<T>): List<T> {
         if (points.size < 2) {
             return emptyList()
@@ -60,7 +59,11 @@ class RDPFilter<T>(
         return filtered
     }
 
-    private fun findFurthest(startIndex: Int, endIndex: Int, allPoints: List<T>): Int {
+    private fun findFurthest(
+        startIndex: Int,
+        endIndex: Int,
+        allPoints: List<T>,
+    ): Int {
         if (endIndex - startIndex < 2) {
             return -1
         }
@@ -80,6 +83,4 @@ class RDPFilter<T>(
 
         return maxIndex
     }
-
-
 }

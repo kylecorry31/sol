@@ -1,13 +1,14 @@
 package com.kylecorry.sol.units
 
 @JvmInline
-value class Distance private constructor(private val measure: Measure) : Comparable<Distance> {
+value class Distance private constructor(
+    private val measure: Measure,
+) : Comparable<Distance> {
     val value: Float
         get() = measureValue(measure)
 
     val units: DistanceUnits
         get() = measureUnit<DistanceUnits>(measure)
-
 
     fun convertTo(newUnits: DistanceUnits): Distance {
         val m = value * units.meters
@@ -15,52 +16,31 @@ value class Distance private constructor(private val measure: Measure) : Compara
         return from(newDistance.toFloat(), newUnits)
     }
 
-    fun meters(): Distance {
-        return convertTo(DistanceUnits.Meters)
-    }
+    fun meters(): Distance = convertTo(DistanceUnits.Meters)
 
-    operator fun times(multiplier: Float): Distance {
-        return from(value * multiplier, units)
-    }
+    operator fun times(multiplier: Float): Distance = from(value * multiplier, units)
 
-    override fun toString(): String {
-        return "$value $units"
-    }
+    override fun toString(): String = "$value $units"
 
     companion object {
+        fun meters(distance: Float): Distance = from(distance, DistanceUnits.Meters)
 
-        fun meters(distance: Float): Distance {
-            return from(distance, DistanceUnits.Meters)
-        }
+        fun feet(distance: Float): Distance = from(distance, DistanceUnits.Feet)
 
-        fun feet(distance: Float): Distance {
-            return from(distance, DistanceUnits.Feet)
-        }
+        fun centimeters(distance: Float): Distance = from(distance, DistanceUnits.Centimeters)
 
-        fun centimeters(distance: Float): Distance {
-            return from(distance, DistanceUnits.Centimeters)
-        }
+        fun kilometers(distance: Float): Distance = from(distance, DistanceUnits.Kilometers)
 
-        fun kilometers(distance: Float): Distance {
-            return from(distance, DistanceUnits.Kilometers)
-        }
+        fun miles(distance: Float): Distance = from(distance, DistanceUnits.Miles)
 
-        fun miles(distance: Float): Distance {
-            return from(distance, DistanceUnits.Miles)
-        }
+        fun nauticalMiles(distance: Float): Distance = from(distance, DistanceUnits.NauticalMiles)
 
-        fun nauticalMiles(distance: Float): Distance {
-            return from(distance, DistanceUnits.NauticalMiles)
-        }
+        fun yards(distance: Float): Distance = from(distance, DistanceUnits.Yards)
 
-        fun yards(distance: Float): Distance {
-            return from(distance, DistanceUnits.Yards)
-        }
-
-        fun from(value: Float, unit: DistanceUnits): Distance {
-            return Distance(packMeasure(value, unit))
-        }
-
+        fun from(
+            value: Float,
+            unit: DistanceUnits,
+        ): Distance = Distance(packMeasure(value, unit))
     }
 
     override fun compareTo(other: Distance): Int {

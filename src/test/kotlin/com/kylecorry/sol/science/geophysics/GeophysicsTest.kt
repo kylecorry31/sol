@@ -11,17 +11,16 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.time.LocalDate
 
 internal class GeophysicsTest {
-
     @Test
     fun gravity() {
         assertThat(Geophysics.getGravity(Coordinate.zero)).isCloseTo(9.78032677f, 0.00001f)
         assertThat(Geophysics.getGravity(Coordinate(90.0, 0.0))).isCloseTo(
             9.83218493786340046183f,
-            0.00001f
+            0.00001f,
         )
         assertThat(Geophysics.getGravity(Coordinate(-90.0, 0.0))).isCloseTo(
             9.83218493786340046183f,
-            0.00001f
+            0.00001f,
         )
     }
 
@@ -38,15 +37,27 @@ internal class GeophysicsTest {
         "2027-07-01, -80.0, 240.0, 0.0, 68.49",
         "2027-07-01, 80.0, 0.0, 100000.0, 2.16",
         "2027-07-01, 0.0, 120.0, 100000.0, -0.23",
-        "2027-07-01, -80.0, 240.0, 100000.0, 67.93"
+        "2027-07-01, -80.0, 240.0, 100000.0, 67.93",
     )
-    fun getGeomagneticDeclination(dateStr: String, lat: Double, lon: Double, altitude: Float, expected: Float) {
+    fun getGeomagneticDeclination(
+        dateStr: String,
+        lat: Double,
+        lon: Double,
+        altitude: Float,
+        expected: Float,
+    ) {
         val location = Coordinate(lat, lon)
-        val actual = Geophysics.getGeomagneticDeclination(
-            location,
-            altitude,
-            LocalDate.parse(dateStr).atStartOfDay().toUTC().toInstant().toEpochMilli()
-        )
+        val actual =
+            Geophysics.getGeomagneticDeclination(
+                location,
+                altitude,
+                LocalDate
+                    .parse(dateStr)
+                    .atStartOfDay()
+                    .toUTC()
+                    .toInstant()
+                    .toEpochMilli(),
+            )
         assertEquals(expected, actual, 0.01f)
     }
 
@@ -63,16 +74,27 @@ internal class GeophysicsTest {
         "2027-07-01, -80.0, 240.0, 0.0, -71.92",
         "2027-07-01, 80.0, 0.0, 100000.0, 83.29",
         "2027-07-01, 0.0, 120.0, 100000.0, -14.81",
-        "2027-07-01, -80.0, 240.0, 100000.0, -72.1"
+        "2027-07-01, -80.0, 240.0, 100000.0, -72.1",
     )
-    fun getGeomagneticInclination(dateStr: String, lat: Double, lon: Double, altitude: Float, expected: Float) {
+    fun getGeomagneticInclination(
+        dateStr: String,
+        lat: Double,
+        lon: Double,
+        altitude: Float,
+        expected: Float,
+    ) {
         val location = Coordinate(lat, lon)
-        val actual = Geophysics.getGeomagneticInclination(
-            location,
-            altitude,
-            LocalDate.parse(dateStr).atStartOfDay().toUTC().toInstant().toEpochMilli()
-        )
+        val actual =
+            Geophysics.getGeomagneticInclination(
+                location,
+                altitude,
+                LocalDate
+                    .parse(dateStr)
+                    .atStartOfDay()
+                    .toUTC()
+                    .toInstant()
+                    .toEpochMilli(),
+            )
         assertEquals(expected, actual, 0.01f)
     }
-
 }

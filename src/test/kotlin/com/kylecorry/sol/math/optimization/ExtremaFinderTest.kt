@@ -10,10 +10,14 @@ import java.util.stream.Stream
 import kotlin.math.sin
 
 class ExtremaFinderTest {
-
     @ParameterizedTest
     @MethodSource("provideExtremas")
-    fun simpleExtremaFinder(start: Double, end: Double, fn: (x: Double) -> Double, expected: List<Extremum>) {
+    fun simpleExtremaFinder(
+        start: Double,
+        end: Double,
+        fn: (x: Double) -> Double,
+        expected: List<Extremum>,
+    ) {
         val step = 0.01
         val finder = SimpleExtremaFinder(step)
         val actual = finder.find(Range(start, end), fn)
@@ -22,7 +26,12 @@ class ExtremaFinderTest {
 
     @ParameterizedTest
     @MethodSource("provideExtremas")
-    fun goldenSearchExtremaFinder(start: Double, end: Double, fn: (x: Double) -> Double, expected: List<Extremum>) {
+    fun goldenSearchExtremaFinder(
+        start: Double,
+        end: Double,
+        fn: (x: Double) -> Double,
+        expected: List<Extremum>,
+    ) {
         val step = 0.5
         val tolerance = 0.01
         val finder = GoldenSearchExtremaFinder(step, tolerance)
@@ -32,7 +41,12 @@ class ExtremaFinderTest {
 
     @ParameterizedTest
     @MethodSource("provideExtremas")
-    fun iterativeSimpleExtremaFinder(start: Double, end: Double, fn: (x: Double) -> Double, expected: List<Extremum>) {
+    fun iterativeSimpleExtremaFinder(
+        start: Double,
+        end: Double,
+        fn: (x: Double) -> Double,
+        expected: List<Extremum>,
+    ) {
         val initialStep = 0.5
         val finalStep = 0.01
         val finder = IterativeSimpleExtremaFinder(initialStep, finalStep, 3)
@@ -44,7 +58,7 @@ class ExtremaFinderTest {
         expected: List<Extremum>,
         actual: List<Extremum>,
         xTolerance: Float,
-        yTolerance: Float
+        yTolerance: Float,
     ) {
         assert(expected.size == actual.size) { "Expected ${expected.size} extremas but found ${actual.size}" }
         for (i in expected.indices) {
@@ -58,8 +72,8 @@ class ExtremaFinderTest {
 
     companion object {
         @JvmStatic
-        fun provideExtremas(): Stream<Arguments> {
-            return Stream.of(
+        fun provideExtremas(): Stream<Arguments> =
+            Stream.of(
                 // Sin (min and max)
                 Arguments.of(
                     0.0,
@@ -68,13 +82,13 @@ class ExtremaFinderTest {
                     listOf(
                         Extremum(
                             Vector2(Math.PI.toFloat() / 2f, 1f),
-                            true
+                            true,
                         ),
                         Extremum(
                             Vector2(3 * Math.PI.toFloat() / 2f, -1f),
-                            false
-                        )
-                    )
+                            false,
+                        ),
+                    ),
                 ),
                 // Sin (max only)
                 Arguments.of(
@@ -84,9 +98,9 @@ class ExtremaFinderTest {
                     listOf(
                         Extremum(
                             Vector2(Math.PI.toFloat() / 2f, 1f),
-                            true
-                        )
-                    )
+                            true,
+                        ),
+                    ),
                 ),
                 // Sin (min only)
                 Arguments.of(
@@ -96,23 +110,23 @@ class ExtremaFinderTest {
                     listOf(
                         Extremum(
                             Vector2(3 * Math.PI.toFloat() / 2f, -1f),
-                            false
-                        )
-                    )
+                            false,
+                        ),
+                    ),
                 ),
                 // Flat line
                 Arguments.of(
                     0.0,
                     10.0,
                     { x: Double -> 1.0 },
-                    emptyList<Extremum>()
+                    emptyList<Extremum>(),
                 ),
                 // Linear
                 Arguments.of(
                     0.0,
                     10.0,
                     { x: Double -> x },
-                    emptyList<Extremum>()
+                    emptyList<Extremum>(),
                 ),
                 // Parabola
                 Arguments.of(
@@ -122,13 +136,10 @@ class ExtremaFinderTest {
                     listOf(
                         Extremum(
                             Vector2(0f, 0f),
-                            false
-                        )
-                    )
+                            false,
+                        ),
+                    ),
                 ),
             )
-
-        }
     }
-
 }

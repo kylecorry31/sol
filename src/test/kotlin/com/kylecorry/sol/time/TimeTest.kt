@@ -29,7 +29,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.time.*
 
 class TimeTest {
-
     @ParameterizedTest
     @CsvSource(
         "100, PT100H",
@@ -40,7 +39,10 @@ class TimeTest {
         "0.03125, PT1M52S",
         "0.00048828125, PT1S",
     )
-    fun hours(hours: Double, expectedStr: String) {
+    fun hours(
+        hours: Double,
+        expectedStr: String,
+    ) {
         val expected = Duration.parse(expectedStr)
         val actual = Time.hours(hours)
         assertDurationEquals(expected, actual, Duration.ofSeconds(1))
@@ -198,10 +200,11 @@ class TimeTest {
 
         val times = Time.getDaylightSavingsTransitions(zone, year)
         assertEquals(
-            times, listOf(
+            times,
+            listOf(
                 zdt(2022, Month.MARCH, 13, 2, zone = zone) to Duration.ofHours(1),
                 zdt(2022, Month.NOVEMBER, 6, 1, zone = zone).plusHours(1) to Duration.ofHours(0),
-            )
+            ),
         )
     }
 
@@ -212,7 +215,8 @@ class TimeTest {
 
         val times = Time.getDaylightSavingsTransitions(zone, year)
         assertEquals(
-            times, listOf<Pair<ZonedDateTime, Duration>>()
+            times,
+            listOf<Pair<ZonedDateTime, Duration>>(),
         )
     }
 
@@ -237,12 +241,13 @@ class TimeTest {
     @Test
     fun canGetClosestPastTime() {
         val now = dt(2020, Month.JANUARY, 10, 2)
-        val times = listOf(
-            dt(2020, Month.JANUARY, 10, 0),
-            dt(2020, Month.JANUARY, 11, 0),
-            dt(2020, Month.JANUARY, 10, 1),
-            null
-        )
+        val times =
+            listOf(
+                dt(2020, Month.JANUARY, 10, 0),
+                dt(2020, Month.JANUARY, 11, 0),
+                dt(2020, Month.JANUARY, 10, 1),
+                null,
+            )
 
         val actual = getClosestPastTime(now, times)
 
@@ -252,12 +257,13 @@ class TimeTest {
     @Test
     fun canGetClosestPastTimeZoned() {
         val now = zdt(2020, Month.JANUARY, 10, 2)
-        val times = listOf(
-            zdt(2020, Month.JANUARY, 10, 0),
-            zdt(2020, Month.JANUARY, 11, 0),
-            zdt(2020, Month.JANUARY, 10, 1),
-            null
-        )
+        val times =
+            listOf(
+                zdt(2020, Month.JANUARY, 10, 0),
+                zdt(2020, Month.JANUARY, 11, 0),
+                zdt(2020, Month.JANUARY, 10, 1),
+                null,
+            )
 
         val actual = getClosestPastTime(now, times)
 
@@ -267,12 +273,13 @@ class TimeTest {
     @Test
     fun canGetClosestPastTimeInstant() {
         val now = Instant.now()
-        val times = listOf(
-            now.minusSeconds(100),
-            now.minusSeconds(10),
-            now.plusSeconds(100),
-            null
-        )
+        val times =
+            listOf(
+                now.minusSeconds(100),
+                now.minusSeconds(10),
+                now.plusSeconds(100),
+                null,
+            )
 
         val actual = getClosestPastTime(now, times)
 
@@ -282,13 +289,14 @@ class TimeTest {
     @Test
     fun canGetClosestTime() {
         val now = zdt(2020, Month.JANUARY, 10, 2)
-        val times = listOf(
-            zdt(2020, Month.JANUARY, 10, 0),
-            zdt(2020, Month.JANUARY, 11, 0),
-            zdt(2020, Month.JANUARY, 10, 1),
-            zdt(2020, Month.JANUARY, 10, 2, 30),
-            null
-        )
+        val times =
+            listOf(
+                zdt(2020, Month.JANUARY, 10, 0),
+                zdt(2020, Month.JANUARY, 11, 0),
+                zdt(2020, Month.JANUARY, 10, 1),
+                zdt(2020, Month.JANUARY, 10, 2, 30),
+                null,
+            )
 
         val actual = getClosestTime(now, times)
 
@@ -298,12 +306,13 @@ class TimeTest {
     @Test
     fun canGetClosestFutureTimeZoned() {
         val now = zdt(2020, Month.JANUARY, 10, 2)
-        val times = listOf(
-            zdt(2020, Month.JANUARY, 10, 0),
-            zdt(2020, Month.JANUARY, 11, 0),
-            zdt(2020, Month.JANUARY, 10, 1),
-            null
-        )
+        val times =
+            listOf(
+                zdt(2020, Month.JANUARY, 10, 0),
+                zdt(2020, Month.JANUARY, 11, 0),
+                zdt(2020, Month.JANUARY, 10, 1),
+                null,
+            )
 
         val actual = getClosestFutureTime(now, times)
 
@@ -313,12 +322,13 @@ class TimeTest {
     @Test
     fun canGetClosestFutureTime() {
         val now = dt(2020, Month.JANUARY, 10, 2)
-        val times = listOf(
-            dt(2020, Month.JANUARY, 10, 0),
-            dt(2020, Month.JANUARY, 11, 0),
-            dt(2020, Month.JANUARY, 10, 1),
-            null
-        )
+        val times =
+            listOf(
+                dt(2020, Month.JANUARY, 10, 0),
+                dt(2020, Month.JANUARY, 11, 0),
+                dt(2020, Month.JANUARY, 10, 1),
+                null,
+            )
 
         val actual = getClosestFutureTime(now, times)
 
@@ -328,11 +338,12 @@ class TimeTest {
     @Test
     fun returnsNullIfNoFutureTimes() {
         val now = dt(2020, Month.JANUARY, 10, 2)
-        val times = listOf(
-            dt(2020, Month.JANUARY, 10, 0),
-            dt(2020, Month.JANUARY, 10, 1),
-            null
-        )
+        val times =
+            listOf(
+                dt(2020, Month.JANUARY, 10, 0),
+                dt(2020, Month.JANUARY, 10, 1),
+                null,
+            )
 
         val actual = getClosestFutureTime(now, times)
 
@@ -342,11 +353,12 @@ class TimeTest {
     @Test
     fun returnsNullIfNoPastTimes() {
         val now = dt(2020, Month.JANUARY, 9, 2)
-        val times = listOf(
-            dt(2020, Month.JANUARY, 10, 0),
-            dt(2020, Month.JANUARY, 10, 1),
-            null
-        )
+        val times =
+            listOf(
+                dt(2020, Month.JANUARY, 10, 0),
+                dt(2020, Month.JANUARY, 10, 1),
+                null,
+            )
 
         val actual = getClosestPastTime(now, times)
 
@@ -367,12 +379,14 @@ class TimeTest {
         val step = Duration.ofHours(1)
         val readings = Time.getReadings(date, ZoneId.systemDefault(), step) { it.toEpochSecond() }
         assertEquals(24, readings.size)
-        val end = date
-            .atTime(23, 0)
-            .atZone(ZoneId.systemDefault())
-        val start = date
-            .atTime(0, 0)
-            .atZone(ZoneId.systemDefault())
+        val end =
+            date
+                .atTime(23, 0)
+                .atZone(ZoneId.systemDefault())
+        val start =
+            date
+                .atTime(0, 0)
+                .atZone(ZoneId.systemDefault())
 
         assertEquals(start.toEpochSecond(), readings.first().value)
         assertEquals(start.toInstant(), readings.first().time)
@@ -455,7 +469,11 @@ class TimeTest {
         "2020-01-01T23:59:45-05:00, 15, 2020-01-02T00:00:00-05:00",
         "2020-01-01T01:30:00-05:00, 15, 2020-01-01T01:30:00-05:00",
     )
-    fun roundNearestMinute(time: ZonedDateTime, minute: Int, expected: ZonedDateTime) {
+    fun roundNearestMinute(
+        time: ZonedDateTime,
+        minute: Int,
+        expected: ZonedDateTime,
+    ) {
         val actual = time.roundNearestMinute(minute)
         assertEquals(expected, actual)
     }
@@ -472,7 +490,11 @@ class TimeTest {
         "2020-01-01T23:59:45, 15, 2020-01-02T00:00:00",
         "2020-01-01T01:30:00, 15, 2020-01-01T01:30:00",
     )
-    fun roundNearestMinute(time: LocalDateTime, minute: Int, expected: LocalDateTime) {
+    fun roundNearestMinute(
+        time: LocalDateTime,
+        minute: Int,
+        expected: LocalDateTime,
+    ) {
         val actual = time.roundNearestMinute(minute)
         assertEquals(expected, actual)
     }
@@ -534,7 +556,10 @@ class TimeTest {
         "20, 1.3333",
         "-20, -1.3333",
     )
-    fun getSolarTimeOffset(longitude: Double, offset: Double) {
+    fun getSolarTimeOffset(
+        longitude: Double,
+        offset: Double,
+    ) {
         val expected = Time.hours(offset)
         assertDurationEquals(expected, Time.getSolarTimeOffset(longitude), Duration.ofMinutes(1))
     }
@@ -555,7 +580,10 @@ class TimeTest {
         "1.3333, 20",
         "-1.3333, -20",
     )
-    fun getLongitudeFromSolarTimeOffset(offset: Double, longitude: Double) {
+    fun getLongitudeFromSolarTimeOffset(
+        offset: Double,
+        longitude: Double,
+    ) {
         assertEquals(longitude, Time.getLongitudeFromSolarTimeOffset(Time.hours(offset)), 0.001)
     }
 
@@ -577,22 +605,33 @@ class TimeTest {
         "30, +2",
         "-30, -2",
     )
-    fun getApproximateTimeZone(longitude: Double, offset: String) {
+    fun getApproximateTimeZone(
+        longitude: Double,
+        offset: String,
+    ) {
         val expected = ZoneId.of(offset)
         val actual = Time.getApproximateTimeZone(Coordinate(0.0, longitude))
         assertEquals(expected, actual)
     }
 
-    private fun assertDurationEquals(expected: Duration, actual: Duration, delta: Duration) {
+    private fun assertDurationEquals(
+        expected: Duration,
+        actual: Duration,
+        delta: Duration,
+    ) {
         val diff = expected.minus(actual).abs()
         if (diff > delta) {
             assertEquals(expected, actual)
         }
     }
 
-    private fun dt(year: Int, month: Month, day: Int, hour: Int, minute: Int = 0): LocalDateTime {
-        return LocalDateTime.of(year, month, day, hour, minute)
-    }
+    private fun dt(
+        year: Int,
+        month: Month,
+        day: Int,
+        hour: Int,
+        minute: Int = 0,
+    ): LocalDateTime = LocalDateTime.of(year, month, day, hour, minute)
 
     private fun zdt(
         year: Int,
@@ -600,8 +639,6 @@ class TimeTest {
         day: Int,
         hour: Int,
         minute: Int = 0,
-        zone: ZoneId = ZoneId.systemDefault()
-    ): ZonedDateTime {
-        return ZonedDateTime.of(dt(year, month, day, hour, minute), zone)
-    }
+        zone: ZoneId = ZoneId.systemDefault(),
+    ): ZonedDateTime = ZonedDateTime.of(dt(year, month, day, hour, minute), zone)
 }

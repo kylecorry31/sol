@@ -4,19 +4,22 @@ import assertk.assertThat
 import assertk.assertions.isCloseTo
 import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.Coordinate
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
-import com.kylecorry.sol.tests.isCloseTo
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class CylindricalEquidistantProjectionTest {
-
     @ParameterizedTest
     @MethodSource("provideToCoordinate")
-    fun toCoordinate(x: Float, y: Float, expected: Coordinate) {
+    fun toCoordinate(
+        x: Float,
+        y: Float,
+        expected: Coordinate,
+    ) {
         val projection = CylindricalEquidistantProjection()
         val coordinate = projection.toCoordinate(Vector2(x, y))
         assertThat(coordinate).isCloseTo(expected, 0.5f)
@@ -24,7 +27,11 @@ internal class CylindricalEquidistantProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideToPixels")
-    fun toPixels(coordinate: Coordinate, expectedX: Float, expectedY: Float) {
+    fun toPixels(
+        coordinate: Coordinate,
+        expectedX: Float,
+        expectedY: Float,
+    ) {
         val projection = CylindricalEquidistantProjection()
         val pixels = projection.toPixels(coordinate)
         assertThat(pixels.x).isCloseTo(expectedX, 0.5f)
@@ -44,14 +51,22 @@ internal class CylindricalEquidistantProjectionTest {
         "80, 0.1736482",
         "-80, 0.1736482",
     )
-    fun getScaleForLatitude(latitude: Double, expected: Float) {
+    fun getScaleForLatitude(
+        latitude: Double,
+        expected: Float,
+    ) {
         val scale = CylindricalEquidistantProjection.getScaleForLatitude(latitude)
         assertThat(scale).isCloseTo(expected, 0.0001f)
     }
 
     @ParameterizedTest
     @MethodSource("provideScaledToCoordinate")
-    fun toCoordinateScaled(scale: Float, x: Float, y: Float, expected: Coordinate) {
+    fun toCoordinateScaled(
+        scale: Float,
+        x: Float,
+        y: Float,
+        expected: Coordinate,
+    ) {
         val projection = CylindricalEquidistantProjection(scale)
         val coordinate = projection.toCoordinate(Vector2(x, y))
         assertThat(coordinate).isCloseTo(expected, 0.5f)
@@ -59,18 +74,22 @@ internal class CylindricalEquidistantProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideScaledToPixels")
-    fun toPixelsScaled(scale: Float, coordinate: Coordinate, expectedX: Float, expectedY: Float) {
+    fun toPixelsScaled(
+        scale: Float,
+        coordinate: Coordinate,
+        expectedX: Float,
+        expectedY: Float,
+    ) {
         val projection = CylindricalEquidistantProjection(scale)
         val pixels = projection.toPixels(coordinate)
         assertThat(pixels.x).isCloseTo(expectedX, 0.0001f)
         assertThat(pixels.y).isCloseTo(expectedY, 0.0001f)
     }
 
-
     companion object {
         @JvmStatic
-        fun provideToCoordinate(): Stream<Arguments> {
-            return Stream.of(
+        fun provideToCoordinate(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(0f, 0f, Coordinate.zero),
                 Arguments.of(10f.toRadians(), 0f, Coordinate(0.0, 10.0)),
                 Arguments.of((-10f).toRadians(), 0f, Coordinate(0.0, -10.0)),
@@ -83,11 +102,10 @@ internal class CylindricalEquidistantProjectionTest {
                 Arguments.of(0f, 100f.toRadians(), Coordinate(90.0, 0.0)),
                 Arguments.of(0f, (-100f).toRadians(), Coordinate(-90.0, 0.0)),
             )
-        }
 
         @JvmStatic
-        fun provideToPixels(): Stream<Arguments> {
-            return Stream.of(
+        fun provideToPixels(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(Coordinate.zero, 0f, 0f),
                 Arguments.of(Coordinate(0.0, 10.0), 10f.toRadians(), 0f),
                 Arguments.of(Coordinate(0.0, -10.0), (-10f).toRadians(), 0f),
@@ -100,23 +118,19 @@ internal class CylindricalEquidistantProjectionTest {
                 Arguments.of(Coordinate(90.0, 0.0), 0f, 100f.toRadians()),
                 Arguments.of(Coordinate(-90.0, 0.0), 0f, (-100f).toRadians()),
             )
-        }
 
         @JvmStatic
-        fun provideScaledToCoordinate(): Stream<Arguments> {
-            return Stream.of(
+        fun provideScaledToCoordinate(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(2f, 20f.toRadians(), 20f.toRadians(), Coordinate(10.0, 10.0)),
                 Arguments.of(2f, (-20f).toRadians(), (-20f).toRadians(), Coordinate(-10.0, -10.0)),
             )
-        }
 
         @JvmStatic
-        fun provideScaledToPixels(): Stream<Arguments> {
-            return Stream.of(
+        fun provideScaledToPixels(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(2f, Coordinate(10.0, 10.0), 20f.toRadians(), 20f.toRadians()),
                 Arguments.of(2f, Coordinate(-10.0, -10.0), (-20f).toRadians(), (-20f).toRadians()),
             )
-        }
     }
-
 }

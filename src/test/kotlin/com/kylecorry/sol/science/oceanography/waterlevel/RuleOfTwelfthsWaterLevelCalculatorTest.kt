@@ -12,14 +12,13 @@ import java.time.ZonedDateTime
 import java.util.stream.Stream
 
 internal class RuleOfTwelfthsWaterLevelCalculatorTest {
-
     @ParameterizedTest
     @MethodSource("provideWaterLevels")
     fun calculate(
         first: Tide,
         second: Tide,
         time: ZonedDateTime,
-        expected: Float
+        expected: Float,
     ) {
         val calculator = RuleOfTwelfthsWaterLevelCalculator(first, second)
         val actual = calculator.calculate(time)
@@ -28,105 +27,105 @@ internal class RuleOfTwelfthsWaterLevelCalculatorTest {
 
     companion object {
         @JvmStatic
-        fun provideWaterLevels(): Stream<Arguments> {
-            return Stream.of(
+        fun provideWaterLevels(): Stream<Arguments> =
+            Stream.of(
                 // Low to high
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 0, 0),
-                    0f
+                    0f,
                 ),
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 1, 0),
-                    0.8f
+                    0.8f,
                 ),
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 2, 0),
-                    3f
+                    3f,
                 ),
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 3, 0),
-                    6f
+                    6f,
                 ),
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 4, 0),
-                    9f
+                    9f,
                 ),
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 5, 0),
-                    11.2f
+                    11.2f,
                 ),
                 Arguments.of(
                     Tide.low(time(1, 0, 0), 0f),
                     Tide.high(time(1, 6, 0), 12f),
                     time(1, 6, 0),
-                    12f
+                    12f,
                 ),
                 // High to low
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 6, 0),
-                    12f
+                    12f,
                 ),
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 7, 0),
-                    11.2f
+                    11.2f,
                 ),
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 8, 0),
-                    9f
+                    9f,
                 ),
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 9, 0),
-                    6f
+                    6f,
                 ),
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 10, 0),
-                    3f
+                    3f,
                 ),
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 11, 0),
-                    0.8f
+                    0.8f,
                 ),
                 Arguments.of(
                     Tide.high(time(1, 6, 0), 12f),
                     Tide.low(time(1, 12, 0), 0f),
                     time(1, 12, 0),
-                    0f
+                    0f,
                 ),
             )
-        }
 
-        private fun time(day: Int, hour: Int, minute: Int): ZonedDateTime {
-            return ZonedDateTime.of(
+        private fun time(
+            day: Int,
+            hour: Int,
+            minute: Int,
+        ): ZonedDateTime =
+            ZonedDateTime.of(
                 LocalDate.of(2022, 1, day),
                 LocalTime.of(hour, minute, 0),
-                ZoneId.of("UTC")
+                ZoneId.of("UTC"),
             )
-        }
-
-
     }
 }

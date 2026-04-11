@@ -8,10 +8,8 @@ import kotlin.math.sqrt
 class KNNClassifier(
     private val k: Int,
     private val input: Matrix,
-    private val labels: Array<Array<Int>>
-) :
-    IClassifier {
-
+    private val labels: Array<Array<Int>>,
+) : IClassifier {
     override fun classify(x: List<Float>): List<Float> {
         val xArr = x.toTypedArray()
 
@@ -36,7 +34,10 @@ class KNNClassifier(
         return Statistics.probability(sumLabels)
     }
 
-    private fun distance(p1: Array<Float>, p2: Array<Float>): Float {
+    private fun distance(
+        p1: Array<Float>,
+        p2: Array<Float>,
+    ): Float {
         var sum = 0f
         for (i in p1.indices) {
             sum += square(p1[i] - p2[i])

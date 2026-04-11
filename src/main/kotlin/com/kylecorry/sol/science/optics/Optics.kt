@@ -11,16 +11,16 @@ import kotlin.math.atan2
 import kotlin.math.sqrt
 
 object Optics {
-
     /**
      * Calculates the angular size of an object
      * @param diameter The diameter of the object
      * @param distance The distance to the object
      * @return The angular size in degrees
      */
-    fun getAngularSize(diameter: Distance, distance: Distance): Float {
-        return getAngularSize(diameter.meters().value, distance.meters().value)
-    }
+    fun getAngularSize(
+        diameter: Distance,
+        distance: Distance,
+    ): Float = getAngularSize(diameter.meters().value, distance.meters().value)
 
     /**
      * Calculates the angular size of an object
@@ -28,9 +28,10 @@ object Optics {
      * @param distance The distance to the object in the same unit
      * @return The angular size in degrees
      */
-    fun getAngularSize(diameter: Float, distance: Float): Float {
-        return (2 * atan2(diameter / 2f, distance)).toDegrees()
-    }
+    fun getAngularSize(
+        diameter: Float,
+        distance: Float,
+    ): Float = (2 * atan2(diameter / 2f, distance)).toDegrees()
 
     /**
      * Calculates the perspective projection of a point onto the camera's image plane
@@ -50,7 +51,7 @@ object Optics {
         val cy = opticalCenter.y
         return Vector2(
             fx * point.x / point.z + cx,
-            fy * point.y / point.z + cy
+            fy * point.y / point.z + cy,
         )
     }
 
@@ -66,7 +67,7 @@ object Optics {
         point: Vector2,
         focalLength: Vector2,
         opticalCenter: Vector2,
-        distance: Float = 1f
+        distance: Float = 1f,
     ): Vector3 {
         val fx = focalLength.x
         val fy = focalLength.y
@@ -80,9 +81,11 @@ object Optics {
         val x2 = point.x * point.x
         val y2 = point.y * point.y
 
-        var z = distance * fx * fy * sqrt(
-            1 / (cx2 * fy2 - 2 * cx * fy2 * point.x + cy2 * fx2 - 2 * cy * fx2 * point.y + fx2 * fy2 + fx2 * y2 + fy2 * x2)
-        )
+        var z =
+            distance * fx * fy *
+                sqrt(
+                    1 / (cx2 * fy2 - 2 * cx * fy2 * point.x + cy2 * fx2 - 2 * cy * fx2 * point.y + fx2 * fy2 + fx2 * y2 + fy2 * x2),
+                )
         // This can be plus or minus, but given it is visible, it is probably positive
         if (z < 0) {
             z *= -1
@@ -102,10 +105,8 @@ object Optics {
     fun getFocalLengthPixels(
         focalLength: Float,
         sensorSize: Float,
-        sensorSizePixels: Int
-    ): Float {
-        return focalLength * sensorSizePixels / sensorSize
-    }
+        sensorSizePixels: Int,
+    ): Float = focalLength * sensorSizePixels / sensorSize
 
     /**
      * Calculates the field of view in degrees. Assumes the lens is rectilinear.
@@ -114,7 +115,7 @@ object Optics {
      */
     fun getFieldOfView(
         focalLength: Float,
-        sensorSize: Float
+        sensorSize: Float,
     ): Float {
         // https://www.bobatkins.com/photography/technical/field_of_view.html
         return 2 * atan(sensorSize / (2 * focalLength)).toDegrees()
@@ -126,9 +127,10 @@ object Optics {
      * @param viewSize The view size
      * @return The focal length in the same unit as viewSize
      */
-    fun getFocalLength(fieldOfView: Float, viewSize: Float): Float {
-        return viewSize / (2 * tanDegrees(fieldOfView / 2f))
-    }
+    fun getFocalLength(
+        fieldOfView: Float,
+        viewSize: Float,
+    ): Float = viewSize / (2 * tanDegrees(fieldOfView / 2f))
 
     /**
      * Corrects the distortion of a point using the Brown-Conrady distortion model.
@@ -168,25 +170,30 @@ object Optics {
         val p2 = tangentialDistortionCoefficients.getOrNull(1) ?: 0f
 
         val xCorrection =
-            normalizedX * radialDistortion + (p1 * (rSquared + 2 * normalizedX * normalizedX) + 2 * p2 * normalizedX * normalizedY) * sharedTangentialDistortion
+            normalizedX * radialDistortion +
+                (p1 * (rSquared + 2 * normalizedX * normalizedX) + 2 * p2 * normalizedX * normalizedY) * sharedTangentialDistortion
         val yCorrection =
-            normalizedY * radialDistortion + (2 * p1 * normalizedX * normalizedY + p2 * (rSquared + 2 * normalizedY * normalizedY)) * sharedTangentialDistortion
+            normalizedY * radialDistortion +
+                (2 * p1 * normalizedX * normalizedY + p2 * (rSquared + 2 * normalizedY * normalizedY)) * sharedTangentialDistortion
 
         return Vector2(point.x + xCorrection, point.y + yCorrection)
     }
 
-    fun luxToCandela(lux: Float, distance: Distance): Float {
+    fun luxToCandela(
+        lux: Float,
+        distance: Distance,
+    ): Float {
         val meters = distance.meters().value
         return lux * meters * meters
     }
 
-    fun luxAtDistance(candela: Float, distance: Distance): Float {
+    fun luxAtDistance(
+        candela: Float,
+        distance: Distance,
+    ): Float {
         val meters = distance.meters().value
         return candela / (meters * meters)
     }
 
-    fun lightBeamDistance(candela: Float): Distance {
-        return Distance.meters(sqrt(candela * 4))
-    }
-
+    fun lightBeamDistance(candela: Float): Distance = Distance.meters(sqrt(candela * 4))
 }

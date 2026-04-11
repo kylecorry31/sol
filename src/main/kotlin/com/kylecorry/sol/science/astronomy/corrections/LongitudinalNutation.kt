@@ -6,7 +6,6 @@ import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 
 internal object LongitudinalNutation {
-
     fun getNutationInLongitude(ut: UniversalTime): Double {
         val T = ut.toJulianCenturies()
         val X0 = polynomial(T, 297.85036, 445267.111480, -0.0019142, 1 / 189474.0)
@@ -23,8 +22,8 @@ internal object LongitudinalNutation {
         return nutation / 36000000.0
     }
 
-    fun table3(): Array<DoubleArray> {
-        return arrayOf(
+    fun table3(): Array<DoubleArray> =
+        arrayOf(
             doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, -171996.0, -174.2, 92025.0, 8.9),
             doubleArrayOf(-2.0, 0.0, 0.0, 2.0, 2.0, -13187.0, -1.6, 5736.0, -3.1),
             doubleArrayOf(0.0, 0.0, 0.0, 2.0, 2.0, -2274.0, -0.2, 977.0, -0.5),
@@ -87,8 +86,6 @@ internal object LongitudinalNutation {
             doubleArrayOf(0.0, -1.0, 1.0, 2.0, 2.0, -3.0, 0.0, 0.0, 0.0),
             doubleArrayOf(2.0, -1.0, -1.0, 2.0, 2.0, -3.0, 0.0, 0.0, 0.0),
             doubleArrayOf(0.0, 0.0, 3.0, 2.0, 2.0, -3.0, 0.0, 0.0, 0.0),
-            doubleArrayOf(2.0, -1.0, 0.0, 2.0, 2.0, -3.0, 0.0, 0.0, 0.0)
+            doubleArrayOf(2.0, -1.0, 0.0, 2.0, 2.0, -3.0, 0.0, 0.0, 0.0),
         )
-    }
-
 }

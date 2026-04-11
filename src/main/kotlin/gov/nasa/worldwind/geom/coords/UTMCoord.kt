@@ -16,10 +16,13 @@ import gov.nasa.worldwind.geom.LatLon
  * @version $Id$
  */
 class UTMCoord(
-    val latitude: Angle, val longitude: Angle, val zone: Int,
-    private val hemisphere: String?, val easting: Double, val northing: Double
+    val latitude: Angle,
+    val longitude: Angle,
+    val zone: Int,
+    private val hemisphere: String?,
+    val easting: Double,
+    val northing: Double,
 ) {
-
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append(zone)
@@ -30,19 +33,31 @@ class UTMCoord(
     }
 
     companion object {
-        fun fromLatLon(latitude: Angle, longitude: Angle): UTMCoord {
+        fun fromLatLon(
+            latitude: Angle,
+            longitude: Angle,
+        ): UTMCoord {
             val converter = UTMCoordConverter()
             val err = converter.convertGeodeticToUTM(latitude.radians, longitude.radians)
 
             require(err == UTMCoordConverter.UTM_NO_ERROR.toLong()) { "UTM Conversion Error" }
 
             return UTMCoord(
-                latitude, longitude, converter.zone, converter.hemisphere,
-                converter.easting, converter.northing
+                latitude,
+                longitude,
+                converter.zone,
+                converter.hemisphere,
+                converter.easting,
+                converter.northing,
             )
         }
 
-        fun fromUTM(zone: Int, hemisphere: String, easting: Double, northing: Double): UTMCoord {
+        fun fromUTM(
+            zone: Int,
+            hemisphere: String,
+            easting: Double,
+            northing: Double,
+        ): UTMCoord {
             val converter = UTMCoordConverter()
             val err = converter.convertUTMToGeodetic(zone.toLong(), hemisphere, easting, northing)
 
@@ -51,11 +66,19 @@ class UTMCoord(
             return UTMCoord(
                 Angle.fromRadians(converter.latitude),
                 Angle.fromRadians(converter.longitude),
-                zone, hemisphere, easting, northing
+                zone,
+                hemisphere,
+                easting,
+                northing,
             )
         }
 
-        fun locationFromUTMCoord(zone: Int, hemisphere: String, easting: Double, northing: Double): LatLon {
+        fun locationFromUTMCoord(
+            zone: Int,
+            hemisphere: String,
+            easting: Double,
+            northing: Double,
+        ): LatLon {
             val coord: UTMCoord = fromUTM(zone, hemisphere, easting, northing)
             return LatLon(coord.latitude, coord.longitude)
         }

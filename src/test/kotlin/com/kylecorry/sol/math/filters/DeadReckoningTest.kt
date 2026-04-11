@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class DeadReckoningTest {
-
     @Test
     fun deadReckon() {
         val filter = DeadReckoning(1f)
@@ -17,5 +16,4 @@ class DeadReckoningTest {
 
         assertEquals(3f, filter.calculate(-3f, 0.5f), 0.001f)
     }
-
 }

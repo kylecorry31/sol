@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 import java.time.Month
 
 class GreenwichSiderealTimeTest {
-
     @Test
     fun toSiderealTime() {
         val ut = UniversalTime.of(2010, Month.FEBRUARY, 7, 23, 30)
@@ -25,7 +24,7 @@ class GreenwichSiderealTimeTest {
     }
 
     @Test
-    fun atLongitude(){
+    fun atLongitude() {
         val gst = GreenwichSiderealTime(2.061389)
         val lst = gst.atLongitude(-40.0)
         assertEquals(23.394722, lst.hours, 0.000001)

@@ -9,7 +9,10 @@ import org.junit.jupiter.params.converter.SimpleArgumentConverter
  * - If target type is Long, accepts Vector2 and returns its packed value.
  */
 class Vector2LongConverter : SimpleArgumentConverter() {
-    override fun convert(source: Any?, targetType: Class<*>): Any {
+    override fun convert(
+        source: Any?,
+        targetType: Class<*>,
+    ): Any {
         if (source == null) {
             throw ArgumentConversionException("Source is null")
         }
@@ -22,11 +25,15 @@ class Vector2LongConverter : SimpleArgumentConverter() {
                             is Long -> Vector2(item)
                             is Number -> Vector2(item.toLong())
                             is Vector2 -> item
-                            else -> throw ArgumentConversionException("Cannot convert list element ${item?.let { it::class.java }} to Vector2")
+                            else -> throw ArgumentConversionException(
+                                "Cannot convert list element ${item?.let { it::class.java }} to Vector2",
+                            )
                         }
                     }
                 } else {
-                    throw ArgumentConversionException("Cannot convert ${source::class.java} to List<Vector2>. Expected List<Long|Number|Vector2>.")
+                    throw ArgumentConversionException(
+                        "Cannot convert ${source::class.java} to List<Vector2>. Expected List<Long|Number|Vector2>.",
+                    )
                 }
             }
 

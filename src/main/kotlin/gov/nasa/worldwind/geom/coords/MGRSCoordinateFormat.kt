@@ -16,13 +16,18 @@ import gov.nasa.worldwind.geom.Angle
  * @version $Id$
  */
 object MGRSCoordinateFormat {
-    fun getString(latitude: Double, longitude: Double, precision: Int): String {
+    fun getString(
+        latitude: Double,
+        longitude: Double,
+        precision: Int,
+    ): String {
         val converter = MGRSCoordConverter()
-        val error = converter.convertGeodeticToMGRS(
-            Angle.fromDegreesLatitude(latitude).radians,
-            Angle.fromDegreesLongitude(longitude).radians,
-            precision
-        )
+        val error =
+            converter.convertGeodeticToMGRS(
+                Angle.fromDegreesLatitude(latitude).radians,
+                Angle.fromDegreesLongitude(longitude).radians,
+                precision,
+            )
         require(error == MGRSCoordConverter.MGRS_NO_ERROR.toLong()) { "MGRS Conversion Error" }
         return converter.mgrsString.trim()
     }
@@ -36,7 +41,7 @@ object MGRSCoordinateFormat {
 
         return Coordinate(
             Angle.fromRadians(converter.latitude).degrees,
-            Angle.fromRadians(converter.longitude).degrees
+            Angle.fromRadians(converter.longitude).degrees,
         )
     }
 }

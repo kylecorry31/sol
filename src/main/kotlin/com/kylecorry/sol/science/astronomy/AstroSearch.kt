@@ -6,7 +6,6 @@ import java.time.Duration
 import java.time.Instant
 
 internal object AstroSearch {
-
     /**
      * The maximum number of iterations to perform when searching for an event
      */
@@ -20,7 +19,11 @@ internal object AstroSearch {
      * @param predicate the predicate to test
      * @return the start time or null if not found
      */
-    fun findStart(range: Range<Instant>, precision: Duration, predicate: (Instant) -> Boolean): Instant? {
+    fun findStart(
+        range: Range<Instant>,
+        precision: Duration,
+        predicate: (Instant) -> Boolean,
+    ): Instant? {
         var left = range.start
         var right = range.end
         var iterations = 0
@@ -52,7 +55,11 @@ internal object AstroSearch {
      * @param predicate the predicate to test
      * @return the end time or null if not found
      */
-    fun findEnd(range: Range<Instant>, precision: Duration, predicate: (Instant) -> Boolean): Instant? {
+    fun findEnd(
+        range: Range<Instant>,
+        precision: Duration,
+        predicate: (Instant) -> Boolean,
+    ): Instant? {
         var left = range.start
         var right = range.end
         var iterations = 0
@@ -84,7 +91,11 @@ internal object AstroSearch {
      * @param producer the function to produce a value for a given time
      * @return the peak time
      */
-    fun findPeak(range: Range<Instant>, precision: Duration, producer: (Instant) -> Float): Instant {
+    fun findPeak(
+        range: Range<Instant>,
+        precision: Duration,
+        producer: (Instant) -> Float,
+    ): Instant {
         var left = range.start
         var right = range.end
         var iterations = 0
@@ -123,7 +134,7 @@ internal object AstroSearch {
         range: Range<Instant>,
         precision: Duration,
         start: Instant = range.middle(),
-        predicate: (Instant) -> Boolean
+        predicate: (Instant) -> Boolean,
     ): Instant? {
         var left = start
         var right = start
@@ -146,5 +157,4 @@ internal object AstroSearch {
 
         return null
     }
-
 }

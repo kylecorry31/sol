@@ -17,7 +17,7 @@ import kotlin.math.sin
 data class SphericalCoordinate(
     val r: Float,
     val theta: Float,
-    val phi: Float
+    val phi: Float,
 ) {
     fun toCartesian(): Vector3 {
         val thetaRad = theta.toRadians()
@@ -38,5 +38,4 @@ data class SphericalCoordinate(
             return SphericalCoordinate(r, theta, phi)
         }
     }
-
 }

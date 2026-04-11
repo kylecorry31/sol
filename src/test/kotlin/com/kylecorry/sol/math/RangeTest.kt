@@ -1,13 +1,11 @@
 package com.kylecorry.sol.math
 
 import org.junit.jupiter.api.Assertions.*
-
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 internal class RangeTest {
-
     @Test
     fun contains() {
         assertTrue(Range(1f, 2f).contains(1.5f))
@@ -34,7 +32,7 @@ internal class RangeTest {
         "1, 2, 2, 3, 2, 2",
         "1, 2, 0, 3, 1, 2",
         "1, 2, 0, 0,,",
-        "1, 2, 3, 3,,"
+        "1, 2, 3, 3,,",
     )
     fun intersection(
         start: Float,
@@ -42,7 +40,7 @@ internal class RangeTest {
         otherStart: Float,
         otherEnd: Float,
         expectedStart: Float?,
-        expectedEnd: Float?
+        expectedEnd: Float?,
     ) {
         val range = Range(start, end)
         val other = Range(otherStart, otherEnd)

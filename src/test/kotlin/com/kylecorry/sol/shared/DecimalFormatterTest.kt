@@ -7,17 +7,21 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class DecimalFormatterTest {
-
     @ParameterizedTest
     @MethodSource("provideValues")
-    fun format(value: Number, places: Int, strict: Boolean, expected: String) {
+    fun format(
+        value: Number,
+        places: Int,
+        strict: Boolean,
+        expected: String,
+    ) {
         assertEquals(expected, DecimalFormatter.format(value, places, strict))
     }
 
     companion object {
         @JvmStatic
-        fun provideValues(): Stream<Arguments> {
-            return Stream.of(
+        fun provideValues(): Stream<Arguments> =
+            Stream.of(
                 Arguments.of(1.155, 1, false, "1.2"),
                 Arguments.of(1.155, 1, true, "1.2"),
                 Arguments.of(1.155, 4, false, "1.155"),
@@ -30,8 +34,6 @@ internal class DecimalFormatterTest {
                 Arguments.of(Double.NaN, 2, true, "-"),
                 Arguments.of(Double.NEGATIVE_INFINITY, 2, true, "-"),
                 Arguments.of(Double.POSITIVE_INFINITY, 2, true, "-"),
-                )
-        }
+            )
     }
-
 }

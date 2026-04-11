@@ -2,12 +2,14 @@ package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
 
-class GridSearchOptimizer(private val stepSize: Double) : IOptimizer {
+class GridSearchOptimizer(
+    private val stepSize: Double,
+) : IOptimizer {
     override fun optimize(
         xRange: Range<Double>,
         yRange: Range<Double>,
         maximize: Boolean,
-        fn: (x: Double, y: Double) -> Double
+        fn: (x: Double, y: Double) -> Double,
     ): Pair<Double, Double> {
         var bestX = xRange.start
         var bestY = yRange.start

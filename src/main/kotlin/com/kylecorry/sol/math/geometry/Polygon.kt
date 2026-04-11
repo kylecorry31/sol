@@ -2,7 +2,9 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.Vector2
 
-data class Polygon(val vertices: List<Vector2>) {
+data class Polygon(
+    val vertices: List<Vector2>,
+) {
     val edges: List<Line>
         get() {
             val edges = mutableListOf<Line>()

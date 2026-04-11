@@ -11,21 +11,24 @@ import kotlin.math.atan
 import kotlin.math.ln
 import kotlin.math.sinh
 
-class MercatorProjection(private val scale: Float = 1f) : IMapProjection {
+class MercatorProjection(
+    private val scale: Float = 1f,
+) : IMapProjection {
     override fun toCoordinate(pixel: Vector2): Coordinate {
         val longitude = (pixel.x / scale).toDegrees()
         val latitude = (atan(sinh(pixel.y / scale))).toDegrees()
         return Coordinate(
             clamp(latitude.toDouble(), -90.0, 90.0),
-            Coordinate.toLongitude(longitude.toDouble())
+            Coordinate.toLongitude(longitude.toDouble()),
         )
     }
 
-    override fun toPixels(location: Coordinate): Vector2 {
-        return toPixels(location.latitude, location.longitude)
-    }
+    override fun toPixels(location: Coordinate): Vector2 = toPixels(location.latitude, location.longitude)
 
-    override fun toPixels(latitude: Double, longitude: Double): Vector2 {
+    override fun toPixels(
+        latitude: Double,
+        longitude: Double,
+    ): Vector2 {
         val x = scale * longitude.toRadians()
         val sinLat = sinDegrees(latitude)
         val y = scale * 0.5 * ln((1 + sinLat) / (1 - sinLat))
@@ -33,9 +36,6 @@ class MercatorProjection(private val scale: Float = 1f) : IMapProjection {
     }
 
     companion object {
-        fun getScaleForLatitude(latitude: Double): Float {
-            return cosDegrees(latitude).toFloat()
-        }
+        fun getScaleForLatitude(latitude: Double): Float = cosDegrees(latitude).toFloat()
     }
-
 }
