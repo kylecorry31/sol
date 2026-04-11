@@ -236,11 +236,11 @@ object Time {
             }
         }
 
-        val roundedMinutes = this.minute.roundNearest(minutes)
-
-        val delta = roundedMinutes - this.minute
-
-        return this.plusMinutes(delta.toLong()).truncatedTo(ChronoUnit.MINUTES)
+        val nanosPerMinute = 60_000_000_000L
+        val intervalNanos = minutes * nanosPerMinute
+        val totalNanos = this.minute * nanosPerMinute + this.second * 1_000_000_000L + this.nano
+        val roundedNanos = ((totalNanos + intervalNanos / 2) / intervalNanos) * intervalNanos
+        return this.plusNanos(roundedNanos - totalNanos).truncatedTo(ChronoUnit.MINUTES)
     }
 
     fun LocalDateTime.roundNearestMinute(minutes: Int = 1): LocalDateTime {
@@ -253,11 +253,11 @@ object Time {
             }
         }
 
-        val roundedMinutes = this.minute.roundNearest(minutes)
-
-        val delta = roundedMinutes - this.minute
-
-        return this.plusMinutes(delta.toLong()).truncatedTo(ChronoUnit.MINUTES)
+        val nanosPerMinute = 60_000_000_000L
+        val intervalNanos = minutes * nanosPerMinute
+        val totalNanos = this.minute * nanosPerMinute + this.second * 1_000_000_000L + this.nano
+        val roundedNanos = ((totalNanos + intervalNanos / 2) / intervalNanos) * intervalNanos
+        return this.plusNanos(roundedNanos - totalNanos).truncatedTo(ChronoUnit.MINUTES)
     }
 
     fun LocalDateTime.plusMillis(millis: Long): LocalDateTime {
