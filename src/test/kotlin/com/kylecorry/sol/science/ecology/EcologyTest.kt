@@ -272,6 +272,26 @@ class EcologyTest {
         assertEquals("reset", callOrder.first())
     }
 
+    @Test
+    fun lifecycleEventDoesNotDuplicateEventsTriggeredOnStartDate() {
+        val trigger = object : LifecycleEventTrigger {
+            override fun isTriggered(factors: LifecycleEventFactors): Boolean {
+                return !factors.date.isBefore(LocalDate.of(2024, 1, 1))
+            }
+        }
+
+        val result = Ecology.getLifecycleEventDates(
+            listOf(LifecycleEvent("event", trigger)),
+            Range(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 2)),
+            { Duration.ofHours(12) },
+            ::mockTemperatureProvider
+        )
+
+        assertEquals(1, result.size)
+        assertEquals(LocalDate.of(2024, 1, 1), result[0].first)
+        assertEquals("event", result[0].second.name)
+    }
+
     // getActivePeriodsForYear
 
     @Test

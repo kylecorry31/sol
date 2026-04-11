@@ -119,7 +119,9 @@ object Ecology {
             // Add all active events that occurred and are currently active as of the start date
             if (date == dateRange.start) {
                 hits.forEach { event ->
-                    lifecycleEvents.add(date to event)
+                    if (lifecycleEvents.none { it.first == date && it.second == event }) {
+                        lifecycleEvents.add(date to event)
+                    }
                 }
             }
 
