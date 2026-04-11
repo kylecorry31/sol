@@ -16,34 +16,55 @@ class RDPFilter<T>(
             return emptyList()
         }
 
-        val rdp = mutableListOf<T>()
+        val size = points.size
+        val lastIndex = size - 1
+        val keep = BooleanArray(size)
+        keep[0] = true
+        keep[lastIndex] = true
 
-        rdp.add(points.first())
-        filterHelper(0, points.lastIndex, points, rdp)
-        rdp.add(points.last())
+        var keptCount = 2
 
-        return rdp
-    }
+        // Store pending segments as packed start/end indices to avoid Pair allocations.
+        val pendingSegments = IntArray(size * 2)
+        var pendingSize = 0
+        pendingSegments[pendingSize++] = 0
+        pendingSegments[pendingSize++] = lastIndex
 
-    private fun filterHelper(
-        startIndex: Int,
-        endIndex: Int,
-        allPoints: List<T>,
-        rdpPoints: MutableList<T>
-    ) {
-        val nextIndex = findFurthest(startIndex, endIndex, allPoints)
-        if (nextIndex > 0) {
-            if (startIndex != nextIndex) {
-                filterHelper(startIndex, nextIndex, allPoints, rdpPoints)
-            }
-            rdpPoints.add((allPoints[nextIndex]))
-            if (endIndex != nextIndex) {
-                filterHelper(nextIndex, endIndex, allPoints, rdpPoints)
+        while (pendingSize > 0) {
+            val endIndex = pendingSegments[--pendingSize]
+            val startIndex = pendingSegments[--pendingSize]
+            val nextIndex = findFurthest(startIndex, endIndex, points)
+            if (nextIndex != -1) {
+                if (!keep[nextIndex]) {
+                    keep[nextIndex] = true
+                    keptCount++
+                }
+                if (nextIndex + 1 < endIndex) {
+                    pendingSegments[pendingSize++] = nextIndex
+                    pendingSegments[pendingSize++] = endIndex
+                }
+                if (startIndex + 1 < nextIndex) {
+                    pendingSegments[pendingSize++] = startIndex
+                    pendingSegments[pendingSize++] = nextIndex
+                }
             }
         }
+
+        val filtered = ArrayList<T>(keptCount)
+        for (i in 0 until size) {
+            if (keep[i]) {
+                filtered.add(points[i])
+            }
+        }
+
+        return filtered
     }
 
     private fun findFurthest(startIndex: Int, endIndex: Int, allPoints: List<T>): Int {
+        if (endIndex - startIndex < 2) {
+            return -1
+        }
+
         var maxDistance = epsilon
         var maxIndex = -1
         val start = allPoints[startIndex]
