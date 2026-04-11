@@ -26,6 +26,8 @@ import kotlin.math.*
  * https://www.ordnancesurvey.co.uk/documents/resources/guide-coordinate-systems-great-britain.pdf
  */
 object EastingNorthingConversion {
+    private const val MAX_TO_LAT_LON_ITERATIONS = 128
+
     /**
      * Convert from Lat lon
      *
@@ -134,8 +136,9 @@ object EastingNorthingConversion {
         var m = 0.0
         var latPrime = lat0
         var delta = 1.0
+        var iterations = 0
 
-        while (delta > 0.00001) {
+        while (delta > 0.00001 && iterations < MAX_TO_LAT_LON_ITERATIONS) {
             latPrime = ((coordN - n0 - m) / (a * f0)) + latPrime
 
             m = b * f0 * ((1 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (latPrime - lat0)
@@ -151,7 +154,10 @@ object EastingNorthingConversion {
                         * cos(3.0 * (latPrime + lat0)))
 
             delta = abs(coordN - n0 - m)
+            iterations++
         }
+
+        check(delta <= 0.00001) { "Easting/northing to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations" }
 
         val eSinPhi = 1 - e2 * sin(latPrime).pow(2) // eSinPhi = 1 - e^2 * sin^2 phi
         val nu = a * f0 * eSinPhi.pow(-0.5)

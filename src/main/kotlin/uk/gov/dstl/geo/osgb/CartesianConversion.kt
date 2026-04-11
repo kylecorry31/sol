@@ -27,6 +27,8 @@ import kotlin.math.*
  * https://www.ordnancesurvey.co.uk/documents/resources/guide-coordinate-systems-great-britain.pdf
  */
 object CartesianConversion {
+    private const val MAX_TO_LAT_LON_ITERATIONS = 128
+
     /**
      * @param inputCoordinates Array of coordinates [lat, lon, ellipsoidHeight] to convert
      * @param a Semi-major axis of ellipsoid
@@ -69,14 +71,18 @@ object CartesianConversion {
 
         var v = 0.0
         var delta = 2 * precision
+        var iterations = 0
 
-        while (delta > precision) {
+        while (delta > precision && iterations < MAX_TO_LAT_LON_ITERATIONS) {
             v = a / sqrt(1 - e2 * sin(lat).pow(2))
             val newLat = atan((z + e2 * v * sin(lat)) / p)
 
             delta = abs(Math.toDegrees(lat - newLat))
             lat = newLat
+            iterations++
         }
+
+        check(delta <= precision) { "Cartesian to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations" }
 
         val height = (p / cos(lat)) - v
 
