@@ -68,6 +68,7 @@ object Geology {
         elevations: List<ElevationRayMeasurement>,
         withRefraction: Boolean = true
     ): Float {
+        require(elevations.isNotEmpty()) { "elevations must have at least one element" }
         val currentMeters = currentElevation.meters().value
         return elevations.maxOf {
             val curvatureCorrection = getElevationCurvatureCorrection(it.distance, withRefraction)

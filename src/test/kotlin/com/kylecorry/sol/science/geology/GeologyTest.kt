@@ -2,6 +2,8 @@ package com.kylecorry.sol.science.geology
 
 import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
@@ -88,6 +90,13 @@ internal class GeologyTest {
             withRefraction
         )
         assertEquals(expected, angle, 0.0001f)
+    }
+
+    @Test
+    fun getHorizonDipAngleRequiresMeasurements() {
+        assertThrows(IllegalArgumentException::class.java) {
+            Geology.getHorizonDipAngle(Distance.meters(100f), emptyList())
+        }
     }
 
     companion object {
