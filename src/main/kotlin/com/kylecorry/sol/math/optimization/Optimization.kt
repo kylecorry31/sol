@@ -15,7 +15,7 @@ object Optimization {
         var iterations = 0
         var delta: Double
         do {
-            val newValue = calculate(initialValue)
+            val newValue = calculate(lastValue)
             delta = newValue - lastValue
             lastValue = newValue
             iterations++
