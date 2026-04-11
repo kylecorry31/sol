@@ -232,7 +232,15 @@ object QuaternionMath {
     }
 
     fun slerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true) {
-        val cosHalfTheta = dot(quat1, quat2)
+        var endQuaternion = quat2
+        var cosHalfTheta = dot(quat1, endQuaternion)
+        if (useShortestPath && cosHalfTheta < 0) {
+            val adjustedQuaternion = FloatArray(4)
+            multiply(quat2, -1f, adjustedQuaternion)
+            endQuaternion = adjustedQuaternion
+            cosHalfTheta = dot(quat1, endQuaternion)
+        }
+
         if (cosHalfTheta.absoluteValue >= 1) {
             out[X] = quat1[X]
             out[Y] = quat1[Y]
@@ -241,33 +249,24 @@ object QuaternionMath {
             return
         }
 
-        if (useShortestPath && cosHalfTheta < 0) {
-            val temp = FloatArray(4)
-            multiply(quat2, -1f, temp)
-            // Passing in false for useShortestPath to avoid infinite recursion
-            slerp(quat1, temp, t, out, false)
-            return
-        }
-
-
         val halfTheta = acos(cosHalfTheta)
         val sinHalfTheta = sqrt(1 - cosHalfTheta * cosHalfTheta)
 
         if (sinHalfTheta.absoluteValue < 0.001) {
-            out[X] = quat1[X] * 0.5f + quat2[X] * 0.5f
-            out[Y] = quat1[Y] * 0.5f + quat2[Y] * 0.5f
-            out[Z] = quat1[Z] * 0.5f + quat2[Z] * 0.5f
-            out[W] = quat1[W] * 0.5f + quat2[W] * 0.5f
+            out[X] = quat1[X] * 0.5f + endQuaternion[X] * 0.5f
+            out[Y] = quat1[Y] * 0.5f + endQuaternion[Y] * 0.5f
+            out[Z] = quat1[Z] * 0.5f + endQuaternion[Z] * 0.5f
+            out[W] = quat1[W] * 0.5f + endQuaternion[W] * 0.5f
             return
         }
 
         val ratioA = sin((1 - t) * halfTheta) / sinHalfTheta
         val ratioB = sin(t * halfTheta) / sinHalfTheta
 
-        out[X] = quat1[X] * ratioA + quat2[X] * ratioB
-        out[Y] = quat1[Y] * ratioA + quat2[Y] * ratioB
-        out[Z] = quat1[Z] * ratioA + quat2[Z] * ratioB
-        out[W] = quat1[W] * ratioA + quat2[W] * ratioB
+        out[X] = quat1[X] * ratioA + endQuaternion[X] * ratioB
+        out[Y] = quat1[Y] * ratioA + endQuaternion[Y] * ratioB
+        out[Z] = quat1[Z] * ratioA + endQuaternion[Z] * ratioB
+        out[W] = quat1[W] * ratioA + endQuaternion[W] * ratioB
     }
 
     fun lerp(quat1: FloatArray, quat2: FloatArray, t: Float, out: FloatArray, useShortestPath: Boolean = true) {
