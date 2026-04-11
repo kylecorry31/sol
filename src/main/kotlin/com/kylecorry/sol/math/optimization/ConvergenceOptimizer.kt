@@ -1,6 +1,8 @@
 package com.kylecorry.sol.math.optimization
 
 import com.kylecorry.sol.math.Range
+import kotlin.math.ceil
+import kotlin.math.ln
 
 class ConvergenceOptimizer(
     private val initialStep: Float,
@@ -14,22 +16,28 @@ class ConvergenceOptimizer(
         maximize: Boolean,
         fn: (Double, Double) -> Double
     ): Pair<Double, Double> {
+        require(initialStep.isFinite() && initialStep > 0f) { "Initial step must be finite and greater than 0" }
+        require(precision.isFinite() && precision > 0f) { "Precision must be finite and greater than 0" }
 
         var step = initialStep
         var currentXRange = xRange
         var currentYRange = yRange
         var center = initialValue ?: ((xRange.start + xRange.end) / 2 to (yRange.start + yRange.end) / 2)
+        val maxIterations = ceil(ln((initialStep / precision).toDouble()) / ln(2.0)).toInt().coerceAtLeast(0) + 1
 
-        while (step > precision) {
+        repeat(maxIterations) {
+            if (step <= precision) {
+                return center
+            }
             val optimizer = getOptimizer(step, center)
             val (x, y) = optimizer.optimize(currentXRange, currentYRange, maximize, fn)
-            var xSize = (currentXRange.end - currentXRange.start) / 2
-            var ySize = (currentYRange.end - currentYRange.start) / 2
+            val xSize = (currentXRange.end - currentXRange.start) / 2
+            val ySize = (currentYRange.end - currentYRange.start) / 2
 
-            var startX = (x - xSize).coerceAtLeast(xRange.start)
-            var endX = (x + xSize).coerceAtMost(xRange.end)
-            var startY = (y - ySize).coerceAtLeast(yRange.start)
-            var endY = (y + ySize).coerceAtMost(yRange.end)
+            val startX = (x - xSize).coerceAtLeast(xRange.start)
+            val endX = (x + xSize).coerceAtMost(xRange.end)
+            val startY = (y - ySize).coerceAtLeast(yRange.start)
+            val endY = (y + ySize).coerceAtMost(yRange.end)
 
             currentXRange = Range(startX, endX)
             currentYRange = Range(startY, endY)
@@ -40,6 +48,4 @@ class ConvergenceOptimizer(
 
         return center
     }
-
-
 }
