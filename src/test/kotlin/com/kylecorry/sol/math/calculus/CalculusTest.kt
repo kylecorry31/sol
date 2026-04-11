@@ -130,6 +130,23 @@ internal class CalculusTest {
     }
 
     @Test
+    fun derivativeSamplesShortInputHighOrderFallsBackToAvailableStencil() {
+        val samples = listOf(
+            Vector2(0f, 0f),
+            Vector2(1f, 1f)
+        )
+
+        val derivative = Calculus.derivative(samples, finiteDifferenceOrder = 3)
+
+        assertEquals(samples.size, derivative.size)
+        assertEquals(0f, derivative[0].x, 0.0001f)
+        assertEquals(1f, derivative[1].x, 0.0001f)
+        assertEquals(1f, derivative[0].y, 0.0001f)
+        assertEquals(1f, derivative[1].y, 0.0001f)
+    }
+
+
+    @Test
     fun root() {
         val fn = { x: Double -> square(x) - 9 }
         val root1 = Calculus.root(fn, guess = 0.1, maxIterations = 15)
