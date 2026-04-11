@@ -10,13 +10,13 @@ import kotlin.math.hypot
  */
 class Location(val coordinate: Coordinate, val elevation: Distance) {
     fun distanceTo(other: Location, highAccuracy: Boolean = true): Float {
-        val horizontal = coordinate.distanceTo(other.coordinate, highAccuracy)
+        val horizontal = horizontalDistanceTo(other, highAccuracy)
         val vertical = elevation.meters().value - other.elevation.meters().value
         return hypot(horizontal, vertical)
     }
 
     fun inclinationTo(other: Location): Float {
-        val distance = distanceTo(other)
+        val distance = horizontalDistanceTo(other)
         val vertical = verticalDistanceTo(other)
         return Geology.getInclination(Distance.meters(distance), Distance.meters(vertical))
     }
@@ -26,7 +26,7 @@ class Location(val coordinate: Coordinate, val elevation: Distance) {
     }
 
     fun verticalDistanceTo(other: Location): Float {
-        return elevation.meters().value - other.elevation.meters().value
+        return other.elevation.meters().value - elevation.meters().value
     }
 
     fun bearingTo(other: Location, highAccuracy: Boolean = true): Bearing {
