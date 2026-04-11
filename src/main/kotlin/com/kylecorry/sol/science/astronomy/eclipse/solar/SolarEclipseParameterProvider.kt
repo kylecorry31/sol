@@ -16,7 +16,6 @@ import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 internal class SolarEclipseParameterProvider {
-
     private val moon = Moon()
 
     fun getNextSolarEclipseParameters(after: Instant): SolarEclipseParameters {
@@ -28,6 +27,7 @@ internal class SolarEclipseParameterProvider {
         var k = moon.getNextPhaseK(ut, MoonTruePhase.New)
         var T: Double
         var F: Double
+        var iterations = 0
         do {
             T = k / 1236.85
             F = Trigonometry.normalizeAngle(
@@ -39,7 +39,12 @@ internal class SolarEclipseParameterProvider {
             if (sinDegrees(F).absoluteValue > 0.36) {
                 k += 1
             }
-        } while (sinDegrees(F).absoluteValue > 0.36)
+            iterations++
+        } while (sinDegrees(F).absoluteValue > 0.36 && iterations < MAX_PHASE_SEARCH_ITERATIONS)
+
+        check(sinDegrees(F).absoluteValue <= 0.36) {
+            "Solar eclipse phase search did not converge within $MAX_PHASE_SEARCH_ITERATIONS iterations"
+        }
 
         val mean = getJDEOfMeanMoonPhase(k)
         val M = Trigonometry.normalizeAngle(
@@ -165,5 +170,7 @@ internal class SolarEclipseParameterProvider {
         )
     }
 
-
+    companion object {
+        private const val MAX_PHASE_SEARCH_ITERATIONS = 100
+    }
 }

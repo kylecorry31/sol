@@ -37,6 +37,8 @@ import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
 
 object Astronomy {
+    private const val MAX_SOLAR_LONGITUDE_REFINEMENT_ITERATIONS = 100
+
 
     private val sun = Sun()
     private val moon = Moon()
@@ -656,6 +658,7 @@ object Astronomy {
 
         var jd = d.toUniversalTime().toJulianDay()
         var correction: Double
+        var iterations = 0
 
         do {
             val ut = fromJulianDay(jd)
@@ -666,7 +669,12 @@ object Astronomy {
             ).eclipticLongitude
             correction = 58 * sinDegrees(longitude - solarLon)
             jd += correction
-        } while (correction > 0.00001)
+            iterations++
+        } while (correction.absoluteValue > 0.00001 && iterations < MAX_SOLAR_LONGITUDE_REFINEMENT_ITERATIONS)
+
+        check(correction.absoluteValue <= 0.00001) {
+            "Solar longitude refinement did not converge within $MAX_SOLAR_LONGITUDE_REFINEMENT_ITERATIONS iterations"
+        }
 
         return fromJulianDay(jd).toLocal(today.zone)
     }

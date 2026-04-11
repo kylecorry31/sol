@@ -28,6 +28,7 @@ internal class LunarEclipseParameterProvider {
         var k = moon.getNextPhaseK(ut, MoonTruePhase.Full)
         var T: Double
         var F: Double
+        var iterations = 0
         do {
             T = k / 1236.85
             F = Trigonometry.normalizeAngle(
@@ -39,7 +40,12 @@ internal class LunarEclipseParameterProvider {
             if (sinDegrees(F).absoluteValue > 0.36) {
                 k += 1
             }
-        } while (sinDegrees(F).absoluteValue > 0.36)
+            iterations++
+        } while (sinDegrees(F).absoluteValue > 0.36 && iterations < MAX_PHASE_SEARCH_ITERATIONS)
+
+        check(sinDegrees(F).absoluteValue <= 0.36) {
+            "Lunar eclipse phase search did not converge within $MAX_PHASE_SEARCH_ITERATIONS iterations"
+        }
 
         val mean = getJDEOfMeanMoonPhase(k)
         val M = Trigonometry.normalizeAngle(
@@ -167,5 +173,7 @@ internal class LunarEclipseParameterProvider {
         )
     }
 
-
+    companion object {
+        private const val MAX_PHASE_SEARCH_ITERATIONS = 100
+    }
 }
