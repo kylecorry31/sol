@@ -37,7 +37,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
         for (i in 2..rawData.lastIndex) {
             sum += rawData[i] * rawData[i].toDouble()
         }
-        require(sum >= 0){ "Sum of squares must be non-negative but was $sum" }
+        check(sum >= 0){ "Sum of squares must be non-negative but was $sum" }
         return sqrt(sum.toFloat())
     }
 
@@ -113,8 +113,8 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
             data[0] = Float.fromBits(rows)
             data[1] = Float.fromBits(columns)
             val matrix = Matrix(data)
-            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
@@ -125,8 +125,8 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
             data[0] = Float.fromBits(rows)
             data[1] = Float.fromBits(columns)
             val matrix = Matrix(data)
-            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
@@ -145,37 +145,37 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
             newData[1] = Float.fromBits(columns)
             data.copyInto(newData, 2)
             val matrix = Matrix(newData)
-            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
         fun identity(size: Int): Matrix {
             require(size >= 0) { "size must be non-negative, but was $size" }
             val matrix = diagonal(values = FloatArray(size) { 1f })
-            require(matrix.rows() == size) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == size) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == size) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == size) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
         fun diagonal(vararg values: Float): Matrix {
             val matrix = create(values.size, values.size) { r, c -> if (r == c) values[r] else 0f }
-            require(matrix.rows() == values.size) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == values.size) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == values.size) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == values.size) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
         fun column(vararg values: Float): Matrix {
             val matrix = create(values.size, 1) { r, _ -> values[r] }
-            require(matrix.rows() == values.size) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == 1) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == values.size) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == 1) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
         fun row(vararg values: Float): Matrix {
             val matrix = create(1, values.size) { _, c -> values[c] }
-            require(matrix.rows() == 1) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == values.size) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == 1) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == values.size) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
@@ -185,8 +185,8 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
             val matrix = create(rows, columns) { r, c ->
                 oldMatrix[r][c]
             }
-            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
 
@@ -209,8 +209,8 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
                 newData[i] = initialize(row, column)
             }
             val matrix = createFromRawData(newData)
-            require(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
-            require(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
+            check(matrix.rows() == rows) { "The matrix doesn't have the right number of rows" }
+            check(matrix.columns() == columns) { "The matrix doesn't have the right number of columns" }
             return matrix
         }
     }
