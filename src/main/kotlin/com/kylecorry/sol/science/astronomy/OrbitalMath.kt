@@ -22,13 +22,11 @@ internal object OrbitalMath {
         inclination: Double
     ): EclipticCoordinate {
         val heliocentricEclipticLongitude = normalizeAngle(trueAnomaly + perihelionEclipticLongitude)
-        val heliocentricEclipticLatitude = normalizeAngle(
-            asin(
-                sinDegrees(heliocentricEclipticLongitude - ascendingNodeEclipticLongitude) * sinDegrees(
-                    inclination
-                )
-            ).toDegrees()
-        )
+        val heliocentricEclipticLatitude = asin(
+            sinDegrees(heliocentricEclipticLongitude - ascendingNodeEclipticLongitude) * sinDegrees(
+                inclination
+            )
+        ).toDegrees()
         return EclipticCoordinate(heliocentricEclipticLatitude, heliocentricEclipticLongitude)
     }
 
