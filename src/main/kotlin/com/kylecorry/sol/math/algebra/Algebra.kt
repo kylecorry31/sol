@@ -51,13 +51,13 @@ object Algebra {
      * Ex. 1 + 2x + 5x^2 + x^4
      * polynomial(x, 1, 2, 5, 0, 1)
      */
-    fun polynomial(x: Double, vararg coefs: Double): Double {
+    fun polynomial(x: Double, vararg coefficients: Double): Double {
         require(x.isFinite()) { "x must be finite" }
         var runningTotal = 0.0
         var xPower = 1.0
-        for (i in coefs.indices) {
-            require(coefs[i].isFinite()) { "coefs must be finite, index: $i was ${coefs[i]}" }
-            runningTotal += xPower * coefs[i]
+        for (i in coefficients.indices) {
+            require(coefficients[i].isFinite()) { "coefficients must be finite, index: $i was ${coefficients[i]}" }
+            runningTotal += xPower * coefficients[i]
             xPower *= x
         }
 

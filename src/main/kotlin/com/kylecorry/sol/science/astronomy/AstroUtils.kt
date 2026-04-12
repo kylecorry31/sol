@@ -59,16 +59,6 @@ internal object AstroUtils {
         return Bearing.from(azimuth)
     }
 
-    fun getAzimuth(
-        coordinate: EquatorialCoordinate,
-        ut: UniversalTime,
-        location: Coordinate,
-        distanceToBody: Distance? = null
-    ): Bearing {
-        val azimuth = getLocation(coordinate, ut, location, false, distanceToBody).azimuth.toFloat()
-        return Bearing.from(azimuth)
-    }
-
     fun getLocation(
         locator: ICelestialLocator,
         ut: UniversalTime,

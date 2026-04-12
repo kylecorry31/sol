@@ -2,9 +2,9 @@ package com.kylecorry.sol.science.astronomy.units
 
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 
-internal open class SiderealTime(_hours: Double, val longitude: Double) {
+internal open class SiderealTime(paramHours: Double, val longitude: Double) {
 
-    val hours = wrap(_hours, 0.0, 24.0)
+    val hours = wrap(paramHours, 0.0, 24.0)
 
     fun atGreenwich(): GreenwichSiderealTime {
         return GreenwichSiderealTime(hours - longitude / 15)

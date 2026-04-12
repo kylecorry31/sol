@@ -4,12 +4,12 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.units.Coordinate
 
 internal class EquatorialCoordinate(
-    _declination: Double,
-    _rightAscension: Double,
+    paramDeclination: Double,
+    paramRightAscension: Double,
     val isApparent: Boolean = false
 ) {
-    val declination = wrap(_declination, -90.0, 90.0)
-    val rightAscension = wrap(_rightAscension, 0.0, 360.0)
+    val declination = wrap(paramDeclination, -90.0, 90.0)
+    val rightAscension = wrap(paramRightAscension, 0.0, 360.0)
 
     val rightAscensionHours = rightAscension / 15
 

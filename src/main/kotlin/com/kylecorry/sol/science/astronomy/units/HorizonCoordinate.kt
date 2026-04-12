@@ -13,10 +13,10 @@ import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import kotlin.math.*
 
-internal class HorizonCoordinate(_azimuth: Double, _altitude: Double) {
+internal class HorizonCoordinate(paramAzimuth: Double, paramAltitude: Double) {
 
-    val azimuth = wrap(_azimuth, 0.0, 360.0)
-    val altitude = wrap(_altitude, -90.0, 90.0)
+    val azimuth = wrap(paramAzimuth, 0.0, 360.0)
+    val altitude = wrap(paramAltitude, -90.0, 90.0)
     val zenith = 90 - altitude
 
     fun toEquatorial(siderealTime: SiderealTime, latitude: Double): EquatorialCoordinate {

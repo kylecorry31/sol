@@ -98,8 +98,8 @@ object FrequencyAnalysis {
 
     fun getFrequencyFFT(index: Int, size: Int, sampleRate: Float): Float {
         val value = sampleRate / size
-        val N = (size - 1) / 2 + 1
-        return if (index < N) {
+        val binSize = (size - 1) / 2 + 1
+        return if (index < binSize) {
             index * value
         } else {
             (index - size) * value

@@ -21,7 +21,6 @@ import kotlin.math.pow
 internal class Sun : ICelestialLocator {
 
     private val semiMajorAxisLen0 = 1.495985e8
-    private val angularDiameter0 = 0.533128
 
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val delta = TerrestrialTime.getDeltaT(ut.year)

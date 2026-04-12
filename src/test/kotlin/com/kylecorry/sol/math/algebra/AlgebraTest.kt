@@ -36,8 +36,8 @@ internal class AlgebraTest {
 
     @ParameterizedTest
     @MethodSource("providePolynomial")
-    fun polynomial(x: Double, coefs: DoubleArray, expected: Double) {
-        val actual = Algebra.polynomial(x, *coefs)
+    fun polynomial(x: Double, coefficients: DoubleArray, expected: Double) {
+        val actual = Algebra.polynomial(x, *coefficients)
         assertEquals(expected, actual, 0.00001)
     }
 

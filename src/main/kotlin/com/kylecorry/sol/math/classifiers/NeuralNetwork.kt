@@ -138,9 +138,9 @@ class NeuralNetwork(
     }
 
     private fun squaredError(x: Matrix, y: Matrix, regularization: Float): Float {
-        val y_ = predict(x)
+        val yPrediction = predict(x)
         val sumSquareWeights = layers.sumOfFloat { it.weights.mapped { weight -> weight.pow(2) }.sum() }
-        return 0.5f * y_.subtract(y).mapped { it.pow(2) }
+        return 0.5f * yPrediction.subtract(y).mapped { it.pow(2) }
             .sum() / layers.first().inputSize + regularization / 2 * sumSquareWeights
     }
 

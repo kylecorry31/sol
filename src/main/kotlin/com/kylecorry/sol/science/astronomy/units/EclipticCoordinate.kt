@@ -9,9 +9,9 @@ import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import kotlin.math.asin
 import kotlin.math.atan2
 
-internal class EclipticCoordinate(_eclipticLatitude: Double, _eclipticLongitude: Double) {
-    val eclipticLatitude = wrap(_eclipticLatitude, -90.0, 90.0)
-    val eclipticLongitude = wrap(_eclipticLongitude, 0.0, 360.0)
+internal class EclipticCoordinate(paramEclipticLatitude: Double, paramEclipticLongitude: Double) {
+    val eclipticLatitude = wrap(paramEclipticLatitude, -90.0, 90.0)
+    val eclipticLongitude = wrap(paramEclipticLongitude, 0.0, 360.0)
 
     fun toEquatorial(eclipticObliquity: Double): EquatorialCoordinate {
         val rightAscension = atan2(

@@ -66,8 +66,8 @@ internal class MGRSCoordConverter {
     ) {
         override fun toString(): String {
             return "MGRS: " + zone + " " +
-                    alphabet[latitudeBand] + " " +
-                    alphabet[squareLetter1] + alphabet[squareLetter2] + " " +
+                    ALPHABET[latitudeBand] + " " +
+                    ALPHABET[squareLetter1] + ALPHABET[squareLetter2] + " " +
                     easting + " " +
                     northing + " " +
                     "(" + precision + ")"
@@ -144,13 +144,13 @@ internal class MGRSCoordConverter {
         num_letters = i - j
         if (num_letters == 3) {
             /* get letters */
-            letters[0] = alphabet.indexOf(MGRSString[j].uppercaseChar())
+            letters[0] = ALPHABET.indexOf(MGRSString[j].uppercaseChar())
             if ((letters[0] == LETTER_I) || (letters[0] == LETTER_O)) error_code =
                 error_code or MGRS_STRING_ERROR.toLong()
-            letters[1] = alphabet.indexOf(MGRSString[j + 1].uppercaseChar())
+            letters[1] = ALPHABET.indexOf(MGRSString[j + 1].uppercaseChar())
             if ((letters[1] == LETTER_I) || (letters[1] == LETTER_O)) error_code =
                 error_code or MGRS_STRING_ERROR.toLong()
-            letters[2] = alphabet.indexOf(MGRSString[j + 2].uppercaseChar())
+            letters[2] = ALPHABET.indexOf(MGRSString[j + 2].uppercaseChar())
             if ((letters[2] == LETTER_I) || (letters[2] == LETTER_O)) error_code =
                 error_code or MGRS_STRING_ERROR.toLong()
         } else error_code = error_code or MGRS_STRING_ERROR.toLong()
@@ -207,11 +207,11 @@ internal class MGRSCoordConverter {
         while (i < MGRSString.length && MGRSString[i] == ' ') {
             i++
         }
-        var j: Int = i
+        val j: Int = i
         while (i < MGRSString.length && Character.isDigit(MGRSString[i])) {
             i++
         }
-        var num_digits: Int = i - j
+        val num_digits: Int = i - j
         if (num_digits > 2) error_code = error_code or MGRS_STRING_ERROR.toLong()
         else if (num_digits <= 0) error_code = error_code or MGRS_NOZONE_WARNING.toLong()
 
@@ -683,7 +683,7 @@ internal class MGRSCoordConverter {
         var j = 0
         while (j < 3) {
             if (Letters[j] !in 0..26) return MGRS_ZONE_ERROR.toLong()
-            this.mgrsString += alphabet[Letters[j].toInt()]
+            this.mgrsString += ALPHABET[Letters[j].toInt()]
             j++
         }
 
@@ -876,7 +876,7 @@ internal class MGRSCoordConverter {
         private const val LETTER_Z = 25 /* ARRAY INDEX FOR LETTER Z               */
         private const val MGRS_LETTERS = 3 /* NUMBER OF LETTERS IN MGRS              */
 
-        private const val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        private const val ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
         // UPS Constants are in the following order:
         //    long letter;            /* letter representing latitude band      */

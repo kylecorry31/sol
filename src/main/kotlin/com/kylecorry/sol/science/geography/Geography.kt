@@ -284,7 +284,7 @@ object Geography {
         val lon1 = location1.longitude.toRadians()
         val lat2 = location2.latitude.toRadians()
         val lon2 = location2.longitude.toRadians()
-        val MAXITERS = 20
+        val maxIterations = 20
         val a = 6378137.0 // WGS84 major axis
         val b = 6356752.3142 // WGS84 semi-major axis
         val f = (a - b) / a
@@ -308,7 +308,7 @@ object Geography {
         var cosLambda = 0.0
         var sinLambda = 0.0
         var lambda = L // initial guess
-        for (iter in 0..<MAXITERS) {
+        for (iter in 0..<maxIterations) {
             val lambdaOrig = lambda
             cosLambda = cos(lambda)
             sinLambda = sin(lambda)

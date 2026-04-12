@@ -474,7 +474,6 @@ internal class TMCoordConverter {
         const val TRANMERC_LON_WARNING: Int = 0x0200
 
         private const val PI = 3.14159265358979323 /* PI     */
-        const val PI_OVER: Double = (PI / 2.0) /* PI over 2 */
         private const val MAX_LAT: Double = ((PI * 89.99) / 180.0) /* 90 degrees in radians */
         private const val MAX_DELTA_LONG: Double = ((PI * 90) / 180.0) /* 90 degrees in radians */
         private const val MIN_SCALE_FACTOR = 0.3

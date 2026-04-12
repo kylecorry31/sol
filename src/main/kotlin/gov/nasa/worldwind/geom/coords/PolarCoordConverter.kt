@@ -212,7 +212,7 @@ internal constructor() {
                 clat = cos(Polar_Origin_Lat)
                 mc = clat / sqrt(1.0 - essin * essin)
                 Polar_a_mc = Polar_a * mc
-                tc = tan(PI_Over_4 - Polar_Origin_Lat / 2.0) / pow_es
+                tc = tan(PI_OVER_4 - Polar_Origin_Lat / 2.0) / pow_es
             } else {
                 one_PLUS_es = 1.0 + es
                 one_MINUS_es = 1.0 - es
@@ -284,7 +284,7 @@ internal constructor() {
                 slat = sin(Latitude)
                 essin = es * slat
                 pow_es = ((1.0 - essin) / (1.0 + essin)).pow(es_OVER_2)
-                t = tan(PI_Over_4 - Latitude / 2.0) / pow_es
+                t = tan(PI_OVER_4 - Latitude / 2.0) / pow_es
 
                 rho = if (abs(abs(Polar_Origin_Lat) - PI_OVER_2) > 1.0e-10) Polar_a_mc * t / tc
                 else two_Polar_a * t / e4
@@ -408,7 +408,7 @@ internal constructor() {
 
         private const val PI = 3.14159265358979323
         private const val PI_OVER_2: Double = PI / 2.0
-        private const val PI_Over_4: Double = PI / 4.0
+        private const val PI_OVER_4: Double = PI / 4.0
         private const val TWO_PI: Double = 2.0 * PI
     }
 }
