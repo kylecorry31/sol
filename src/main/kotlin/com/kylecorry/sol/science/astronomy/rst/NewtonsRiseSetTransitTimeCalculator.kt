@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.astronomy.rst
 
 
+import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.interpolation.Interpolation
@@ -144,24 +145,24 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         locator: ICelestialLocator
     ): RiseSetTransitTimes {
         val ut = ut0hOnDate(date)
-        val uty = ut0hOnDate(date.minusDays(1))
-        val utt = ut0hOnDate(date.plusDays(1))
+        val utYesterday = ut0hOnDate(date.minusDays(1))
+        val utTomorrow = ut0hOnDate(date.plusDays(1))
         val astroCoords = locator.getCoordinates(ut)
-        val astroCoordsy = locator.getCoordinates(uty)
-        val astroCoordst = locator.getCoordinates(utt)
+        val astroCoordsYesterday = locator.getCoordinates(utYesterday)
+        val astroCoordsTomorrow = locator.getCoordinates(utTomorrow)
         val distance = if (withParallax) locator.getDistance(ut) else null
-        val distancey = if (withParallax) locator.getDistance(uty) else null
-        val distancet = if (withParallax) locator.getDistance(utt) else null
+        val distanceYesterday = if (withParallax) locator.getDistance(utYesterday) else null
+        val distanceTomorrow = if (withParallax) locator.getDistance(utTomorrow) else null
         val times = getRiseSetTransitTimes(
             ut,
             coordinate,
             standardAltitude,
             withRefraction,
-            Triple(astroCoordsy, astroCoords, astroCoordst),
-            if (distance != null && distancey != null && distancet != null) Triple(
+            Triple(astroCoordsYesterday, astroCoords, astroCoordsTomorrow),
+            if (distance != null && distanceYesterday != null && distanceTomorrow != null) Triple(
                 distance,
-                distancey,
-                distancet
+                distanceYesterday,
+                distanceTomorrow
             ) else null
         )
             ?: return RiseSetTransitTimes(null, null, null)
@@ -201,100 +202,183 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
     ): Triple<Double, Double, Double>? {
         val apparentSidereal = getApparentSiderealTime(ut)
         val deltaT = TerrestrialTime.getDeltaT(ut.year)
-        val cosH =
-            (sinDegrees(standardAltitude) - sinDegrees(location.latitude) * sinDegrees(coordinates.second.declination)) / (cosDegrees(
-                location.latitude
-            ) * cosDegrees(coordinates.second.declination))
+        val hourAngle = getHourAngle(standardAltitude, location, coordinates.second) ?: return null
+        check(hourAngle in 0.0..180.0) { "Hour angle is invalid" }
 
-        if (cosH >= 1) {
-            // Always down
-            return null
-        } else if (cosH <= -1) {
-            // Always up
-            return null
-        }
-
-        val H = wrap(Math.toDegrees(acos(cosH)), 0.0, 180.0)
-
-        val iterations = 20
-        val doneThresh = 0.0001
-
-        var m0 = wrap(
+        var transitDayFraction = wrap(
             (coordinates.second.rightAscension - location.longitude - apparentSidereal) / 360.0,
             0.0,
             1.0
         )
-        var m1 = wrap(m0 - H / 360, 0.0, 1.0)
-        var m2 = wrap(m0 + H / 360, 0.0, 1.0)
+        var riseDayFraction = wrap(transitDayFraction - hourAngle / 360, 0.0, 1.0)
+        var setDayFraction = wrap(transitDayFraction + hourAngle / 360, 0.0, 1.0)
         val date = ut.toLocalDate()
 
-        for (i in 0..<iterations) {
-            val sidereal0 =
-                GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m0) / 15)
-            val sidereal1 =
-                GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m1) / 15)
-            val sidereal2 =
-                GreenwichSiderealTime(Trigonometry.normalizeAngle(apparentSidereal + 360.985647 * m2) / 15)
+        for (i in 0..<MAX_ITERATIONS) {
+            val transitDayFractionAdjustment = getTransitAdjustment(
+                apparentSidereal,
+                transitDayFraction,
+                deltaT,
+                coordinates,
+                location
+            )
 
-            val n0 = m0 + deltaT / 86400
-            val n1 = m1 + deltaT / 86400
-            val n2 = m2 + deltaT / 86400
+            val riseDayFractionAdjustment = getRiseSetAdjustment(
+                apparentSidereal,
+                riseDayFraction,
+                deltaT,
+                coordinates,
+                distances,
+                date,
+                location,
+                withRefraction,
+                standardAltitude,
+            )
+            val setDayFractionAdjustment = getRiseSetAdjustment(
+                apparentSidereal,
+                setDayFraction,
+                deltaT,
+                coordinates,
+                distances,
+                date,
+                location,
+                withRefraction,
+                standardAltitude,
+            )
 
-            val c0 =
-                interpolateCoordinate(n0, coordinates.first, coordinates.second, coordinates.third)
-            val c1 =
-                interpolateCoordinate(n1, coordinates.first, coordinates.second, coordinates.third)
-            val c2 =
-                interpolateCoordinate(n2, coordinates.first, coordinates.second, coordinates.third)
+            transitDayFraction = wrap(transitDayFraction + transitDayFractionAdjustment, 0.0, 1.0)
+            riseDayFraction = wrap(riseDayFraction + riseDayFractionAdjustment, 0.0, 1.0)
+            setDayFraction = wrap(setDayFraction + setDayFractionAdjustment, 0.0, 1.0)
 
-            val d1 = distances?.let { interpolateDistance(n1, it.first, it.second, it.third) }
-            val d2 = distances?.let { interpolateDistance(n2, it.first, it.second, it.third) }
-
-            val hourAngle0 = c0.getHourAngle(sidereal0.atLongitude(location.longitude)) * 15
-            val hourAngle1 = c1.getHourAngle(sidereal1.atLongitude(location.longitude)) * 15
-            val hourAngle2 = c2.getHourAngle(sidereal2.atLongitude(location.longitude)) * 15
-
-            val altitude1 =
-                AstroUtils.getAltitude(
-                    c1,
-                    sidereal1.toUniversalTime(date),
-                    location,
-                    withRefraction,
-                    d1
-                )
-            val altitude2 =
-                AstroUtils.getAltitude(
-                    c2,
-                    sidereal2.toUniversalTime(date),
-                    location,
-                    withRefraction,
-                    d2
-                )
-
-            val dm0 = -hourAngle0 / 360
-            val dm1 =
-                (altitude1 - standardAltitude) / (360 * cosDegrees(c1.declination) * cosDegrees(
-                    location.latitude
-                ) * sinDegrees(hourAngle1))
-            val dm2 =
-                (altitude2 - standardAltitude) / (360 * cosDegrees(c2.declination) * cosDegrees(
-                    location.latitude
-                ) * sinDegrees(hourAngle2))
-
-            m0 = wrap(m0 + dm0, 0.0, 1.0)
-            m1 = wrap(m1 + dm1, 0.0, 1.0)
-            m2 = wrap(m2 + dm2, 0.0, 1.0)
-
-            if (abs(dm0) < doneThresh && abs(dm1) < doneThresh && abs(dm2) < doneThresh) {
+            if (
+                abs(transitDayFractionAdjustment) < DONE_THRESHOLD &&
+                abs(riseDayFractionAdjustment) < DONE_THRESHOLD &&
+                abs(setDayFractionAdjustment) < DONE_THRESHOLD
+            ) {
                 break
             }
         }
 
-        val riseHour = m1 * 24
-        val transitHour = m0 * 24
-        val setHour = m2 * 24
+        val riseHour = riseDayFraction * 24
+        val transitHour = transitDayFraction * 24
+        val setHour = setDayFraction * 24
 
         return Triple(riseHour, transitHour, setHour)
+    }
+
+    private fun getGreenwichSiderealTime(
+        apparentSiderealDegrees: Double,
+        dayFraction: Double
+    ): GreenwichSiderealTime {
+        require(dayFraction in 0.0..1.0) { "Day fraction must be between 0 and 1" }
+        val siderealDegreesAtTime =
+            Trigonometry.normalizeAngle(apparentSiderealDegrees + 360.985647 * dayFraction)
+        val siderealHoursAtTime = siderealDegreesAtTime / 15
+        return GreenwichSiderealTime(siderealHoursAtTime)
+    }
+
+    private fun getHourAngle(
+        standardAltitudeDegrees: Double,
+        location: Coordinate,
+        coordinate: EquatorialCoordinate
+    ): Double? {
+        val cosineHourAngle =
+            (sinDegrees(standardAltitudeDegrees) - sinDegrees(location.latitude) * sinDegrees(
+                coordinate.declination
+            )) / (cosDegrees(location.latitude) * cosDegrees(coordinate.declination))
+
+        if (cosineHourAngle >= 1) {
+            // Always down
+            return null
+        } else if (cosineHourAngle <= -1) {
+            // Always up
+            return null
+        }
+
+        return wrap(acos(cosineHourAngle).toDegrees(), 0.0, 180.0)
+    }
+
+    private fun getTerrestrialDayFraction(
+        universalDayFraction: Double,
+        deltaTSeconds: Double
+    ): Double {
+        return universalDayFraction + deltaTSeconds / 86400
+    }
+
+    private fun getTransitAdjustment(
+        apparentSiderealDegrees: Double,
+        dayFraction: Double,
+        deltaTSeconds: Double,
+        coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>,
+        location: Coordinate
+    ): Double {
+        val siderealTime = getGreenwichSiderealTime(apparentSiderealDegrees, dayFraction)
+        val terrestrialDayFraction = getTerrestrialDayFraction(dayFraction, deltaTSeconds)
+        val interpolatedCoordinate = interpolateCoordinate(
+            terrestrialDayFraction,
+            coordinates.first,
+            coordinates.second,
+            coordinates.third
+        )
+        val hourAngleDegrees =
+            interpolatedCoordinate.getHourAngle(siderealTime.atLongitude(location.longitude)) * 15
+        return -hourAngleDegrees / 360
+    }
+
+    private fun getRiseSetAdjustment(
+        apparentSiderealDegrees: Double,
+        dayFraction: Double,
+        deltaTSeconds: Double,
+        coordinates: Triple<EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate>,
+        distances: Triple<Distance, Distance, Distance>?,
+        date: java.time.LocalDate,
+        location: Coordinate,
+        withRefraction: Boolean,
+        standardAltitudeDegrees: Double,
+    ): Double {
+        val siderealTime = getGreenwichSiderealTime(apparentSiderealDegrees, dayFraction)
+        val terrestrialDayFraction = getTerrestrialDayFraction(dayFraction, deltaTSeconds)
+        val interpolatedCoordinate = interpolateCoordinate(
+            terrestrialDayFraction,
+            coordinates.first,
+            coordinates.second,
+            coordinates.third
+        )
+        val interpolatedDistance =
+            distances?.let {
+                interpolateDistance(terrestrialDayFraction, it.first, it.second, it.third)
+            }
+        val hourAngleDegrees =
+            interpolatedCoordinate.getHourAngle(siderealTime.atLongitude(location.longitude)) * 15
+        val altitudeDegrees =
+            AstroUtils.getAltitude(
+                interpolatedCoordinate,
+                siderealTime.toUniversalTime(date),
+                location,
+                withRefraction,
+                interpolatedDistance
+            )
+        return getRiseSetAltitudeAdjustment(
+            altitudeDegrees,
+            standardAltitudeDegrees,
+            interpolatedCoordinate.declination,
+            location.latitude,
+            hourAngleDegrees
+        )
+    }
+
+    private fun getRiseSetAltitudeAdjustment(
+        altitudeDegrees: Float,
+        standardAltitudeDegrees: Double,
+        declinationDegrees: Double,
+        latitudeDegrees: Double,
+        hourAngleDegrees: Double
+    ): Double {
+        val denominator =
+            360 * cosDegrees(declinationDegrees) * cosDegrees(latitudeDegrees) * sinDegrees(
+                hourAngleDegrees
+            )
+        return (altitudeDegrees - standardAltitudeDegrees) / denominator
     }
 
 
@@ -353,6 +437,11 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
             rightAscensions.third
         }
         return Triple(ra1, ra2, ra3)
+    }
+
+    companion object {
+        private const val MAX_ITERATIONS = 20
+        private const val DONE_THRESHOLD = 0.0001
     }
 
 }
