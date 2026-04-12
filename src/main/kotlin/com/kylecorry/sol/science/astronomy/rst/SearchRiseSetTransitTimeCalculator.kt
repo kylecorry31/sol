@@ -8,10 +8,7 @@ import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.Coordinate
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
+import java.time.*
 
 internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator {
     override fun calculate(
@@ -22,8 +19,6 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         withRefraction: Boolean,
         withParallax: Boolean
     ): RiseSetTransitTimes {
-        var time = date.atStartOfDay()
-        val currentDate = date.toLocalDate()
         val parameters = SearchParameters(
             locator,
             location,
@@ -31,75 +26,23 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
             withRefraction,
             withParallax
         )
-        // Initialize the first altitude
-        val yesterdayAltitude = getAltitude(parameters, time.minusHours(1))
-        var lastAltitude = getAltitude(parameters, time)
-        var isRising = lastAltitude > yesterdayAltitude
+        val eventTimeRanges = findHourlyEventRanges(parameters, date)
 
-        var setTimeRange: Range<ZonedDateTime>? = null
-        var riseTimeRange: Range<ZonedDateTime>? = null
-        var transitTimeRange: Range<ZonedDateTime>? = null
-
-        val intervalHours = 1L
-
-        // Find the hour of each event
-        while (time.toLocalDate() == currentDate) {
-            val altitude = getAltitude(parameters, time)
-
-            // Check if it just set past the standard altitude
-            if (lastAltitude >= standardAltitude && altitude < standardAltitude) {
-                setTimeRange = Range(time.minusHours(intervalHours), time)
-            }
-
-            // Check if it just rose past the standard altitude
-            if (standardAltitude in lastAltitude.toDouble()..<altitude.toDouble()) {
-                riseTimeRange = Range(time.minusHours(intervalHours), time)
-            }
-
-            // Check if it just crossed transit
-            if (transitTimeRange == null) {
-                val isCurrentlyRising = altitude > getAltitude(parameters, time.minusMinutes(1))
-                if (isRising && !isCurrentlyRising && altitude >= standardAltitude) {
-                    transitTimeRange = Range(time.minusHours(intervalHours), time)
-                }
-                isRising = isCurrentlyRising
-            }
-
-            // If all three times are found, break
-            if (setTimeRange != null && riseTimeRange != null && transitTimeRange != null) {
-                break
-            }
-
-            lastAltitude = altitude
-            time = time.plusHours(intervalHours)
-        }
-
-        // Narrow down the times to within 1 minute
-        val precision = Duration.ofMinutes(1)
-
-        val rise = riseTimeRange?.let {
-            AstroSearch.findStart(
-                Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
-                precision
-            ) { time ->
+        // Narrow down the actual times
+        val rise = eventTimeRanges.rise?.let {
+            AstroSearch.findStart(getSearchRange(it), SEARCH_PRECISION) { time ->
                 getAltitude(parameters, time.toEpochMilli()) >= standardAltitude
             }?.atZone(date.zone)
         }
 
-        val set = setTimeRange?.let {
-            AstroSearch.findEnd(
-                Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
-                precision
-            ) { time ->
+        val set = eventTimeRanges.set?.let {
+            AstroSearch.findEnd(getSearchRange(it), SEARCH_PRECISION) { time ->
                 getAltitude(parameters, time.toEpochMilli()) >= standardAltitude
             }?.atZone(date.zone)
         }
 
-        val transit = transitTimeRange?.let {
-            val peak = AstroSearch.findPeak(
-                Range(it.start.toInstant() - precision, it.end.toInstant() + precision),
-                precision
-            ) { time ->
+        val transit = eventTimeRanges.transit?.let {
+            val peak = AstroSearch.findPeak(getSearchRange(it), SEARCH_PRECISION) { time ->
                 getAltitude(parameters, time.toEpochMilli())
             }.atZone(date.zone)
 
@@ -111,6 +54,54 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         }
 
         return RiseSetTransitTimes(rise, transit, set)
+    }
+
+    private fun getSearchRange(times: Range<ZonedDateTime>): Range<Instant> {
+        return Range(times.start.toInstant() - SEARCH_PRECISION, times.end.toInstant() + SEARCH_PRECISION)
+    }
+
+    private fun findHourlyEventRanges(
+        parameters: SearchParameters,
+        date: ZonedDateTime
+    ): EventTimeRanges {
+        var time = date.atStartOfDay()
+        val currentDate = date.toLocalDate()
+        val yesterdayAltitude = getAltitude(parameters, time.minusHours(1))
+        var lastAltitude = getAltitude(parameters, time)
+        var isRising = lastAltitude > yesterdayAltitude
+
+        var setTimeRange: Range<ZonedDateTime>? = null
+        var riseTimeRange: Range<ZonedDateTime>? = null
+        var transitTimeRange: Range<ZonedDateTime>? = null
+
+        while (time.toLocalDate() == currentDate) {
+            val altitude = getAltitude(parameters, time)
+
+            if (lastAltitude >= parameters.standardAltitude && altitude < parameters.standardAltitude) {
+                setTimeRange = Range(time.minusHours(SEARCH_INTERVAL_HOURS), time)
+            }
+
+            if (parameters.standardAltitude in lastAltitude.toDouble()..<altitude.toDouble()) {
+                riseTimeRange = Range(time.minusHours(SEARCH_INTERVAL_HOURS), time)
+            }
+
+            if (transitTimeRange == null) {
+                val isCurrentlyRising = altitude > getAltitude(parameters, time.minusMinutes(1))
+                if (isRising && !isCurrentlyRising && altitude >= parameters.standardAltitude) {
+                    transitTimeRange = Range(time.minusHours(SEARCH_INTERVAL_HOURS), time)
+                }
+                isRising = isCurrentlyRising
+            }
+
+            if (setTimeRange != null && riseTimeRange != null && transitTimeRange != null) {
+                break
+            }
+
+            lastAltitude = altitude
+            time = time.plusHours(SEARCH_INTERVAL_HOURS)
+        }
+
+        return EventTimeRanges(riseTimeRange, transitTimeRange, setTimeRange)
     }
 
     private fun getAltitude(searchParameters: SearchParameters, time: Long): Float {
@@ -142,4 +133,15 @@ internal class SearchRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculato
         val withRefraction: Boolean,
         val withParallax: Boolean
     )
+
+    private data class EventTimeRanges(
+        val rise: Range<ZonedDateTime>?,
+        val transit: Range<ZonedDateTime>?,
+        val set: Range<ZonedDateTime>?
+    )
+
+    companion object {
+        private const val SEARCH_INTERVAL_HOURS = 1L
+        private val SEARCH_PRECISION = Duration.ofMinutes(1)
+    }
 }
