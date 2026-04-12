@@ -70,9 +70,7 @@ class NeuralNetwork(
         batchSize: Int = input.size,
         onEpochCompleteFn: (error: Float, epoch: Int) -> Unit = { _, _ -> }
     ): Float {
-        if (input.size != output.size) {
-            throw IllegalArgumentException("Input and output have the same number of elements")
-        }
+        require(input.size == output.size) { "Input and output have the same number of elements" }
 
         if (input.isEmpty()) {
             return 0f
@@ -81,20 +79,20 @@ class NeuralNetwork(
         val inputSize = input.first().rows() to input.first().columns()
         val outputSize = output.first().rows() to output.first().columns()
 
-        if (inputSize.second != layers.first().inputSize) {
-            throw IllegalArgumentException("Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${layers.first().inputSize}")
+        require(inputSize.second == layers.first().inputSize) {
+            "Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${layers.first().inputSize}"
         }
 
-        if (outputSize.second != layers.last().outputSize) {
-            throw IllegalArgumentException("Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${layers.last().outputSize}")
+        require(outputSize.second == layers.last().outputSize) {
+            "Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${layers.last().outputSize}"
         }
 
-        if (input.any { it.rows() != inputSize.first || it.columns() != inputSize.second }) {
-            throw IllegalArgumentException("All input matrices must have the same dimensions")
+        require(input.none { it.rows() != inputSize.first || it.columns() != inputSize.second }) {
+            "All input matrices must have the same dimensions"
         }
 
-        if (output.any { it.rows() != outputSize.first || it.columns() != outputSize.second }) {
-            throw IllegalArgumentException("All output matrices must have the same dimensions")
+        require(output.none { it.rows() != outputSize.first || it.columns() != outputSize.second }) {
+            "All output matrices must have the same dimensions"
         }
 
         var totalError = 0f

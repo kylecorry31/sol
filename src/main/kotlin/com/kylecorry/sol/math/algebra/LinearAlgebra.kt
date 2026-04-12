@@ -11,12 +11,15 @@ object LinearAlgebra {
         require(mat1.columns() == mat2.rows()) { "Matrix 1 columns must be the same size as matrix 2 rows" }
 
         val product = Matrix.zeros(mat1.rows(), mat2.columns())
+        check(product.rows() == mat1.rows())
+        check(product.columns() == mat2.columns())
         for (r in 0..<mat1.rows()) {
             for (otherC in 0..<mat2.columns()) {
                 var sum = 0.0f
                 for (c in 0..<mat1.columns()) {
                     sum += mat1[r, c] * mat2[c, otherC]
                 }
+                check(sum.isFinite())
                 product[r, otherC] = sum
             }
         }

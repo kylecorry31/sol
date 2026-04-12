@@ -4,7 +4,6 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.sqrt
 
 object Algebra {
-
     /**
      * Solves an equation of form mx + b = 0
      */
@@ -17,7 +16,9 @@ object Algebra {
             }
             return null
         }
-        return -equation.b / equation.m
+        val solution = -equation.b / equation.m
+        check(solution.isFinite())
+        return solution
     }
 
     fun solve(equation: QuadraticEquation): Pair<Float, Float>? {
@@ -26,16 +27,21 @@ object Algebra {
         require(equation.c.isFinite()) { "c must be finite" }
         if (Arithmetic.isZero(equation.a)) {
             val linear = solve(LinearEquation(equation.b, equation.c)) ?: return null
+            check(linear.isFinite())
             return linear to linear
         }
+        check(!Arithmetic.isZero(equation.a))
 
         val discriminant = equation.b * equation.b - 4 * equation.a * equation.c
+        check(discriminant.isFinite())
         if (discriminant < 0) {
             return null
         }
         val sqrtDiscriminant = sqrt(discriminant)
         val x1 = (-equation.b + sqrtDiscriminant) / (2 * equation.a)
         val x2 = (-equation.b - sqrtDiscriminant) / (2 * equation.a)
+        check(x1.isFinite())
+        check(x2.isFinite())
         return x1 to x2
     }
 
@@ -43,7 +49,10 @@ object Algebra {
         require(equation.m.isFinite()) { "m must be finite" }
         require(!Arithmetic.isZero(equation.m)) { "m must not be zero" }
         require(equation.b.isFinite()) { "b must be finite" }
-        return LinearEquation(1 / equation.m, -equation.b / equation.m)
+        val inverse = LinearEquation(1 / equation.m, -equation.b / equation.m)
+        check(inverse.m.isFinite())
+        check(inverse.b.isFinite())
+        return inverse
     }
 
     /**
@@ -61,6 +70,7 @@ object Algebra {
             xPower *= x
         }
 
+        check(runningTotal.isFinite())
         return runningTotal
     }
 

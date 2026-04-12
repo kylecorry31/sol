@@ -145,9 +145,7 @@ class Polynomial(terms: List<PolynomialTerm>) {
                         parts[0] == "-" -> -1f
                         parts[0].contains("/") -> {
                             val fractionParts = coefficientPart.split("/")
-                            if (fractionParts.size != 2) {
-                                throw IllegalArgumentException("Invalid fraction in term: $termString")
-                            }
+                            require(fractionParts.size == 2) { "Invalid fraction in term: $termString" }
                             val numerator = fractionParts[0].toFloat()
                             val denominator = fractionParts[1].toFloat()
                             numerator / denominator
