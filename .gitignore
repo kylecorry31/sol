@@ -82,3 +82,6 @@ temp/
 .idea/markdown.xml
 .idea/AndroidProjectSystem.xml
 /.vscode/tasks.json
+sonarqube-issues.json
+sonarqube-report.json
+.codex
