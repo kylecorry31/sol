@@ -1197,6 +1197,61 @@ class MeteorologyTest {
                         WeatherCondition.Overcast
                     ),
                     weatherLater(null)
+                ),
+
+                // Ignores front-indicating clouds older than 24 hours
+                Arguments.of(
+                    emptyList<Reading<Pressure>>(),
+                    listOf(
+                        Reading(CloudGenus.Cirrus, weatherTime.minus(Duration.ofHours(26))),
+                        Reading(CloudGenus.Altocumulus, weatherTime.minus(Duration.ofHours(25))),
+                        Reading(
+                            CloudGenus.Stratus,
+                            weatherTime.minus(Duration.ofHours(24)).minusSeconds(1)
+                        )
+                    ),
+                    null,
+                    weather(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                    ),
+                    weatherLater(null)
+                ),
+
+                // Ignores current cloud conditions older than 3 hours
+                Arguments.of(
+                    pressures(1030f, 1030f),
+                    listOf(
+                        Reading(CloudGenus.Stratus, weatherTime.minus(Duration.ofHours(4)))
+                    ),
+                    null,
+                    weatherAt(
+                        weatherTime,
+                        null,
+                        PressureSystem.High,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Clear
+                    ),
+                    weatherLater(
+                        PressureSystem.High
+                    )
+                ),
+
+                // Ignores pressures older than 48 hours
+                Arguments.of(
+                    listOf(
+                        Reading(Pressure.hpa(1027f), weatherTime.minus(Duration.ofHours(52))),
+                        Reading(Pressure.hpa(1030f), weatherTime.minus(Duration.ofHours(49)))
+                    ),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        null,
+                        null,
+                        PressureTendency(PressureCharacteristic.Steady, 0f)
+                    ),
+                    weatherLater(null)
                 )
             )
         }
