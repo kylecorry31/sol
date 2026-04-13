@@ -27,6 +27,21 @@ internal class OceanographyTest {
     }
 
     @Test
+    fun getMeanLunitidalIntervalAveragesToThirtyMinutesForApril2026ReferenceTides() {
+        val location = Coordinate(42.0, -72.0)
+        val highs = listOf(
+            ZonedDateTime.parse("2026-04-13T10:06:00-04:00[America/New_York]"),
+            ZonedDateTime.parse("2026-04-13T22:34:00-04:00[America/New_York]"),
+            ZonedDateTime.parse("2026-04-14T10:55:00-04:00[America/New_York]"),
+            ZonedDateTime.parse("2026-04-14T23:23:00-04:00[America/New_York]"),
+        )
+
+        val interval = Oceanography.getMeanLunitidalInterval(highs, location)
+
+        assertEquals(Duration.ofMinutes(30), interval?.toMinutes()?.let { Duration.ofMinutes(it) })
+    }
+
+    @Test
     fun getTidalRange() {
         val cases = listOf(
             Pair(LocalDateTime.of(2020, Month.SEPTEMBER, 13, 6, 0), TidalRange.Neap),
