@@ -6,7 +6,7 @@ import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.science.meteorology.clouds.CloudLevel
 import com.kylecorry.sol.science.meteorology.clouds.CloudService
 import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
-import com.kylecorry.sol.science.meteorology.forecast.SolForecaster
+import com.kylecorry.sol.science.meteorology.forecast.sol.SolForecaster
 import com.kylecorry.sol.science.meteorology.forecast.ZambrettiForecaster
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.science.shared.Season

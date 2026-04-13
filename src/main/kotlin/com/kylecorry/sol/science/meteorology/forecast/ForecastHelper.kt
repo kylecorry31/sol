@@ -2,12 +2,21 @@ package com.kylecorry.sol.science.meteorology.forecast
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.meteorology.*
+import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
 import com.kylecorry.sol.units.Temperature
 import java.time.Duration
 
 internal object ForecastHelper {
+
+    val overcastClouds = setOf(
+        CloudGenus.Stratus,
+        CloudGenus.Nimbostratus,
+        CloudGenus.Stratocumulus,
+        CloudGenus.Altostratus
+    )
+
     fun addSecondaryConditions(
         conditions: List<WeatherCondition>,
         dailyTemperatureRange: Range<Temperature>? = null,
