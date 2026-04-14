@@ -128,7 +128,7 @@ internal class StarLocationCalculator {
             lon = newCoord.longitude
         }
 
-        return Coordinate.constrained(lat, lon)
+        return Coordinate(lat, lon)
     }
 
     private fun getLocationFromStarsAltitudeOnly(
@@ -149,7 +149,7 @@ internal class StarLocationCalculator {
 
 
         // Step 2: Refine the location using triangulation
-        val (approximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate.constrained(lat, lon))
+        val (approximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate(lat, lon))
         if (approximateLocation != null) {
             lat = approximateLocation.latitude
             lon = approximateLocation.longitude
@@ -185,7 +185,7 @@ internal class StarLocationCalculator {
                 val expectedAltitude = getStarAltitude(
                     reading.star,
                     reading.time,
-                    Coordinate.constrained(lat, lon),
+                    Coordinate(lat, lon),
                     true
                 )
                 square(
@@ -198,7 +198,7 @@ internal class StarLocationCalculator {
         lat = result.second
         lon = result.first
 
-        return Coordinate.constrained(lat, lon)
+        return Coordinate(lat, lon)
     }
 
     private fun triangulateApproximateLocation(

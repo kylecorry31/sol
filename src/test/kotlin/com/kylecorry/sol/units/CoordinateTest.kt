@@ -4,6 +4,8 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class CoordinateTest {
 
@@ -23,6 +25,43 @@ class CoordinateTest {
         assertTrue(Coordinate(1.0, 0.0).isNorthernHemisphere)
         assertFalse(Coordinate(-1.0, 0.0).isNorthernHemisphere)
         assertTrue(Coordinate(0.0, 0.0).isNorthernHemisphere)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "100.0, 200.0, 90.0, -160.0",
+        "-100.0, -200.0, -90.0, 160.0",
+        "42.815, -70.8733, 42.815, -70.8733",
+        "0.0, 0.0, 0.0, 0.0",
+        "90.0, 180.0, 90.0, 180.0",
+        "-90.0, -180.0, -90.0, -180.0",
+        "89.9999999, 179.9999999, 89.9999999, 179.9999999",
+        "-89.9999999, -179.9999999, -89.9999999, -179.9999999",
+        "45.123456789, -179.999999999, 45.123456789, -179.999999999",
+        "-45.987654321, 179.999999999, -45.987654321, 179.999999999",
+        "12.345678901, 540.0, 12.345678901, -180.0",
+        "12.345678901, -540.0, 12.345678901, 180.0",
+        "12.345678901, 539.999999999, 12.345678901, 179.999999999",
+        "12.345678901, -539.999999999, 12.345678901, -179.999999999"
+    )
+    fun constructorConstrainsAndRoundTrips(
+        latitude: Double,
+        longitude: Double,
+        expectedLatitude: Double,
+        expectedLongitude: Double
+    ) {
+        val coordinate = Coordinate(latitude, longitude)
+
+        assertEquals(expectedLatitude, coordinate.latitude, 0.000001)
+        assertEquals(expectedLongitude, coordinate.longitude, 0.000001)
+    }
+
+    @Test
+    fun canConvertDoubleCoordinate() {
+        val coordinate = DoubleCoordinate(100.0, 200.0).toCoordinate()
+
+        assertEquals(90.0, coordinate.latitude, 0.000001)
+        assertEquals(-160.0, coordinate.longitude, 0.000001)
     }
 
     @Test

@@ -5,9 +5,11 @@ import assertk.assertions.isCloseTo
 import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.CoordinateLongConverter
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import com.kylecorry.sol.tests.isCloseTo
+import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import java.util.stream.Stream
@@ -16,7 +18,7 @@ internal class CylindricalEquidistantProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideToCoordinate")
-    fun toCoordinate(x: Float, y: Float, expected: Coordinate) {
+    fun toCoordinate(x: Float, y: Float, @ConvertWith(CoordinateLongConverter::class) expected: Coordinate) {
         val projection = CylindricalEquidistantProjection()
         val coordinate = projection.toCoordinate(Vector2(x, y))
         assertThat(coordinate).isCloseTo(expected, 0.5f)
@@ -24,7 +26,7 @@ internal class CylindricalEquidistantProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideToPixels")
-    fun toPixels(coordinate: Coordinate, expectedX: Float, expectedY: Float) {
+    fun toPixels(@ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, expectedX: Float, expectedY: Float) {
         val projection = CylindricalEquidistantProjection()
         val pixels = projection.toPixels(coordinate)
         assertThat(pixels.x).isCloseTo(expectedX, 0.5f)
@@ -51,7 +53,7 @@ internal class CylindricalEquidistantProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideScaledToCoordinate")
-    fun toCoordinateScaled(scale: Float, x: Float, y: Float, expected: Coordinate) {
+    fun toCoordinateScaled(scale: Float, x: Float, y: Float, @ConvertWith(CoordinateLongConverter::class) expected: Coordinate) {
         val projection = CylindricalEquidistantProjection(scale)
         val coordinate = projection.toCoordinate(Vector2(x, y))
         assertThat(coordinate).isCloseTo(expected, 0.5f)
@@ -59,7 +61,7 @@ internal class CylindricalEquidistantProjectionTest {
 
     @ParameterizedTest
     @MethodSource("provideScaledToPixels")
-    fun toPixelsScaled(scale: Float, coordinate: Coordinate, expectedX: Float, expectedY: Float) {
+    fun toPixelsScaled(scale: Float, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, expectedX: Float, expectedY: Float) {
         val projection = CylindricalEquidistantProjection(scale)
         val pixels = projection.toPixels(coordinate)
         assertThat(pixels.x).isCloseTo(expectedX, 0.0001f)
