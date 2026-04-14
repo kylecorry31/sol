@@ -91,9 +91,12 @@ internal object SolForecaster : Forecaster {
         }
 
         // Try to figure out what the current conditions are based on past predictions
-        var startTime = getNextStartTime(time, pressures, clouds)
-        val maxTime = time.minus(HISTORY_DURATION_NO_CHANGE_MAX)
-        while (startTime != null && startTime.isAfter(maxTime)) {
+        val times = pressures.map { it.time } + clouds.map { it.time }
+        var startTime = Time.getClosestPastTime(time, times)
+        val minTime = time.minus(HISTORY_DURATION_NO_CHANGE_MAX)
+        val maxIterations = times.size
+        var i = 0
+        while (startTime != null && startTime.isAfter(minTime) && i < maxIterations) {
             val previous = forecastHelper(
                 pressures,
                 clouds,
@@ -114,24 +117,13 @@ internal object SolForecaster : Forecaster {
                 return forecast.withCurrentConditions(conditions)
             }
 
-            val newTime = getNextStartTime(startTime, pressures, clouds)
-            // Prevents an infinite loop (shouldn't be possible, but just in case)
-            if (startTime == newTime) {
-                break
-            }
+            val newTime = Time.getClosestPastTime(startTime, times)
+            check(startTime != newTime)
             startTime = newTime
+            i++
         }
 
         return forecast
-    }
-
-    private fun getNextStartTime(
-        time: Instant,
-        pressures: List<Reading<Pressure>>,
-        clouds: List<Reading<CloudGenus?>>
-    ): Instant? {
-        val times = pressures.map { it.time } + clouds.map { it.time }
-        return Time.getClosestPastTime(time, times)
     }
 
     private fun List<WeatherForecast>.withCurrentConditions(conditions: List<WeatherCondition>): List<WeatherForecast> {
