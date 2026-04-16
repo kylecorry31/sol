@@ -14,6 +14,8 @@ import kotlin.math.absoluteValue
 
 object Physics {
 
+    private val solver = RungeKutta4thOrderSolver()
+
     fun fallHeight(time: Duration, gravity: Float = Geophysics.GRAVITY): Distance {
         val seconds = time.toMillis() / 1000f
         return Distance.from(0.5f * gravity * seconds * seconds, DistanceUnits.Meters)
@@ -65,7 +67,6 @@ object Physics {
     ): List<TrajectoryPoint2D> {
         val trajectory = mutableListOf<TrajectoryPoint2D>()
 
-        val solver = RungeKutta4thOrderSolver()
         val results = solver.solve(
             Range(0f, maxTime),
             timeStep,
