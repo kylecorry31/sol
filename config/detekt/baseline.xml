@@ -2,19 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>CyclomaticComplexMethod:IntersectionMath.kt$IntersectionMath$fun getIntersection(line: Line, rectangle: Rectangle): List&lt;Vector2&gt;</ID>
-    <ID>CyclomaticComplexMethod:LoessFilter2D.kt$LoessFilter2D$override fun filter(data: List&lt;Vector2&gt;): List&lt;Vector2&gt;</ID>
-    <ID>CyclomaticComplexMethod:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator$private fun populateTidesForTime( startTime: ZonedDateTime, tides: MutableList&lt;ZonedDateTime&gt;, interval: Duration, isBefore: Boolean )</ID>
-    <ID>CyclomaticComplexMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun breakMGRSString(MGRSString: String): MGRSComponents?</ID>
-    <ID>CyclomaticComplexMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUPS(MGRS: String): UPSCoord?</ID>
-    <ID>CyclomaticComplexMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUTM(MGRSString: String): UTMCoord?</ID>
-    <ID>CyclomaticComplexMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertUPSToMGRS(Hemisphere: String?, Easting: Double, Northing: Double, Precision: Long): Long</ID>
-    <ID>CyclomaticComplexMethod:PolarCoordConverter.kt$PolarCoordConverter$fun convertGeodeticToPolarStereographic(Latitude: Double, Longitude: Double): Long</ID>
-    <ID>CyclomaticComplexMethod:PolarCoordConverter.kt$PolarCoordConverter$fun convertPolarStereographicToGeodetic(Easting: Double, Northing: Double): Long</ID>
-    <ID>CyclomaticComplexMethod:TMCoordConverter.kt$TMCoordConverter$fun convertGeodeticToTransverseMercator(Latitude: Double, Longitude: Double): Long</ID>
-    <ID>CyclomaticComplexMethod:UTMCoordConverter.kt$UTMCoordConverter$fun convertGeodeticToUTM(latitude: Double, longitude: Double): Long</ID>
-    <ID>CyclomaticComplexMethod:UTMCoordinateFormat.kt$UTMCoordinateFormat$override fun toString(coordinate: Coordinate): String</ID>
-    <ID>CyclomaticComplexMethod:ZambrettiForecaster.kt$ZambrettiForecaster$private fun forecast( location: Coordinate, pressure: Pressure, tendency: PressureTendency, windDirection: Bearing?, dailyTemperatureRange: Range&lt;Temperature&gt;?, time: ZonedDateTime, changeThreshold: Float ): List&lt;WeatherForecast&gt;</ID>
     <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2MK3 : TideConstituent</ID>
     <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2N2 : TideConstituent</ID>
     <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2Q1 : TideConstituent</ID>
@@ -25,7 +12,6 @@
     <ID>ForbiddenComment:Calculus.kt$Calculus$// TODO: Use central difference</ID>
     <ID>ForbiddenComment:GoldenSearchExtremaFinder.kt$GoldenSearchExtremaFinder$// TODO: Extract this</ID>
     <ID>ForbiddenComment:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$// TODO: Replace Savanna with Wet Summer and Dry Summer</ID>
-    <ID>ForbiddenComment:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator$// TODO: Check if it approximately contains, in case the time is slightly off</ID>
     <ID>ForbiddenComment:Meteorology.kt$Meteorology$// TODO: Factor in temperature</ID>
     <ID>ForbiddenComment:NumericDifferentiation.kt$NumericDifferentiation$// TODO: dx multiplier</ID>
     <ID>ForbiddenComment:Oceanography.kt$Oceanography$// TODO: Give more weight to tides closer to full/new moon?</ID>
@@ -34,7 +20,6 @@
     <ID>ForbiddenComment:SolForecaster.kt$SolForecaster$// TODO: Now, soon, and later buckets (or predict next X hours)</ID>
     <ID>ForbiddenComment:SolarEclipseCalculator.kt$SolarEclipseCalculator$// TODO: Check to see if the eclipse will even be visible on earth</ID>
     <ID>ForbiddenComment:Trigonometry.kt$Trigonometry$// TODO: To get a more accurate range, factor in the phase of the waveforms</ID>
-    <ID>ForbiddenComment:UTMCoordConverter.kt$UTMCoordConverter$// TODO: arg checking</ID>
     <ID>ForbiddenComment:ZambrettiForecaster.kt$ZambrettiForecaster$// TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)</ID>
     <ID>FunctionNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun table54_1(): Array&lt;Array&lt;Int&gt;&gt;</ID>
     <ID>FunctionNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun table54_P(): Array&lt;Array&lt;Int&gt;&gt;</ID>
@@ -43,64 +28,18 @@
     <ID>FunctionNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun table54_P(): Array&lt;Array&lt;Int&gt;&gt;</ID>
     <ID>FunctionNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun table54_Q(): Array&lt;Array&lt;Int&gt;&gt;</ID>
     <ID>FunctionParameterNaming:EclipticObliquity.kt$EclipticObliquity$T: Double</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Easting: Double</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Hemisphere: String?</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Latitude: Double</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Letters: LongArray</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$MGRS: String</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$MGRSString: String</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Northing: Double</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Precision: Long</ID>
-    <ID>FunctionParameterNaming:MGRSCoordConverter.kt$MGRSCoordConverter$Zone: Long</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$Easting: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$False_Easting: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$False_Northing: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$Latitude: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$Latitude_of_True_Scale: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$Longitude: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$Longitude_Down_from_Pole: Double</ID>
-    <ID>FunctionParameterNaming:PolarCoordConverter.kt$PolarCoordConverter$Northing: Double</ID>
     <ID>FunctionParameterNaming:Sun.kt$Sun$T: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Central_Meridian: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Easting: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$False_Easting: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$False_Northing: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Latitude: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Longitude: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Northing: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Origin_Latitude: Double</ID>
-    <ID>FunctionParameterNaming:TMCoordConverter.kt$TMCoordConverter$Scale_Factor: Double</ID>
-    <ID>FunctionParameterNaming:UPSCoordConverter.kt$UPSCoordConverter$Easting: Double</ID>
-    <ID>FunctionParameterNaming:UPSCoordConverter.kt$UPSCoordConverter$Hemisphere: String?</ID>
-    <ID>FunctionParameterNaming:UPSCoordConverter.kt$UPSCoordConverter$Northing: Double</ID>
-    <ID>FunctionParameterNaming:UTMCoordConverter.kt$UTMCoordConverter$Easting: Double</ID>
-    <ID>FunctionParameterNaming:UTMCoordConverter.kt$UTMCoordConverter$Hemisphere: String</ID>
-    <ID>FunctionParameterNaming:UTMCoordConverter.kt$UTMCoordConverter$Northing: Double</ID>
-    <ID>FunctionParameterNaming:UTMCoordConverter.kt$UTMCoordConverter$Zone: Long</ID>
-    <ID>ImplicitDefaultLocale:LatLon.kt$LatLon$String.format("Lat %7.4f\u00B0", this.latitude.degrees)</ID>
-    <ID>ImplicitDefaultLocale:LatLon.kt$LatLon$String.format("Lon %7.4f\u00B0", this.longitude.degrees)</ID>
-    <ID>ImplicitDefaultLocale:MGRSCoordConverter.kt$MGRSCoordConverter$String.format("%02d", Zone)</ID>
     <ID>ImplicitDefaultLocale:NationalGrid.kt$NationalGrid$String.format("%s %05.0f %05.0f", gs.reference, offset[0], offset[1])</ID>
     <ID>LargeClass:Astronomy.kt$Astronomy</ID>
     <ID>LongMethod:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
     <ID>LongMethod:Geography.kt$Geography$fun trilaterate( readings: List&lt;Geofence&gt;, isWeighted: Boolean = false, calculateBias: Boolean = false ): TrilaterationResult</ID>
     <ID>LongMethod:Geography.kt$Geography$fun vincenty( location1: Coordinate, location2: Coordinate ): FloatArray</ID>
-    <ID>LongMethod:LoessFilter2D.kt$LoessFilter2D$override fun filter(data: List&lt;Vector2&gt;): List&lt;Vector2&gt;</ID>
     <ID>LongMethod:LongitudinalNutation.kt$LongitudinalNutation$fun table3(): Array&lt;DoubleArray&gt;</ID>
     <ID>LongMethod:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun getNextLunarEclipse(ut: UniversalTime): LunarEclipseParameters</ID>
-    <ID>LongMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun breakMGRSString(MGRSString: String): MGRSComponents?</ID>
-    <ID>LongMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUPS(MGRS: String): UPSCoord?</ID>
-    <ID>LongMethod:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUTM(MGRSString: String): UTMCoord?</ID>
     <ID>LongMethod:Moon.kt$Moon$private fun table47a(): Array&lt;Array&lt;Int&gt;&gt;</ID>
     <ID>LongMethod:Moon.kt$Moon$private fun table47b(): Array&lt;Array&lt;Int&gt;&gt;</ID>
     <ID>LongMethod:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$private fun calculateHelper( locator: ICelestialLocator, date: ZonedDateTime, location: Coordinate, standardAltitude: Double, withRefraction: Boolean, withParallax: Boolean ): RiseSetTransitTimes</ID>
-    <ID>LongMethod:PolarCoordConverter.kt$PolarCoordConverter$fun convertPolarStereographicToGeodetic(Easting: Double, Northing: Double): Long</ID>
-    <ID>LongMethod:PolarCoordConverter.kt$PolarCoordConverter$fun setPolarStereographicParameters( a: Double, f: Double, Latitude_of_True_Scale: Double, Longitude_Down_from_Pole: Double, False_Easting: Double, False_Northing: Double ): Long</ID>
     <ID>LongMethod:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun getNextSolarEclipse(ut: UniversalTime): SolarEclipseParameters</ID>
-    <ID>LongMethod:TMCoordConverter.kt$TMCoordConverter$fun convertGeodeticToTransverseMercator(Latitude: Double, Longitude: Double): Long</ID>
-    <ID>LongMethod:TMCoordConverter.kt$TMCoordConverter$fun convertTransverseMercatorToGeodetic(Easting: Double, Northing: Double): Long</ID>
-    <ID>LongMethod:TMCoordConverter.kt$TMCoordConverter$fun setTransverseMercatorParameters( a: Double, f: Double, Origin_Latitude: Double, Central_Meridian: Double, False_Easting: Double, False_Northing: Double, Scale_Factor: Double ): Long</ID>
-    <ID>LongMethod:UTMCoordConverter.kt$UTMCoordConverter$fun convertGeodeticToUTM(latitude: Double, longitude: Double): Long</ID>
     <ID>LongParameterList:Astronomy.kt$Astronomy$( date: ZonedDateTime, location: Coordinate, tilt: Float, azimuth: Bearing, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
     <ID>LongParameterList:Astronomy.kt$Astronomy$( location: Coordinate, time: ZonedDateTime, nextRiseOffset: Duration = Duration.ofHours(6), mode: SunTimesMode = SunTimesMode.Actual, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
     <ID>LongParameterList:Astronomy.kt$Astronomy$( readings: List&lt;AltitudeAzimuth&gt;, time: ZonedDateTime, approximateLocation: Coordinate? = null, tolerance: Float = 0.04f, minMatches: Int = 5, numNeighbors: Int = 3, minMagnitude: Float = 4f )</ID>
@@ -121,7 +60,6 @@
     <ID>LongParameterList:LoessFilter.kt$LoessFilter$( private val span: Float = 0.3f, private val robustnessIterations: Int = 2, private val accuracy: Float = 1e-12f, private val minimumSpanSize: Int = 0, private val maximumSpanSize: Int = Int.MAX_VALUE, private val maximumSpanDistance: Float? = null, private val distanceFn: (p1: List&lt;Float&gt;, p2: List&lt;Float&gt;) -&gt; Float = Geometry::manhattanDistance )</ID>
     <ID>LongParameterList:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$( input: List&lt;List&lt;Float&gt;&gt;, output: List&lt;Int&gt;, epochs: Int = 100, learningRate: Float = 0.1f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
     <ID>LongParameterList:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
-    <ID>LongParameterList:MGRSCoordConverter.kt$MGRSCoordConverter.MGRSComponents$( val zone: Int, val latitudeBand: Int, val squareLetter1: Int, val squareLetter2: Int, val easting: Double, val northing: Double, val precision: Int )</ID>
     <ID>LongParameterList:Meteorology.kt$Meteorology$( observations: List&lt;WeatherObservation&lt;*&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;?, pressureChangeThreshold: Float = 0.5f, pressureStormChangeThreshold: Float = 2f, time: Instant = Instant.now(), location: Coordinate = Coordinate.zero, source: ForecastSource = ForecastSource.Sol )</ID>
     <ID>LongParameterList:Meteorology.kt$Meteorology$( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;?, pressureChangeThreshold: Float = 0.5f, pressureStormChangeThreshold: Float = 2f, time: Instant = Instant.now(), location: Coordinate = Coordinate.zero, source: ForecastSource = ForecastSource.Sol )</ID>
     <ID>LongParameterList:NeuralNetwork.kt$NeuralNetwork$( input: List&lt;List&lt;Float&gt;&gt;, output: List&lt;Int&gt;, epochs: Int = 100, learningRate: Float = 0.1f, regularization: Float = 0f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
@@ -132,13 +70,9 @@
     <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$( ut: UniversalTime, location: Coordinate, standardAltitude: Double, withRefraction: Boolean, coordinates: Triple&lt;EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate&gt;, distances: Triple&lt;Distance, Distance, Distance&gt;? )</ID>
     <ID>LongParameterList:Physics.kt$Physics$( targetPosition: Vector2, velocity: Float, initialPosition: Vector2 = Vector2.zero, dragModel: DragModel = NoDragModel(), timeStep: Float = 0.01f, maxTime: Float = 10f, minAngle: Float = 0f, maxAngle: Float = 90f, optimizer: IOptimizer = HillClimbingOptimizer(0.001, initialValue = 0.0 to 0.0), getInterpolator: (points: List&lt;Vector2&gt;) -&gt; Interpolator = { points -&gt; LinearInterpolator(points) } )</ID>
     <ID>LongParameterList:PlanetLocator.kt$Planet$( val order: Int, internal val epoch: Double, val orbitalPeriod: Double, val radius: Double, internal val eccentricity: Double, internal val semimajorAxis: Double, internal val angularDiameter: Double, internal val visualMagnitude: Double, internal val inclination: Double, internal val eclipticLongitudeEpoch: Double, internal val eclipticLongitudePerihelion: Double, internal val eclipticLongitudeAscendingNodeEpoch: Double )</ID>
-    <ID>LongParameterList:PolarCoordConverter.kt$PolarCoordConverter$( a: Double, f: Double, Latitude_of_True_Scale: Double, Longitude_Down_from_Pole: Double, False_Easting: Double, False_Northing: Double )</ID>
     <ID>LongParameterList:SolForecaster.kt$SolForecaster$( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;? = null, time: Instant = Instant.now(), pressureChangeThreshold: Float = 1.5f, pressureStormChangeThreshold: Float = 2f )</ID>
     <ID>LongParameterList:SolForecaster.kt$SolForecaster$( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;? = null, time: Instant = Instant.now(), pressureChangeThreshold: Float = 1.5f, weatherPredictors: List&lt;Pair&lt;WeatherCondition, WeatherPredictor&gt;&gt;, afterWeatherPredictors: List&lt;Pair&lt;WeatherCondition, WeatherPredictor&gt;&gt;, )</ID>
     <ID>LongParameterList:SolarRadiationCalculator.kt$SolarRadiationCalculator$( ut: UniversalTime, location: Coordinate, tilt: Float? = null, bearing: Bearing? = null, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
-    <ID>LongParameterList:TMCoord.kt$TMCoord.Companion$( easting: Double, northing: Double, originLatitude: Angle, centralMeridian: Angle, falseEasting: Double, falseNorthing: Double, scale: Double )</ID>
-    <ID>LongParameterList:TMCoord.kt$TMCoord.Companion$( latitude: Angle, longitude: Angle, a: Double?, f: Double?, originLatitude: Angle, centralMeridian: Angle, falseEasting: Double, falseNorthing: Double, scale: Double )</ID>
-    <ID>LongParameterList:TMCoordConverter.kt$TMCoordConverter$( a: Double, f: Double, Origin_Latitude: Double, Central_Meridian: Double, False_Easting: Double, False_Northing: Double, Scale_Factor: Double )</ID>
     <ID>LongParameterList:ZambrettiForecaster.kt$ZambrettiForecaster$( location: Coordinate, pressure: Pressure, tendency: PressureTendency, windDirection: Bearing?, dailyTemperatureRange: Range&lt;Temperature&gt;?, time: ZonedDateTime, changeThreshold: Float )</ID>
     <ID>LoopWithTooManyJumpStatements:Astronomy.kt$Astronomy$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter.kt$LoessFilter$for</ID>
@@ -178,10 +112,6 @@
     <ID>MaxLineLength:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$"Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${this.output}"</ID>
     <ID>MaxLineLength:LongitudinalNutation.kt$LongitudinalNutation$nutation += (row[5] + row[6] * T) * sinDegrees(row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4)</ID>
     <ID>MaxLineLength:LowPressureLaterPredictor.kt$LowPressureLaterPredictor$return (factors.weatherFront == WeatherFront.Warm &amp;&amp; factors.pressureSystem != PressureSystem.High) || (factors.pressureSystem == PressureSystem.Low &amp;&amp; factors.pressureTendency.characteristic == PressureCharacteristic.Steady)</ID>
-    <ID>MaxLineLength:MGRSCoordConverter.kt$MGRSCoordConverter$if</ID>
-    <ID>MaxLineLength:MGRSCoordConverter.kt$MGRSCoordConverter$if (((letters[0] == LETTER_V.toLong()) &amp;&amp; (Zone == 31L)) &amp;&amp; (grid_easting == 500000.0)) grid_easting -= 1.0</ID>
-    <ID>MaxLineLength:MGRSCoordConverter.kt$MGRSCoordConverter$if ((ltr2_low_value == LETTER_J.toLong()) &amp;&amp; (MGRS.squareLetter1 &gt; LETTER_O)) grid_easting -= ONEHT</ID>
-    <ID>MaxLineLength:MGRSCoordConverter.kt$MGRSCoordConverter$val</ID>
     <ID>MaxLineLength:Meteorology.kt$Meteorology$*</ID>
     <ID>MaxLineLength:Meteorology.kt$Meteorology$c1 + c2 * temperature + c3 * relativeHumidity + c4 * temperature * relativeHumidity + c5 * temperature * temperature + c6 * relativeHumidity * relativeHumidity + c7 * temperature * temperature * relativeHumidity + c8 * temperature * relativeHumidity * relativeHumidity + c9 * temperature * temperature * relativeHumidity * relativeHumidity</ID>
     <ID>MaxLineLength:MultiTrigger.kt$MultiTrigger$class</ID>
@@ -206,7 +136,6 @@
     <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$sinDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch)</ID>
     <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$square(earthPosition.second) + square(planetPosition.second)</ID>
     <ID>MaxLineLength:PlateSolver.kt$PlateSolver$if</ID>
-    <ID>MaxLineLength:PolarCoordConverter.kt$PolarCoordConverter$if</ID>
     <ID>MaxLineLength:PrecipitationPredictor.kt$PrecipitationPredictor$return (factors.weatherFront == WeatherFront.Warm || factors.doCloudsIndicateWeatherFront) &amp;&amp; !factors.pressureTendency.characteristic.isRising</ID>
     <ID>MaxLineLength:SolarEclipseCalculator.kt$SolarEclipseCalculator$*</ID>
     <ID>MaxLineLength:SolarEclipseCalculator.kt$SolarEclipseCalculator$// The sun is larger than the moon, and the moon is completely contained in the sun disk (sun is partially obscured)</ID>
@@ -218,29 +147,17 @@
     <ID>MaxLineLength:Statistics.kt$Statistics$* Calculates the root mean square errors between the datasets. Actual and predicted must correspond 1-1 with eachother.</ID>
     <ID>MaxLineLength:Statistics.kt$Statistics$* Calculates the sum of squared errors between the datasets. Actual and predicted must correspond 1-1 with eachother.</ID>
     <ID>MaxLineLength:StormPredictor.kt$StormPredictor$return factors.pressureTendency.characteristic.isFalling &amp;&amp; factors.pressureTendency.amount.absoluteValue &gt;= pressureTendencyStormThreshold.absoluteValue</ID>
-    <ID>MaxLineLength:TMCoord.kt$TMCoord.Companion$*</ID>
-    <ID>MaxLineLength:TMCoord.kt$TMCoord.Companion$require(!(err != TMCoordConverter.TRANMERC_NO_ERROR.toLong() &amp;&amp; err != TMCoordConverter.TRANMERC_LON_WARNING.toLong())) { "TM Conversion Error" }</ID>
-    <ID>MaxLineLength:TMCoordConverter.kt$TMCoordConverter$+</ID>
-    <ID>MaxLineLength:TMCoordConverter.kt$TMCoordConverter$if</ID>
-    <ID>MaxLineLength:TMCoordConverter.kt$TMCoordConverter$sn * s * c5 * TranMerc_Scale_Factor</ID>
-    <ID>MaxLineLength:TMCoordConverter.kt$TMCoordConverter$t * (5e0 + 3e0 * tan2 + eta - 4e0 * eta.pow(2.0) - 9e0 * tan2 * eta)</ID>
     <ID>MaxLineLength:TemperatureTrigger.kt$TemperatureTrigger$private val triggerType: TemperatureTriggerType = if (above) TemperatureTriggerType.High else TemperatureTriggerType.Low</ID>
     <ID>MaxLineLength:Trigonometry.kt$Trigonometry$*</ID>
-    <ID>MaxLineLength:UTMCoordConverter.kt$UTMCoordConverter$// if ((Easting &lt; MIN_EASTING) || (Easting &gt; MAX_EASTING)) //removed check to enable reprojecting images</ID>
-    <ID>MaxLineLength:UTMCoordinateFormat.kt$UTMCoordinateFormat$if (coordinate.latitude &lt; -72) 'C' else if (coordinate.latitude &lt; -64) 'D' else if (coordinate.latitude &lt; -56) 'E' else if (coordinate.latitude &lt; -48) 'F' else if (coordinate.latitude &lt; -40) 'G' else if (coordinate.latitude &lt; -32) 'H' else if (coordinate.latitude &lt; -24) 'J' else if (coordinate.latitude &lt; -16) 'K' else if (coordinate.latitude &lt; -8) 'L' else if (coordinate.latitude &lt; 0) 'M' else if (coordinate.latitude &lt; 8) 'N' else if (coordinate.latitude &lt; 16) 'P' else if (coordinate.latitude &lt; 24) 'Q' else if (coordinate.latitude &lt; 32) 'R' else if (coordinate.latitude &lt; 40) 'S' else if (coordinate.latitude &lt; 48) 'T' else if (coordinate.latitude &lt; 56) 'U' else if (coordinate.latitude &lt; 64) 'V' else if (coordinate.latitude &lt; 72) 'W' else 'X'</ID>
     <ID>MaxLineLength:WindPredictor.kt$WindPredictor$return factors.pressureTendency.characteristic.isRapid || (factors.weatherFrontFromCloudsOnly == WeatherFront.Cold &amp;&amp; !factors.pressureTendency.characteristic.isRising)</ID>
     <ID>MaxLineLength:ZambrettiForecaster.kt$ZambrettiForecaster$// TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)</ID>
     <ID>MemberNameEqualsClassName:MarchingSquares.kt$MarchingSquares$private fun &lt;T&gt; marchingSquares( square: List&lt;Pair&lt;T, Float&gt;&gt;, threshold: Float, interpolator: (Float, T, T) -&gt; T ): List&lt;IsolineSegment&lt;T&gt;&gt;</ID>
     <ID>MemberNameEqualsClassName:Speed.kt$Speed$val speed: Float get() = measureValue(measure)</ID>
     <ID>NestedBlockDepth:Ecology.kt$Ecology$fun getLifecycleEventDates( events: List&lt;LifecycleEvent&gt;, dateRange: Range&lt;LocalDate&gt;, dayLengthProvider: (LocalDate) -&gt; Duration, temperatureProvider: (LocalDate) -&gt; Range&lt;Temperature&gt;, ): List&lt;Pair&lt;LocalDate, LifecycleEvent&gt;&gt;</ID>
-    <ID>NestedBlockDepth:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUPS(MGRS: String): UPSCoord?</ID>
-    <ID>NestedBlockDepth:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUTM(MGRSString: String): UTMCoord?</ID>
     <ID>NestedBlockDepth:NeuralNetwork.kt$NeuralNetwork$fun fit( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, regularization: Float = 0f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } ): Float</ID>
-    <ID>NestedBlockDepth:UTMCoordConverter.kt$UTMCoordConverter$fun convertGeodeticToUTM(latitude: Double, longitude: Double): Long</ID>
     <ID>ReturnCount:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
     <ID>ReturnCount:Algebra.kt$Algebra$fun solve(equation: LinearEquation): Float?</ID>
     <ID>ReturnCount:Algebra.kt$Algebra$fun solve(equation: QuadraticEquation): Pair&lt;Float, Float&gt;?</ID>
-    <ID>ReturnCount:Angle.kt$Angle$override fun compareTo(other: Angle?): Int</ID>
     <ID>ReturnCount:Arithmetic.kt$Arithmetic$fun power(x: Int, power: Int): Int</ID>
     <ID>ReturnCount:Arithmetic.kt$Arithmetic$fun wrap(value: Double, min: Double, max: Double): Double</ID>
     <ID>ReturnCount:ArrivalTimeCalculator.kt$ArrivalTimeCalculator$fun getArrivalTime( time: Instant, forecast: WeatherForecast, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt; ): Instant?</ID>
@@ -276,7 +193,6 @@
     <ID>ReturnCount:KalmanFilter.kt$KalmanFilter.Companion$fun filter( measurements: List&lt;Double&gt;, errors: List&lt;Double&gt;, processError: Double, times: List&lt;Double&gt;? = null ): List&lt;Double&gt;</ID>
     <ID>ReturnCount:KalmanFilter.kt$KalmanFilter.Companion$fun filterWithError( measurements: List&lt;Double&gt;, errors: List&lt;Double&gt;, processError: Double, times: List&lt;Double&gt;? = null ): List&lt;Pair&lt;Double, Double&gt;&gt;</ID>
     <ID>ReturnCount:LocalNewtonInterpolator.kt$LocalNewtonInterpolator$override fun interpolate(x: Float): Float</ID>
-    <ID>ReturnCount:MGRSCoordConverter.kt$MGRSCoordConverter$private fun convertMGRSToUPS(MGRS: String): UPSCoord?</ID>
     <ID>ReturnCount:Moon.kt$Moon$fun getPhase(ut: UniversalTime): MoonPhase</ID>
     <ID>ReturnCount:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$private fun getHourAngle( standardAltitudeDegrees: Double, location: Coordinate, coordinate: EquatorialCoordinate ): Double?</ID>
     <ID>ReturnCount:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$override fun toString(coordinate: Coordinate): String</ID>
@@ -296,24 +212,19 @@
     <ID>ReturnCount:TextExtensions.kt$internal fun String.toDoubleCompat(): Double?</ID>
     <ID>ReturnCount:TextExtensions.kt$internal fun String.toFloatCompat(): Float?</ID>
     <ID>ReturnCount:Time.kt$Time$fun List&lt;Reading&lt;*&gt;&gt;.duration(): Duration</ID>
-    <ID>ReturnCount:UPSCoordConverter.kt$UPSCoordConverter$fun convertGeodeticToUPS(latitude: Double, longitude: Double): Long</ID>
-    <ID>SwallowedException:MGRSCoordConverter.kt$MGRSCoordConverter$e: Exception</ID>
     <ID>SwallowedException:MGRSCoordinateFormat.kt$MGRSCoordinateFormat$e: Exception</ID>
     <ID>SwallowedException:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$e: Exception</ID>
     <ID>SwallowedException:TextExtensions.kt$e: Exception</ID>
     <ID>SwallowedException:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
-    <ID>SwallowedException:UTMCoordConverter.kt$UTMCoordConverter$e: Exception</ID>
     <ID>SwallowedException:UTMCoordinateFormat.kt$UTMCoordinateFormat$e2: Exception</ID>
     <ID>SwallowedException:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:UTMCoordinateFormat.kt$UTMCoordinateFormat$Exception()</ID>
     <ID>ThrowsCount:NationalGrid.kt$NationalGrid$fun fromNationalGrid(ng: String): DoubleArray</ID>
     <ID>ThrowsCount:NeuralNetwork.kt$NeuralNetwork$fun load(weights: List&lt;LayerWeights&gt;)</ID>
-    <ID>TooGenericExceptionCaught:MGRSCoordConverter.kt$MGRSCoordConverter$e: Exception</ID>
     <ID>TooGenericExceptionCaught:MGRSCoordinateFormat.kt$MGRSCoordinateFormat$e: Exception</ID>
     <ID>TooGenericExceptionCaught:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$e: Exception</ID>
     <ID>TooGenericExceptionCaught:TextExtensions.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:UTMCoordConverter.kt$UTMCoordConverter$e: Exception</ID>
     <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e2: Exception</ID>
     <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
     <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Bias matrix for layer $index must be the same size")</ID>
@@ -321,7 +232,6 @@
     <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Weight matrix for layer $index must be the same size")</ID>
     <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Weights and bias lists must be same size as layers")</ID>
     <ID>TooGenericExceptionThrown:UTMCoordinateFormat.kt$UTMCoordinateFormat$throw Exception()</ID>
-    <ID>TooManyFunctions:Angle.kt$Angle$Companion</ID>
     <ID>TooManyFunctions:Arithmetic.kt$Arithmetic</ID>
     <ID>TooManyFunctions:Astronomy.kt$Astronomy</ID>
     <ID>TooManyFunctions:CoordinateBounds.kt$CoordinateBounds : IGeoArea</ID>
@@ -334,7 +244,6 @@
     <ID>TooManyFunctions:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier</ID>
     <ID>TooManyFunctions:LinearAlgebra.kt$LinearAlgebra</ID>
     <ID>TooManyFunctions:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator : IWaterLevelCalculator</ID>
-    <ID>TooManyFunctions:MGRSCoordConverter.kt$MGRSCoordConverter</ID>
     <ID>TooManyFunctions:MathExtensions.kt$MathExtensions</ID>
     <ID>TooManyFunctions:Matrix.kt$Matrix</ID>
     <ID>TooManyFunctions:Matrix.kt$com.kylecorry.sol.math.algebra.Matrix.kt</ID>
@@ -350,7 +259,6 @@
     <ID>TooManyFunctions:Trigonometry.kt$Trigonometry</ID>
     <ID>TooManyFunctions:UniversalTime.kt$com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
     <ID>TooManyFunctions:Vector2.kt$Vector2</ID>
-    <ID>UnusedPrivateMember:UTMCoordConverter.kt$UTMCoordConverter$private fun setUTMParameters(a: Double, f: Double, override: Long): Long</ID>
     <ID>UnusedPrivateProperty:Calculus.kt$Calculus$i</ID>
     <ID>UnusedPrivateProperty:DecimalFormatter.kt$DecimalFormatter$i</ID>
     <ID>UnusedPrivateProperty:Geography.kt$Geography$iter</ID>
@@ -368,42 +276,6 @@
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$var F: Double</ID>
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$var T: Double</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$private val MGRS_Ellipsoid_Code = "WE"</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$private var false_northing = 0.0</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$private var ltr2_high_value: Long = 0 // this is only used for doing MGRS to xxx conversions.</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$private var ltr2_low_value: Long = 0</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$private var min_northing = 0.0</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$private var northing_offset = 0.0 //smithjl added north_offset</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val MGRS = breakMGRSString(MGRSString)</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val UPS = UPSCoord.fromLatLon(Angle.fromRadians(latitude), Angle.fromRadians(longitude))</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val UPS = convertMGRSToUPS(MGRSString)</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val UTM = UTMCoord.fromLatLon(Angle.fromRadians(latitude), Angle.fromRadians(longitude))</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val UTM = convertMGRSToUTM(MGRSString)</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val aa_pattern: Long = if (MGRS_Ellipsoid_Code.compareTo(CLARKE_1866) == 0 || MGRS_Ellipsoid_Code.compareTo(CLARKE_1880) == 0 || MGRS_Ellipsoid_Code.compareTo( BESSEL_1841 ) == 0 || MGRS_Ellipsoid_Code.compareTo(BESSEL_1841_NAMIBIA) == 0 ) 0L else 1L /* Pattern based on ellipsoid code */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val error_code = MGRS_NO_ERROR.toLong()</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val error_code: Long = getLatitudeLetter(Latitude)</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val false_easting: Double /* False easting for 2nd letter */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val false_northing: Double /* False northing for 3rd letter */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val lat_deg: Double = latitude * RAD_TO_DEG</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val ltr2_high_value: Long /* 2nd letter range - high number */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val ltr2_low_value: Int /* 2nd letter range - low number */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val ltr2_low_value: Long /* 2nd letter range - low number */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val ltr3_high_value: Long /* 3rd letter range - high number (UPS) */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val num_digits: Int = i - j</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$val num_letters: Int</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var Easting = Easting</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var Northing = Northing</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var UTM: UTMCoord? = null</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var error_code = MGRS_NO_ERROR.toLong()</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var error_code = checkZone(MGRSString)</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var grid_easting: Double /* Easting for 100,000 meter grid square */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var grid_easting: Double /* Easting used to derive 2nd letter of MGRS */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var grid_easting: Double /* easting for 100,000 meter grid square */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var grid_northing: Double /* Northing for 100,000 meter grid square */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var grid_northing: Double /* Northing used to derive 3rd letter of MGRS */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var grid_northing: Double /* northing for 100,000 meter grid square */</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var num_digits: Int</ID>
-    <ID>VariableNaming:MGRSCoordConverter.kt$MGRSCoordConverter$var set_number: Long /* Set number (1-6) based on UTM zone number */</ID>
     <ID>VariableNaming:Moon.kt$Moon$val D = getMeanElongation(tt)</ID>
     <ID>VariableNaming:Moon.kt$Moon$val D = getMeanElongation(ut)</ID>
     <ID>VariableNaming:Moon.kt$Moon$val E = polynomial(T, 1.0, -0.002516, -0.0000074)</ID>
@@ -418,34 +290,6 @@
     <ID>VariableNaming:Moon.kt$Moon$val T = tt.toJulianCenturies()</ID>
     <ID>VariableNaming:Moon.kt$Moon$val T = ut.toJulianCenturies()</ID>
     <ID>VariableNaming:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$val T = ut.toJulianCenturies()</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$/* Ellipsoid Parameters, default to WGS 84 */ private var Polar_a = 6378137.0 /* Semi-major axis of ellipsoid in meters */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$/* Maximum variance for easting and northing values for WGS 84. */ private var Polar_Delta_Easting = 12713601.0</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$/* Polar Stereographic projection Parameters */ private var Polar_Origin_Lat: Double = ((PI * 90) / 180) /* Latitude of origin in radians */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Polar_Delta_Northing = 12713601.0</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Polar_False_Easting = 0.0 /* False easting in meters */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Polar_False_Northing = 0.0 /* False northing in meters */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Polar_Origin_Long = 0.0 /* Longitude of origin in radians */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Polar_a_mc = 6378137.0 /* Polar_a * mc */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Polar_f = 1 / 298.257223563 /* Flattening of ellipsoid */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var Southern_Hemisphere = 0.0 /* Flag variable */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var es_OVER_2 = .040909595421311 /* es / 2.0 */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$private var two_Polar_a = 12756274.0 /* 2.0 * Polar_a */</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val delta_radius: Double</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val inv_f = 1 / f</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val max_easting = Polar_False_Easting + Polar_Delta_Easting</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val max_northing = Polar_False_Northing + Polar_Delta_Northing</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val min_easting = Polar_False_Easting - Polar_Delta_Easting</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val min_northing = Polar_False_Northing - Polar_Delta_Northing</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val one_MINUS_es: Double</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val one_PLUS_es: Double</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$val pow_es: Double</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var Error_Code: Long = POLAR_NO_ERROR</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var Latitude = Latitude</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var Longitude = Longitude</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var Longitude_Down_from_Pole = Longitude_Down_from_Pole</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var PHI: Double</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var pow_es: Double</ID>
-    <ID>VariableNaming:PolarCoordConverter.kt$PolarCoordConverter$var sin_PHI: Double</ID>
     <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)</ID>
     <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val E = Algebra.polynomial(T, 1.0, -0.002516, -0.0000074)</ID>
     <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
@@ -463,49 +307,6 @@
     <ID>VariableNaming:Sun.kt$Sun$val M = getMeanAnomaly(T)</ID>
     <ID>VariableNaming:Sun.kt$Sun$val T = tt.toJulianCenturies()</ID>
     <ID>VariableNaming:Sun.kt$Sun$val T = ut.toJulianCenturies()</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$/* Isometeric to geodetic latitude parameters, default to WGS 84 */ private var TranMerc_ap = 6367449.1458008</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$/* Maximum variance for easting and northing values for WGS 84. */ private var TranMerc_Delta_Easting = 40000000.0</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$/* Transverse_Mercator projection Parameters */ private var TranMerc_Origin_Lat = 0.0 /* Latitude of origin in radians */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_Delta_Northing = 40000000.0</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_False_Easting = 0.0 /* False easting in meters */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_False_Northing = 0.0 /* False northing in meters */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_Origin_Long = 0.0 /* Longitude of origin in radians */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_Scale_Factor = 1.0 /* Scale factor */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_bp = 16038.508696861</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_cp = 16.832613334334</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_dp = 0.021984404273757</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_ebs = 0.0067394967565869 /* Second Eccentricity squared */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_ep = 3.1148371319283e-005</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$private var TranMerc_es = 0.0066943799901413800 /* Eccentricity (0.08181919084262188000) squared */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$val TranMerc_b: Double /* Semi-minor axis of ellipsoid, in meters */</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$val inv_f = 1 / f</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$val temp_Long: Double</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$val temp_Origin: Double</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$var Central_Meridian = Central_Meridian</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$var Error_Code = TRANMERC_NO_ERROR.toLong()</ID>
-    <ID>VariableNaming:TMCoordConverter.kt$TMCoordConverter$var Longitude = Longitude</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$/* Ellipsoid Parameters, default to WGS 84 */ private val UPS_a = 6378137.0 /* Semi-major axis of ellipsoid in meters */</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private val UPS_False_Easting = 2000000.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private val UPS_False_Northing = 2000000.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private val UPS_Origin_Longitude = 0.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private val UPS_f = 1 / 298.257223563 /* Flattening of ellipsoid */</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private val false_easting = 0.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private val false_northing = 0.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private var UPS_Easting = 0.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private var UPS_Northing = 0.0</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$private var UPS_Origin_Latitude: Double = MAX_ORIGIN_LAT /*set default = North Hemisphere */</ID>
-    <ID>VariableNaming:UPSCoordConverter.kt$UPSCoordConverter$var Error_Code = UPS_NO_ERROR.toLong()</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$private var UTM_Override: Long = 0 /* Zone override flag */</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$private var UTM_a = 6378137.0 /* Semi-major axis of ellipsoid in meters */</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$private var UTM_f = 1 / 298.257223563 /* Flattening of ellipsoid */</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$val False_Easting = 500000.0</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$val Origin_Latitude = 0.0</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$val Scale = 0.9996</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$val TM = TMCoord.fromLatLon( Angle.fromRadians(latitude), Angle.fromRadians(lon), this.UTM_a, this.UTM_f, Angle.fromRadians(originLatitude), Angle.fromRadians(this.centralMeridian), falseEasting, falseNorthing, scale )</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$val TM = TMCoord.fromTM( Easting, Northing, Angle.fromRadians(Origin_Latitude), Angle.fromRadians(this.centralMeridian), False_Easting, False_Northing, Scale )</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$val inv_f = 1 / f</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$var Error_Code = UTM_NO_ERROR.toLong()</ID>
-    <ID>VariableNaming:UTMCoordConverter.kt$UTMCoordConverter$var False_Northing = 0.0</ID>
     <ID>VariableNaming:UniversalTime.kt$val A = floor(Y / 100)</ID>
     <ID>VariableNaming:UniversalTime.kt$val B = 2 - A + floor(A / 4)</ID>
     <ID>VariableNaming:UniversalTime.kt$val D = dayOfMonth.toDouble() + if (includeTime) toLocalTime().toDecimalHours() / 24.0 else 0.0</ID>

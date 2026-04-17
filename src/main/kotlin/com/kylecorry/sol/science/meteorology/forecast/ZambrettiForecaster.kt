@@ -130,49 +130,15 @@ internal object ZambrettiForecaster : Forecaster {
         // TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)
 
         val season = Astronomy.getSeason(location, time)
-
-
-        val z = if (tendency.amount < changeThreshold) {
-            144 - 0.13 * hpa
-        } else if (tendency.amount > 0) {
-            185 - 0.16 * hpa
-        } else {
-            127 - 0.12 * hpa
-        }
-
-        val windDirectionDegrees = windDirection?.value
-        val windAdjustment = when {
-            windDirectionDegrees == null -> 0
-            windDirectionDegrees > 225 && windDirectionDegrees <= 315 -> 1
-            windDirectionDegrees > 135 && windDirectionDegrees <= 225 -> 2
-            windDirectionDegrees > 45 && windDirectionDegrees <= 135 -> 1
-            else -> 0
-        }
-
-        val seasonAdjustment = when (season) {
-            Season.Winter if tendency.amount <= -changeThreshold -> -1
-            Season.Summer if tendency.amount >= changeThreshold -> 1
-            else -> 0
-        }
-
-        var zAdjusted = z + windAdjustment + seasonAdjustment
-
-        if (zAdjusted < 1) {
-            zAdjusted = 1.0
-        } else if (zAdjusted > 32) {
-            zAdjusted = 32.0
-        }
+        val z = getZambrettiValue(hpa, tendency, changeThreshold)
+        val windAdjustment = getWindAdjustment(windDirection)
+        val seasonAdjustment = getSeasonAdjustment(season, tendency, changeThreshold)
+        val zAdjusted = (z + windAdjustment + seasonAdjustment).coerceIn(1.0, 32.0)
 
         val current = WeatherForecast(
             time.toInstant(),
             getCurrentConditions(zAdjusted, dailyTemperatureRange),
-            system = if (Meteorology.isHighPressure(pressure)) {
-                PressureSystem.High
-            } else if (Meteorology.isLowPressure(pressure)) {
-                PressureSystem.Low
-            } else {
-                null
-            },
+            system = getPressureSystem(pressure),
             tendency = tendency
         )
 
@@ -182,6 +148,53 @@ internal object ZambrettiForecaster : Forecaster {
         )
 
         return listOf(current, later)
+    }
+
+    private fun getZambrettiValue(
+        hpa: Float,
+        tendency: PressureTendency,
+        changeThreshold: Float
+    ): Double {
+        return if (tendency.amount < changeThreshold) {
+            144 - 0.13 * hpa
+        } else if (tendency.amount > 0) {
+            185 - 0.16 * hpa
+        } else {
+            127 - 0.12 * hpa
+        }
+    }
+
+    private fun getWindAdjustment(windDirection: Bearing?): Int {
+        val windDirectionDegrees = windDirection?.value
+        return when {
+            windDirectionDegrees == null -> 0
+            windDirectionDegrees > 225 && windDirectionDegrees <= 315 -> 1
+            windDirectionDegrees > 135 && windDirectionDegrees <= 225 -> 2
+            windDirectionDegrees > 45 && windDirectionDegrees <= 135 -> 1
+            else -> 0
+        }
+    }
+
+    private fun getSeasonAdjustment(
+        season: Season,
+        tendency: PressureTendency,
+        changeThreshold: Float
+    ): Int {
+        return when (season) {
+            Season.Winter if tendency.amount <= -changeThreshold -> -1
+            Season.Summer if tendency.amount >= changeThreshold -> 1
+            else -> 0
+        }
+    }
+
+    private fun getPressureSystem(pressure: Pressure): PressureSystem? {
+        return if (Meteorology.isHighPressure(pressure)) {
+            PressureSystem.High
+        } else if (Meteorology.isLowPressure(pressure)) {
+            PressureSystem.Low
+        } else {
+            null
+        }
     }
 
     private fun getCurrentConditions(

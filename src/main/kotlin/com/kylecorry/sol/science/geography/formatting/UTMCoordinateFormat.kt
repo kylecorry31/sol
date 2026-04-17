@@ -9,6 +9,29 @@ import gov.nasa.worldwind.geom.coords.UPSCoord
 import gov.nasa.worldwind.geom.coords.UTMCoord
 
 class UTMCoordinateFormat(private val precision: Int = 7) : CoordinateFormat {
+
+    private val latitudeBands = listOf(
+        -72.0 to 'C',
+        -64.0 to 'D',
+        -56.0 to 'E',
+        -48.0 to 'F',
+        -40.0 to 'G',
+        -32.0 to 'H',
+        -24.0 to 'J',
+        -16.0 to 'K',
+        -8.0 to 'L',
+        0.0 to 'M',
+        8.0 to 'N',
+        16.0 to 'P',
+        24.0 to 'Q',
+        32.0 to 'R',
+        40.0 to 'S',
+        48.0 to 'T',
+        56.0 to 'U',
+        64.0 to 'V',
+        72.0 to 'W'
+    )
+
     override fun toString(coordinate: Coordinate): String {
         try {
             val lat = Angle.fromDegreesLatitude(coordinate.latitude)
@@ -16,11 +39,7 @@ class UTMCoordinateFormat(private val precision: Int = 7) : CoordinateFormat {
             val utm = UTMCoord.fromLatLon(lat, lng)
 
             val zone = utm.zone.toString().padStart(2, '0')
-
-            val letter =
-                if (coordinate.latitude < -72) 'C' else if (coordinate.latitude < -64) 'D' else if (coordinate.latitude < -56) 'E' else if (coordinate.latitude < -48) 'F' else if (coordinate.latitude < -40) 'G' else if (coordinate.latitude < -32) 'H' else if (coordinate.latitude < -24) 'J' else if (coordinate.latitude < -16) 'K' else if (coordinate.latitude < -8) 'L' else if (coordinate.latitude < 0) 'M' else if (coordinate.latitude < 8) 'N' else if (coordinate.latitude < 16) 'P' else if (coordinate.latitude < 24) 'Q' else if (coordinate.latitude < 32) 'R' else if (coordinate.latitude < 40) 'S' else if (coordinate.latitude < 48) 'T' else if (coordinate.latitude < 56) 'U' else if (coordinate.latitude < 64) 'V' else if (coordinate.latitude < 72) 'W' else 'X'
-
-
+            val letter = getLatitudeBandLetter(coordinate.latitude)
             val easting =
                 roundUTMPrecision(precision, utm.easting.toInt()).toString().padStart(7, '0') + "E"
             val northing =
@@ -74,6 +93,10 @@ class UTMCoordinateFormat(private val precision: Int = 7) : CoordinateFormat {
         } catch (e: Exception) {
             return "?"
         }
+    }
+
+    private fun getLatitudeBandLetter(latitude: Double): Char {
+        return latitudeBands.firstOrNull { latitude < it.first }?.second ?: 'X'
     }
 
     private fun roundUTMPrecision(precision: Int, utmValue: Int): Int {

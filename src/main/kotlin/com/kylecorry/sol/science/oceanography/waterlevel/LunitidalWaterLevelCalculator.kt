@@ -169,50 +169,17 @@ class LunitidalWaterLevelCalculator(
         repeat(SEARCH_MAX_DAYS) { index ->
             check(index < SEARCH_MAX_DAYS)
             val time = startTime.plusDays(offsetMultiplier * index.toLong())
-
-            if (isBefore) {
-                check(time == startTime || time.isBefore(startTime))
-            } else {
-                check(time == startTime || time.isAfter(startTime))
-            }
+            validateSearchTime(time, startTime, isBefore)
 
             val upper = getUpperMoonTransit(time)
             val lower = getLowerMoonTransit(time)
-            // TODO: Check if it approximately contains, in case the time is slightly off
-            if (upper != null && !tides.contains(upper.plus(interval))) {
-                val wasAddedToTides = tides.add(upper.plus(interval))
-                check(wasAddedToTides)
-                val wasAddedToCache = moonTransitCache.add(upper)
-                check(wasAddedToCache)
-            }
-
-            // TODO: Check if it approximately contains, in case the time is slightly off
-            if (lower != null && !tides.contains(lower.plus(interval))) {
-                val wasAddedToTides = tides.add(lower.plus(interval))
-                check(wasAddedToTides)
-                val wasAddedToCache = moonTransitCache.add(lower)
-                check(wasAddedToCache)
-            }
+            addTransitIfMissing(upper, tides, interval)
+            addTransitIfMissing(lower, tides, interval)
 
             val times = listOf(upper?.plus(interval), lower?.plus(interval))
             val closest = getClosestTime(startTime, times, !isBefore)
-            if (closest != null) {
-                val furthestTime = startTime.plus(TIME_BETWEEN_TIDES_MAX.multipliedBy(offsetMultiplier.toLong()))
-
-                if (isBefore){
-                    check(furthestTime.isBefore(startTime))
-                } else {
-                    check(furthestTime.isAfter(startTime))
-                }
-
-                if (isBefore && isBetween(closest, furthestTime, startTime)) {
-                    return
-                }
-
-                if (!isBefore && isBetween(closest, startTime, furthestTime)) {
-                    return
-                }
-
+            if (closest != null && isClosestTimeInRange(startTime, closest, offsetMultiplier, isBefore)) {
+                return
             }
         }
     }
@@ -227,6 +194,52 @@ class LunitidalWaterLevelCalculator(
         } else {
             Time.getClosestPastTime(currentTime, times)
         }
+    }
+
+    private fun validateSearchTime(time: ZonedDateTime, startTime: ZonedDateTime, isBefore: Boolean) {
+        if (isBefore) {
+            check(time == startTime || time.isBefore(startTime))
+        } else {
+            check(time == startTime || time.isAfter(startTime))
+        }
+    }
+
+    private fun addTransitIfMissing(
+        transit: ZonedDateTime?,
+        tides: MutableList<ZonedDateTime>,
+        interval: Duration
+    ) {
+        if (transit == null) {
+            return
+        }
+
+        val tideTime = transit.plus(interval)
+        // TODO: Check if it approximately contains, in case the time is slightly off
+        if (tides.contains(tideTime)) {
+            return
+        }
+
+        val wasAddedToTides = tides.add(tideTime)
+        check(wasAddedToTides)
+        val wasAddedToCache = moonTransitCache.add(transit)
+        check(wasAddedToCache)
+    }
+
+    private fun isClosestTimeInRange(
+        startTime: ZonedDateTime,
+        closest: ZonedDateTime,
+        offsetMultiplier: Int,
+        isBefore: Boolean
+    ): Boolean {
+        val furthestTime = startTime.plus(TIME_BETWEEN_TIDES_MAX.multipliedBy(offsetMultiplier.toLong()))
+
+        if (isBefore) {
+            check(furthestTime.isBefore(startTime))
+            return isBetween(closest, furthestTime, startTime)
+        }
+
+        check(furthestTime.isAfter(startTime))
+        return isBetween(closest, startTime, furthestTime)
     }
 
     companion object {

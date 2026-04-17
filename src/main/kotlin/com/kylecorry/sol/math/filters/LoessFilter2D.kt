@@ -61,75 +61,98 @@ class LoessFilter2D(
         }
 
         val weights = MutableList(n) { 1f }
-        val res = sortedData.toMutableList()
+        val result = sortedData.toMutableList()
         val residuals = MutableList(n) { 0f }
         val robustnessWeights = MutableList(n) { 1f }
         val mappedMaxDistance =
             maximumSpanDistance?.let { Interpolation.norm(maximumSpanDistance, rangeX.start, rangeX.end) }
+        val state = SmoothingState(weights, result, residuals, robustnessWeights, mappedMaxDistance)
 
         for (iteration in 0..robustnessIterations) {
-            for (i in sortedData.indices) {
-                val point = sortedData[i]
-                val x = point.x
-                val y = point.y
-
-                val interval = getNearest(sortedData, i)
-
-                if (interval.second - interval.first < 2) {
-                    continue
-                }
-
-                val nearest =
-                    sortedData.subList(interval.first, interval.second).mapIndexed { index, p ->
-                        Triple(p, abs(point.x - p.x), interval.first + index)
-                    }.sortedBy { it.second }
-
-                val maxDistance = mappedMaxDistance ?: nearest.last().second
-
-                val w = nearest.map {
-                    if (Arithmetic.isZero(maxDistance)) {
-                        1f
-                    } else {
-                        tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
-                    }
-                }
-
-                val regression = WeightedLinearRegression(nearest.map { it.first }, w, accuracy)
-
-                res[i] = Vector2(x, regression.predict(x))
-                residuals[i] = abs(y - res[i].y)
-            }
+            smoothIteration(sortedData, state)
 
             if (iteration == robustnessIterations) {
                 break
             }
 
-            val medianResidual = Statistics.median(residuals)
-
-            if (abs(medianResidual) < accuracy) {
+            val isWithinAccuracy = updateRobustnessWeights(state)
+            if (isWithinAccuracy) {
                 break
-            }
-
-            for (i in sortedData.indices) {
-                val a = residuals[i] / (6 * medianResidual)
-                robustnessWeights[i] = if (a >= 1) {
-                    0f
-                } else {
-                    (1 - a * a).pow(2)
-                }
             }
         }
 
         return if (wasResorted) {
-            Lists.reorder(res, sortOrder, true)
+            Lists.reorder(state.result, sortOrder, true)
         } else {
-            res
+            state.result
         }.map {
             Vector2(
                 Interpolation.lerp(it.x, rangeX.start, rangeX.end),
                 Interpolation.lerp(it.y, rangeY.start, rangeY.end)
             )
         }
+    }
+
+    private fun smoothIteration(sortedData: List<Vector2>, state: SmoothingState) {
+        for (i in sortedData.indices) {
+            val point = sortedData[i]
+            val interval = getNearest(sortedData, i)
+
+            if (interval.second - interval.first < 2) {
+                continue
+            }
+
+            val nearest = getNearestPoints(sortedData, point, interval)
+            val maxDistance = state.mappedMaxDistance ?: nearest.last().second
+            val regressionWeights = getRegressionWeights(nearest, state.robustnessWeights, state.weights, maxDistance)
+            val regression = WeightedLinearRegression(nearest.map { it.first }, regressionWeights, accuracy)
+
+            state.result[i] = Vector2(point.x, regression.predict(point.x))
+            state.residuals[i] = abs(point.y - state.result[i].y)
+        }
+    }
+
+    private fun getNearestPoints(
+        sortedData: List<Vector2>,
+        point: Vector2,
+        interval: Pair<Int, Int>
+    ): List<Triple<Vector2, Float, Int>> {
+        return sortedData.subList(interval.first, interval.second).mapIndexed { index, candidate ->
+            Triple(candidate, abs(point.x - candidate.x), interval.first + index)
+        }.sortedBy { it.second }
+    }
+
+    private fun getRegressionWeights(
+        nearest: List<Triple<Vector2, Float, Int>>,
+        robustnessWeights: List<Float>,
+        weights: List<Float>,
+        maxDistance: Float
+    ): List<Float> {
+        return nearest.map {
+            if (Arithmetic.isZero(maxDistance)) {
+                1f
+            } else {
+                tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+            }
+        }
+    }
+
+    private fun updateRobustnessWeights(state: SmoothingState): Boolean {
+        val medianResidual = Statistics.median(state.residuals)
+        if (abs(medianResidual) < accuracy) {
+            return true
+        }
+
+        for (i in state.residuals.indices) {
+            val a = state.residuals[i] / (6 * medianResidual)
+            state.robustnessWeights[i] = if (a >= 1) {
+                0f
+            } else {
+                (1 - a * a).pow(2)
+            }
+        }
+
+        return false
     }
 
     private fun getNearest(points: List<Vector2>, i: Int): Pair<Int, Int> {
@@ -162,5 +185,13 @@ class LoessFilter2D(
         }
         return (1 - x.pow(3)).pow(3)
     }
+
+    private data class SmoothingState(
+        val weights: List<Float>,
+        val result: MutableList<Vector2>,
+        val residuals: MutableList<Float>,
+        val robustnessWeights: MutableList<Float>,
+        val mappedMaxDistance: Float?
+    )
 
 }

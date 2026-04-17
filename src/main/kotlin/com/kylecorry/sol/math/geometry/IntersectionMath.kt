@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.algebra.Algebra
+import com.kylecorry.sol.math.algebra.LinearEquation
 import com.kylecorry.sol.math.algebra.QuadraticEquation
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
@@ -51,66 +52,29 @@ internal object IntersectionMath {
     }
 
     fun getIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
-
-        // If both the start and end are on the same side of the rectangle and outside of it, there is no intersection
-        val isLeftOfRectangle = line.start.x < rectangle.left && line.end.x < rectangle.left
-        val isRightOfRectangle = line.start.x > rectangle.right && line.end.x > rectangle.right
-        val isBelowRectangle = line.start.y < rectangle.bottom && line.end.y < rectangle.bottom
-        val isAboveRectangle = line.start.y > rectangle.top && line.end.y > rectangle.top
-
-        val isOutsideRectangle = listOf(
-            isLeftOfRectangle,
-            isRightOfRectangle,
-            isBelowRectangle,
-            isAboveRectangle
-        ).any { it }
-
-        if (isOutsideRectangle) {
+        if (isOutsideRectangle(line, rectangle)) {
             return emptyList()
         }
 
-
         if (line.isVertical) {
-            val x = line.start.x
-            if (x !in rectangle.left..rectangle.right) {
-                return emptyList()
-            }
-            val top = Vector2(x, rectangle.top)
-            val bottom = Vector2(x, rectangle.bottom)
-            return listOf(top, bottom)
+            return getVerticalIntersection(line, rectangle)
         }
 
         val equation = line.equation()
-        val inverse = if (line.isHorizontal) {
-            // Inverse is not defined for horizontal lines
-            null
-        } else {
-            Algebra.inverse(equation)
-        }
+        val inverse = tryGetInverse(line, equation)
         val left = Vector2(rectangle.left, equation.evaluate(rectangle.left))
         val right = Vector2(rectangle.right, equation.evaluate(rectangle.right))
         val top = inverse?.let { Vector2(inverse.evaluate(rectangle.top), rectangle.top) }
         val bottom = inverse?.let { Vector2(inverse.evaluate(rectangle.bottom), rectangle.bottom) }
 
-        val intersections = mutableSetOf<Vector2>()
-
-        if (rectangle.contains(left)) {
-            intersections.add(left)
-        }
-
-        if (rectangle.contains(right)) {
-            intersections.add(right)
-        }
-
-        if (top != null && rectangle.contains(top)) {
-            intersections.add(top)
-        }
-
-        if (bottom != null && rectangle.contains(bottom)) {
-            intersections.add(bottom)
-        }
-
-        return intersections.toList()
+        return listOfNotNull(
+            left,
+            right,
+            top,
+            bottom
+        )
+            .filter { rectangle.contains(it) }
+            .distinct()
     }
 
     fun getIntersection(a: Vector2, b: Vector2, rectangle: Rectangle): List<Vector2> {
@@ -126,6 +90,37 @@ internal object IntersectionMath {
 
     private fun cross(a: Vector2, b: Vector2): Float {
         return a.x * b.y - a.y * b.x
+    }
+
+    private fun isOutsideRectangle(line: Line, rectangle: Rectangle): Boolean {
+        val isLeftOfRectangle = line.start.x < rectangle.left && line.end.x < rectangle.left
+        val isRightOfRectangle = line.start.x > rectangle.right && line.end.x > rectangle.right
+        val isBelowRectangle = line.start.y < rectangle.bottom && line.end.y < rectangle.bottom
+        val isAboveRectangle = line.start.y > rectangle.top && line.end.y > rectangle.top
+        return listOf(
+            isLeftOfRectangle,
+            isRightOfRectangle,
+            isBelowRectangle,
+            isAboveRectangle
+        ).any { it }
+    }
+
+    private fun getVerticalIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
+        val x = line.start.x
+        if (x !in rectangle.left..rectangle.right) {
+            return emptyList()
+        }
+        val top = Vector2(x, rectangle.top)
+        val bottom = Vector2(x, rectangle.bottom)
+        return listOf(top, bottom)
+    }
+
+    private fun tryGetInverse(line: Line, equation: LinearEquation): LinearEquation? {
+        if (line.isHorizontal) {
+            // Inverse is not defined for horizontal lines
+            return null
+        }
+        return Algebra.inverse(equation)
     }
 
     private fun isBetweenZeroAndOne(value: Float, tolerance: Float = 0.00001f): Boolean {

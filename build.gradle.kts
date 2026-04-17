@@ -72,6 +72,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     setSource(files("src/main/kotlin"))
     include("**/*.kt", "**/*.kts")
     exclude("**/build/**")
+    exclude("**/gov/nasa/worldwind/**")
     jvmTarget = "11"
     reports {
         html.required.set(true)
@@ -85,6 +86,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configure
     setSource(files("src/main/kotlin"))
     include("**/*.kt", "**/*.kts")
     exclude("**/build/**")
+    exclude("**/gov/nasa/worldwind/**")
     jvmTarget = "11"
 }
 
