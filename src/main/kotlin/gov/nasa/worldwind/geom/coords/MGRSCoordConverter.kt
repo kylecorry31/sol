@@ -291,7 +291,9 @@ internal class MGRSCoordConverter {
         if (MGRS == null) error_code = error_code or MGRS_STRING_ERROR.toLong()
         else {
             if (error_code == MGRS_NO_ERROR.toLong()) {
-                if ((MGRS.latitudeBand == LETTER_X) && ((MGRS.zone == 32) || (MGRS.zone == 34) || (MGRS.zone == 36))) error_code =
+                val isSpecialLatitudeBand = MGRS.latitudeBand == LETTER_X
+                val isInvalidZoneForBandX = MGRS.zone == 32 || MGRS.zone == 34 || MGRS.zone == 36
+                if (isSpecialLatitudeBand && isInvalidZoneForBandX) error_code =
                     error_code or MGRS_STRING_ERROR.toLong()
                 else {
                     hemisphere = if (MGRS.latitudeBand < LETTER_N) AVKey.SOUTH
@@ -583,11 +585,11 @@ internal class MGRSCoordConverter {
 
         if (set_number == 0L) set_number = 6
 
-        val aa_pattern: Long = if (MGRS_Ellipsoid_Code.compareTo(CLARKE_1866) == 0 || MGRS_Ellipsoid_Code.compareTo(CLARKE_1880) == 0 || MGRS_Ellipsoid_Code.compareTo(
-                BESSEL_1841
-            ) == 0 || MGRS_Ellipsoid_Code.compareTo(BESSEL_1841_NAMIBIA) == 0
-        ) 0L
-        else 1L /* Pattern based on ellipsoid code */
+        val usesAlternatePattern = MGRS_Ellipsoid_Code.compareTo(CLARKE_1866) == 0 ||
+                MGRS_Ellipsoid_Code.compareTo(CLARKE_1880) == 0 ||
+                MGRS_Ellipsoid_Code.compareTo(BESSEL_1841) == 0 ||
+                MGRS_Ellipsoid_Code.compareTo(BESSEL_1841_NAMIBIA) == 0
+        val aaPattern: Long = if (usesAlternatePattern) 0L else 1L /* Pattern based on ellipsoid code */
 
         when (set_number) {
             1L, 4L -> {
@@ -605,7 +607,7 @@ internal class MGRSCoordConverter {
         }
 
         /* False northing at A for second letter of grid square */
-        false_northing = if (aa_pattern == 1L) {
+        false_northing = if (aaPattern == 1L) {
             if ((set_number % 2) == 0L) 500000.0 //smithjl was 1500000
             else 0.0
         } else {
@@ -780,12 +782,18 @@ internal class MGRSCoordConverter {
             // Check that the second letter of the MGRS string is within
             // the range of valid second letter values
             // Also check that the third letter is valid
-            if ((mgrs.squareLetter1 < ltr2_low_value) || (mgrs.squareLetter1 > ltr2_high_value) ||
-                ((mgrs.squareLetter1 == LETTER_D) || (mgrs.squareLetter1 == LETTER_E) ||
-                        (mgrs.squareLetter1 == LETTER_M) || (mgrs.squareLetter1 == LETTER_N) ||
-                        (mgrs.squareLetter1 == LETTER_V) || (mgrs.squareLetter1 == LETTER_W)) ||
-                (mgrs.squareLetter2 > ltr3_high_value)
-            ) error_code = MGRS_STRING_ERROR.toLong()
+            val isSquareLetter1OutOfRange =
+                mgrs.squareLetter1 < ltr2_low_value || mgrs.squareLetter1 > ltr2_high_value
+            val isInvalidSquareLetter1 = mgrs.squareLetter1 == LETTER_D ||
+                mgrs.squareLetter1 == LETTER_E ||
+                mgrs.squareLetter1 == LETTER_M ||
+                mgrs.squareLetter1 == LETTER_N ||
+                mgrs.squareLetter1 == LETTER_V ||
+                mgrs.squareLetter1 == LETTER_W
+            val isSquareLetter2OutOfRange = mgrs.squareLetter2 > ltr3_high_value
+            if (isSquareLetter1OutOfRange || isInvalidSquareLetter1 || isSquareLetter2OutOfRange) {
+                error_code = MGRS_STRING_ERROR.toLong()
+            }
 
             if (error_code == MGRS_NO_ERROR.toLong()) {
                 grid_northing = mgrs.squareLetter2.toDouble() * ONEHT + false_northing

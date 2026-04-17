@@ -9,7 +9,6 @@ import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseCalculator
-import com.kylecorry.sol.science.astronomy.locators.ICelestialLocator
 import com.kylecorry.sol.science.astronomy.locators.MeteorShowerLocator
 import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Planet
@@ -621,7 +620,10 @@ object Astronomy {
         val today = getSunEvents(time, location, sunTimesMode)
         val tomorrow = getSunEvents(time.plusDays(1), location, sunTimesMode)
 
-        if (yesterday.set == null || today.rise == null || today.set == null || tomorrow.rise == null) {
+        val didNotSet = yesterday.set == null || today.set == null
+        val willNotRise = today.rise == null || tomorrow.rise == null
+
+        if (didNotSet || willNotRise) {
             return if (!isSunUp(time, location) && today.rise == null) {
                 // Sun does not set
                 Range(time.atStartOfDay(), time.atEndOfDay())

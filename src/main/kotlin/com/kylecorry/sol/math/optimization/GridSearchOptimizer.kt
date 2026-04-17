@@ -18,7 +18,9 @@ class GridSearchOptimizer(private val stepSize: Double) : IOptimizer {
             var y = yRange.start
             while (y <= yRange.end) {
                 val value = fn(x, y)
-                if ((maximize && value > bestValue) || (!maximize && value < bestValue)) {
+                val isBetterMax = maximize && value > bestValue
+                val isBetterMin = !maximize && value < bestValue
+                if (isBetterMax || isBetterMin) {
                     bestValue = value
                     bestX = x
                     bestY = y

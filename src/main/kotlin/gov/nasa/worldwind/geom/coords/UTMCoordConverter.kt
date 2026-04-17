@@ -132,8 +132,11 @@ internal class UTMCoordConverter {
             else (((lon * 180.0 / PI) / 6.0) - 29).toLong()
             if (tempZone > 60) tempZone = 1
             /* UTM special cases */
-            if ((latDegrees > 55) && (latDegrees < 64) && (longDegrees > -1) && (longDegrees < 3)) tempZone = 31
-            if ((latDegrees > 55) && (latDegrees < 64) && (longDegrees > 2) && (longDegrees < 12)) tempZone = 32
+            val isSouthwestNorwayBand = latDegrees > 55 && latDegrees < 64
+            val isZone31SouthwestNorway = isSouthwestNorwayBand && longDegrees > -1 && longDegrees < 3
+            val isZone32SouthwestNorway = isSouthwestNorwayBand && longDegrees > 2 && longDegrees < 12
+            if (isZone31SouthwestNorway) tempZone = 31
+            if (isZone32SouthwestNorway) tempZone = 32
             if ((latDegrees > 71) && (longDegrees > -1) && (longDegrees < 9)) tempZone = 31
             if ((latDegrees > 71) && (longDegrees > 8) && (longDegrees < 21)) tempZone = 33
             if ((latDegrees > 71) && (longDegrees > 20) && (longDegrees < 33)) tempZone = 35

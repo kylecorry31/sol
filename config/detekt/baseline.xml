@@ -2,17 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ComplexCondition:ArrivalTimeCalculator.kt$ArrivalTimeCalculator$hasSingleCondition &amp;&amp; ((hasSkyCondition &amp;&amp; isSteady) || hasWindCondition)</ID>
-    <ID>ComplexCondition:Astronomy.kt$Astronomy$yesterday.set == null || today.rise == null || today.set == null || tomorrow.rise == null</ID>
-    <ID>ComplexCondition:Geography.kt$Geography$!latitude1.isFinite() || !longitude1.isFinite() || !latitude2.isFinite() || !longitude2.isFinite()</ID>
-    <ID>ComplexCondition:GridSearchOptimizer.kt$GridSearchOptimizer$(maximize &amp;&amp; value &gt; bestValue) || (!maximize &amp;&amp; value &lt; bestValue)</ID>
-    <ID>ComplexCondition:IntersectionMath.kt$IntersectionMath$line.start.x &lt; rectangle.left &amp;&amp; line.end.x &lt; rectangle.left || line.start.x &gt; rectangle.right &amp;&amp; line.end.x &gt; rectangle.right || line.start.y &lt; rectangle.bottom &amp;&amp; line.end.y &lt; rectangle.bottom || line.start.y &gt; rectangle.top &amp;&amp; line.end.y &gt; rectangle.top</ID>
-    <ID>ComplexCondition:MGRSCoordConverter.kt$MGRSCoordConverter$(MGRS.latitudeBand == LETTER_X) &amp;&amp; ((MGRS.zone == 32) || (MGRS.zone == 34) || (MGRS.zone == 36))</ID>
-    <ID>ComplexCondition:MGRSCoordConverter.kt$MGRSCoordConverter$(mgrs.squareLetter1 &lt; ltr2_low_value) || (mgrs.squareLetter1 &gt; ltr2_high_value) || ((mgrs.squareLetter1 == LETTER_D) || (mgrs.squareLetter1 == LETTER_E) || (mgrs.squareLetter1 == LETTER_M) || (mgrs.squareLetter1 == LETTER_N) || (mgrs.squareLetter1 == LETTER_V) || (mgrs.squareLetter1 == LETTER_W)) || (mgrs.squareLetter2 &gt; ltr3_high_value)</ID>
-    <ID>ComplexCondition:MGRSCoordConverter.kt$MGRSCoordConverter$MGRS_Ellipsoid_Code.compareTo(CLARKE_1866) == 0 || MGRS_Ellipsoid_Code.compareTo(CLARKE_1880) == 0 || MGRS_Ellipsoid_Code.compareTo( BESSEL_1841 ) == 0 || MGRS_Ellipsoid_Code.compareTo(BESSEL_1841_NAMIBIA) == 0</ID>
-    <ID>ComplexCondition:Meteorology.kt$Meteorology$!((temp0 &lt; temp1 &amp;&amp; temp1 &lt; temp2) || (temp0 &gt; temp1 &amp;&amp; temp1 &gt; temp2))</ID>
-    <ID>ComplexCondition:UTMCoordConverter.kt$UTMCoordConverter$(latDegrees &gt; 55) &amp;&amp; (latDegrees &lt; 64) &amp;&amp; (longDegrees &gt; -1) &amp;&amp; (longDegrees &lt; 3)</ID>
-    <ID>ComplexCondition:UTMCoordConverter.kt$UTMCoordConverter$(latDegrees &gt; 55) &amp;&amp; (latDegrees &lt; 64) &amp;&amp; (longDegrees &gt; 2) &amp;&amp; (longDegrees &lt; 12)</ID>
     <ID>CyclomaticComplexMethod:IntersectionMath.kt$IntersectionMath$fun getIntersection(line: Line, rectangle: Rectangle): List&lt;Vector2&gt;</ID>
     <ID>CyclomaticComplexMethod:LoessFilter2D.kt$LoessFilter2D$override fun filter(data: List&lt;Vector2&gt;): List&lt;Vector2&gt;</ID>
     <ID>CyclomaticComplexMethod:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator$private fun populateTidesForTime( startTime: ZonedDateTime, tides: MutableList&lt;ZonedDateTime&gt;, interval: Duration, isBefore: Boolean )</ID>

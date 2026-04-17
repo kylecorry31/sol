@@ -312,7 +312,10 @@ object Meteorology {
      * @return the ambient temperature in celsius or null if the readings weren't all increasing or decreasing
      */
     fun getAmbientTemperature(temp0: Float, temp1: Float, temp2: Float): Float? {
-        if (!((temp0 < temp1 && temp1 < temp2) || (temp0 > temp1 && temp1 > temp2))) {
+        val isIncreasing = temp0 < temp1 && temp1 < temp2
+        val isDecreasing = temp0 > temp1 && temp1 > temp2
+
+        if (!isIncreasing && !isDecreasing) {
             return null
         }
         return (temp0 * temp2 - temp1 * temp1) / (temp0 + temp2 - 2 * temp1)

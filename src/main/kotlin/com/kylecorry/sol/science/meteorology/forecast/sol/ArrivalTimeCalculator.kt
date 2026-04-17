@@ -23,8 +23,9 @@ internal object ArrivalTimeCalculator {
         val isSteady = forecast.tendency?.characteristic == PressureCharacteristic.Steady
         val hasSingleCondition = forecast.conditions.size == 1
         val hasWindCondition = forecast.conditions.contains(WeatherCondition.Wind)
+        val hasSteadySkyCondition = hasSkyCondition && isSteady
 
-        if (hasSingleCondition && ((hasSkyCondition && isSteady) || hasWindCondition)) {
+        if (hasSingleCondition && (hasSteadySkyCondition || hasWindCondition)) {
             return time
         }
 

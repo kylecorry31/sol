@@ -53,11 +53,19 @@ internal object IntersectionMath {
     fun getIntersection(line: Line, rectangle: Rectangle): List<Vector2> {
 
         // If both the start and end are on the same side of the rectangle and outside of it, there is no intersection
-        if (line.start.x < rectangle.left && line.end.x < rectangle.left ||
-            line.start.x > rectangle.right && line.end.x > rectangle.right ||
-            line.start.y < rectangle.bottom && line.end.y < rectangle.bottom ||
-            line.start.y > rectangle.top && line.end.y > rectangle.top
-        ) {
+        val isLeftOfRectangle = line.start.x < rectangle.left && line.end.x < rectangle.left
+        val isRightOfRectangle = line.start.x > rectangle.right && line.end.x > rectangle.right
+        val isBelowRectangle = line.start.y < rectangle.bottom && line.end.y < rectangle.bottom
+        val isAboveRectangle = line.start.y > rectangle.top && line.end.y > rectangle.top
+
+        val isOutsideRectangle = listOf(
+            isLeftOfRectangle,
+            isRightOfRectangle,
+            isBelowRectangle,
+            isAboveRectangle
+        ).any { it }
+
+        if (isOutsideRectangle) {
             return emptyList()
         }
 

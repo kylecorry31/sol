@@ -284,7 +284,10 @@ object Geography {
         val latitude2 = (atan2(p2.z, sqrt(square(p2.x) + square(p2.y)))).toDegrees()
         val longitude2 = (atan2(p2.y, p2.x)).toDegrees()
 
-        if (!latitude1.isFinite() || !longitude1.isFinite() || !latitude2.isFinite() || !longitude2.isFinite()) {
+        val firstPointIsFinite = latitude1.isFinite() && longitude1.isFinite()
+        val secondPointIsFinite = latitude2.isFinite() && longitude2.isFinite()
+
+        if (!firstPointIsFinite || !secondPointIsFinite) {
             return emptyList()
         }
 
