@@ -18,7 +18,6 @@ import kotlin.math.pow
  * @param accuracy the threshold to stop the robustness at (short circuit)
  * @param minimumSpanSize the minimum number of points to be considered in the span
  * @param maximumSpanSize the maximum number of points to be considered in the span
- * @param maximumSpanDistance the maximum X distance of the span
  * @param distanceFn
  */
 class LoessFilter(
@@ -27,7 +26,6 @@ class LoessFilter(
     private val accuracy: Float = 1e-12f,
     private val minimumSpanSize: Int = 0,
     private val maximumSpanSize: Int = Int.MAX_VALUE,
-    private val maximumSpanDistance: Float? = null,
     private val distanceFn: (p1: List<Float>, p2: List<Float>) -> Float = Geometry::manhattanDistance
 ) {
 

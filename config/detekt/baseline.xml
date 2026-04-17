@@ -48,7 +48,6 @@
     <ID>LongParameterList:Interpolation.kt$Interpolation$( value: Float, originalMin: Float, originalMax: Float, newMin: Float, newMax: Float, shouldClamp: Boolean = false )</ID>
     <ID>LongParameterList:Interpolation.kt$Interpolation$( x: Float, x0: Float, y0: Float, x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float )</ID>
     <ID>LongParameterList:LeastSquaresOptimizer.kt$LeastSquaresOptimizer$( points: List&lt;List&lt;Float&gt;&gt;, errors: List&lt;Float&gt;, maxIterations: Int = 100, maxAllowedStep: Float = 500f, dampingFactor: Float = 0.1f, tolerance: Float = 0.0001f, initialValue: List&lt;Float&gt;? = null, distanceFn: (point: List&lt;Float&gt;, guess: List&lt;Float&gt;) -&gt; Float = { a, b -&gt; Geometry.euclideanDistance(a, b) }, weightingFn: (index: Int, point: List&lt;Float&gt;, error: Float) -&gt; Float = { index, point, error -&gt; 1f }, jacobianFn: (index: Int, point: List&lt;Float&gt;, guess: List&lt;Float&gt;) -&gt; List&lt;Float&gt; = { index, point, guess -&gt; val distance = distanceFn(point, guess) point.mapIndexed { j, value -&gt; (guess[j] - value) / distance * weightingFn(index, point, errors[index]) } } )</ID>
-    <ID>LongParameterList:LoessFilter.kt$LoessFilter$( private val span: Float = 0.3f, private val robustnessIterations: Int = 2, private val accuracy: Float = 1e-12f, private val minimumSpanSize: Int = 0, private val maximumSpanSize: Int = Int.MAX_VALUE, private val maximumSpanDistance: Float? = null, private val distanceFn: (p1: List&lt;Float&gt;, p2: List&lt;Float&gt;) -&gt; Float = Geometry::manhattanDistance )</ID>
     <ID>LongParameterList:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$( input: List&lt;List&lt;Float&gt;&gt;, output: List&lt;Int&gt;, epochs: Int = 100, learningRate: Float = 0.1f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
     <ID>LongParameterList:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
     <ID>LongParameterList:Meteorology.kt$Meteorology$( observations: List&lt;WeatherObservation&lt;*&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;?, pressureChangeThreshold: Float = 0.5f, pressureStormChangeThreshold: Float = 2f, time: Instant = Instant.now(), location: Coordinate = Coordinate.zero, source: ForecastSource = ForecastSource.Sol )</ID>
@@ -177,12 +176,6 @@
     <ID>TooManyFunctions:Trigonometry.kt$Trigonometry</ID>
     <ID>TooManyFunctions:UniversalTime.kt$com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
     <ID>TooManyFunctions:Vector2.kt$Vector2</ID>
-    <ID>UnusedPrivateProperty:Calculus.kt$Calculus$i</ID>
-    <ID>UnusedPrivateProperty:DecimalFormatter.kt$DecimalFormatter$i</ID>
-    <ID>UnusedPrivateProperty:Geography.kt$Geography$iter</ID>
-    <ID>UnusedPrivateProperty:LoessFilter.kt$LoessFilter$private val maximumSpanDistance: Float? = null</ID>
-    <ID>UnusedPrivateProperty:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$i</ID>
-    <ID>UnusedPrivateProperty:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$private val precision: Int = 5</ID>
     <ID>UseRequire:NationalGrid.kt$NationalGrid$throw IllegalArgumentException( "Differing size of northing and easting, unable to determine valid ref $s" )</ID>
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)</ID>
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val E = Algebra.polynomial(T, 1.0, -0.002516, -0.0000074)</ID>

@@ -7,7 +7,7 @@ import uk.gov.dstl.geo.osgb.EastingNorthingConversion
 import uk.gov.dstl.geo.osgb.NationalGrid
 import uk.gov.dstl.geo.osgb.OSGB36
 
-class OSGBCoordinateFormat(private val precision: Int = 5) : CoordinateFormat {
+class OSGBCoordinateFormat : CoordinateFormat {
     override fun toString(coordinate: Coordinate): String {
         try {
             val osgb36 = OSGB36.fromWGS84(coordinate.latitude, coordinate.longitude)

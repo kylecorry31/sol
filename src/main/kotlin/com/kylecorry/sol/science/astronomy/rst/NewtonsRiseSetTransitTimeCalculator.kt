@@ -222,7 +222,7 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         var setDayFraction = wrap(transitDayFraction + hourAngle / 360, 0.0, 1.0)
         val date = ut.toLocalDate()
 
-        for (i in 0..<MAX_ITERATIONS) {
+        for (ignored in 0..<MAX_ITERATIONS) {
             val transitDayFractionAdjustment = getTransitAdjustment(
                 apparentSidereal,
                 transitDayFraction,
