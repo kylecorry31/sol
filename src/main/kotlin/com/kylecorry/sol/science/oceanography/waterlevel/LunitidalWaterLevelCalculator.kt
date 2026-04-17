@@ -55,15 +55,12 @@ class LunitidalWaterLevelCalculator(
             getCalculator(previous, next)
         }
 
-        val level = calculator.calculate(time)
+        val lowestLevel = waterLevelRange?.start ?: -1f
+        val highestLevel = waterLevelRange?.end ?: 1f
+
+        val level = calculator.calculate(time).coerceIn(lowestLevel, highestLevel)
         check(level.isFinite())
-
-        if (waterLevelRange != null) {
-            check(level in waterLevelRange)
-        } else {
-            check(level in -1f..1f)
-        }
-
+        check(level in lowestLevel..highestLevel)
         return level
     }
 
