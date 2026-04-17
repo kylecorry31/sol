@@ -12,3 +12,7 @@ console-reports:
 
 output-reports:
   active: true
+
+style:
+  MagicNumber:
+    active: false
