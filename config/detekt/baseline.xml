@@ -2,16 +2,13 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2MK3 : TideConstituent</ID>
-    <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2N2 : TideConstituent</ID>
-    <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2Q1 : TideConstituent</ID>
-    <ID>EnumNaming:TidalHarmonic.kt$TideConstituent$_2SM2 : TideConstituent</ID>
     <ID>ExplicitItLambdaParameter:LeastSquaresOptimizer.kt$LeastSquaresOptimizer${ index, it -&gt; step[index] = it / maxStep * maxAllowedStep }</ID>
     <ID>ForbiddenComment:Astronomy.kt$Astronomy$// TODO: Apply max search to lunar as well</ID>
     <ID>ForbiddenComment:Calculus.kt$Calculus$// TODO: RK4 solver?</ID>
     <ID>ForbiddenComment:Calculus.kt$Calculus$// TODO: Use central difference</ID>
     <ID>ForbiddenComment:GoldenSearchExtremaFinder.kt$GoldenSearchExtremaFinder$// TODO: Extract this</ID>
     <ID>ForbiddenComment:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$// TODO: Replace Savanna with Wet Summer and Dry Summer</ID>
+    <ID>ForbiddenComment:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator$// TODO: Check if it approximately contains, in case the time is slightly off</ID>
     <ID>ForbiddenComment:Meteorology.kt$Meteorology$// TODO: Factor in temperature</ID>
     <ID>ForbiddenComment:NumericDifferentiation.kt$NumericDifferentiation$// TODO: dx multiplier</ID>
     <ID>ForbiddenComment:Oceanography.kt$Oceanography$// TODO: Give more weight to tides closer to full/new moon?</ID>
