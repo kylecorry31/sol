@@ -8,7 +8,11 @@ import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.geophysics.Geophysics
 import com.kylecorry.sol.science.oceanography.waterlevel.IWaterLevelCalculator
 import com.kylecorry.sol.time.Time
-import com.kylecorry.sol.units.*
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.units.Pressure
+import com.kylecorry.sol.units.PressureUnits
 import java.time.Duration
 import java.time.ZonedDateTime
 

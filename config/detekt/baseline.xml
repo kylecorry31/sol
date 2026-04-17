@@ -7054,49 +7054,5 @@
     <ID>VariableNaming:UniversalTime.kt$val Y = (year - 1).toDouble()</ID>
     <ID>VariableNaming:UniversalTime.kt$var M = month.value.toDouble()</ID>
     <ID>VariableNaming:UniversalTime.kt$var Y = year.toDouble()</ID>
-    <ID>WildcardImport:Arithmetic.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Astronomy.kt$import com.kylecorry.sol.science.astronomy.locators.*</ID>
-    <ID>WildcardImport:Astronomy.kt$import com.kylecorry.sol.science.astronomy.stars.*</ID>
-    <ID>WildcardImport:Astronomy.kt$import com.kylecorry.sol.science.astronomy.units.*</ID>
-    <ID>WildcardImport:CartesianConversion.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Coordinate.kt$import com.kylecorry.sol.science.geography.formatting.*</ID>
-    <ID>WildcardImport:Coordinate.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:DoubleCoordinate.kt$import com.kylecorry.sol.science.geography.formatting.*</ID>
-    <ID>WildcardImport:DoubleCoordinate.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:EastingNorthingConversion.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:ForecastHelper.kt$import com.kylecorry.sol.science.meteorology.*</ID>
-    <ID>WildcardImport:Geography.kt$import com.kylecorry.sol.science.geology.*</ID>
-    <ID>WildcardImport:Geography.kt$import com.kylecorry.sol.units.*</ID>
-    <ID>WildcardImport:Geography.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Geometry.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:HorizonCoordinate.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:LeastSquaresRegression.kt$import com.kylecorry.sol.math.algebra.*</ID>
-    <ID>WildcardImport:LogisticRegressionClassifier.kt$import com.kylecorry.sol.math.algebra.*</ID>
-    <ID>WildcardImport:Meteorology.kt$import com.kylecorry.sol.units.*</ID>
-    <ID>WildcardImport:Meteorology.kt$import java.time.*</ID>
-    <ID>WildcardImport:Moon.kt$import com.kylecorry.sol.science.astronomy.units.*</ID>
-    <ID>WildcardImport:Moon.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:NationalGrid.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:NeuralNetwork.kt$import com.kylecorry.sol.math.algebra.*</ID>
-    <ID>WildcardImport:NewtonsRiseSetTransitTimeCalculator.kt$import com.kylecorry.sol.science.astronomy.units.*</ID>
-    <ID>WildcardImport:OSGB36.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Oceanography.kt$import com.kylecorry.sol.units.*</ID>
-    <ID>WildcardImport:OrbitalMath.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Physics.kt$import com.kylecorry.sol.math.*</ID>
-    <ID>WildcardImport:Physics.kt$import com.kylecorry.sol.units.*</ID>
-    <ID>WildcardImport:PlanetLocator.kt$import com.kylecorry.sol.science.astronomy.units.*</ID>
-    <ID>WildcardImport:PolarCoordConverter.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Quaternion.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:SearchRiseSetTransitTimeCalculator.kt$import java.time.*</ID>
-    <ID>WildcardImport:SolForecaster.kt$import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.*</ID>
-    <ID>WildcardImport:SphericalHarmonics.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:StarLocator.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Statistics.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:TMCoordConverter.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:Time.kt$import java.time.*</ID>
-    <ID>WildcardImport:Trigonometry.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:UniversalTime.kt$import java.time.*</ID>
-    <ID>WildcardImport:WeightedLeastSquaresRegression.kt$import com.kylecorry.sol.math.algebra.*</ID>
-    <ID>WildcardImport:ZambrettiForecaster.kt$import com.kylecorry.sol.science.meteorology.*</ID>
   </CurrentIssues>
 </SmellBaseline>

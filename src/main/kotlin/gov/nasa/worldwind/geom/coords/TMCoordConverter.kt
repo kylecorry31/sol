@@ -5,7 +5,13 @@
  */
 package gov.nasa.worldwind.geom.coords
 
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
 
 /**
  * Converter used to translate Transverse Mercator coordinates to and from geodetic latitude and longitude.
@@ -480,4 +486,3 @@ internal class TMCoordConverter {
         private const val MAX_SCALE_FACTOR = 3.0
     }
 } // end TMConverter class
-

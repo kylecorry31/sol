@@ -1,6 +1,10 @@
 package com.kylecorry.sol.math.regression
 
-import com.kylecorry.sol.math.algebra.*
+import com.kylecorry.sol.math.algebra.Matrix
+import com.kylecorry.sol.math.algebra.appendColumn
+import com.kylecorry.sol.math.algebra.dot
+import com.kylecorry.sol.math.algebra.inverse
+import com.kylecorry.sol.math.algebra.transpose
 
 class LeastSquaresRegression(
     private val input: List<List<Float>>,

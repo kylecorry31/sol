@@ -12,7 +12,14 @@ import com.kylecorry.sol.math.filters.MovingAverageFilter
 import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object Statistics {
 

@@ -1,6 +1,13 @@
 package com.kylecorry.sol.math.classifiers
 
-import com.kylecorry.sol.math.algebra.*
+import com.kylecorry.sol.math.algebra.Matrix
+import com.kylecorry.sol.math.algebra.divide
+import com.kylecorry.sol.math.algebra.dot
+import com.kylecorry.sol.math.algebra.mapRows
+import com.kylecorry.sol.math.algebra.mapped
+import com.kylecorry.sol.math.algebra.multiply
+import com.kylecorry.sol.math.algebra.subtract
+import com.kylecorry.sol.math.algebra.transpose
 import com.kylecorry.sol.math.batch
 import com.kylecorry.sol.math.lists.Lists
 import com.kylecorry.sol.math.statistics.Statistics

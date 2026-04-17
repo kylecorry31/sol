@@ -17,7 +17,7 @@
  */
 package uk.gov.dstl.geo.osgb
 
-import kotlin.math.*
+import kotlin.math.PI
 
 /**
  * <b>Convert between OSGB36 and WGS84 coordinate systems</b>

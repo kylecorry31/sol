@@ -7,7 +7,12 @@ import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.time.Time.toUTCLocal
 import com.kylecorry.sol.time.Time.utc
-import java.time.*
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.math.cos
 import kotlin.math.floor
 

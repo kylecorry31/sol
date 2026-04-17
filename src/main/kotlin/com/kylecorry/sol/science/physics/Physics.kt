@@ -1,6 +1,10 @@
 package com.kylecorry.sol.science.physics
 
-import com.kylecorry.sol.math.*
+import com.kylecorry.sol.math.Quaternion
+import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.math.Vector
+import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.calculus.RungeKutta4thOrderSolver
 import com.kylecorry.sol.math.interpolation.Interpolator
 import com.kylecorry.sol.math.interpolation.LinearInterpolator
@@ -8,7 +12,18 @@ import com.kylecorry.sol.math.optimization.HillClimbingOptimizer
 import com.kylecorry.sol.math.optimization.IOptimizer
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.science.geophysics.Geophysics
-import com.kylecorry.sol.units.*
+import com.kylecorry.sol.science.physics.DragModel
+import com.kylecorry.sol.science.physics.NoDragModel
+import com.kylecorry.sol.science.physics.TrajectoryPoint2D
+import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.units.Energy
+import com.kylecorry.sol.units.EnergyUnits
+import com.kylecorry.sol.units.Speed
+import com.kylecorry.sol.units.TimeUnits
+import com.kylecorry.sol.units.Weight
+import com.kylecorry.sol.units.WeightUnits
 import java.time.Duration
 import kotlin.math.absoluteValue
 

@@ -3,7 +3,13 @@ package com.kylecorry.sol.math
 import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import kotlin.math.*
+import kotlin.math.absoluteValue
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.withSign
 
 data class Quaternion(val x: Float, val y: Float, val z: Float, val w: Float) {
 

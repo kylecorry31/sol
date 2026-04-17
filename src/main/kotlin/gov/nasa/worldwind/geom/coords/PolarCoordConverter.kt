@@ -91,7 +91,15 @@
  */
 package gov.nasa.worldwind.geom.coords
 
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
 
 /**
  * Ported to Java from the NGA GeoTrans polarst.c and polarst.h code.
@@ -412,4 +420,3 @@ internal constructor() {
         private const val TWO_PI: Double = 2.0 * PI
     }
 }
-

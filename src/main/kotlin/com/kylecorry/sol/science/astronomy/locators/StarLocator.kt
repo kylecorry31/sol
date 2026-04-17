@@ -9,7 +9,11 @@ import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 import com.kylecorry.sol.units.Distance
-import kotlin.math.*
+import kotlin.math.absoluteValue
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.hypot
 
 internal class StarLocator(private val star: Star) : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {

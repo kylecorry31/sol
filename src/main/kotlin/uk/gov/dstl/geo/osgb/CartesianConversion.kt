@@ -17,7 +17,12 @@
  */
 package uk.gov.dstl.geo.osgb
 
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * <b>Convert between LatLon and Cartesian coordinate systems</b>

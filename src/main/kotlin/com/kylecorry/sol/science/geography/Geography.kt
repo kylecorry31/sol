@@ -13,9 +13,32 @@ import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
-import com.kylecorry.sol.science.geology.*
-import com.kylecorry.sol.units.*
-import kotlin.math.*
+import com.kylecorry.sol.science.geology.CoordinateBounds
+import com.kylecorry.sol.science.geology.Geofence
+import com.kylecorry.sol.science.geology.IGeoArea
+import com.kylecorry.sol.science.geology.NavigationVector
+import com.kylecorry.sol.science.geology.ReferenceEllipsoid
+import com.kylecorry.sol.science.geology.Region
+import com.kylecorry.sol.science.geography.TrilaterationResult
+import com.kylecorry.sol.units.Bearing
+import com.kylecorry.sol.units.Coordinate
+import com.kylecorry.sol.units.Distance
+import com.kylecorry.sol.units.DistanceUnits
+import com.kylecorry.sol.units.Location
+import kotlin.math.abs
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
+import kotlin.math.absoluteValue
+import kotlin.math.pow
+import kotlin.math.sign
 
 object Geography {
 

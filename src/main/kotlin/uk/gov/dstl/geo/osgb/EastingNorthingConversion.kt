@@ -17,7 +17,11 @@
  */
 package uk.gov.dstl.geo.osgb
 
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.tan
 
 /**
  * <b>Convert between LatLon and Easting/Northings for Transverse Mercator projection</b>

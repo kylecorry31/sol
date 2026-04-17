@@ -6,8 +6,21 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.science.geography.Geography
-import com.kylecorry.sol.science.geography.formatting.*
-import kotlin.math.*
+import com.kylecorry.sol.science.geography.formatting.CoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.DecimalDegreesCoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.DegreesDecimalMinutesCoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.DegreesMinutesSecondsCoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.MGRSCoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.OSGBCoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.USNGCoordinateFormat
+import com.kylecorry.sol.science.geography.formatting.UTMCoordinateFormat
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.absoluteValue
+import kotlin.math.cos
+import kotlin.math.roundToLong
+import kotlin.math.sin
 
 /**
  * A geographic coordinate with precision down to about 1cm (7 decimal places). Latitude is clamped to the range [-90, 90] and longitude is wrapped to the range [-180, 180].

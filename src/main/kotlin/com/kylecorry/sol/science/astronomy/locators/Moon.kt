@@ -13,12 +13,20 @@ import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
-import com.kylecorry.sol.science.astronomy.units.*
+import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
+import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
+import com.kylecorry.sol.science.astronomy.units.UniversalTime
+import com.kylecorry.sol.science.astronomy.units.fromJulianDay
+import com.kylecorry.sol.science.astronomy.units.toJulianCenturies
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import java.time.Duration
-import kotlin.math.*
+import kotlin.math.absoluteValue
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.sin
 
 internal class Moon : ICelestialLocator {
 

@@ -8,7 +8,11 @@ import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.toDegrees
 import com.kylecorry.sol.science.astronomy.OrbitalMath
-import com.kylecorry.sol.science.astronomy.units.*
+import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
+import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
+import com.kylecorry.sol.science.astronomy.units.JD_2000
+import com.kylecorry.sol.science.astronomy.units.UniversalTime
+import com.kylecorry.sol.science.astronomy.units.toJulianDay
 import com.kylecorry.sol.units.Distance
 import kotlin.math.atan2
 import kotlin.math.log10

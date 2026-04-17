@@ -9,7 +9,11 @@ import com.kylecorry.sol.math.trigonometry.Trigonometry.normalizeAngle
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
-import kotlin.math.*
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 internal object OrbitalMath {
 

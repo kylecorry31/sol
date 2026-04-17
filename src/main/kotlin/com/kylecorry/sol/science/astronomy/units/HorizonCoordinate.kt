@@ -11,7 +11,12 @@ import com.kylecorry.sol.math.trigonometry.Trigonometry.tanDegrees
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import kotlin.math.*
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 internal class HorizonCoordinate(paramAzimuth: Double, paramAltitude: Double) {
 

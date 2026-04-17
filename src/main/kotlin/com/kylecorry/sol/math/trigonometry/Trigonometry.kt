@@ -4,7 +4,17 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.sumOfFloat
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.acos
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.log2
+import kotlin.math.min
+import kotlin.math.sign
+import kotlin.math.sin
+import kotlin.math.tan
 
 object Trigonometry {
 

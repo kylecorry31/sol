@@ -23,7 +23,12 @@ import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import java.time.Instant
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.absoluteValue
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 internal class SphericalHarmonics(
     private val gCoefficients: Array<FloatArray>,

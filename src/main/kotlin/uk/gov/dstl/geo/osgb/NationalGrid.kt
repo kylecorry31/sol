@@ -17,7 +17,9 @@
  */
 package uk.gov.dstl.geo.osgb
 
-import kotlin.math.*
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 /** Convert National grid (TM 123412 23434) to OSGB Northing and Easting. */
 object NationalGrid {
