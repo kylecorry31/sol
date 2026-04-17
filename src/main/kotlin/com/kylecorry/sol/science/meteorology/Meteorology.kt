@@ -261,7 +261,7 @@ object Meteorology {
      */
     fun getWindChill(temperature: Temperature, windSpeed: Speed): Temperature {
         val t = temperature.convertTo(TemperatureUnits.Fahrenheit).value.toDouble()
-        val v = windSpeed.convertTo(DistanceUnits.Miles, TimeUnits.Hours).speed.toDouble()
+        val v = windSpeed.convertTo(DistanceUnits.Miles, TimeUnits.Hours).value.toDouble()
 
         // Wind chill is defined only at or below 50F and speeds above 3mph
         if (t > 50f || v <= 3) {

@@ -12,9 +12,6 @@ import com.kylecorry.sol.math.optimization.HillClimbingOptimizer
 import com.kylecorry.sol.math.optimization.IOptimizer
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.science.geophysics.Geophysics
-import com.kylecorry.sol.science.physics.DragModel
-import com.kylecorry.sol.science.physics.NoDragModel
-import com.kylecorry.sol.science.physics.TrajectoryPoint2D
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
@@ -158,7 +155,7 @@ object Physics {
      */
     fun getKineticEnergy(mass: Weight, speed: Speed): Energy {
         val massKg = mass.convertTo(WeightUnits.Kilograms).value
-        val speedMps = speed.convertTo(DistanceUnits.Meters, TimeUnits.Seconds).speed
+        val speedMps = speed.convertTo(DistanceUnits.Meters, TimeUnits.Seconds).value
         val joules = 0.5f * massKg * speedMps * speedMps
         return Energy.from(joules, EnergyUnits.Joules)
     }

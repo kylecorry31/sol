@@ -33,7 +33,7 @@ class PhysicsTest {
         val initialVelocity = Speed.from(2670f, DistanceUnits.Feet, TimeUnits.Seconds).convertTo(
             DistanceUnits.Meters,
             TimeUnits.Seconds
-        ).speed
+        ).value
 
         val sightIn = Distance.from(100f, DistanceUnits.Yards).meters().value
 
@@ -125,7 +125,7 @@ class PhysicsTest {
                 Speed.from(actual.velocity.x, DistanceUnits.Meters, TimeUnits.Seconds).convertTo(
                     DistanceUnits.Feet,
                     TimeUnits.Seconds
-                ).speed,
+                ).value,
                 0.1f,
                 "Velocity did not match for $expected"
             )
