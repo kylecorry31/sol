@@ -6,8 +6,13 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic
 
 data class Line(val start: Vector2, val end: Vector2) {
 
-    val isVertical = Arithmetic.isApproximatelyEqual(start.x, end.x)
-    val isHorizontal = Arithmetic.isApproximatelyEqual(start.y, end.y)
+    val isVertical: Boolean
+        get() = Arithmetic.isApproximatelyEqual(start.x, end.x) || slope().isInfinite()
+    val isHorizontal: Boolean
+        get() {
+            val m = slope()
+            return Arithmetic.isApproximatelyEqual(start.y, end.y) || Arithmetic.isZero(m) || m.isNaN()
+        }
 
     fun left(): Vector2 {
         return if (start.x < end.x) {
