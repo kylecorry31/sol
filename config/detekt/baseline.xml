@@ -183,7 +183,6 @@
     <ID>UnusedPrivateProperty:LoessFilter.kt$LoessFilter$private val maximumSpanDistance: Float? = null</ID>
     <ID>UnusedPrivateProperty:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$i</ID>
     <ID>UnusedPrivateProperty:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$private val precision: Int = 5</ID>
-    <ID>UseCheckOrError:Extensions.kt$throw IllegalStateException("Unable to calculate nextGaussian after 128 attempts")</ID>
     <ID>UseRequire:NationalGrid.kt$NationalGrid$throw IllegalArgumentException( "Differing size of northing and easting, unable to determine valid ref $s" )</ID>
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)</ID>
     <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val E = Algebra.polynomial(T, 1.0, -0.002516, -0.0000074)</ID>

@@ -17,5 +17,5 @@ fun Random.nextGaussian(): Double {
         }
     }
 
-    throw IllegalStateException("Unable to calculate nextGaussian after 128 attempts")
+    error("Unable to calculate nextGaussian after 128 attempts")
 }
