@@ -23,7 +23,7 @@ internal object MarchingSquares {
                     grid[i + 1][j]
                 )
                 calculators.add {
-                    marchingSquares(square, threshold, interpolator)
+                    calculateMarchingSquares(square, threshold, interpolator)
                 }
             }
         }
@@ -31,7 +31,7 @@ internal object MarchingSquares {
         return executor.map(calculators).flatten()
     }
 
-    private fun <T> marchingSquares(
+    private fun <T> calculateMarchingSquares(
         square: List<Pair<T, Float>>,
         threshold: Float,
         interpolator: (Float, T, T) -> T
@@ -64,10 +64,12 @@ internal object MarchingSquares {
             2 -> {
                 contourLines.add(IsolineSegment(intersections[0], intersections[1]))
             }
+
             4 if a.second >= threshold -> {
                 contourLines.add(IsolineSegment(intersections[0], intersections[2]))
                 contourLines.add(IsolineSegment(intersections[1], intersections[3]))
             }
+
             4 if a.second < threshold -> {
                 contourLines.add(IsolineSegment(intersections[0], intersections[1]))
                 contourLines.add(IsolineSegment(intersections[2], intersections[3]))

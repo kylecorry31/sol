@@ -68,7 +68,6 @@
     <ID>LoopWithTooManyJumpStatements:LoessFilter.kt$LoessFilter$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt$LoessFilter2D$for</ID>
     <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt$TimeSeriesEnsemble$for</ID>
-    <ID>MemberNameEqualsClassName:MarchingSquares.kt$MarchingSquares$private fun &lt;T&gt; marchingSquares( square: List&lt;Pair&lt;T, Float&gt;&gt;, threshold: Float, interpolator: (Float, T, T) -&gt; T ): List&lt;IsolineSegment&lt;T&gt;&gt;</ID>
     <ID>NestedBlockDepth:Ecology.kt$Ecology$fun getLifecycleEventDates( events: List&lt;LifecycleEvent&gt;, dateRange: Range&lt;LocalDate&gt;, dayLengthProvider: (LocalDate) -&gt; Duration, temperatureProvider: (LocalDate) -&gt; Range&lt;Temperature&gt;, ): List&lt;Pair&lt;LocalDate, LifecycleEvent&gt;&gt;</ID>
     <ID>NestedBlockDepth:NeuralNetwork.kt$NeuralNetwork$fun fit( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, regularization: Float = 0f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } ): Float</ID>
     <ID>ReturnCount:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
