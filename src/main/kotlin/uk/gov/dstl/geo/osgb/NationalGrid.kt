@@ -220,6 +220,7 @@ object NationalGrid {
                 n = parseDoubleWithCoordPrecision(list[1])
                     ?: throw IllegalArgumentException("Unable to extract NE from $ng")
             }
+
             list.size == 1 -> {
                 // Consolidated value
                 val ret = splitConsolidated(list[0])
@@ -228,6 +229,7 @@ object NationalGrid {
                 n = parseDoubleWithCoordPrecision(ret[1])
                     ?: throw IllegalArgumentException("Unable to extract NE from $ng")
             }
+
             else -> throw IllegalArgumentException("Invalid NG coords $ng")
         }
 
@@ -241,10 +243,8 @@ object NationalGrid {
      * @return An array, containing the Easting and Northing (in that order) split from a string
      */
     private fun splitConsolidated(s: String): Array<String> {
-        if (s.length % 2 != 0) {
-            throw IllegalArgumentException(
-                "Differing size of northing and easting, unable to determine valid ref $s"
-            )
+        require(s.length % 2 == 0) {
+            "Differing size of northing and easting, unable to determine valid ref $s"
         }
 
         val index = s.length / 2
