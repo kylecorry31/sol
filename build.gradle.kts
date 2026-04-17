@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.2.21"
     id("java-library")
     id("com.vanniktech.maven.publish") version "0.35.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 val versionName = "17.0.2"
@@ -57,6 +58,34 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = true
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    basePath = rootDir.absolutePath
+    baseline = file("$rootDir/config/detekt/baseline.xml")
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    setSource(files("src/main/kotlin"))
+    include("**/*.kt", "**/*.kts")
+    exclude("**/build/**")
+    jvmTarget = "11"
+    reports {
+        html.required.set(true)
+        sarif.required.set(true)
+        md.required.set(false)
+        xml.required.set(false)
+    }
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+    setSource(files("src/main/kotlin"))
+    include("**/*.kt", "**/*.kts")
+    exclude("**/build/**")
+    jvmTarget = "11"
 }
 
 // Setup javadocs
