@@ -1,14 +1,14 @@
 package com.kylecorry.sol.science.astronomy.moon
 
-private const val truePhaseWidth = 11.25f
+private const val TRUE_PHASE_WIDTH_DEGREES = 11.25f
 
 enum class MoonTruePhase(val startAngle: Float, val endAngle: Float) {
-    New(360 - truePhaseWidth, truePhaseWidth),
-    WaningCrescent(truePhaseWidth, 90 - truePhaseWidth),
-    ThirdQuarter(90 - truePhaseWidth, 90 + truePhaseWidth),
-    WaningGibbous(90 + truePhaseWidth, 180 - truePhaseWidth),
-    Full(180 - truePhaseWidth, 180 + truePhaseWidth),
-    WaxingGibbous(180 + truePhaseWidth, 270 - truePhaseWidth),
-    FirstQuarter(270 - truePhaseWidth, 270 + truePhaseWidth),
-    WaxingCrescent(270 + truePhaseWidth, 360 - truePhaseWidth)
+    New(360 - TRUE_PHASE_WIDTH_DEGREES, TRUE_PHASE_WIDTH_DEGREES),
+    WaningCrescent(TRUE_PHASE_WIDTH_DEGREES, 90 - TRUE_PHASE_WIDTH_DEGREES),
+    ThirdQuarter(90 - TRUE_PHASE_WIDTH_DEGREES, 90 + TRUE_PHASE_WIDTH_DEGREES),
+    WaningGibbous(90 + TRUE_PHASE_WIDTH_DEGREES, 180 - TRUE_PHASE_WIDTH_DEGREES),
+    Full(180 - TRUE_PHASE_WIDTH_DEGREES, 180 + TRUE_PHASE_WIDTH_DEGREES),
+    WaxingGibbous(180 + TRUE_PHASE_WIDTH_DEGREES, 270 - TRUE_PHASE_WIDTH_DEGREES),
+    FirstQuarter(270 - TRUE_PHASE_WIDTH_DEGREES, 270 + TRUE_PHASE_WIDTH_DEGREES),
+    WaxingCrescent(270 + TRUE_PHASE_WIDTH_DEGREES, 360 - TRUE_PHASE_WIDTH_DEGREES)
 }

@@ -6538,7 +6538,6 @@
     <ID>NewLineAtEndOfFile:Algebra.kt$com.kylecorry.sol.math.algebra.Algebra.kt</ID>
     <ID>NewLineAtEndOfFile:AltitudeAzimuth.kt$com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth.kt</ID>
     <ID>NewLineAtEndOfFile:Angle.kt$gov.nasa.worldwind.geom.Angle.kt</ID>
-    <ID>NewLineAtEndOfFile:Arithmetic.kt$com.kylecorry.sol.math.arithmetic.Arithmetic.kt</ID>
     <ID>NewLineAtEndOfFile:ArrayUtils.kt$com.kylecorry.sol.shared.ArrayUtils.kt</ID>
     <ID>NewLineAtEndOfFile:ArrivalTimeCalculator.kt$com.kylecorry.sol.science.meteorology.forecast.sol.ArrivalTimeCalculator.kt</ID>
     <ID>NewLineAtEndOfFile:AstroSearch.kt$com.kylecorry.sol.science.astronomy.AstroSearch.kt</ID>
@@ -6593,7 +6592,6 @@
     <ID>NewLineAtEndOfFile:Executor.kt$com.kylecorry.sol.shared.Executor.kt</ID>
     <ID>NewLineAtEndOfFile:Extensions.kt$com.kylecorry.sol.math.Extensions.kt</ID>
     <ID>NewLineAtEndOfFile:Extremum.kt$com.kylecorry.sol.math.optimization.Extremum.kt</ID>
-    <ID>NewLineAtEndOfFile:ForecastHelper.kt$com.kylecorry.sol.science.meteorology.forecast.ForecastHelper.kt</ID>
     <ID>NewLineAtEndOfFile:ForecastSource.kt$com.kylecorry.sol.science.meteorology.forecast.ForecastSource.kt</ID>
     <ID>NewLineAtEndOfFile:Forecaster.kt$com.kylecorry.sol.science.meteorology.forecast.Forecaster.kt</ID>
     <ID>NewLineAtEndOfFile:FrequencyAnalysis.kt$com.kylecorry.sol.math.analysis.FrequencyAnalysis.kt</ID>
@@ -6601,7 +6599,6 @@
     <ID>NewLineAtEndOfFile:GaussianFilter.kt$com.kylecorry.sol.math.filters.GaussianFilter.kt</ID>
     <ID>NewLineAtEndOfFile:Geofence.kt$com.kylecorry.sol.science.geology.Geofence.kt</ID>
     <ID>NewLineAtEndOfFile:Geology.kt$com.kylecorry.sol.science.geology.Geology.kt</ID>
-    <ID>NewLineAtEndOfFile:Geometry.kt$com.kylecorry.sol.math.geometry.Geometry.kt</ID>
     <ID>NewLineAtEndOfFile:GoldenSearchExtremaFinder.kt$com.kylecorry.sol.math.optimization.GoldenSearchExtremaFinder.kt</ID>
     <ID>NewLineAtEndOfFile:GradientDescentOptimizer.kt$com.kylecorry.sol.math.optimization.GradientDescentOptimizer.kt</ID>
     <ID>NewLineAtEndOfFile:GreenwichSiderealTime.kt$com.kylecorry.sol.science.astronomy.units.GreenwichSiderealTime.kt</ID>
@@ -6613,7 +6610,6 @@
     <ID>NewLineAtEndOfFile:HeatAlert.kt$com.kylecorry.sol.science.meteorology.HeatAlert.kt</ID>
     <ID>NewLineAtEndOfFile:HighPressureLaterPredictor.kt$com.kylecorry.sol.science.meteorology.forecast.sol.predictors.HighPressureLaterPredictor.kt</ID>
     <ID>NewLineAtEndOfFile:HillClimbingOptimizer.kt$com.kylecorry.sol.math.optimization.HillClimbingOptimizer.kt</ID>
-    <ID>NewLineAtEndOfFile:HorizonCoordinate.kt$com.kylecorry.sol.science.astronomy.units.HorizonCoordinate.kt</ID>
     <ID>NewLineAtEndOfFile:ICelestialLocator.kt$com.kylecorry.sol.science.astronomy.locators.ICelestialLocator.kt</ID>
     <ID>NewLineAtEndOfFile:IClassifier.kt$com.kylecorry.sol.math.classifiers.IClassifier.kt</ID>
     <ID>NewLineAtEndOfFile:IExtremaFinder.kt$com.kylecorry.sol.math.optimization.IExtremaFinder.kt</ID>
@@ -6638,7 +6634,6 @@
     <ID>NewLineAtEndOfFile:KoppenGeigerClimateClassifier.kt$com.kylecorry.sol.science.meteorology.KoppenGeigerClimateClassifier.kt</ID>
     <ID>NewLineAtEndOfFile:LatLon.kt$gov.nasa.worldwind.geom.LatLon.kt</ID>
     <ID>NewLineAtEndOfFile:LeastSquaresOptimizer.kt$com.kylecorry.sol.math.optimization.LeastSquaresOptimizer.kt</ID>
-    <ID>NewLineAtEndOfFile:LeastSquaresRegression.kt$com.kylecorry.sol.math.regression.LeastSquaresRegression.kt</ID>
     <ID>NewLineAtEndOfFile:LifecycleEventFactors.kt$com.kylecorry.sol.science.ecology.LifecycleEventFactors.kt</ID>
     <ID>NewLineAtEndOfFile:LifecycleEventTrigger.kt$com.kylecorry.sol.science.ecology.triggers.LifecycleEventTrigger.kt</ID>
     <ID>NewLineAtEndOfFile:Line.kt$com.kylecorry.sol.math.geometry.Line.kt</ID>
@@ -6667,8 +6662,6 @@
     <ID>NewLineAtEndOfFile:MercatorProjection.kt$com.kylecorry.sol.science.geography.projections.MercatorProjection.kt</ID>
     <ID>NewLineAtEndOfFile:MeteorShower.kt$com.kylecorry.sol.science.astronomy.meteors.MeteorShower.kt</ID>
     <ID>NewLineAtEndOfFile:MeteorShowerLocator.kt$com.kylecorry.sol.science.astronomy.locators.MeteorShowerLocator.kt</ID>
-    <ID>NewLineAtEndOfFile:Meteorology.kt$com.kylecorry.sol.science.meteorology.Meteorology.kt</ID>
-    <ID>NewLineAtEndOfFile:Moon.kt$com.kylecorry.sol.science.astronomy.locators.Moon.kt</ID>
     <ID>NewLineAtEndOfFile:MoonPhase.kt$com.kylecorry.sol.science.astronomy.moon.MoonPhase.kt</ID>
     <ID>NewLineAtEndOfFile:MoonTruePhase.kt$com.kylecorry.sol.science.astronomy.moon.MoonTruePhase.kt</ID>
     <ID>NewLineAtEndOfFile:MovingAverageFilter.kt$com.kylecorry.sol.math.filters.MovingAverageFilter.kt</ID>
@@ -6681,17 +6674,13 @@
     <ID>NewLineAtEndOfFile:NoisyExtremaFinder.kt$com.kylecorry.sol.math.optimization.NoisyExtremaFinder.kt</ID>
     <ID>NewLineAtEndOfFile:NumericDifferentiation.kt$com.kylecorry.sol.math.calculus.NumericDifferentiation.kt</ID>
     <ID>NewLineAtEndOfFile:ODESolver.kt$com.kylecorry.sol.math.calculus.ODESolver.kt</ID>
-    <ID>NewLineAtEndOfFile:Oceanography.kt$com.kylecorry.sol.science.oceanography.Oceanography.kt</ID>
     <ID>NewLineAtEndOfFile:Optics.kt$com.kylecorry.sol.science.optics.Optics.kt</ID>
     <ID>NewLineAtEndOfFile:Optimization.kt$com.kylecorry.sol.math.optimization.Optimization.kt</ID>
-    <ID>NewLineAtEndOfFile:OrbitalMath.kt$com.kylecorry.sol.science.astronomy.OrbitalMath.kt</ID>
     <ID>NewLineAtEndOfFile:OrbitalPosition.kt$com.kylecorry.sol.science.astronomy.OrbitalPosition.kt</ID>
     <ID>NewLineAtEndOfFile:OvercastLaterPredictor.kt$com.kylecorry.sol.science.meteorology.forecast.sol.predictors.OvercastLaterPredictor.kt</ID>
     <ID>NewLineAtEndOfFile:OvercastPredicator.kt$com.kylecorry.sol.science.meteorology.forecast.sol.predictors.OvercastPredicator.kt</ID>
     <ID>NewLineAtEndOfFile:PartialLunarEclipseCalculator.kt$com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator.kt</ID>
-    <ID>NewLineAtEndOfFile:Physics.kt$com.kylecorry.sol.science.physics.Physics.kt</ID>
     <ID>NewLineAtEndOfFile:PiecewiseWaterLevelCalculator.kt$com.kylecorry.sol.science.oceanography.waterlevel.PiecewiseWaterLevelCalculator.kt</ID>
-    <ID>NewLineAtEndOfFile:PlanetLocator.kt$com.kylecorry.sol.science.astronomy.locators.PlanetLocator.kt</ID>
     <ID>NewLineAtEndOfFile:PlateSolver.kt$com.kylecorry.sol.science.astronomy.stars.PlateSolver.kt</ID>
     <ID>NewLineAtEndOfFile:Polygon.kt$com.kylecorry.sol.math.geometry.Polygon.kt</ID>
     <ID>NewLineAtEndOfFile:Polynomial.kt$com.kylecorry.sol.math.algebra.Polynomial.kt</ID>
@@ -6707,7 +6696,6 @@
     <ID>NewLineAtEndOfFile:ProximityChangeFilter1D.kt$com.kylecorry.sol.math.filters.ProximityChangeFilter1D.kt</ID>
     <ID>NewLineAtEndOfFile:ProximityChangeFilter2D.kt$com.kylecorry.sol.math.filters.ProximityChangeFilter2D.kt</ID>
     <ID>NewLineAtEndOfFile:ProximityChangeFilterGeneric.kt$com.kylecorry.sol.math.filters.ProximityChangeFilterGeneric.kt</ID>
-    <ID>NewLineAtEndOfFile:Quaternion.kt$com.kylecorry.sol.math.Quaternion.kt</ID>
     <ID>NewLineAtEndOfFile:RDPFilter.kt$com.kylecorry.sol.math.filters.RDPFilter.kt</ID>
     <ID>NewLineAtEndOfFile:Reading.kt$com.kylecorry.sol.units.Reading.kt</ID>
     <ID>NewLineAtEndOfFile:Rectangle.kt$com.kylecorry.sol.math.geometry.Rectangle.kt</ID>
@@ -6729,15 +6717,12 @@
     <ID>NewLineAtEndOfFile:Size.kt$com.kylecorry.sol.math.geometry.Size.kt</ID>
     <ID>NewLineAtEndOfFile:SolForecastFactorCalculator.kt$com.kylecorry.sol.science.meteorology.forecast.sol.SolForecastFactorCalculator.kt</ID>
     <ID>NewLineAtEndOfFile:SolForecastFactors.kt$com.kylecorry.sol.science.meteorology.forecast.sol.SolForecastFactors.kt</ID>
-    <ID>NewLineAtEndOfFile:SolForecaster.kt$com.kylecorry.sol.science.meteorology.forecast.sol.SolForecaster.kt</ID>
     <ID>NewLineAtEndOfFile:SolarEclipseCalculator.kt$com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseCalculator.kt</ID>
     <ID>NewLineAtEndOfFile:SolarEclipseParameterProvider.kt$com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseParameterProvider.kt</ID>
     <ID>NewLineAtEndOfFile:SolarEclipseParameters.kt$com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseParameters.kt</ID>
     <ID>NewLineAtEndOfFile:SolarRadiationCalculator.kt$com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator.kt</ID>
     <ID>NewLineAtEndOfFile:Star.kt$com.kylecorry.sol.science.astronomy.stars.Star.kt</ID>
     <ID>NewLineAtEndOfFile:StarLocationCalculator.kt$com.kylecorry.sol.science.astronomy.stars.StarLocationCalculator.kt</ID>
-    <ID>NewLineAtEndOfFile:StarLocator.kt$com.kylecorry.sol.science.astronomy.locators.StarLocator.kt</ID>
-    <ID>NewLineAtEndOfFile:Statistics.kt$com.kylecorry.sol.math.statistics.Statistics.kt</ID>
     <ID>NewLineAtEndOfFile:StormPredictor.kt$com.kylecorry.sol.science.meteorology.forecast.sol.predictors.StormPredictor.kt</ID>
     <ID>NewLineAtEndOfFile:Sun.kt$com.kylecorry.sol.science.astronomy.locators.Sun.kt</ID>
     <ID>NewLineAtEndOfFile:SunTimesMode.kt$com.kylecorry.sol.science.astronomy.SunTimesMode.kt</ID>
@@ -6753,15 +6738,12 @@
     <ID>NewLineAtEndOfFile:TideClockWaterLevelCalculator.kt$com.kylecorry.sol.science.oceanography.waterlevel.TideClockWaterLevelCalculator.kt</ID>
     <ID>NewLineAtEndOfFile:TideFrequency.kt$com.kylecorry.sol.science.oceanography.TideFrequency.kt</ID>
     <ID>NewLineAtEndOfFile:TideType.kt$com.kylecorry.sol.science.oceanography.TideType.kt</ID>
-    <ID>NewLineAtEndOfFile:Time.kt$com.kylecorry.sol.time.Time.kt</ID>
     <ID>NewLineAtEndOfFile:TimeSeriesEnsemble.kt$com.kylecorry.sol.math.statistics.TimeSeriesEnsemble.kt</ID>
     <ID>NewLineAtEndOfFile:TimeUnits.kt$com.kylecorry.sol.units.TimeUnits.kt</ID>
     <ID>NewLineAtEndOfFile:TimeZoneLocations.kt$com.kylecorry.sol.time.TimeZoneLocations.kt</ID>
     <ID>NewLineAtEndOfFile:TotalLunarEclipseCalculator.kt$com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalculator.kt</ID>
     <ID>NewLineAtEndOfFile:TrajectoryPoint2D.kt$com.kylecorry.sol.science.physics.TrajectoryPoint2D.kt</ID>
-    <ID>NewLineAtEndOfFile:Trigonometry.kt$com.kylecorry.sol.math.trigonometry.Trigonometry.kt</ID>
     <ID>NewLineAtEndOfFile:TrilaterationResult.kt$com.kylecorry.sol.science.geography.TrilaterationResult.kt</ID>
-    <ID>NewLineAtEndOfFile:UniversalTime.kt$com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
     <ID>NewLineAtEndOfFile:Vector.kt$com.kylecorry.sol.math.Vector.kt</ID>
     <ID>NewLineAtEndOfFile:Vector3.kt$com.kylecorry.sol.math.Vector3.kt</ID>
     <ID>NewLineAtEndOfFile:Vector3Precise.kt$com.kylecorry.sol.math.Vector3Precise.kt</ID>
@@ -6774,10 +6756,8 @@
     <ID>NewLineAtEndOfFile:WeatherObservation.kt$com.kylecorry.sol.science.meteorology.observation.WeatherObservation.kt</ID>
     <ID>NewLineAtEndOfFile:WeatherPredictor.kt$com.kylecorry.sol.science.meteorology.forecast.sol.predictors.WeatherPredictor.kt</ID>
     <ID>NewLineAtEndOfFile:WeightUnits.kt$com.kylecorry.sol.units.WeightUnits.kt</ID>
-    <ID>NewLineAtEndOfFile:WeightedLeastSquaresRegression.kt$com.kylecorry.sol.math.regression.WeightedLeastSquaresRegression.kt</ID>
     <ID>NewLineAtEndOfFile:WeightedLinearRegression.kt$com.kylecorry.sol.math.regression.WeightedLinearRegression.kt</ID>
     <ID>NewLineAtEndOfFile:WindPredictor.kt$com.kylecorry.sol.science.meteorology.forecast.sol.predictors.WindPredictor.kt</ID>
-    <ID>NewLineAtEndOfFile:ZambrettiForecaster.kt$com.kylecorry.sol.science.meteorology.forecast.ZambrettiForecaster.kt</ID>
     <ID>ReturnCount:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
     <ID>ReturnCount:Algebra.kt$Algebra$fun solve(equation: LinearEquation): Float?</ID>
     <ID>ReturnCount:Algebra.kt$Algebra$fun solve(equation: QuadraticEquation): Pair&lt;Float, Float&gt;?</ID>
@@ -6891,7 +6871,6 @@
     <ID>TooManyFunctions:Trigonometry.kt$Trigonometry</ID>
     <ID>TooManyFunctions:UniversalTime.kt$com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
     <ID>TooManyFunctions:Vector2.kt$Vector2</ID>
-    <ID>TopLevelPropertyNaming:MoonTruePhase.kt$private const val truePhaseWidth = 11.25f</ID>
     <ID>UnusedPrivateMember:UTMCoordConverter.kt$UTMCoordConverter$private fun setUTMParameters(a: Double, f: Double, override: Long): Long</ID>
     <ID>UnusedPrivateProperty:Calculus.kt$Calculus$i</ID>
     <ID>UnusedPrivateProperty:DecimalFormatter.kt$DecimalFormatter$i</ID>
