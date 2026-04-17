@@ -2,7 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ExplicitItLambdaParameter:LeastSquaresOptimizer.kt$LeastSquaresOptimizer${ index, it -&gt; step[index] = it / maxStep * maxAllowedStep }</ID>
     <ID>ForbiddenComment:Astronomy.kt$Astronomy$// TODO: Apply max search to lunar as well</ID>
     <ID>ForbiddenComment:Calculus.kt$Calculus$// TODO: RK4 solver?</ID>
     <ID>ForbiddenComment:Calculus.kt$Calculus$// TODO: Use central difference</ID>

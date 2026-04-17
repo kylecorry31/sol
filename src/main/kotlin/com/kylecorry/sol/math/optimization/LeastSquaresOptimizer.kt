@@ -49,8 +49,8 @@ class LeastSquaresOptimizer {
 
             if ((step.data.maxOfOrNull { abs(it) } ?: 0f) > maxAllowedStep) {
                 val maxStep = step.data.maxOfOrNull { abs(it) } ?: 0f
-                step.data.forEachIndexed { index, it ->
-                    step[index] = it / maxStep * maxAllowedStep
+                step.data.forEachIndexed { index, stepValue ->
+                    step[index] = stepValue / maxStep * maxAllowedStep
                 }
             }
 
