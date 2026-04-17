@@ -8,7 +8,8 @@ import java.time.Month
 
 internal object KoppenGeigerClimateClassifier {
 
-    private val months1 = listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
+    private val months1 =
+        listOf(Month.APRIL, Month.MAY, Month.JUNE, Month.JULY, Month.AUGUST, Month.SEPTEMBER)
     private val months2 =
         listOf(Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER, Month.JANUARY, Month.FEBRUARY, Month.MARCH)
 
@@ -28,7 +29,10 @@ internal object KoppenGeigerClimateClassifier {
         requireValidTemperatures(temperatures)
         requireValidPrecipitations(precipitation)
 
-        val factors = getClimateFactors(getTemperatureList(temperatures), getPrecipitationList(precipitation))
+        val factors = getClimateFactors(
+            getTemperatureList(temperatures),
+            getPrecipitationList(precipitation)
+        )
         val group = getClimateGroup(factors)
         val classification = when (group) {
             KoppenGeigerClimateGroup.Tropical -> getTropicalClassification(factors)
@@ -61,8 +65,11 @@ internal object KoppenGeigerClimateClassifier {
         factors: ClimateFactors
     ): KoppenGeigerClimateClassification {
         val seasonalPrecipitationPattern = when {
-            factors.precipitationSummerMin < 40 && factors.precipitationSummerMin < factors.precipitationWinterMax / 3 -> KoppenGeigerSeasonalPrecipitationPattern.DrySummer
-            factors.precipitationWinterMin < factors.precipitationSummerMax / 10 -> KoppenGeigerSeasonalPrecipitationPattern.DryWinter
+            factors.precipitationSummerMin < 40 &&
+                factors.precipitationSummerMin < factors.precipitationWinterMax / 3 ->
+                KoppenGeigerSeasonalPrecipitationPattern.DrySummer
+            factors.precipitationWinterMin < factors.precipitationSummerMax / 10 ->
+                KoppenGeigerSeasonalPrecipitationPattern.DryWinter
             else -> KoppenGeigerSeasonalPrecipitationPattern.NoDrySeason
         }
         val temperaturePattern = when {
@@ -113,7 +120,8 @@ internal object KoppenGeigerClimateClassifier {
     ): KoppenGeigerClimateClassification {
         val seasonalPrecipitationPattern = when {
             factors.precipitationMin >= 60f -> KoppenGeigerSeasonalPrecipitationPattern.Rainforest
-            factors.precipitationMin >= 100 - factors.precipitationAnnualMean / 25 -> KoppenGeigerSeasonalPrecipitationPattern.Monsoon
+            factors.precipitationMin >= 100 - factors.precipitationAnnualMean / 25 ->
+                KoppenGeigerSeasonalPrecipitationPattern.Monsoon
             // TODO: Replace Savanna with Wet Summer and Dry Summer
             else -> KoppenGeigerSeasonalPrecipitationPattern.Savanna
         }
@@ -128,7 +136,8 @@ internal object KoppenGeigerClimateClassifier {
         factors: ClimateFactors,
     ): KoppenGeigerClimateClassification {
         val seasonalPrecipitationPattern = when {
-            factors.precipitationAnnualMean < 5 * factors.precipitationThreshold -> KoppenGeigerSeasonalPrecipitationPattern.Desert
+            factors.precipitationAnnualMean < 5 * factors.precipitationThreshold ->
+                KoppenGeigerSeasonalPrecipitationPattern.Desert
             else -> KoppenGeigerSeasonalPrecipitationPattern.Steppe
         }
         val temperaturePattern = if (factors.temperatureAnnualMean >= 18f) {
@@ -144,13 +153,21 @@ internal object KoppenGeigerClimateClassifier {
     }
 
     private fun requireValidTemperatures(temperatures: Map<Month, Temperature>) {
-        require(Month.entries.all { temperatures.contains(it) }) { "A temperature reading is required for each month" }
-        require(temperatures.values.none { !it.value.isFinite() }) { "One or more temperature readings are invalid" }
+        require(Month.entries.all { temperatures.contains(it) }) {
+            "A temperature reading is required for each month"
+        }
+        require(temperatures.values.none { !it.value.isFinite() }) {
+            "One or more temperature readings are invalid"
+        }
     }
 
     private fun requireValidPrecipitations(precipitation: Map<Month, Distance>) {
-        require(Month.entries.all { precipitation.contains(it) }) { "A precipitation reading is required for each month" }
-        require(precipitation.values.none { !it.value.isFinite() || it.value < 0 }) { "One or more precipitation readings are invalid" }
+        require(Month.entries.all { precipitation.contains(it) }) {
+            "A precipitation reading is required for each month"
+        }
+        require(precipitation.values.none { !it.value.isFinite() || it.value < 0 }) {
+            "One or more precipitation readings are invalid"
+        }
     }
 
     private fun getPrecipitationList(precipitation: Map<Month, Distance>): List<Float> {

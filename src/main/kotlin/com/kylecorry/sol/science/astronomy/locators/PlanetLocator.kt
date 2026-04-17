@@ -23,37 +23,36 @@ internal class PlanetLocator(private val planet: Planet) : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val planetPosition = getHeliocentricPosition(planet, ut)
         val earthPosition = getHeliocentricPosition(Planet.Earth, ut)
+        val pLong = planetPosition.first.eclipticLongitude
+        val pLat = planetPosition.first.eclipticLatitude
+        val eLong = earthPosition.first.eclipticLongitude
+        val longDiffNode = pLong - planet.eclipticLongitudeAscendingNodeEpoch
         val longitudeAdjustment = normalizeAngle(
             planet.eclipticLongitudeAscendingNodeEpoch + atan2(
-                sinDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch) * cosDegrees(
-                    planet.inclination
-                ),
-                cosDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch)
+                sinDegrees(longDiffNode) * cosDegrees(planet.inclination),
+                cosDegrees(longDiffNode)
             ).toDegrees()
         )
+        val pCosLat = planetPosition.second * cosDegrees(pLat)
+        val longDiffEarth = eLong - longitudeAdjustment
         val geocentricEclipticLongitude = normalizeAngle(
             if (planet.order <= Planet.Earth.order) {
-                180 + earthPosition.first.eclipticLongitude + atan2(
-                    planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(earthPosition.first.eclipticLongitude - longitudeAdjustment),
-                    earthPosition.second - planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * cosDegrees(
-                        earthPosition.first.eclipticLongitude - longitudeAdjustment
-                    )
+                180 + eLong + atan2(
+                    pCosLat * sinDegrees(longDiffEarth),
+                    earthPosition.second - pCosLat * cosDegrees(longDiffEarth)
                 ).toDegrees()
             } else {
                 longitudeAdjustment + atan2(
-                    earthPosition.second * sinDegrees(longitudeAdjustment - earthPosition.first.eclipticLongitude),
-                    planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) - earthPosition.second * cosDegrees(
-                        earthPosition.first.eclipticLongitude - longitudeAdjustment
-                    )
+                    earthPosition.second * sinDegrees(longitudeAdjustment - eLong),
+                    pCosLat - earthPosition.second * cosDegrees(longDiffEarth)
                 ).toDegrees()
             }
         )
         val geocentricEclipticLatitude = normalizeAngle(
             atan2(
-                planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * tanDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(
-                    geocentricEclipticLongitude - longitudeAdjustment
-                ),
-                earthPosition.second * sinDegrees(longitudeAdjustment - earthPosition.first.eclipticLongitude)
+                pCosLat * tanDegrees(pLat) *
+                    sinDegrees(geocentricEclipticLongitude - longitudeAdjustment),
+                earthPosition.second * sinDegrees(longitudeAdjustment - eLong)
             ).toDegrees()
         )
         val coordinate = EclipticCoordinate(geocentricEclipticLatitude, geocentricEclipticLongitude)
@@ -88,37 +87,36 @@ internal class PlanetLocator(private val planet: Planet) : ICelestialLocator {
         planetPosition: Pair<EclipticCoordinate, Double>,
         earthPosition: Pair<EclipticCoordinate, Double>
     ): EclipticCoordinate {
+        val pLong = planetPosition.first.eclipticLongitude
+        val pLat = planetPosition.first.eclipticLatitude
+        val eLong = earthPosition.first.eclipticLongitude
+        val longDiffNode = pLong - planet.eclipticLongitudeAscendingNodeEpoch
         val longitudeAdjustment = normalizeAngle(
             planet.eclipticLongitudeAscendingNodeEpoch + atan2(
-                sinDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch) * cosDegrees(
-                    planet.inclination
-                ),
-                cosDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch)
+                sinDegrees(longDiffNode) * cosDegrees(planet.inclination),
+                cosDegrees(longDiffNode)
             ).toDegrees()
         )
+        val pCosLat = planetPosition.second * cosDegrees(pLat)
+        val longDiffEarth = eLong - longitudeAdjustment
         val geocentricEclipticLongitude = normalizeAngle(
             if (planet.order <= Planet.Earth.order) {
-                180 + earthPosition.first.eclipticLongitude + atan2(
-                    planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(earthPosition.first.eclipticLongitude - longitudeAdjustment),
-                    earthPosition.second - planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * cosDegrees(
-                        earthPosition.first.eclipticLongitude - longitudeAdjustment
-                    )
+                180 + eLong + atan2(
+                    pCosLat * sinDegrees(longDiffEarth),
+                    earthPosition.second - pCosLat * cosDegrees(longDiffEarth)
                 ).toDegrees()
             } else {
                 longitudeAdjustment + atan2(
-                    earthPosition.second * sinDegrees(longitudeAdjustment - earthPosition.first.eclipticLongitude),
-                    planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) - earthPosition.second * cosDegrees(
-                        earthPosition.first.eclipticLongitude - longitudeAdjustment
-                    )
+                    earthPosition.second * sinDegrees(longitudeAdjustment - eLong),
+                    pCosLat - earthPosition.second * cosDegrees(longDiffEarth)
                 ).toDegrees()
             }
         )
         val geocentricEclipticLatitude = normalizeAngle(
             atan2(
-                planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * tanDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(
-                    geocentricEclipticLongitude - longitudeAdjustment
-                ),
-                earthPosition.second * sinDegrees(longitudeAdjustment - earthPosition.first.eclipticLongitude)
+                pCosLat * tanDegrees(pLat) *
+                    sinDegrees(geocentricEclipticLongitude - longitudeAdjustment),
+                earthPosition.second * sinDegrees(longitudeAdjustment - eLong)
             ).toDegrees()
         )
         return EclipticCoordinate(geocentricEclipticLatitude, geocentricEclipticLongitude)
@@ -128,10 +126,10 @@ internal class PlanetLocator(private val planet: Planet) : ICelestialLocator {
         planetPosition: Pair<EclipticCoordinate, Double>,
         earthPosition: Pair<EclipticCoordinate, Double>
     ): Double {
+        val longDiff = planetPosition.first.eclipticLongitude - earthPosition.first.eclipticLongitude
         return sqrt(
-            square(earthPosition.second) + square(planetPosition.second) - 2 * earthPosition.second * planetPosition.second * cosDegrees(
-                planetPosition.first.eclipticLongitude - earthPosition.first.eclipticLongitude
-            )
+            square(earthPosition.second) + square(planetPosition.second) -
+                2 * earthPosition.second * planetPosition.second * cosDegrees(longDiff)
         )
     }
 

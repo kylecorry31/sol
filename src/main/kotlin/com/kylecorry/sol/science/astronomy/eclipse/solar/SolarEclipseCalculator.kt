@@ -211,7 +211,8 @@ internal class SolarEclipseCalculator(
     }
 
     /**
-     * Calculate the magnitude of the eclipse. This is based on the formulas provided in https://doi.org/10.11578/dc.20190909.1
+     * Calculate the magnitude of the eclipse.
+     * This is based on the formulas provided in https://doi.org/10.11578/dc.20190909.1
      *
      * @param angularDistance The angular distance between the sun and moon.
      * @param moonRadius The radius of the moon disk.
@@ -237,7 +238,8 @@ internal class SolarEclipseCalculator(
                 // The sun is smaller than the moon, so the obscuration is 1 (sun is completely obscured)
                 diameterRatio to 1f
             } else {
-                // The sun is larger than the moon, and the moon is completely contained in the sun disk (sun is partially obscured)
+                // The sun is larger than the moon, and the moon is completely contained
+                // in the sun disk (sun is partially obscured)
                 val sunArea = PI * sunRadius * sunRadius
                 val moonArea = PI * moonRadius * moonRadius
                 diameterRatio to (moonArea / sunArea).toFloat()
@@ -280,7 +282,8 @@ internal class SolarEclipseCalculator(
     }
 
     /**
-     * Check if there is any eclipse. This is the case if the angular distance between the sun and moon is smaller than the sum of their radii.
+     * Check if there is any eclipse. This is the case if the angular distance between the sun
+     * and moon is smaller than the sum of their radii.
      *
      * @param angularDistance The angular distance between the sun and moon.
      * @param moonRadius The radius of the moon disk (degrees).
@@ -296,7 +299,8 @@ internal class SolarEclipseCalculator(
     }
 
     /**
-     * Check if there is a total eclipse. This is the case if the angular distance between the sun and moon is smaller than the difference of their radii.
+     * Check if there is a total eclipse. This is the case if the angular distance between the sun
+     * and moon is smaller than the difference of their radii.
      *
      * @param angularDistance The angular distance between the sun and moon.
      * @param moonRadius The radius of the moon disk (degrees).

@@ -108,7 +108,8 @@ object Interpolation {
 
     /**
      * Use Lagrange interpolation to interpolate a value. You need at least order + 1 control points.
-     * If multiple points are to be interpolated, use [NewtonInterpolator] or [LocalNewtonInterpolator] since it caches the coefficients.
+     * If multiple points are to be interpolated, use [NewtonInterpolator] or [LocalNewtonInterpolator]
+     * since it caches the coefficients.
      * @param x: The x value to interpolate
      * @param xs: The x values of the control points
      * @param ys: The y values of the control points
@@ -157,10 +158,13 @@ object Interpolation {
 
     /**
      * Interpolates the isoline for a grid of values using the Marching Squares algorithm.
-     * @param grid A 2D grid of point to value pairs. The points should be equidistant. It is recommended to supply 1 extra row and column on each side of the grid to ensure the isoline extends to the edges.
+     * @param grid A 2D grid of point to value pairs. The points should be equidistant. It is recommended
+     * to supply 1 extra row and column on each side of the grid to ensure the isoline extends to the edges.
      * @param threshold The value to use as the isoline threshold.
-     * @param executor The executor of the isoline calculations to optionally process in parallel. Defaults to sequential processing.
-     * @param interpolator A function that takes a percentage (0 to 1) and two values (percent from a to b), and returns the interpolated point.
+     * @param executor The executor of the isoline calculations to optionally process in parallel.
+     * Defaults to sequential processing.
+     * @param interpolator A function that takes a percentage (0 to 1) and two values (percent from a to b),
+     * and returns the interpolated point.
      * @return A list of isoline segments.
      */
     fun <T> getIsoline(

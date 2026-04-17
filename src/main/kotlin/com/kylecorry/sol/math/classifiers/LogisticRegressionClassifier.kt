@@ -72,7 +72,8 @@ class LogisticRegressionClassifier(
         }
 
         require(outputSize.second == this.output) {
-            "Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${this.output}"
+            "Output of dimension ${inputSize.second} can't be produced by network with " +
+                "output dimension of ${this.output}"
         }
 
         require(input.none { it.rows() != inputSize.first || it.columns() != inputSize.second }) {

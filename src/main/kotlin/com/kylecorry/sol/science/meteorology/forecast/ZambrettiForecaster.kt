@@ -127,7 +127,8 @@ internal object ZambrettiForecaster : Forecaster {
 
         val hpa = pressure.hpa().value
 
-        // TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)
+        // TODO: Modify this to handle the southern hemisphere wind direction
+        // (and maybe factor in the prevailing wind direction)
 
         val season = Astronomy.getSeason(location, time)
         val z = getZambrettiValue(hpa, tendency, changeThreshold)

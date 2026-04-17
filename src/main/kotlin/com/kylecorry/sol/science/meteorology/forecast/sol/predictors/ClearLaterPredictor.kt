@@ -9,7 +9,18 @@ import com.kylecorry.sol.science.meteorology.forecast.sol.SolForecastFactors
 internal class ClearLaterPredictor : WeatherPredictor {
     override fun isLikely(factors: SolForecastFactors): Boolean {
         val hasCurrentCloudConditions =
-            factors.cloudReadingCurrent != null && (factors.cloudReadingCurrent.value == null || factors.cloudReadingCurrent.value in ForecastHelper.overcastClouds)
-        return (factors.weatherFront == WeatherFront.Cold && factors.pressureSystem != PressureSystem.Low) || (hasCurrentCloudConditions && factors.pressureSystem == PressureSystem.High && factors.pressureTendency.characteristic == PressureCharacteristic.Steady)
+            factors.cloudReadingCurrent != null &&
+                (
+                    factors.cloudReadingCurrent.value == null ||
+                        factors.cloudReadingCurrent.value in ForecastHelper.overcastClouds
+                    )
+        return (
+            factors.weatherFront == WeatherFront.Cold &&
+                factors.pressureSystem != PressureSystem.Low
+            ) || (
+            hasCurrentCloudConditions &&
+                factors.pressureSystem == PressureSystem.High &&
+                factors.pressureTendency.characteristic == PressureCharacteristic.Steady
+            )
     }
 }

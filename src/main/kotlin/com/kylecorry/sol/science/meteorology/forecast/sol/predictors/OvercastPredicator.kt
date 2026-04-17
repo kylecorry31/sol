@@ -8,10 +8,20 @@ import com.kylecorry.sol.science.meteorology.forecast.sol.SolForecastFactors
 internal class OvercastPredicator : WeatherPredictor {
     override fun isLikely(factors: SolForecastFactors): Boolean {
         // Determine if an overcast cloud reading is present
-        if (factors.cloudReadingCurrent != null && factors.cloudReadingCurrent.value in ForecastHelper.overcastClouds) {
+        if (
+            factors.cloudReadingCurrent != null &&
+            factors.cloudReadingCurrent.value in ForecastHelper.overcastClouds
+        ) {
             return true
         }
 
-        return factors.cloudReadingCurrent == null && factors.pressureSystem == PressureSystem.Low && (factors.pressureTendency.characteristic == PressureCharacteristic.Steady || factors.pressureTendency.characteristic.isFalling)
+        return (
+            factors.cloudReadingCurrent == null &&
+                factors.pressureSystem == PressureSystem.Low &&
+                (
+                    factors.pressureTendency.characteristic == PressureCharacteristic.Steady ||
+                        factors.pressureTendency.characteristic.isFalling
+                    )
+            )
     }
 }

@@ -91,7 +91,8 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
             return today
         }
 
-        // Get today's times (at noon) - this is needed around DST changes in the UK (I'm not 100% sure why - seems to occur when getting the UT 0)
+        // Get today's times (at noon) - this is needed around DST changes in the UK
+        // (I'm not 100% sure why - seems to occur when getting the UT 0)
         val todayAtNoon = getTransitTimesHelper(
             date.withHour(12).withMinute(0).withSecond(0).withNano(0),
             location,
@@ -431,7 +432,9 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
         return Distance.from(distance.toFloat(), first.units)
     }
 
-    private fun normalizeRightAscensions(rightAscensions: Triple<Double, Double, Double>): Triple<Double, Double, Double> {
+    private fun normalizeRightAscensions(
+        rightAscensions: Triple<Double, Double, Double>
+    ): Triple<Double, Double, Double> {
         val ra1 = rightAscensions.first
         val ra2 = if (rightAscensions.second < ra1) {
             rightAscensions.second + 360

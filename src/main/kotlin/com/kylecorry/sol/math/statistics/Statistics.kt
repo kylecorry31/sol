@@ -182,7 +182,8 @@ object Statistics {
     }
 
     /**
-     * Calculates the root mean square errors between the datasets. Actual and predicted must correspond 1-1 with eachother.
+     * Calculates the root mean square errors between the datasets.
+     * Actual and predicted must correspond 1-1 with eachother.
      */
     fun rmse(actual: List<Float>, predicted: List<Float>): Float {
         val n = actual.size
@@ -190,7 +191,8 @@ object Statistics {
     }
 
     /**
-     * Calculates the sum of squared errors between the datasets. Actual and predicted must correspond 1-1 with eachother.
+     * Calculates the sum of squared errors between the datasets.
+     * Actual and predicted must correspond 1-1 with eachother.
      */
     fun sse(actual: List<Float>, predicted: List<Float>): Float {
 

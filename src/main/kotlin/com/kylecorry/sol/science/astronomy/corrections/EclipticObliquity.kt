@@ -44,7 +44,8 @@ internal object EclipticObliquity {
         var nutation = 0.0
         val table = LongitudinalNutation.table3()
         for (row in table) {
-            nutation += (row[7] + row[8] * T) * cosDegrees(row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4)
+            val angle = row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4
+            nutation += (row[7] + row[8] * T) * cosDegrees(angle)
         }
         return nutation / 36000000.0
     }

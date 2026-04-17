@@ -14,6 +14,9 @@ internal class StormPredictor(private val pressureTendencyStormThreshold: Float)
             return true
         }
 
-        return factors.pressureTendency.characteristic.isFalling && factors.pressureTendency.amount.absoluteValue >= pressureTendencyStormThreshold.absoluteValue
+        return (
+            factors.pressureTendency.characteristic.isFalling &&
+                factors.pressureTendency.amount.absoluteValue >= pressureTendencyStormThreshold.absoluteValue
+            )
     }
 }

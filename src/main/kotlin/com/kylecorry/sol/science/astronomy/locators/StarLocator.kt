@@ -54,14 +54,9 @@ internal class StarLocator(private val star: Star) : ICelestialLocator {
         val rightAscension = coords.rightAscension + processionRA
 
         val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)
-        val B =
-            cosDegrees(value3) * cosDegrees(declination) * cosDegrees(rightAscension + value1) - sinDegrees(value3) * sinDegrees(
-                declination
-            )
-        val C =
-            sinDegrees(value3) * cosDegrees(declination) * cosDegrees(rightAscension + value1) + cosDegrees(value3) * sinDegrees(
-                declination
-            )
+        val cosDecCosRA = cosDegrees(declination) * cosDegrees(rightAscension + value1)
+        val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)
+        val C = sinDegrees(value3) * cosDecCosRA + cosDegrees(value3) * sinDegrees(declination)
 
         val ra = atan2(A, B).toDegrees() + value2
         val dec = if (declination.absoluteValue > 89.0) {

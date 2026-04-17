@@ -36,7 +36,8 @@ class LoessFilter2D(
      * Smooth the data, the output will have the same x values as the input
      */
     override fun filter(data: List<Vector2>): List<Vector2> {
-        // Note: This has essentially the same logic as LoessFilter, except there are a few performance optimizations here for the 2D case
+        // Note: This has essentially the same logic as LoessFilter, except there are a few
+        // performance optimizations here for the 2D case
         val n = data.size
         if (n < 3) {
             return data

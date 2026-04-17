@@ -127,11 +127,15 @@ object Meteorology {
      * Forecast the weather for the next few hours
      * @param pressures the pressure readings
      * @param clouds the cloud readings, null cloud genus = Clear
-     * @param dailyTemperatureRange the daily temperature range for the given time (the next 24 hours, but can be less than that)
-     * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
-     * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
+     * @param dailyTemperatureRange The daily temperature range for the given time
+     *   (the next 24 hours, but can be less than that)
+     * @param pressureChangeThreshold (Optional) The change threshold for pressure to be
+     *   considered changing (hPa / hr)
+     * @param pressureStormChangeThreshold (Optional) The change threshold for pressure
+     *   to be considered a storm (hPa / hr)
      * @param time the time to calculate the forecast after
-     * @param location the location to calculate the forecast for (may be used to determine climate zone / hemisphere - does not need to be very accurate)
+     * @param location The location to calculate the forecast for
+     *   (may be used to determine climate zone / hemisphere and does not need to be very accurate)
      * @param source the source to use to derive the forecast
      * @return the predicted weather (now and later - times are not accurate yet)
      */
@@ -161,11 +165,15 @@ object Meteorology {
     /**
      * Forecast the weather for the next few hours
      * @param observations the weather observations
-     * @param dailyTemperatureRange the daily temperature range for the given time (the next 24 hours, but can be less than that)
-     * @param pressureChangeThreshold (optional) the change threshold for pressure to be considered changing (hPa / hr)
-     * @param pressureStormChangeThreshold (optional) the change threshold for pressure to be considered a storm (hPa / hr)
+     * @param dailyTemperatureRange The daily temperature range for the given time
+     *   (the next 24 hours, but can be less than that)
+     * @param pressureChangeThreshold (Optional) The change threshold for pressure to be
+     *   considered changing (hPa / hr)
+     * @param pressureStormChangeThreshold (Optional) The change threshold for pressure
+     *   to be considered a storm (hPa / hr)
      * @param time the time to calculate the forecast after
-     * @param location the location to calculate the forecast for (may be used to determine climate zone / hemisphere - does not need to be very accurate)
+     * @param location The location to calculate the forecast for
+     *   (may be used to determine climate zone / hemisphere and does not need to be very accurate)
      * @param source the source to use to derive the forecast
      * @return the predicted weather (now and later - times are not accurate yet)
      */
@@ -214,7 +222,15 @@ object Meteorology {
         val c9 = -0.000003582
 
         val hi =
-            c1 + c2 * temperature + c3 * relativeHumidity + c4 * temperature * relativeHumidity + c5 * temperature * temperature + c6 * relativeHumidity * relativeHumidity + c7 * temperature * temperature * relativeHumidity + c8 * temperature * relativeHumidity * relativeHumidity + c9 * temperature * temperature * relativeHumidity * relativeHumidity
+            c1 +
+                c2 * temperature +
+                c3 * relativeHumidity +
+                c4 * temperature * relativeHumidity +
+                c5 * temperature * temperature +
+                c6 * relativeHumidity * relativeHumidity +
+                c7 * temperature * temperature * relativeHumidity +
+                c8 * temperature * relativeHumidity * relativeHumidity +
+                c9 * temperature * temperature * relativeHumidity * relativeHumidity
 
         return hi.toFloat()
     }

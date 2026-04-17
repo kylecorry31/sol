@@ -7,7 +7,8 @@ import com.kylecorry.sol.units.average
 class TemperatureTrigger(
     threshold: Temperature = Temperature.celsius(0f),
     private val above: Boolean = true,
-    private val triggerType: TemperatureTriggerType = if (above) TemperatureTriggerType.High else TemperatureTriggerType.Low
+    private val triggerType: TemperatureTriggerType =
+        if (above) TemperatureTriggerType.High else TemperatureTriggerType.Low
 ) : LifecycleEventTrigger {
 
     private val thresholdC = threshold.celsius().value

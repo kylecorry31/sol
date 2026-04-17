@@ -18,7 +18,8 @@ internal object LongitudinalNutation {
         var nutation = 0.0
         val table = table3()
         for (row in table) {
-            nutation += (row[5] + row[6] * T) * sinDegrees(row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4)
+            val angle = row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4
+            nutation += (row[5] + row[6] * T) * sinDegrees(angle)
         }
         return nutation / 36000000.0
     }

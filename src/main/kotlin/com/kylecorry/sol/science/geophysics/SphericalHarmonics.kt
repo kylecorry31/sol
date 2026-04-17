@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file was heavily modified by Kyle Corry. Convert to Kotlin, extracted from GeomagneticField.java, updated to support scalars.
+ * This file was heavily modified by Kyle Corry.
+ * Converted to Kotlin, extracted from GeomagneticField.java, and updated to support scalars.
  */
 
 package com.kylecorry.sol.science.geophysics
@@ -63,20 +64,39 @@ internal class SphericalHarmonics(
             for (n in 1..<maxN) {
                 for (m in 0..n) {
                     // Adjust for time
-                    val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
-                    val h = hCoefficients[n][m] + yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
+                    val g =
+                        gCoefficients[n][m] +
+                            yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
+                    val h =
+                        hCoefficients[n][m] +
+                            yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
 
                     // Negative derivative with respect to latitude, divided by
                     // radius.  This looks like the negation of the version in the
                     // NOAA Technical report because that report used
                     // P_n^m(sin(theta)) and we use P_n^m(cos(90 - theta)), so the
                     // derivative with respect to theta is negated.
-                    gcX += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mPDeriv[n][m] * schmidtQuasiNormFactors[n][m]
+                    gcX +=
+                        relativeRadiusPower[n + 2] *
+                            (g * cosMLon[m] + h * sinMLon[m]) *
+                            legendre.mPDeriv[n][m] *
+                            schmidtQuasiNormFactors[n][m]
                     // Negative derivative with respect to longitude, divided by
                     // radius.
-                    gcY += relativeRadiusPower[n + 2] * m * (g * sinMLon[m] - h * cosMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m] * inverseCosLatitude
+                    gcY +=
+                        relativeRadiusPower[n + 2] *
+                            m *
+                            (g * sinMLon[m] - h * cosMLon[m]) *
+                            legendre.mP[n][m] *
+                            schmidtQuasiNormFactors[n][m] *
+                            inverseCosLatitude
                     // Negative derivative with respect to radius.
-                    gcZ -= (n + 1) * relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
+                    gcZ -=
+                        (n + 1) *
+                            relativeRadiusPower[n + 2] *
+                            (g * cosMLon[m] + h * sinMLon[m]) *
+                            legendre.mP[n][m] *
+                            schmidtQuasiNormFactors[n][m]
                 }
             }
 
@@ -104,10 +124,18 @@ internal class SphericalHarmonics(
             for (n in 1..<maxN) {
                 for (m in 0..n) {
                     // Adjust for time
-                    val g = gCoefficients[n][m] + yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
-                    val h = hCoefficients[n][m] + yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
+                    val g =
+                        gCoefficients[n][m] +
+                            yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
+                    val h =
+                        hCoefficients[n][m] +
+                            yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
 
-                    scalar += relativeRadiusPower[n + 2] * (g * cosMLon[m] + h * sinMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m]
+                    scalar +=
+                        relativeRadiusPower[n + 2] *
+                            (g * cosMLon[m] + h * sinMLon[m]) *
+                            legendre.mP[n][m] *
+                            schmidtQuasiNormFactors[n][m]
                 }
             }
 
@@ -119,7 +147,15 @@ internal class SphericalHarmonics(
         coordinate: Coordinate,
         altitude: Distance,
         time: Instant,
-        crossinline calculator: (yearsSinceBase: Float, legendre: LegendreTable, relativeRadiusPower: FloatArray, cosMLon: FloatArray, sinMLon: FloatArray, gdLatitudeRad: Float, mGcLatitudeRad: Float) -> T
+        crossinline calculator: (
+            yearsSinceBase: Float,
+            legendre: LegendreTable,
+            relativeRadiusPower: FloatArray,
+            cosMLon: FloatArray,
+            sinMLon: FloatArray,
+            gdLatitudeRad: Float,
+            mGcLatitudeRad: Float
+        ) -> T
     ): T {
         val timeMillis = time.toEpochMilli()
 

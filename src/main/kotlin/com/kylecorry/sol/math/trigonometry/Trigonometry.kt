@@ -153,7 +153,8 @@ object Trigonometry {
      * Connects two points with a waveform where one point is the high, and the other the low
      * @param first the first point
      * @param second the second point
-     * @param approximateFrequency the approximate frequency that these two points should be connected with. Defaults to interpreting one as a high and the other as a low as a half period
+     * @param approximateFrequency the approximate frequency that these two points should be connected with.
+     * Defaults to interpreting one as a high and the other as a low as a half period
      * @return the waveform which connects these two points
      */
     fun connect(first: Vector2, second: Vector2, approximateFrequency: Float? = null): Waveform {

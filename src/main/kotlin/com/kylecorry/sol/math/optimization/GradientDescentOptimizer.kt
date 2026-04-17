@@ -25,7 +25,8 @@ class GradientDescentOptimizer(
         var y = lerp(random.nextDouble(), yRange.start, yRange.end)
         var gradient = gradientFn(x, y)
         var i = 0
-        while ((gradient.first.absoluteValue > gradientThreshold || gradient.second.absoluteValue > gradientThreshold) && i <= maxIterations) {
+        while ((gradient.first.absoluteValue > gradientThreshold ||
+                    gradient.second.absoluteValue > gradientThreshold) && i <= maxIterations) {
             x += (if (maximize) 1 else -1) * learningRate * gradient.first
             y += (if (maximize) 1 else -1) * learningRate * gradient.second
             x = xRange.clamp(x)

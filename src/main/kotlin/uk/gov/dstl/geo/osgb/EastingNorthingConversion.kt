@@ -161,7 +161,9 @@ object EastingNorthingConversion {
             iterations++
         }
 
-        check(delta <= 0.00001) { "Easting/northing to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations" }
+        check(delta <= 0.00001) {
+            "Easting/northing to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations"
+        }
 
         val eSinPhi = 1 - e2 * sin(latPrime).pow(2) // eSinPhi = 1 - e^2 * sin^2 phi
         val nu = a * f0 * eSinPhi.pow(-0.5)

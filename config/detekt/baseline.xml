@@ -16,12 +16,13 @@
     <ID>ForbiddenComment:SolForecaster.kt$SolForecaster$// TODO: Now, soon, and later buckets (or predict next X hours)</ID>
     <ID>ForbiddenComment:SolarEclipseCalculator.kt$SolarEclipseCalculator$// TODO: Check to see if the eclipse will even be visible on earth</ID>
     <ID>ForbiddenComment:Trigonometry.kt$Trigonometry$// TODO: To get a more accurate range, factor in the phase of the waveforms</ID>
-    <ID>ForbiddenComment:ZambrettiForecaster.kt$ZambrettiForecaster$// TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)</ID>
+    <ID>ForbiddenComment:ZambrettiForecaster.kt$ZambrettiForecaster$// TODO: Modify this to handle the southern hemisphere wind direction</ID>
     <ID>FunctionParameterNaming:EclipticObliquity.kt$EclipticObliquity$T: Double</ID>
     <ID>FunctionParameterNaming:Sun.kt$Sun$T: Double</ID>
     <ID>ImplicitDefaultLocale:NationalGrid.kt$NationalGrid$String.format("%s %05.0f %05.0f", gs.reference, offset[0], offset[1])</ID>
     <ID>LargeClass:Astronomy.kt$Astronomy</ID>
     <ID>LongMethod:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
+    <ID>LongMethod:EastingNorthingConversion.kt$EastingNorthingConversion$fun toLatLon( inputCoordinates: DoubleArray, a: Double, b: Double, n0: Double, e0: Double, f0: Double, lat0Degrees: Double, lon0Degrees: Double ): DoubleArray</ID>
     <ID>LongMethod:Geography.kt$Geography$fun trilaterate( readings: List&lt;Geofence&gt;, isWeighted: Boolean = false, calculateBias: Boolean = false ): TrilaterationResult</ID>
     <ID>LongMethod:Geography.kt$Geography$fun vincenty( location1: Coordinate, location2: Coordinate ): FloatArray</ID>
     <ID>LongMethod:LongitudinalNutation.kt$LongitudinalNutation$fun table3(): Array&lt;DoubleArray&gt;</ID>
@@ -68,79 +69,6 @@
     <ID>LoopWithTooManyJumpStatements:LoessFilter.kt$LoessFilter$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt$LoessFilter2D$for</ID>
     <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt$TimeSeriesEnsemble$for</ID>
-    <ID>MaxLineLength:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$(1.0128 - parameters.umbralConeRadius - parameters.minDistanceFromCenter.absoluteValue) / moonDiameterInEarthRadii</ID>
-    <ID>MaxLineLength:Astronomy.kt$Astronomy$*</ID>
-    <ID>MaxLineLength:Astronomy.kt$Astronomy$// Purposefully use newton's method here to get the rise and set times, since missing rise/set/transit times are expected</ID>
-    <ID>MaxLineLength:Astronomy.kt$Astronomy$sl &gt;= OrbitalPosition.AutumnalEquinox.solarLongitude -&gt; if (location.isNorthernHemisphere) Season.Fall else Season.Spring</ID>
-    <ID>MaxLineLength:Astronomy.kt$Astronomy$sl &gt;= OrbitalPosition.SummerSolstice.solarLongitude -&gt; if (location.isNorthernHemisphere) Season.Summer else Season.Winter</ID>
-    <ID>MaxLineLength:Astronomy.kt$Astronomy$sl &gt;= OrbitalPosition.WinterSolstice.solarLongitude -&gt; if (location.isNorthernHemisphere) Season.Winter else Season.Summer</ID>
-    <ID>MaxLineLength:AzimuthCalculator.kt$AzimuthCalculator$// Therefore their orientation compared to the forward facing vector is the azimuth (acting as sine/cosine on the unit circle)</ID>
-    <ID>MaxLineLength:CartesianConversion.kt$CartesianConversion$check(delta &lt;= precision) { "Cartesian to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations" }</ID>
-    <ID>MaxLineLength:ClearLaterPredictor.kt$ClearLaterPredictor$factors.cloudReadingCurrent != null &amp;&amp; (factors.cloudReadingCurrent.value == null || factors.cloudReadingCurrent.value in ForecastHelper.overcastClouds)</ID>
-    <ID>MaxLineLength:ClearLaterPredictor.kt$ClearLaterPredictor$return (factors.weatherFront == WeatherFront.Cold &amp;&amp; factors.pressureSystem != PressureSystem.Low) || (hasCurrentCloudConditions &amp;&amp; factors.pressureSystem == PressureSystem.High &amp;&amp; factors.pressureTendency.characteristic == PressureCharacteristic.Steady)</ID>
-    <ID>MaxLineLength:ClearPredictor.kt$ClearPredictor$return factors.cloudReadingCurrent == null &amp;&amp; factors.pressureSystem == PressureSystem.High &amp;&amp; (factors.pressureTendency.characteristic == PressureCharacteristic.Steady || factors.pressureTendency.characteristic.isRising)</ID>
-    <ID>MaxLineLength:Coordinate.kt$Coordinate$*</ID>
-    <ID>MaxLineLength:DegreesDecimalMinutesCoordinateFormat.kt$DegreesDecimalMinutesCoordinateFormat$Regex("^(\\d+)°\\s*(\\d+(?:[.,]\\d+)?)[′']\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+(?:[.,]\\d+)?)[′']\\s*([wWeE])$")</ID>
-    <ID>MaxLineLength:DegreesMinutesSecondsCoordinateFormat.kt$DegreesMinutesSecondsCoordinateFormat$Regex("^(\\d+)°\\s*(\\d+)[′']\\s*(\\d+(?:[.,]\\d+)?)[″\"]\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+)[′']\\s*(\\d+(?:[.,]\\d+)?)[″\"]\\s*([wWeE])$")</ID>
-    <ID>MaxLineLength:EastingNorthingConversion.kt$EastingNorthingConversion$check(delta &lt;= 0.00001) { "Easting/northing to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations" }</ID>
-    <ID>MaxLineLength:EclipticObliquity.kt$EclipticObliquity$nutation += (row[7] + row[8] * T) * cosDegrees(row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4)</ID>
-    <ID>MaxLineLength:Geography.kt$Geography$*</ID>
-    <ID>MaxLineLength:Geography.kt$Geography$sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(referenceA.latitude)</ID>
-    <ID>MaxLineLength:Geology.kt$Geology$*</ID>
-    <ID>MaxLineLength:Geometry.kt$Geometry$abs((line.end.x - line.start.x) * (line.start.y - point.y) - (line.start.x - point.x) * (line.end.y - line.start.y))</ID>
-    <ID>MaxLineLength:GradientDescentOptimizer.kt$GradientDescentOptimizer$while</ID>
-    <ID>MaxLineLength:HighPressureLaterPredictor.kt$HighPressureLaterPredictor$return (factors.weatherFront == WeatherFront.Cold &amp;&amp; factors.pressureSystem != PressureSystem.Low) || (factors.pressureSystem == PressureSystem.High &amp;&amp; factors.pressureTendency.characteristic == PressureCharacteristic.Steady)</ID>
-    <ID>MaxLineLength:Interpolation.kt$Interpolation$*</ID>
-    <ID>MaxLineLength:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$factors.precipitationAnnualMean &lt; 5 * factors.precipitationThreshold -&gt; KoppenGeigerSeasonalPrecipitationPattern.Desert</ID>
-    <ID>MaxLineLength:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$factors.precipitationMin &gt;= 100 - factors.precipitationAnnualMean / 25 -&gt; KoppenGeigerSeasonalPrecipitationPattern.Monsoon</ID>
-    <ID>MaxLineLength:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$factors.precipitationSummerMin &lt; 40 &amp;&amp; factors.precipitationSummerMin &lt; factors.precipitationWinterMax / 3 -&gt; KoppenGeigerSeasonalPrecipitationPattern.DrySummer</ID>
-    <ID>MaxLineLength:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$factors.precipitationWinterMin &lt; factors.precipitationSummerMax / 10 -&gt; KoppenGeigerSeasonalPrecipitationPattern.DryWinter</ID>
-    <ID>MaxLineLength:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$require(Month.entries.all { precipitation.contains(it) }) { "A precipitation reading is required for each month" }</ID>
-    <ID>MaxLineLength:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier$require(precipitation.values.none { !it.value.isFinite() || it.value &lt; 0 }) { "One or more precipitation readings are invalid" }</ID>
-    <ID>MaxLineLength:LocalNewtonInterpolator.kt$LocalNewtonInterpolator$* A newton interpolator that only uses the points surrounding the x to interpolate rather than the points from the beginning.</ID>
-    <ID>MaxLineLength:LoessFilter2D.kt$LoessFilter2D$// Note: This has essentially the same logic as LoessFilter, except there are a few performance optimizations here for the 2D case</ID>
-    <ID>MaxLineLength:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$"Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${this.output}"</ID>
-    <ID>MaxLineLength:LongitudinalNutation.kt$LongitudinalNutation$nutation += (row[5] + row[6] * T) * sinDegrees(row[0] * X0 + row[1] * X1 + row[2] * X2 + row[3] * X3 + row[4] * X4)</ID>
-    <ID>MaxLineLength:LowPressureLaterPredictor.kt$LowPressureLaterPredictor$return (factors.weatherFront == WeatherFront.Warm &amp;&amp; factors.pressureSystem != PressureSystem.High) || (factors.pressureSystem == PressureSystem.Low &amp;&amp; factors.pressureTendency.characteristic == PressureCharacteristic.Steady)</ID>
-    <ID>MaxLineLength:Meteorology.kt$Meteorology$*</ID>
-    <ID>MaxLineLength:Meteorology.kt$Meteorology$c1 + c2 * temperature + c3 * relativeHumidity + c4 * temperature * relativeHumidity + c5 * temperature * temperature + c6 * relativeHumidity * relativeHumidity + c7 * temperature * temperature * relativeHumidity + c8 * temperature * relativeHumidity * relativeHumidity + c9 * temperature * temperature * relativeHumidity * relativeHumidity</ID>
-    <ID>MaxLineLength:MultiTrigger.kt$MultiTrigger$class</ID>
-    <ID>MaxLineLength:NeuralNetwork.kt$NeuralNetwork$"Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${layers.first().inputSize}"</ID>
-    <ID>MaxLineLength:NeuralNetwork.kt$NeuralNetwork$"Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${layers.last().outputSize}"</ID>
-    <ID>MaxLineLength:NeuralNetwork.kt$NeuralNetwork$if</ID>
-    <ID>MaxLineLength:NeuralNetwork.kt$NeuralNetwork$throw Exception("Layer with output of ${it.first.outputSize} can't connect to layer with input of ${it.second.inputSize}")</ID>
-    <ID>MaxLineLength:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$// Get today's times (at noon) - this is needed around DST changes in the UK (I'm not 100% sure why - seems to occur when getting the UT 0)</ID>
-    <ID>MaxLineLength:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$private</ID>
-    <ID>MaxLineLength:Oceanography.kt$Oceanography$*</ID>
-    <ID>MaxLineLength:Optics.kt$Optics$1 / (cx2 * fy2 - 2 * cx * fy2 * point.x + cy2 * fx2 - 2 * cy * fx2 * point.y + fx2 * fy2 + fx2 * y2 + fy2 * x2)</ID>
-    <ID>MaxLineLength:Optics.kt$Optics$normalizedX * radialDistortion + (p1 * (rSquared + 2 * normalizedX * normalizedX) + 2 * p2 * normalizedX * normalizedY) * sharedTangentialDistortion</ID>
-    <ID>MaxLineLength:Optics.kt$Optics$normalizedY * radialDistortion + (2 * p1 * normalizedX * normalizedY + p2 * (rSquared + 2 * normalizedY * normalizedY)) * sharedTangentialDistortion</ID>
-    <ID>MaxLineLength:OrbitalMath.kt$OrbitalMath$normalizeAngle(2 * atan(sqrt((1 + eccentricity) / (1 - eccentricity)) * tanDegrees(eccentricAnomaly / 2)).toDegrees())</ID>
-    <ID>MaxLineLength:OvercastLaterPredictor.kt$OvercastLaterPredictor$factors.cloudReadingCurrent != null &amp;&amp; (factors.cloudReadingCurrent.value == null || factors.cloudReadingCurrent.value in ForecastHelper.overcastClouds)</ID>
-    <ID>MaxLineLength:OvercastLaterPredictor.kt$OvercastLaterPredictor$return factors.weatherFront == WeatherFront.Warm &amp;&amp; factors.pressureSystem != PressureSystem.High || (hasCurrentCloudConditions &amp;&amp; factors.pressureSystem == PressureSystem.Low &amp;&amp; factors.pressureTendency.characteristic == PressureCharacteristic.Steady)</ID>
-    <ID>MaxLineLength:OvercastPredicator.kt$OvercastPredicator$return factors.cloudReadingCurrent == null &amp;&amp; factors.pressureSystem == PressureSystem.Low &amp;&amp; (factors.pressureTendency.characteristic == PressureCharacteristic.Steady || factors.pressureTendency.characteristic.isFalling)</ID>
-    <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$earthPosition.second</ID>
-    <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude)</ID>
-    <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * sinDegrees(earthPosition.first.eclipticLongitude - longitudeAdjustment)</ID>
-    <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$planetPosition.second * cosDegrees(planetPosition.first.eclipticLatitude) * tanDegrees(planetPosition.first.eclipticLatitude)</ID>
-    <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$sinDegrees(planetPosition.first.eclipticLongitude - planet.eclipticLongitudeAscendingNodeEpoch)</ID>
-    <ID>MaxLineLength:PlanetLocator.kt$PlanetLocator$square(earthPosition.second) + square(planetPosition.second)</ID>
-    <ID>MaxLineLength:PlateSolver.kt$PlateSolver$if</ID>
-    <ID>MaxLineLength:PrecipitationPredictor.kt$PrecipitationPredictor$return (factors.weatherFront == WeatherFront.Warm || factors.doCloudsIndicateWeatherFront) &amp;&amp; !factors.pressureTendency.characteristic.isRising</ID>
-    <ID>MaxLineLength:SolarEclipseCalculator.kt$SolarEclipseCalculator$*</ID>
-    <ID>MaxLineLength:SolarEclipseCalculator.kt$SolarEclipseCalculator$// The sun is larger than the moon, and the moon is completely contained in the sun disk (sun is partially obscured)</ID>
-    <ID>MaxLineLength:SphericalHarmonics.kt$/* * Copyright (C) 2009 The Android Open Source Project * * Licensed under the Apache License, Version 2.0 (the "License"); * you may not use this file except in compliance with the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the License for the specific language governing permissions and * limitations under the License. * * This file was heavily modified by Kyle Corry. Convert to Kotlin, extracted from GeomagneticField.java, updated to support scalars. */</ID>
-    <ID>MaxLineLength:SphericalHarmonics.kt$SphericalHarmonics$crossinline calculator: (yearsSinceBase: Float, legendre: LegendreTable, relativeRadiusPower: FloatArray, cosMLon: FloatArray, sinMLon: FloatArray, gdLatitudeRad: Float, mGcLatitudeRad: Float) -&gt; T</ID>
-    <ID>MaxLineLength:SphericalHarmonics.kt$SphericalHarmonics$gcY += relativeRadiusPower[n + 2] * m * (g * sinMLon[m] - h * cosMLon[m]) * legendre.mP[n][m] * schmidtQuasiNormFactors[n][m] * inverseCosLatitude</ID>
-    <ID>MaxLineLength:StarLocator.kt$StarLocator$cosDegrees(value3) * cosDegrees(declination) * cosDegrees(rightAscension + value1)</ID>
-    <ID>MaxLineLength:StarLocator.kt$StarLocator$sinDegrees(value3) * cosDegrees(declination) * cosDegrees(rightAscension + value1)</ID>
-    <ID>MaxLineLength:Statistics.kt$Statistics$* Calculates the root mean square errors between the datasets. Actual and predicted must correspond 1-1 with eachother.</ID>
-    <ID>MaxLineLength:Statistics.kt$Statistics$* Calculates the sum of squared errors between the datasets. Actual and predicted must correspond 1-1 with eachother.</ID>
-    <ID>MaxLineLength:StormPredictor.kt$StormPredictor$return factors.pressureTendency.characteristic.isFalling &amp;&amp; factors.pressureTendency.amount.absoluteValue &gt;= pressureTendencyStormThreshold.absoluteValue</ID>
-    <ID>MaxLineLength:TemperatureTrigger.kt$TemperatureTrigger$private val triggerType: TemperatureTriggerType = if (above) TemperatureTriggerType.High else TemperatureTriggerType.Low</ID>
-    <ID>MaxLineLength:Trigonometry.kt$Trigonometry$*</ID>
-    <ID>MaxLineLength:WindPredictor.kt$WindPredictor$return factors.pressureTendency.characteristic.isRapid || (factors.weatherFrontFromCloudsOnly == WeatherFront.Cold &amp;&amp; !factors.pressureTendency.characteristic.isRising)</ID>
-    <ID>MaxLineLength:ZambrettiForecaster.kt$ZambrettiForecaster$// TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)</ID>
     <ID>MemberNameEqualsClassName:MarchingSquares.kt$MarchingSquares$private fun &lt;T&gt; marchingSquares( square: List&lt;Pair&lt;T, Float&gt;&gt;, threshold: Float, interpolator: (Float, T, T) -&gt; T ): List&lt;IsolineSegment&lt;T&gt;&gt;</ID>
     <ID>MemberNameEqualsClassName:Speed.kt$Speed$val speed: Float get() = measureValue(measure)</ID>
     <ID>NestedBlockDepth:Ecology.kt$Ecology$fun getLifecycleEventDates( events: List&lt;LifecycleEvent&gt;, dateRange: Range&lt;LocalDate&gt;, dayLengthProvider: (LocalDate) -&gt; Duration, temperatureProvider: (LocalDate) -&gt; Range&lt;Temperature&gt;, ): List&lt;Pair&lt;LocalDate, LifecycleEvent&gt;&gt;</ID>
@@ -217,8 +145,8 @@
     <ID>TooGenericExceptionCaught:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
     <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e2: Exception</ID>
     <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception( "Layer with output of ${it.first.outputSize} can't connect to layer with " + "input of ${it.second.inputSize}" )</ID>
     <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Bias matrix for layer $index must be the same size")</ID>
-    <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Layer with output of ${it.first.outputSize} can't connect to layer with input of ${it.second.inputSize}")</ID>
     <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Weight matrix for layer $index must be the same size")</ID>
     <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Weights and bias lists must be same size as layers")</ID>
     <ID>TooGenericExceptionThrown:UTMCoordinateFormat.kt$UTMCoordinateFormat$throw Exception()</ID>
@@ -290,8 +218,8 @@
     <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$var F: Double</ID>
     <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$var T: Double</ID>
     <ID>VariableNaming:StarLocator.kt$StarLocator$val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)</ID>
-    <ID>VariableNaming:StarLocator.kt$StarLocator$val B = cosDegrees(value3) * cosDegrees(declination) * cosDegrees(rightAscension + value1) - sinDegrees(value3) * sinDegrees( declination )</ID>
-    <ID>VariableNaming:StarLocator.kt$StarLocator$val C = sinDegrees(value3) * cosDegrees(declination) * cosDegrees(rightAscension + value1) + cosDegrees(value3) * sinDegrees( declination )</ID>
+    <ID>VariableNaming:StarLocator.kt$StarLocator$val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)</ID>
+    <ID>VariableNaming:StarLocator.kt$StarLocator$val C = sinDegrees(value3) * cosDecCosRA + cosDegrees(value3) * sinDegrees(declination)</ID>
     <ID>VariableNaming:Sun.kt$Sun$val C = equationOfCenter(T)</ID>
     <ID>VariableNaming:Sun.kt$Sun$val L = getGeometricLongitude(T)</ID>
     <ID>VariableNaming:Sun.kt$Sun$val M = getMeanAnomaly(T)</ID>

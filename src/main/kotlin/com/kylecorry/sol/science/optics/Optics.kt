@@ -81,7 +81,15 @@ object Optics {
         val y2 = point.y * point.y
 
         var z = distance * fx * fy * sqrt(
-            1 / (cx2 * fy2 - 2 * cx * fy2 * point.x + cy2 * fx2 - 2 * cy * fx2 * point.y + fx2 * fy2 + fx2 * y2 + fy2 * x2)
+            1 / (
+                cx2 * fy2 -
+                    2 * cx * fy2 * point.x +
+                    cy2 * fx2 -
+                    2 * cy * fx2 * point.y +
+                    fx2 * fy2 +
+                    fx2 * y2 +
+                    fy2 * x2
+                )
         )
         // This can be plus or minus, but given it is visible, it is probably positive
         if (z < 0) {
@@ -168,9 +176,17 @@ object Optics {
         val p2 = tangentialDistortionCoefficients.getOrNull(1) ?: 0f
 
         val xCorrection =
-            normalizedX * radialDistortion + (p1 * (rSquared + 2 * normalizedX * normalizedX) + 2 * p2 * normalizedX * normalizedY) * sharedTangentialDistortion
+            normalizedX * radialDistortion +
+                (
+                    p1 * (rSquared + 2 * normalizedX * normalizedX) +
+                        2 * p2 * normalizedX * normalizedY
+                    ) * sharedTangentialDistortion
         val yCorrection =
-            normalizedY * radialDistortion + (2 * p1 * normalizedX * normalizedY + p2 * (rSquared + 2 * normalizedY * normalizedY)) * sharedTangentialDistortion
+            normalizedY * radialDistortion +
+                (
+                    2 * p1 * normalizedX * normalizedY +
+                        p2 * (rSquared + 2 * normalizedY * normalizedY)
+                    ) * sharedTangentialDistortion
 
         return Vector2(point.x + xCorrection, point.y + yCorrection)
     }

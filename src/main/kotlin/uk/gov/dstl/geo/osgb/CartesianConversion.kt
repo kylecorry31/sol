@@ -87,7 +87,9 @@ object CartesianConversion {
             iterations++
         }
 
-        check(delta <= precision) { "Cartesian to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations" }
+        check(delta <= precision) {
+            "Cartesian to lat/lon conversion did not converge within $MAX_TO_LAT_LON_ITERATIONS iterations"
+        }
 
         val height = (p / cos(lat)) - v
 

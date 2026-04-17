@@ -123,7 +123,8 @@ object Geology {
 
     /**
      * Calculates the inclination from a unit angle
-     * @param angle The angle, where 0 is the horizon (front), 90 is the sky (above), 180 is the horizon (behind), and 270 is the ground (below)
+     * @param angle The angle, where 0 is the horizon (front), 90 is the sky (above),
+     * 180 is the horizon (behind), and 270 is the ground (below)
      */
     fun getInclination(angle: Float): Float {
         return when (val wrappedAngle = wrap(angle, 0f, 360f)) {

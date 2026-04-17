@@ -39,8 +39,8 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         val moonRadiusInEarthRadii = moonDiameterInEarthRadii / 2
         val umbraRadius = 0.7403 - parameters.umbralConeRadius
 
-        val magnitude =
-            (1.0128 - parameters.umbralConeRadius - parameters.minDistanceFromCenter.absoluteValue) / moonDiameterInEarthRadii
+        val umbralDiff = 1.0128 - parameters.umbralConeRadius - parameters.minDistanceFromCenter.absoluteValue
+        val magnitude = umbralDiff / moonDiameterInEarthRadii
 
         if (magnitude < getMagnitudeThreshold()) {
             return getNextEclipseHelper(

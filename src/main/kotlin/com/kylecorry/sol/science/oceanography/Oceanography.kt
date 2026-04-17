@@ -81,12 +81,18 @@ object Oceanography {
     }
 
     /**
-     * Gets the approximate lunitidal interval for the given high tide time. If the location is provided, this will be the local lunitidal interval.
-     * @param highTideTime The time of the high tide (you can pass in a low tide if you want to calculate the low lunitidal interval)
-     * @param location The location of the tide. If not provided, the interval will be calculated for the prime meridian.
+     * Gets the approximate lunitidal interval for the given high tide time.
+     * If the location is provided, this will be the local lunitidal interval.
+     * @param highTideTime The time of the high tide
+     *   (you can pass in a low tide to calculate the low lunitidal interval)
+     * @param location The location of the tide.
+     *   If not provided, the interval will be calculated for the prime meridian.
      * @return The lunitidal interval or null if it could not be calculated
      */
-    fun getLunitidalInterval(highTideTime: ZonedDateTime, location: Coordinate = Coordinate.zero): Duration? {
+    fun getLunitidalInterval(
+        highTideTime: ZonedDateTime,
+        location: Coordinate = Coordinate.zero
+    ): Duration? {
         // Step 1: Get the time of the moon transit prior to the high tide
         val over = getLastMoonTransit(location, highTideTime)
         val under = getLastMoonUnderfootTime(location, highTideTime)
@@ -103,9 +109,12 @@ object Oceanography {
     }
 
     /**
-     * Gets the approximate mean lunitidal interval for the given high tide times. If the location is provided, this will be the local lunitidal interval.
-     * @param highTideTimes The times of the high tides (you can pass in low tides if you want to calculate the low lunitidal interval)
-     * @param location The location of the tide. If not provided, the interval will be calculated for the prime meridian.
+     * Gets the approximate mean lunitidal interval for the given high tide times.
+     * If the location is provided, this will be the local lunitidal interval.
+     * @param highTideTimes The times of the high tides
+     *   (you can pass in low tides to calculate the low lunitidal interval)
+     * @param location The location of the tide.
+     *   If not provided, the interval will be calculated for the prime meridian.
      * @return The mean lunitidal interval or null if it could not be calculated
      */
     fun getMeanLunitidalInterval(
@@ -119,7 +128,9 @@ object Oceanography {
         }
 
         var averageDuration = Duration.ZERO
-        val needsCorrection = intervals.any { it > Duration.ofHours(8) } && intervals.any { it < Duration.ofHours(4) }
+        val needsCorrection =
+            intervals.any { it > Duration.ofHours(8) } &&
+                intervals.any { it < Duration.ofHours(4) }
 
         for (i in intervals.indices) {
             var interval = intervals[i]

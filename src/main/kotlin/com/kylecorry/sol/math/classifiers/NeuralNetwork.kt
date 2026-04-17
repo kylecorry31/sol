@@ -28,7 +28,10 @@ class NeuralNetwork(
     init {
         layers.zipWithNext().forEach {
             if (it.first.outputSize != it.second.inputSize) {
-                throw Exception("Layer with output of ${it.first.outputSize} can't connect to layer with input of ${it.second.inputSize}")
+                throw Exception(
+                    "Layer with output of ${it.first.outputSize} can't connect to layer with " +
+                        "input of ${it.second.inputSize}"
+                )
             }
         }
         weights?.let { load(it) }
@@ -91,11 +94,13 @@ class NeuralNetwork(
         val outputSize = output.first().rows() to output.first().columns()
 
         require(inputSize.second == layers.first().inputSize) {
-            "Input of dimension ${inputSize.second} can't be fed to network with input dimension of ${layers.first().inputSize}"
+            "Input of dimension ${inputSize.second} can't be fed to network with input " +
+                "dimension of ${layers.first().inputSize}"
         }
 
         require(outputSize.second == layers.last().outputSize) {
-            "Output of dimension ${inputSize.second} can't be produced by network with output dimension of ${layers.last().outputSize}"
+            "Output of dimension ${inputSize.second} can't be produced by network with " +
+                "output dimension of ${layers.last().outputSize}"
         }
 
         require(input.none { it.rows() != inputSize.first || it.columns() != inputSize.second }) {
@@ -158,10 +163,16 @@ class NeuralNetwork(
             throw Exception("Weights and bias lists must be same size as layers")
         }
         layers.forEachIndexed { index, layer ->
-            if (layer.weights.columns() != weights[index].weights.columns() || layer.weights.rows() != weights[index].weights.rows()) {
+            if (
+                layer.weights.columns() != weights[index].weights.columns() ||
+                layer.weights.rows() != weights[index].weights.rows()
+            ) {
                 throw Exception("Weight matrix for layer $index must be the same size")
             }
-            if (layer.bias.columns() != weights[index].bias.columns() || layer.bias.rows() != weights[index].bias.rows()) {
+            if (
+                layer.bias.columns() != weights[index].bias.columns() ||
+                layer.bias.rows() != weights[index].bias.rows()
+            ) {
                 throw Exception("Bias matrix for layer $index must be the same size")
             }
             layer.weights = weights[index].weights

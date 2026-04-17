@@ -66,7 +66,8 @@ internal object OrbitalMath {
     ): Double {
         return if (useEccentricAnomaly) {
             val eccentricAnomaly = estimateEccentricAnomaly(eccentricity, meanAnomaly)
-            normalizeAngle(2 * atan(sqrt((1 + eccentricity) / (1 - eccentricity)) * tanDegrees(eccentricAnomaly / 2)).toDegrees())
+            val ratio = sqrt((1 + eccentricity) / (1 - eccentricity))
+            normalizeAngle(2 * atan(ratio * tanDegrees(eccentricAnomaly / 2)).toDegrees())
         } else {
             getTrueAnomaly(
                 meanAnomaly,

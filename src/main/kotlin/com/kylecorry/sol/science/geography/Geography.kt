@@ -300,7 +300,8 @@ object Geography {
      * Based on http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf using the "Inverse Formula" (section 4).
      * Originally from the Android Open Source Project (Apache 2.0), modified by Kyle Corry in 2021.
      *
-     * @return a 3 element float array of the following [distance (m), initial bearing (true north), final bearing (true north)]
+     * @return a 3 element float array of the following
+     * [distance (m), initial bearing (true north), final bearing (true north)]
      */
     fun vincenty(
         location1: Coordinate,
@@ -395,7 +396,8 @@ object Geography {
      * Computes the distance and bearing between two locations using the Haversine formula.
      * Adapted from https://www.movable-type.co.uk/scripts/latlong.html
      *
-     * @return a 3 element float array of the following [distance (m), initial bearing (true north), final bearing (true north)]
+     * @return a 3 element float array of the following
+     * [distance (m), initial bearing (true north), final bearing (true north)]
      */
     fun haversine(
         location1: Coordinate,
@@ -465,12 +467,14 @@ object Geography {
     }
 
     /**
-     * Triangulate a coordinate using two known coordinates and the bearings from the unknown coordinate to the known coordinates.
+     * Triangulate a coordinate using two known coordinates and the bearings from the unknown
+     * coordinate to the known coordinates.
      * Use this if you want to find your location by taking readings to two known locations.
      * @param referenceA The first known coordinate
      * @param selfToReferenceBearingA The bearing from the unknown coordinate to the first known coordinate (True North)
      * @param referenceB The second known coordinate
-     * @param selfToReferenceBearingB The bearing from the unknown coordinate to the second known coordinate (True North)
+     * @param selfToReferenceBearingB The bearing from the unknown coordinate to the second known
+     * coordinate (True North)
      * @return The triangulated coordinate, if possible
      */
     fun triangulateSelf(
@@ -526,7 +530,8 @@ object Geography {
             ) * cosDegrees(selfToReferenceBearingA.inverse().value.toDouble())
         )
         val deltaP3Long = atan2(
-            sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) * sin(angularDist13) * cosDegrees(referenceA.latitude),
+            sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) *
+                sin(angularDist13) * cosDegrees(referenceA.latitude),
             cos(angularDist13) - sinDegrees(referenceA.latitude) * sin(p3Lat)
         )
         val p3Lng = referenceA.longitude.toRadians() + deltaP3Long
@@ -538,12 +543,15 @@ object Geography {
     }
 
     /**
-     * Triangulate a coordinate using two known coordinates and the bearings from the known coordinates to the unknown coordinate.
+     * Triangulate a coordinate using two known coordinates and the bearings from the known
+     * coordinates to the unknown coordinate.
      * Use this if you want to find the location of a destination by taking readings at two known locations.
      * @param referenceA The first known coordinate
-     * @param referenceAToDestinationBearing The bearing from the first known coordinate to the unknown coordinate (True North)
+     * @param referenceAToDestinationBearing The bearing from the first known coordinate to the
+     * unknown coordinate (True North)
      * @param referenceB The second known coordinate
-     * @param referenceBToDestinationBearing The bearing from the second known coordinate to the unknown coordinate (True North)
+     * @param referenceBToDestinationBearing The bearing from the second known coordinate to the
+     * unknown coordinate (True North)
      * @return The triangulated coordinate, if possible
      */
     fun triangulateDestination(

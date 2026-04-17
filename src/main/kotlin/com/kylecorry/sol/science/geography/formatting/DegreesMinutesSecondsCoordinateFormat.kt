@@ -20,7 +20,10 @@ class DegreesMinutesSecondsCoordinateFormat(private val precision: Int = 1) : Co
 
     override fun parse(text: String): Coordinate? {
         val dmsRegex =
-            Regex("^(\\d+)°\\s*(\\d+)[′']\\s*(\\d+(?:[.,]\\d+)?)[″\"]\\s*([nNsS])[,\\s]+(\\d+)°\\s*(\\d+)[′']\\s*(\\d+(?:[.,]\\d+)?)[″\"]\\s*([wWeE])$")
+            Regex(
+                "^(\\d+)°\\s*(\\d+)[′']\\s*(\\d+(?:[.,]\\d+)?)[″\"]\\s*([nNsS])[,\\s]+" +
+                    "(\\d+)°\\s*(\\d+)[′']\\s*(\\d+(?:[.,]\\d+)?)[″\"]\\s*([wWeE])$"
+            )
         val matches = dmsRegex.find(text.trim()) ?: return null
 
         var latitudeDecimal = 0.0

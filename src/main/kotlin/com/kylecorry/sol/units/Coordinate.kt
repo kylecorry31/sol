@@ -23,7 +23,8 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 
 /**
- * A geographic coordinate with precision down to about 1cm (7 decimal places). Latitude is clamped to the range [-90, 90] and longitude is wrapped to the range [-180, 180].
+ * A geographic coordinate with precision down to about 1cm (7 decimal places).
+ * Latitude is clamped to the range [-90, 90] and longitude is wrapped to [-180, 180].
  * If unclamped or more precise values are needeed, use the [DoubleCoordinate] class instead.
  */
 @JvmInline

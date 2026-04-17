@@ -21,7 +21,8 @@ internal object AzimuthCalculator {
         // Azimuth
         // See https://math.stackexchange.com/questions/381649/whats-the-best-3d-angular-co-ordinate-system-for-working-with-smartfone-apps
         // North and East are perpendicular and are rotated around the down vector
-        // Therefore their orientation compared to the forward facing vector is the azimuth (acting as sine/cosine on the unit circle)
+        // Therefore their orientation compared to the forward facing vector is the azimuth
+        // (acting as sine/cosine on the unit circle)
         // Sine = east.x + north.y
         // Cosine = east.y - north.x (north vector is flipped around the y axis when compared to east)
 

@@ -145,8 +145,9 @@ object Geometry {
             return point.distanceTo(line.start)
         }
 
-        val numerator =
-            abs((line.end.x - line.start.x) * (line.start.y - point.y) - (line.start.x - point.x) * (line.end.y - line.start.y))
+        val dx = line.end.x - line.start.x
+        val dy = line.end.y - line.start.y
+        val numerator = abs(dx * (line.start.y - point.y) - (line.start.x - point.x) * dy)
         val denominator = line.length()
 
         return numerator / denominator

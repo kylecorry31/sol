@@ -3,7 +3,8 @@ package com.kylecorry.sol.math.interpolation
 import com.kylecorry.sol.math.Vector2
 
 /**
- * A newton interpolator that only uses the points surrounding the x to interpolate rather than the points from the beginning.
+ * A newton interpolator that only uses the points surrounding the x to interpolate
+ * rather than the points from the beginning.
  */
 class LocalNewtonInterpolator(points: List<Vector2>, private val order: Int) : Interpolator {
     private val sortedPoints = points.sortedBy { it.x }

@@ -44,7 +44,9 @@ internal class PlateSolver(
             var mostConfidentMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
             for (possibleMatch in possibleMatches) {
                 val confidence = possibleMatch.second
-                if (matches.none { it.star == possibleMatch.first.first } || confidence > matches.first { it.star == possibleMatch.first.first }.confidence) {
+                val existingConfidence =
+                    matches.firstOrNull { it.star == possibleMatch.first.first }?.confidence
+                if (existingConfidence == null || confidence > existingConfidence) {
                     val existing = matches.filter { it.star == possibleMatch.first.first }
                     matches.removeAll(existing)
                     queue.addAll(readingsQuads.filter { q -> existing.any { q.first == it.reading } })

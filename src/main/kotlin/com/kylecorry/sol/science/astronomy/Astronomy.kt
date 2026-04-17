@@ -248,7 +248,8 @@ object Astronomy {
      * @param mode The mode to use for calculating sun times
      * @param withRefraction True to correct for atmospheric refraction
      * @param withParallax True to correct for parallax
-     * @return The range of times the sun is above the horizon or null if it is not above the horizon within approximately a day.
+     * @return The range of times the sun is above the horizon or null if it is not above the horizon
+     * within approximately a day.
      */
     fun getSunAboveHorizonTimes(
         location: Coordinate,
@@ -378,7 +379,8 @@ object Astronomy {
      * @param nextRiseOffset The duration before the next rise to switch to the next day's times
      * @param withRefraction True to correct for atmospheric refraction
      * @param withParallax True to correct for parallax
-     * @return The range of times the moon is above the horizon or null if it is not above the horizon within approximately a day.
+     * @return The range of times the moon is above the horizon or null if it is not above the horizon
+     * within approximately a day.
      */
     fun getMoonAboveHorizonTimes(
         location: Coordinate,
@@ -413,9 +415,12 @@ object Astronomy {
     fun getSeason(location: Coordinate, date: ZonedDateTime): Season {
         val sl = wrap(getSolarLongitude(date), 0f, 360f)
         return when {
-            sl >= OrbitalPosition.WinterSolstice.solarLongitude -> if (location.isNorthernHemisphere) Season.Winter else Season.Summer
-            sl >= OrbitalPosition.AutumnalEquinox.solarLongitude -> if (location.isNorthernHemisphere) Season.Fall else Season.Spring
-            sl >= OrbitalPosition.SummerSolstice.solarLongitude -> if (location.isNorthernHemisphere) Season.Summer else Season.Winter
+            sl >= OrbitalPosition.WinterSolstice.solarLongitude ->
+                if (location.isNorthernHemisphere) Season.Winter else Season.Summer
+            sl >= OrbitalPosition.AutumnalEquinox.solarLongitude ->
+                if (location.isNorthernHemisphere) Season.Fall else Season.Spring
+            sl >= OrbitalPosition.SummerSolstice.solarLongitude ->
+                if (location.isNorthernHemisphere) Season.Summer else Season.Winter
             else -> if (location.isNorthernHemisphere) Season.Spring else Season.Fall
         }
     }
@@ -652,7 +657,8 @@ object Astronomy {
         location: Coordinate,
         date: ZonedDateTime
     ): RiseSetTransitTimes {
-        // Purposefully use newton's method here to get the rise and set times, since missing rise/set/transit times are expected
+        // Purposefully use newton's method here to get the rise and set times,
+        // since missing rise/set/transit times are expected
         return NewtonsRiseSetTransitTimeCalculator().calculate(
             MeteorShowerLocator(shower),
             date,
