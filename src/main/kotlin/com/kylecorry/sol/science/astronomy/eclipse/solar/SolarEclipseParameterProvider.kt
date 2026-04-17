@@ -71,7 +71,7 @@ internal class SolarEclipseParameterProvider {
         val A1 = 299.77 + 0.107408 * k - 0.009173 * power(T, 2)
 
         var correction = 0.0
-        val table = table54_1()
+        val table = table54Part1()
         for (row in table) {
             correction += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * sinDegrees(
                 row[2] * M + row[3] * MPrime + row[4] * F1 + row[5] * A1 + row[6] * omega
@@ -81,7 +81,7 @@ internal class SolarEclipseParameterProvider {
         val correctedJD = mean + correction
 
         var p = 0.0
-        val tableP = table54_P()
+        val tableP = table54PTerms()
         for (row in tableP) {
             p += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * sinDegrees(
                 row[2] * M + row[3] * MPrime + row[4] * F1
@@ -89,7 +89,7 @@ internal class SolarEclipseParameterProvider {
         }
 
         var q = 0.0
-        val tableQ = table54_Q()
+        val tableQ = table54QTerms()
         for (row in tableQ) {
             q += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * cosDegrees(
                 row[2] * M + row[3] * MPrime
@@ -123,7 +123,7 @@ internal class SolarEclipseParameterProvider {
         ) + 0.00000000074 * power(T, 4)
     }
 
-    private fun table54_1(): Array<Array<Int>> {
+    private fun table54Part1(): Array<Array<Int>> {
         return arrayOf(
             // [term, E bool, M, Mprime, F prime, A prime, omega]
             arrayOf(-4075, 0, 0, 1, 0, 0, 0),
@@ -145,7 +145,7 @@ internal class SolarEclipseParameterProvider {
         )
     }
 
-    private fun table54_P(): Array<Array<Int>> {
+    private fun table54PTerms(): Array<Array<Int>> {
         return arrayOf(
             // [term, E bool, M, Mprime, F prime]
             arrayOf(2070, 1, 1, 0, 0),
@@ -158,7 +158,7 @@ internal class SolarEclipseParameterProvider {
         )
     }
 
-    private fun table54_Q(): Array<Array<Int>> {
+    private fun table54QTerms(): Array<Array<Int>> {
         return arrayOf(
             // [term, E bool, M, Mprime]
             arrayOf(52207, 0, 0, 0),

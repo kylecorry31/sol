@@ -17,12 +17,6 @@
     <ID>ForbiddenComment:SolarEclipseCalculator.kt$SolarEclipseCalculator$// TODO: Check to see if the eclipse will even be visible on earth</ID>
     <ID>ForbiddenComment:Trigonometry.kt$Trigonometry$// TODO: To get a more accurate range, factor in the phase of the waveforms</ID>
     <ID>ForbiddenComment:ZambrettiForecaster.kt$ZambrettiForecaster$// TODO: Modify this to handle the southern hemisphere wind direction (and maybe factor in the prevailing wind direction)</ID>
-    <ID>FunctionNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun table54_1(): Array&lt;Array&lt;Int&gt;&gt;</ID>
-    <ID>FunctionNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun table54_P(): Array&lt;Array&lt;Int&gt;&gt;</ID>
-    <ID>FunctionNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun table54_Q(): Array&lt;Array&lt;Int&gt;&gt;</ID>
-    <ID>FunctionNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun table54_1(): Array&lt;Array&lt;Int&gt;&gt;</ID>
-    <ID>FunctionNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun table54_P(): Array&lt;Array&lt;Int&gt;&gt;</ID>
-    <ID>FunctionNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun table54_Q(): Array&lt;Array&lt;Int&gt;&gt;</ID>
     <ID>FunctionParameterNaming:EclipticObliquity.kt$EclipticObliquity$T: Double</ID>
     <ID>FunctionParameterNaming:Sun.kt$Sun$T: Double</ID>
     <ID>ImplicitDefaultLocale:NationalGrid.kt$NationalGrid$String.format("%s %05.0f %05.0f", gs.reference, offset[0], offset[1])</ID>
