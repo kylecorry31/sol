@@ -133,22 +133,13 @@
     <ID>SwallowedException:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$e: Exception</ID>
     <ID>SwallowedException:TextExtensions.kt$e: Exception</ID>
     <ID>SwallowedException:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
-    <ID>SwallowedException:UTMCoordinateFormat.kt$UTMCoordinateFormat$e2: Exception</ID>
     <ID>SwallowedException:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
-    <ID>ThrowingExceptionsWithoutMessageOrCause:UTMCoordinateFormat.kt$UTMCoordinateFormat$Exception()</ID>
     <ID>ThrowsCount:NationalGrid.kt$NationalGrid$fun fromNationalGrid(ng: String): DoubleArray</ID>
-    <ID>ThrowsCount:NeuralNetwork.kt$NeuralNetwork$fun load(weights: List&lt;LayerWeights&gt;)</ID>
     <ID>TooGenericExceptionCaught:MGRSCoordinateFormat.kt$MGRSCoordinateFormat$e: Exception</ID>
     <ID>TooGenericExceptionCaught:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$e: Exception</ID>
     <ID>TooGenericExceptionCaught:TextExtensions.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e2: Exception</ID>
     <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
-    <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception( "Layer with output of ${it.first.outputSize} can't connect to layer with " + "input of ${it.second.inputSize}" )</ID>
-    <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Bias matrix for layer $index must be the same size")</ID>
-    <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Weight matrix for layer $index must be the same size")</ID>
-    <ID>TooGenericExceptionThrown:NeuralNetwork.kt$NeuralNetwork$throw Exception("Weights and bias lists must be same size as layers")</ID>
-    <ID>TooGenericExceptionThrown:UTMCoordinateFormat.kt$UTMCoordinateFormat$throw Exception()</ID>
     <ID>TooManyFunctions:Arithmetic.kt$Arithmetic</ID>
     <ID>TooManyFunctions:Astronomy.kt$Astronomy</ID>
     <ID>TooManyFunctions:CoordinateBounds.kt$CoordinateBounds : IGeoArea</ID>

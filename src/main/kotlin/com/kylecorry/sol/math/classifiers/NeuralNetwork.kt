@@ -27,11 +27,9 @@ class NeuralNetwork(
 
     init {
         layers.zipWithNext().forEach {
-            if (it.first.outputSize != it.second.inputSize) {
-                throw Exception(
-                    "Layer with output of ${it.first.outputSize} can't connect to layer with " +
-                        "input of ${it.second.inputSize}"
-                )
+            require(it.first.outputSize == it.second.inputSize) {
+                "Layer with output of ${it.first.outputSize} can't connect to layer with " +
+                    "input of ${it.second.inputSize}"
             }
         }
         weights?.let { load(it) }
@@ -159,21 +157,21 @@ class NeuralNetwork(
     }
 
     fun load(weights: List<LayerWeights>) {
-        if (weights.size != layers.size) {
-            throw Exception("Weights and bias lists must be same size as layers")
+        require(weights.size == layers.size) {
+            "Weights and bias lists must be same size as layers"
         }
         layers.forEachIndexed { index, layer ->
-            if (
-                layer.weights.columns() != weights[index].weights.columns() ||
-                layer.weights.rows() != weights[index].weights.rows()
+            require(
+                layer.weights.columns() == weights[index].weights.columns() &&
+                    layer.weights.rows() == weights[index].weights.rows()
             ) {
-                throw Exception("Weight matrix for layer $index must be the same size")
+                "Weight matrix for layer $index must be the same size"
             }
-            if (
-                layer.bias.columns() != weights[index].bias.columns() ||
-                layer.bias.rows() != weights[index].bias.rows()
+            require(
+                layer.bias.columns() == weights[index].bias.columns() &&
+                    layer.bias.rows() == weights[index].bias.rows()
             ) {
-                throw Exception("Bias matrix for layer $index must be the same size")
+                "Bias matrix for layer $index must be the same size"
             }
             layer.weights = weights[index].weights
             layer.bias = weights[index].bias

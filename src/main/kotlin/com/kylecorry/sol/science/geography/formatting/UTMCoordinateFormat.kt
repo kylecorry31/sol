@@ -112,8 +112,7 @@ class UTMCoordinateFormat(private val precision: Int = 7) : CoordinateFormat {
         val polarLetters = listOf('A', 'B', 'Y', 'Z')
         return try {
             if (polarLetters.contains(letter.uppercaseChar())) {
-                // Get it into the catch block
-                throw Exception()
+                return fromUPS(zone, letter, easting, northing)
             }
             val latLng = UTMCoord.locationFromUTMCoord(
                 zone,
@@ -123,20 +122,29 @@ class UTMCoordinateFormat(private val precision: Int = 7) : CoordinateFormat {
             )
             Coordinate(latLng.latitude.degrees, latLng.longitude.degrees)
         } catch (e: Exception) {
-            val letters = listOf('A', 'B', 'Y', 'Z')
-            if (zone != 0 || !letters.contains(letter.uppercaseChar())) {
-                return null
-            }
-            try {
-                val latLng = UPSCoord.fromUPS(
-                    if (letter.uppercaseChar() <= 'M') AVKey.SOUTH else AVKey.NORTH,
-                    easting,
-                    northing
-                )
-                Coordinate(latLng.latitude.degrees, latLng.longitude.degrees)
-            } catch (e2: Exception) {
-                null
-            }
+            fromUPS(zone, letter, easting, northing)
+        }
+    }
+
+    private fun fromUPS(
+        zone: Int,
+        letter: Char,
+        easting: Double,
+        northing: Double
+    ): Coordinate? {
+        val letters = listOf('A', 'B', 'Y', 'Z')
+        if (zone != 0 || !letters.contains(letter.uppercaseChar())) {
+            return null
+        }
+        return try {
+            val latLng = UPSCoord.fromUPS(
+                if (letter.uppercaseChar() <= 'M') AVKey.SOUTH else AVKey.NORTH,
+                easting,
+                northing
+            )
+            Coordinate(latLng.latitude.degrees, latLng.longitude.degrees)
+        } catch (e: Exception) {
+            null
         }
     }
 }
