@@ -97,8 +97,8 @@ class CoordinateFormatterTest {
 
     @ParameterizedTest
     @MethodSource("provideOSGB")
-    fun toOSGB(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {
-        assertEquals(expected, OSGBCoordinateFormat(precision).toString(coordinate))
+    fun toOSGB(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate) {
+        assertEquals(expected, OSGBCoordinateFormat().toString(coordinate))
     }
 
     @ParameterizedTest
@@ -181,12 +181,12 @@ class CoordinateFormatterTest {
         @JvmStatic
         fun provideOSGB(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038), 5),
-                Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029), 5),
-                Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038), 5),
-                Arguments.of("SK 87290 68571", Coordinate(53.2070530000, -0.6945160000), 5),
-                Arguments.of("TQ 22069 82537", Coordinate(51.5285582, -0.241681), 5),
-                Arguments.of("?", Coordinate(42.1948, -71.6295), 5)
+                Arguments.of("TG 51409 13177", Coordinate(52.657977, 1.716038)),
+                Arguments.of("OR 96706 50582", Coordinate(55.657977, 2.716029)),
+                Arguments.of("ST 49851 22534", Coordinate(51.0, -2.716038)),
+                Arguments.of("SK 87290 68571", Coordinate(53.2070530000, -0.6945160000)),
+                Arguments.of("TQ 22069 82537", Coordinate(51.5285582, -0.241681)),
+                Arguments.of("?", Coordinate(42.1948, -71.6295))
             )
         }
 
