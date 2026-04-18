@@ -126,50 +126,50 @@ internal class LunarEclipseParameterProvider {
         ) + 0.00000000074 * power(julianCenturiesSinceJ2000, 4)
     }
 
-    private fun table54Part1(): Array<Array<Int>> {
+    private fun table54Part1(): Array<IntArray> {
         return arrayOf(
             // [term, E bool, M, Mprime, F prime, A prime, omega]
-            arrayOf(-4065, 0, 0, 1, 0, 0, 0),
-            arrayOf(1727, 1, 1, 0, 0, 0, 0),
-            arrayOf(161, 0, 0, 2, 0, 0, 0),
-            arrayOf(-97, 0, 0, 0, 2, 0, 0),
-            arrayOf(73, 1, -1, 1, 0, 0, 0),
-            arrayOf(-50, 1, 1, 1, 0, 0, 0),
-            arrayOf(-23, 0, 0, 1, -2, 0, 0),
-            arrayOf(21, 1, 2, 0, 0, 0, 0),
-            arrayOf(12, 0, 0, 1, 2, 0, 0),
-            arrayOf(6, 1, 1, 2, 0, 0, 0),
-            arrayOf(-4, 0, 0, 3, 0, 0, 0),
-            arrayOf(-3, 1, 1, 0, 2, 0, 0),
-            arrayOf(3, 0, 0, 0, 0, 1, 0),
-            arrayOf(-2, 1, 1, 0, -2, 0, 0),
-            arrayOf(-2, 1, -1, 2, 0, 0, 0),
-            arrayOf(-2, 0, 0, 0, 0, 0, 1),
+            intArrayOf(-4065, 0, 0, 1, 0, 0, 0),
+            intArrayOf(1727, 1, 1, 0, 0, 0, 0),
+            intArrayOf(161, 0, 0, 2, 0, 0, 0),
+            intArrayOf(-97, 0, 0, 0, 2, 0, 0),
+            intArrayOf(73, 1, -1, 1, 0, 0, 0),
+            intArrayOf(-50, 1, 1, 1, 0, 0, 0),
+            intArrayOf(-23, 0, 0, 1, -2, 0, 0),
+            intArrayOf(21, 1, 2, 0, 0, 0, 0),
+            intArrayOf(12, 0, 0, 1, 2, 0, 0),
+            intArrayOf(6, 1, 1, 2, 0, 0, 0),
+            intArrayOf(-4, 0, 0, 3, 0, 0, 0),
+            intArrayOf(-3, 1, 1, 0, 2, 0, 0),
+            intArrayOf(3, 0, 0, 0, 0, 1, 0),
+            intArrayOf(-2, 1, 1, 0, -2, 0, 0),
+            intArrayOf(-2, 1, -1, 2, 0, 0, 0),
+            intArrayOf(-2, 0, 0, 0, 0, 0, 1),
         )
     }
 
-    private fun table54PTerms(): Array<Array<Int>> {
+    private fun table54PTerms(): Array<IntArray> {
         return arrayOf(
             // [term, E bool, M, Mprime, F prime]
-            arrayOf(2070, 1, 1, 0, 0),
-            arrayOf(24, 1, 2, 0, 0),
-            arrayOf(-392, 0, 0, 1, 0),
-            arrayOf(116, 0, 0, 2, 0),
-            arrayOf(-73, 1, 1, 1, 0),
-            arrayOf(67, 1, -1, 1, 0),
-            arrayOf(118, 0, 0, 0, 2),
+            intArrayOf(2070, 1, 1, 0, 0),
+            intArrayOf(24, 1, 2, 0, 0),
+            intArrayOf(-392, 0, 0, 1, 0),
+            intArrayOf(116, 0, 0, 2, 0),
+            intArrayOf(-73, 1, 1, 1, 0),
+            intArrayOf(67, 1, -1, 1, 0),
+            intArrayOf(118, 0, 0, 0, 2),
         )
     }
 
-    private fun table54QTerms(): Array<Array<Int>> {
+    private fun table54QTerms(): Array<IntArray> {
         return arrayOf(
             // [term, E bool, M, Mprime]
-            arrayOf(52207, 0, 0, 0),
-            arrayOf(-48, 1, 1, 0),
-            arrayOf(20, 1, 2, 0),
-            arrayOf(-3299, 0, 0, 1),
-            arrayOf(-60, 1, 1, 1),
-            arrayOf(41, 1, -1, 1),
+            intArrayOf(52207, 0, 0, 0),
+            intArrayOf(-48, 1, 1, 0),
+            intArrayOf(20, 1, 2, 0),
+            intArrayOf(-3299, 0, 0, 1),
+            intArrayOf(-60, 1, 1, 1),
+            intArrayOf(41, 1, -1, 1),
         )
     }
 

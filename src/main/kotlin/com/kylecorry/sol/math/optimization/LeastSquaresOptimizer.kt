@@ -42,7 +42,7 @@ class LeastSquaresOptimizer {
             }.toFloatArray())
 
             val jacobian = Matrix.create(points.mapIndexed { i, point ->
-                jacobianFn(i, point, guess).toTypedArray()
+                jacobianFn(i, point, guess).toFloatArray()
             }.toTypedArray())
 
             val step = LinearAlgebra.leastSquares(jacobian, f)

@@ -116,9 +116,9 @@ class NeuralNetwork(
             for (n in batches.indices) {
                 totalError = 0f
                 val batch = batches[n].unzip()
-                val inputRow = Matrix.create(batch.first.map { it.getRow(0).toTypedArray() }.toTypedArray()).transpose()
+                val inputRow = Matrix.create(batch.first.map { it.getRow(0) }.toTypedArray()).transpose()
                 val outputRow =
-                    Matrix.create(batch.second.map { it.getRow(0).toTypedArray() }.toTypedArray()).transpose()
+                    Matrix.create(batch.second.map { it.getRow(0) }.toTypedArray()).transpose()
                 val predicted = predict(inputRow)
                 val samples = inputRow.columns()
                 val ones = Matrix.column(values = FloatArray(samples) { 1f })
@@ -199,7 +199,7 @@ class NeuralNetwork(
             fun parse(data: String): LayerWeights {
                 val parsed = data.split("\n").map {
                     val row = it.split(",").mapNotNull { cell -> cell.toFloatOrNull() }
-                    row.take(row.size - 1).toTypedArray() to row.takeLast(1).toTypedArray()
+                    row.take(row.size - 1).toFloatArray() to row.takeLast(1).toFloatArray()
                 }
                 val weights = Matrix.create(parsed.map { it.first }.toTypedArray())
                 val bias = Matrix.create(parsed.map { it.second }.toTypedArray())

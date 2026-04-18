@@ -10,10 +10,10 @@ internal class LogisticRegressionClassifierTest {
     @Test
     fun classify() {
         val weights = arrayOf(
-            arrayOf(0.39778158f, 0.39860763f, -0.78607847f),
-            arrayOf(0.83751194f, -0.35418033f, -0.56527192f),
-            arrayOf(-1.16395315f, 0.15156467f, 1.27653258f),
-            arrayOf(-0.4919542f, -0.25904599f, 0.76531921f),
+            floatArrayOf(0.39778158f, 0.39860763f, -0.78607847f),
+            floatArrayOf(0.83751194f, -0.35418033f, -0.56527192f),
+            floatArrayOf(-1.16395315f, 0.15156467f, 1.27653258f),
+            floatArrayOf(-0.4919542f, -0.25904599f, 0.76531921f),
         )
 
         val x = listOf(

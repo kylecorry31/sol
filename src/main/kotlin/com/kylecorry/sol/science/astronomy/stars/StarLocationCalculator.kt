@@ -110,7 +110,7 @@ internal class StarLocationCalculator {
                 val pointX = cos(azimuth.toRadians()) * distance
                 val pointY = sin(azimuth.toRadians()) * distance
                 val b = pointY - m * pointX
-                arrayOf(-m, 1f) to b
+                floatArrayOf(-m, 1f) to b
             }
 
             // Solve using least squares

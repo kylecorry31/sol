@@ -179,7 +179,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
             return matrix
         }
 
-        fun create(oldMatrix: Array<Array<Float>>): Matrix {
+        fun create(oldMatrix: Array<FloatArray>): Matrix {
             val rows = oldMatrix.size
             val columns = oldMatrix.getOrNull(0)?.size ?: 0
             val matrix = create(rows, columns) { r, c ->

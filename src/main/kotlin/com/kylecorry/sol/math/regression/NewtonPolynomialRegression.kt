@@ -12,7 +12,7 @@ class NewtonPolynomialRegression(private val order: Int) : PolynomialRegression 
         return Polynomial(terms)
     }
 
-    private fun getPolynomialTerms(coefficients: Array<Float>, points: List<Vector2>): List<PolynomialTerm> {
+    private fun getPolynomialTerms(coefficients: FloatArray, points: List<Vector2>): List<PolynomialTerm> {
         val n = coefficients.size
         var polynomial = Polynomial.fromCoefficients(coefficients[n - 1])
         for (i in n - 2 downTo 0) {
@@ -28,9 +28,9 @@ class NewtonPolynomialRegression(private val order: Int) : PolynomialRegression 
 
     private fun getDividedDifferenceCoefficients(
         points: List<Vector2>
-    ): Array<Float> {
+    ): FloatArray {
         val n = order + 1
-        val a = Array(n) { 0f }
+        val a = FloatArray(n)
         for (i in 0..<n) {
             a[i] = points[i].y
         }

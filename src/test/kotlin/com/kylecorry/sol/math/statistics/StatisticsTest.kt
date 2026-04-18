@@ -45,10 +45,10 @@ internal class StatisticsTest {
     @Test
     fun textureFeatures() {
         val glcm4x4 = arrayOf(
-            arrayOf(0.3333f, 0.0833f, 0.0833f, 0f),
-            arrayOf(0.0833f, 0f, 0.0833f, 0.0833f),
-            arrayOf(0.0833f, 0.0833f, 0f, 0f),
-            arrayOf(0f, 0.0833f, 0f, 0f)
+            floatArrayOf(0.3333f, 0.0833f, 0.0833f, 0f),
+            floatArrayOf(0.0833f, 0f, 0.0833f, 0.0833f),
+            floatArrayOf(0.0833f, 0.0833f, 0f, 0f),
+            floatArrayOf(0f, 0.0833f, 0f, 0f)
         )
         val features = Statistics.textureFeatures(Matrix.create(glcm4x4))
         assertEquals(2.02f, features.entropy, 0.1f)
