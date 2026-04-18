@@ -169,37 +169,9 @@
     <ID>UseOrEmpty:ZambrettiForecaster.kt:ZambrettiForecaster$conditions[z.toInt()]?.current ?: emptyList()</ID>
     <ID>UseOrEmpty:ZambrettiForecaster.kt:ZambrettiForecaster$conditions[z.toInt()]?.later ?: emptyList()</ID>
     <ID>VarCouldBeVal:NewtonInterpolator.kt:NewtonInterpolator$private var polynomial = regression.fit(points)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val M = Trigonometry.normalizeAngle( 2.5534 + 29.1053567 * k - 0.0000014 * power( julianCenturiesSinceJ2000, 2 ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3) )</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val MPrime = Trigonometry.normalizeAngle( 201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power( julianCenturiesSinceJ2000, 3 ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4) )</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$var F: Double</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val D = getMeanElongation(tt)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val D = getMeanElongation(ut)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000075)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val E2 = Arithmetic.square(E)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val F = getArgumentOfLatitude(tt)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val L = Trigonometry.normalizeAngle( polynomial( julianCenturiesSinceJ2000, 218.3164477, 481267.88123421, -0.0015786, 1 / 538841.0, -1 / 65194000.0 ) )</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val M = sun.getMeanAnomaly(tt)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val M = sun.getMeanAnomaly(ut)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val Mp = getMeanAnomaly(ut)</ID>
-    <ID>VariableNaming:Moon.kt:Moon$val Mprime = getMeanAnomaly(tt)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val M = Trigonometry.normalizeAngle( 2.5534 + 29.1053567 * k - 0.0000014 * power( julianCenturiesSinceJ2000, 2 ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3) )</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val MPrime = Trigonometry.normalizeAngle( 201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power( julianCenturiesSinceJ2000, 3 ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4) )</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$var F: Double</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val C = sinDegrees(value3) * cosDecCosRA + cosDegrees(value3) * sinDegrees(declination)</ID>
-    <ID>VariableNaming:Sun.kt:Sun$val C = equationOfCenter(julianCenturiesSinceJ2000)</ID>
-    <ID>VariableNaming:Sun.kt:Sun$val L = getGeometricLongitude(julianCenturiesSinceJ2000)</ID>
-    <ID>VariableNaming:Sun.kt:Sun$val M = getMeanAnomaly(julianCenturiesSinceJ2000)</ID>
     <ID>VariableNaming:UniversalTime.kt:val A = floor(Y / 100)</ID>
     <ID>VariableNaming:UniversalTime.kt:val B = 2 - A + floor(A / 4)</ID>
     <ID>VariableNaming:UniversalTime.kt:val D = dayOfMonth.toDouble() + if (includeTime) toLocalTime().toDecimalHours() / 24.0 else 0.0</ID>

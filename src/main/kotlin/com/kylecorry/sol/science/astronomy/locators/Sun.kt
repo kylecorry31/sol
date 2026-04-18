@@ -84,9 +84,9 @@ internal class Sun : ICelestialLocator {
     }
 
     private fun getTrueLongitude(julianCenturiesSinceJ2000: Double): Double {
-        val L = getGeometricLongitude(julianCenturiesSinceJ2000)
-        val C = equationOfCenter(julianCenturiesSinceJ2000)
-        return L + C
+        val geometricLongitude = getGeometricLongitude(julianCenturiesSinceJ2000)
+        val center = equationOfCenter(julianCenturiesSinceJ2000)
+        return geometricLongitude + center
     }
 
     private fun getGeometricLongitude(julianCenturiesSinceJ2000: Double): Double {
@@ -100,10 +100,10 @@ internal class Sun : ICelestialLocator {
     }
 
     private fun equationOfCenter(julianCenturiesSinceJ2000: Double): Double {
-        val M = getMeanAnomaly(julianCenturiesSinceJ2000)
-        return Algebra.polynomial(julianCenturiesSinceJ2000, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
-                Algebra.polynomial(julianCenturiesSinceJ2000, 0.019993, -0.000101) * sinDegrees(2 * M) +
-                0.000289 * sinDegrees(3 * M)
+        val meanAnomaly = getMeanAnomaly(julianCenturiesSinceJ2000)
+        return Algebra.polynomial(julianCenturiesSinceJ2000, 1.914602, -0.004817, -0.000014) * sinDegrees(meanAnomaly) +
+                Algebra.polynomial(julianCenturiesSinceJ2000, 0.019993, -0.000101) * sinDegrees(2 * meanAnomaly) +
+                0.000289 * sinDegrees(3 * meanAnomaly)
     }
 
     private fun getObliquityCorrection(julianCenturiesSinceJ2000: Double): Double {

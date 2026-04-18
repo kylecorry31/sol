@@ -36,7 +36,86 @@ internal class Moon : ICelestialLocator {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
         val julianCenturiesSinceJ2000 = tt.toJulianCenturies()
-        val L = Trigonometry.normalizeAngle(
+
+        val meanLongitude = getMeanLongitude(julianCenturiesSinceJ2000)
+        val meanElongation = getMeanElongation(tt)
+        val sunMeanAnomaly = sun.getMeanAnomaly(tt)
+        val moonMeanAnomaly = getMeanAnomaly(tt)
+        val argumentOfLatitude = getArgumentOfLatitude(tt)
+
+        val adjustmentVenus = Trigonometry.normalizeAngle(119.75 + 131.849 * julianCenturiesSinceJ2000)
+        val adjustmentJupiter = Trigonometry.normalizeAngle(53.09 + 479264.29 * julianCenturiesSinceJ2000)
+        // The astronomical algorithms book does not specify what the 3rd adjustment is from
+        val adjustment3 = Trigonometry.normalizeAngle(313.45 + 481266.484 * julianCenturiesSinceJ2000)
+        val eccentricity = getEccentricity(julianCenturiesSinceJ2000)
+
+        var moonLongitude = getTableSum(
+            table47a(),
+            eccentricity,
+            meanElongation,
+            sunMeanAnomaly,
+            moonMeanAnomaly,
+            argumentOfLatitude
+        )
+        moonLongitude += 3958 * sinDegrees(adjustmentVenus) +
+                1962 * sinDegrees(meanLongitude - argumentOfLatitude) +
+                318 * sinDegrees(adjustmentJupiter)
+
+        var moonLatitude = getTableSum(
+            table47b(),
+            eccentricity,
+            meanElongation,
+            sunMeanAnomaly,
+            moonMeanAnomaly,
+            argumentOfLatitude
+        )
+
+        moonLatitude += -2235 * sinDegrees(meanLongitude) +
+                382 * sinDegrees(adjustment3) +
+                175 * sinDegrees(adjustmentVenus - argumentOfLatitude) +
+                175 * sinDegrees(adjustmentVenus + argumentOfLatitude) +
+                127 * sinDegrees(meanLongitude - moonMeanAnomaly) -
+                115 * sinDegrees(meanLongitude + moonMeanAnomaly)
+
+        val apparentLongitude =
+            meanLongitude + moonLongitude / 1000000.0 + LongitudinalNutation.getNutationInLongitude(tt)
+        val eclipticLatitude = moonLatitude / 1000000.0
+        val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(tt)
+
+        return EclipticCoordinate(eclipticLatitude, apparentLongitude).toEquatorial(
+            eclipticObliquity
+        )
+    }
+
+    @Suppress("LongParameterList")
+    private fun getTableSum(
+        table: Array<IntArray>,
+        eccentricity: Double,
+        meanElongation: Double,
+        sunMeanAnomaly: Double,
+        moonMeanAnomaly: Double,
+        argumentOfLatitude: Double
+    ): Double {
+        val eccentricitySquared = Arithmetic.square(eccentricity)
+        var sum = 0.0
+        for (row in table) {
+            val eTerm = when (row[1].absoluteValue) {
+                1 -> eccentricity
+                2 -> eccentricitySquared
+                else -> 1.0
+            }
+            sum += row[4] * eTerm * sinDegrees(
+                row[0] * meanElongation +
+                        row[1] * sunMeanAnomaly +
+                        row[2] * moonMeanAnomaly +
+                        row[3] * argumentOfLatitude
+            )
+        }
+        return sum
+    }
+
+    private fun getMeanLongitude(julianCenturiesSinceJ2000: Double): Double {
+        return Trigonometry.normalizeAngle(
             polynomial(
                 julianCenturiesSinceJ2000,
                 218.3164477,
@@ -46,82 +125,34 @@ internal class Moon : ICelestialLocator {
                 -1 / 65194000.0
             )
         )
-
-        val D = getMeanElongation(tt)
-
-        val M = sun.getMeanAnomaly(tt)
-        val Mprime = getMeanAnomaly(tt)
-
-        val F = getArgumentOfLatitude(tt)
-
-        val a1 = Trigonometry.normalizeAngle(119.75 + 131.849 * julianCenturiesSinceJ2000)
-        val a2 = Trigonometry.normalizeAngle(53.09 + 479264.29 * julianCenturiesSinceJ2000)
-        val a3 = Trigonometry.normalizeAngle(313.45 + 481266.484 * julianCenturiesSinceJ2000)
-        val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)
-        val E2 = Arithmetic.square(E)
-
-        val t47a = table47a()
-        val t47b = table47b()
-
-        var sumL = 0.0
-        var sumB = 0.0
-
-        for (row in t47a) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
-            sumL += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
-        }
-
-        for (row in t47b) {
-            val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
-                else -> 1.0
-            }
-            sumB += row[4] * eTerm * sinDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
-        }
-
-        sumL += 3958 * sinDegrees(a1) + 1962 * sinDegrees(L - F) + 318 * sinDegrees(a2)
-        sumB += -2235 * sinDegrees(L) + 382 * sinDegrees(a3) + 175 * sinDegrees(a1 - F) +
-                175 * sinDegrees(a1 + F) + 127 * sinDegrees(L - Mprime) - 115 * sinDegrees(L + Mprime)
-
-
-        val apparentLongitude =
-            L + sumL / 1000000.0 + LongitudinalNutation.getNutationInLongitude(tt)
-        val eclipticLatitude = sumB / 1000000.0
-        val eclipticObliquity = EclipticObliquity.getTrueObliquityOfEcliptic(tt)
-
-        return EclipticCoordinate(eclipticLatitude, apparentLongitude).toEquatorial(
-            eclipticObliquity
-        )
     }
 
     override fun getDistance(ut: UniversalTime): Distance {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
         val julianCenturiesSinceJ2000 = tt.toJulianCenturies()
-        val D = getMeanElongation(tt)
-        val F = getArgumentOfLatitude(tt)
-        val M = sun.getMeanAnomaly(tt)
-
-        val Mprime = getMeanAnomaly(tt)
-        val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000075)
-        val E2 = Arithmetic.square(E)
+        val meanElongation = getMeanElongation(tt)
+        val argumentOfLatitude = getArgumentOfLatitude(tt)
+        val sunMeanAnomaly = sun.getMeanAnomaly(tt)
+        val moonMeanAnomaly = getMeanAnomaly(tt)
+        val eccentricity = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000075)
+        val eccentricitySquared = Arithmetic.square(eccentricity)
         val t47a = table47a()
-        var sumR = 0.0
-
+        var distance = 0.0
         for (row in t47a) {
             val eTerm = when (row[1].absoluteValue) {
-                1 -> E
-                2 -> E2
+                1 -> eccentricity
+                2 -> eccentricitySquared
                 else -> 1.0
             }
-            sumR += row[5] * eTerm * cosDegrees(row[0] * D + row[1] * M + row[2] * Mprime + row[3] * F)
+            distance += row[5] * eTerm * cosDegrees(
+                row[0] * meanElongation +
+                        row[1] * sunMeanAnomaly +
+                        row[2] * moonMeanAnomaly +
+                        row[3] * argumentOfLatitude
+            )
         }
-        val distanceKm = 385000.56 + sumR / 1000
+        val distanceKm = 385000.56 + distance / 1000
         return Distance.kilometers(distanceKm.toFloat())
     }
 
@@ -223,21 +254,25 @@ internal class Moon : ICelestialLocator {
         ).toDegrees()
     }
 
+    fun getEccentricity(julianCenturiesSinceJ2000: Double): Double {
+        return polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)
+    }
+
     private fun getMoonPhaseAngle(ut: UniversalTime): Double {
-        val D = getMeanElongation(ut)
-        val M = sun.getMeanAnomaly(ut)
-        val Mp = getMeanAnomaly(ut)
+        val meanElongation = getMeanElongation(ut)
+        val sunMeanAnomaly = sun.getMeanAnomaly(ut)
+        val moonMeanAnomaly = getMeanAnomaly(ut)
 
-        val i =
-            180 - D - 6.289 * sinDegrees(Mp) + 2.100 * sinDegrees(
-                M
-            ) - 1.274 * sinDegrees(2 * D - Mp) - 0.658 * sinDegrees(
-                2 * D
+        val phaseAngle =
+            180 - meanElongation - 6.289 * sinDegrees(moonMeanAnomaly) + 2.100 * sinDegrees(
+                sunMeanAnomaly
+            ) - 1.274 * sinDegrees(2 * meanElongation - moonMeanAnomaly) - 0.658 * sinDegrees(
+                2 * meanElongation
             ) - 0.214 * sinDegrees(
-                2 * Mp
-            ) - 0.110 * sinDegrees(D)
+                2 * moonMeanAnomaly
+            ) - 0.110 * sinDegrees(meanElongation)
 
-        return (i + 180) % 360.0
+        return (phaseAngle + 180) % 360.0
     }
 
     private fun getMoonIllumination(phaseAngle: Double): Double {

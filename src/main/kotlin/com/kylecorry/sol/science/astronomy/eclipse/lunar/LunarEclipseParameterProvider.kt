@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.astronomy.eclipse.lunar
 
-import com.kylecorry.sol.math.algebra.Algebra
 import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
@@ -27,34 +26,34 @@ internal class LunarEclipseParameterProvider {
     private fun getNextLunarEclipse(ut: UniversalTime): LunarEclipseParameters {
         var k = moon.getNextPhaseK(ut, MoonTruePhase.Full)
         var julianCenturiesSinceJ2000: Double
-        var F: Double
+        var argumentOfLatitude: Double
         var iterations = 0
         do {
             julianCenturiesSinceJ2000 = k / 1236.85
-            F = Trigonometry.normalizeAngle(
+            argumentOfLatitude = Trigonometry.normalizeAngle(
                 160.7108 + 390.67050284 * k - 0.0016118 * power(julianCenturiesSinceJ2000, 2) - 0.00000227 * power(
                     julianCenturiesSinceJ2000,
                     3
                 ) + 0.000000011 * power(julianCenturiesSinceJ2000, 4)
             )
-            if (sinDegrees(F).absoluteValue > 0.36) {
+            if (sinDegrees(argumentOfLatitude).absoluteValue > 0.36) {
                 k += 1
             }
             iterations++
-        } while (sinDegrees(F).absoluteValue > 0.36 && iterations < MAX_PHASE_SEARCH_ITERATIONS)
+        } while (sinDegrees(argumentOfLatitude).absoluteValue > 0.36 && iterations < MAX_PHASE_SEARCH_ITERATIONS)
 
-        check(sinDegrees(F).absoluteValue <= 0.36) {
+        check(sinDegrees(argumentOfLatitude).absoluteValue <= 0.36) {
             "Lunar eclipse phase search did not converge within $MAX_PHASE_SEARCH_ITERATIONS iterations"
         }
 
-        val mean = getJDEOfMeanMoonPhase(k)
-        val M = Trigonometry.normalizeAngle(
+        val meanJulianDay = getJDEOfMeanMoonPhase(k)
+        val sunMeanAnomaly = Trigonometry.normalizeAngle(
             2.5534 + 29.1053567 * k - 0.0000014 * power(
                 julianCenturiesSinceJ2000,
                 2
             ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3)
         )
-        val MPrime = Trigonometry.normalizeAngle(
+        val moonMeanAnomaly = Trigonometry.normalizeAngle(
             201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power(
                 julianCenturiesSinceJ2000,
                 3
@@ -66,53 +65,60 @@ internal class LunarEclipseParameterProvider {
                 2
             ) + 0.00000215 * power(julianCenturiesSinceJ2000, 3)
         )
-        val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)
+        val eccentricity = moon.getEccentricity(julianCenturiesSinceJ2000)
 
-        val F1 = F - 0.02665 * sinDegrees(omega)
-        val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)
+        val adjustedArgumentOfLatitude = argumentOfLatitude - 0.02665 * sinDegrees(omega)
+        // The astronomical algorithms book does not specify what this adjustment is for
+        val adjustment1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)
 
         var correction = 0.0
         val table = table54Part1()
         for (row in table) {
-            correction += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * sinDegrees(
-                row[2] * M + row[3] * MPrime + row[4] * F1 + row[5] * A1 + row[6] * omega
+            correction += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else eccentricity) * sinDegrees(
+                row[2] * sunMeanAnomaly +
+                        row[3] * moonMeanAnomaly +
+                        row[4] * adjustedArgumentOfLatitude +
+                        row[5] * adjustment1 +
+                        row[6] * omega
             )
         }
 
-        val correctedJD = mean + correction
+        val correctedJulianDay = meanJulianDay + correction
 
         var p = 0.0
         val tableP = table54PTerms()
         for (row in tableP) {
-            p += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * sinDegrees(
-                row[2] * M + row[3] * MPrime + row[4] * F1
+            p += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else eccentricity) * sinDegrees(
+                row[2] * sunMeanAnomaly + row[3] * moonMeanAnomaly + row[4] * adjustedArgumentOfLatitude
             )
         }
 
         var q = 0.0
         val tableQ = table54QTerms()
         for (row in tableQ) {
-            q += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else E) * cosDegrees(
-                row[2] * M + row[3] * MPrime
+            q += (row[0] / 10000.0) * (if (row[1] == 0) 1.0 else eccentricity) * cosDegrees(
+                row[2] * sunMeanAnomaly + row[3] * moonMeanAnomaly
             )
         }
 
-        val W = cosDegrees(F1).absoluteValue
+        val cosineArgumentOfLatitude = cosDegrees(adjustedArgumentOfLatitude).absoluteValue
 
-        val gamma = (p * cosDegrees(F1) + q * sinDegrees(F1)) * (1 - 0.0048 * W)
-        val u =
-            0.0059 + 0.0046 * E * cosDegrees(M) - 0.0182 * cosDegrees(MPrime) + 0.0004 * cosDegrees(
-                2 * MPrime
-            ) - 0.0005 * cosDegrees(M + MPrime)
+        val minDistanceFromCenter = (p * cosDegrees(adjustedArgumentOfLatitude) +
+                q * sinDegrees(adjustedArgumentOfLatitude)) * (1 - 0.0048 * cosineArgumentOfLatitude)
+        val umbralConeRadius = 0.0059 +
+                0.0046 * eccentricity * cosDegrees(sunMeanAnomaly) -
+                0.0182 * cosDegrees(moonMeanAnomaly) +
+                0.0004 * cosDegrees(2 * moonMeanAnomaly) -
+                0.0005 * cosDegrees(sunMeanAnomaly + moonMeanAnomaly)
 
-        val n = 0.5458 + 0.04 * cosDegrees(MPrime)
+        val n = 0.5458 + 0.04 * cosDegrees(moonMeanAnomaly)
 
-        val datetime = ZonedDateTime.of(fromJulianDay(correctedJD), ZoneId.of("UTC"))
+        val datetime = ZonedDateTime.of(fromJulianDay(correctedJulianDay), ZoneId.of("UTC"))
 
         return LunarEclipseParameters(
             datetime.toInstant().minusSeconds(TerrestrialTime.getDeltaT(datetime.year).toLong()),
-            gamma,
-            u,
+            minDistanceFromCenter,
+            umbralConeRadius,
             n
         )
 
