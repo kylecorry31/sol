@@ -149,10 +149,10 @@ internal class StarLocationCalculator {
 
 
         // Step 2: Refine the location using triangulation
-        val (approximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate(lat, lon))
-        if (approximateLocation != null) {
-            lat = approximateLocation.latitude
-            lon = approximateLocation.longitude
+        val (updatedApproximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate(lat, lon))
+        if (updatedApproximateLocation != null) {
+            lat = updatedApproximateLocation.latitude
+            lon = updatedApproximateLocation.longitude
             step = 1.0
         }
 

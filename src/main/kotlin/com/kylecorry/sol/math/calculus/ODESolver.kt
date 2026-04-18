@@ -6,7 +6,7 @@ import com.kylecorry.sol.math.Vector2
 
 interface ODESolver {
     fun solve(
-        x: Range<Float>,
+        xRange: Range<Float>,
         stepSize: Float,
         initialY: Vector,
         derivative: (x: Float, y: Vector) -> Vector
@@ -14,13 +14,13 @@ interface ODESolver {
 }
 
 fun ODESolver.solve(
-    x: Range<Float>,
+    xRange: Range<Float>,
     stepSize: Float,
     initialY: Vector2,
     derivative: (x: Float, y: Vector2) -> Vector2
 ): List<Pair<Float, Vector2>> {
     val result = solve(
-        x,
+        xRange,
         stepSize,
         Vector.from(initialY.x, initialY.y)
     ) { x, y ->
@@ -31,13 +31,13 @@ fun ODESolver.solve(
 }
 
 fun ODESolver.solve(
-    x: Range<Float>,
+    xRange: Range<Float>,
     stepSize: Float,
     initialY: Float,
     derivative: (x: Float, y: Float) -> Float
 ): List<Pair<Float, Float>> {
     val result = solve(
-        x,
+        xRange,
         stepSize,
         Vector.from(initialY)
     ) { x, y ->

@@ -46,9 +46,6 @@
     <ID>LoopWithTooManyJumpStatements:LoessFilter.kt:LoessFilter$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt:LoessFilter2D$for</ID>
     <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt:TimeSeriesEnsemble$for</ID>
-    <ID>NoNameShadowing:Geometry.kt:Geometry${ !visited[it] }</ID>
-    <ID>NoNameShadowing:ODESolver.kt:x</ID>
-    <ID>NoNameShadowing:StarLocationCalculator.kt:StarLocationCalculator$approximateLocation</ID>
     <ID>NoRecursion:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$getNextEclipseHelper( parameters.maximum.plus(Duration.ofDays(10)), atLeastInstant, location, iterationsRemaining - 1 )</ID>
     <ID>NoRecursion:LinearAlgebra.kt:LinearAlgebra$determinant(cofactor(m, 0, c))</ID>
     <ID>NoRecursion:Lists.kt:Lists$reorder(data, newIndices, false)</ID>

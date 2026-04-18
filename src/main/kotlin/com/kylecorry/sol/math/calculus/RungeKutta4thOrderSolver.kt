@@ -6,7 +6,7 @@ import com.kylecorry.sol.math.Vector
 class RungeKutta4thOrderSolver : ODESolver {
 
     override fun solve(
-        x: Range<Float>,
+        xRange: Range<Float>,
         stepSize: Float,
         initialY: Vector,
         derivative: (x: Float, y: Vector) -> Vector
@@ -14,9 +14,9 @@ class RungeKutta4thOrderSolver : ODESolver {
         // https://www.geeksforgeeks.org/dsa/runge-kutta-4th-order-method-solve-differential-equation/
         val results = mutableListOf<Pair<Float, Vector>>()
         var y = initialY
-        var currentX = x.start
+        var currentX = xRange.start
 
-        while (currentX < x.end) {
+        while (currentX < xRange.end) {
             results.add(Pair(currentX, y))
 
             val k1 = derivative(currentX, y) * stepSize
