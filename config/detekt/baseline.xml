@@ -3,7 +3,6 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ImplicitDefaultLocale:NationalGrid.kt:NationalGrid$String.format("%s %05.0f %05.0f", gs.reference, offset[0], offset[1])</ID>
-    <ID>LargeClass:Astronomy.kt:Astronomy</ID>
     <ID>LongMethod:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper: Eclipse?</ID>
     <ID>LongMethod:Geography.kt:Geography$fun trilaterate: TrilaterationResult</ID>
     <ID>LongMethod:Geography.kt:Geography$fun vincenty: FloatArray</ID>
@@ -41,15 +40,19 @@
     <ID>LongParameterList:SolForecaster.kt:SolForecaster$private fun forecast: List&lt;WeatherForecast&gt;</ID>
     <ID>LongParameterList:SolForecaster.kt:SolForecaster$private fun forecastHelper: List&lt;WeatherForecast&gt;</ID>
     <ID>LongParameterList:SolarRadiationCalculator.kt:SolarRadiationCalculator$fun getRadiation: Double</ID>
+    <ID>LongParameterList:StarFacade.kt:StarFacade$fun plateSolve: List&lt;DetectedStar&gt;</ID>
+    <ID>LongParameterList:SunFacade.kt:SunFacade$fun getSolarRadiation: Double</ID>
+    <ID>LongParameterList:SunFacade.kt:SunFacade$fun getSunAboveHorizonTimes: Range&lt;ZonedDateTime&gt;?</ID>
     <ID>LongParameterList:ZambrettiForecaster.kt:ZambrettiForecaster$private fun forecast: List&lt;WeatherForecast&gt;</ID>
-    <ID>LoopWithTooManyJumpStatements:Astronomy.kt:Astronomy$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter.kt:LoessFilter$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt:LoessFilter2D$for</ID>
+    <ID>LoopWithTooManyJumpStatements:MeteorFacade.kt:MeteorFacade$for</ID>
     <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt:TimeSeriesEnsemble$for</ID>
     <ID>NoRecursion:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$getNextEclipseHelper( parameters.maximum.plus(Duration.ofDays(10)), atLeastInstant, location, iterationsRemaining - 1 )</ID>
     <ID>NoRecursion:LinearAlgebra.kt:LinearAlgebra$determinant(cofactor(m, 0, c))</ID>
     <ID>NoRecursion:Lists.kt:Lists$reorder(data, newIndices, false)</ID>
     <ID>RedundantHigherOrderMapUsage:MedianFilter.kt:MedianFilter$map</ID>
+    <ID>ReturnCount:AboveHorizonFacade.kt:AboveHorizonFacade$fun getAboveHorizonTimes: Range&lt;ZonedDateTime&gt;?</ID>
     <ID>ReturnCount:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper: Eclipse?</ID>
     <ID>ReturnCount:Algebra.kt:Algebra$fun solve: Float?</ID>
     <ID>ReturnCount:Algebra.kt:Algebra$fun solve: Pair&lt;Float, Float&gt;?</ID>
@@ -57,14 +60,6 @@
     <ID>ReturnCount:Arithmetic.kt:Arithmetic$fun wrap: Double</ID>
     <ID>ReturnCount:ArrivalTimeCalculator.kt:ArrivalTimeCalculator$fun getArrivalTime: Instant?</ID>
     <ID>ReturnCount:AstroSearch.kt:AstroSearch$fun findEvent: Instant?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getDaylightLength: Duration</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextMoonrise: ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextMoonset: ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextSunrise: ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextSunset: ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$private fun getAboveHorizonTimes: Range&lt;ZonedDateTime&gt;?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$private fun getClosestNight: Range&lt;ZonedDateTime&gt;?</ID>
-    <ID>ReturnCount:Astronomy.kt:Astronomy$private fun getNextMeteorShowerPeak: RiseSetTransitTimes?</ID>
     <ID>ReturnCount:ClearPredictor.kt:ClearPredictor$override fun isLikely: Boolean</ID>
     <ID>ReturnCount:CloudPrecipitationCalculator.kt:CloudPrecipitationCalculator$fun getMatch: List&lt;Reading&lt;CloudGenus?&gt;&gt;?</ID>
     <ID>ReturnCount:CoordinateBounds.kt:CoordinateBounds.Companion$fun from: CoordinateBounds</ID>
@@ -87,7 +82,10 @@
     <ID>ReturnCount:KalmanFilter.kt:KalmanFilter.Companion$fun filter: List&lt;Double&gt;</ID>
     <ID>ReturnCount:KalmanFilter.kt:KalmanFilter.Companion$fun filterWithError: List&lt;Pair&lt;Double, Double&gt;&gt;</ID>
     <ID>ReturnCount:LocalNewtonInterpolator.kt:LocalNewtonInterpolator$override fun interpolate: Float</ID>
+    <ID>ReturnCount:MeteorFacade.kt:MeteorFacade$private fun getNextMeteorShowerPeak: RiseSetTransitTimes?</ID>
     <ID>ReturnCount:Moon.kt:Moon$fun getPhase: MoonPhase</ID>
+    <ID>ReturnCount:MoonFacade.kt:MoonFacade$fun getNextMoonrise: ZonedDateTime?</ID>
+    <ID>ReturnCount:MoonFacade.kt:MoonFacade$fun getNextMoonset: ZonedDateTime?</ID>
     <ID>ReturnCount:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun getHourAngle: Double?</ID>
     <ID>ReturnCount:OSGBCoordinateFormat.kt:OSGBCoordinateFormat$override fun toString: String</ID>
     <ID>ReturnCount:Oceanography.kt:Oceanography$fun getTidalRange: TidalRange</ID>
@@ -103,6 +101,10 @@
     <ID>ReturnCount:StarLocationCalculator.kt:StarLocationCalculator$private fun triangulateApproximateLocation: Pair&lt;Coordinate?, Float?&gt;</ID>
     <ID>ReturnCount:Statistics.kt:Statistics$fun quantile: Float</ID>
     <ID>ReturnCount:StormPredictor.kt:StormPredictor$override fun isLikely: Boolean</ID>
+    <ID>ReturnCount:SunFacade.kt:SunFacade$fun getClosestNight: Range&lt;ZonedDateTime&gt;?</ID>
+    <ID>ReturnCount:SunFacade.kt:SunFacade$fun getDaylightLength: Duration</ID>
+    <ID>ReturnCount:SunFacade.kt:SunFacade$fun getNextSunrise: ZonedDateTime?</ID>
+    <ID>ReturnCount:SunFacade.kt:SunFacade$fun getNextSunset: ZonedDateTime?</ID>
     <ID>ReturnCount:TextExtensions.kt:internal fun String.toDoubleCompat: Double?</ID>
     <ID>ReturnCount:TextExtensions.kt:internal fun String.toFloatCompat: Float?</ID>
     <ID>ReturnCount:Time.kt:Time$fun List&lt;Reading&lt;*&gt;&gt;.duration: Duration</ID>
@@ -132,11 +134,13 @@
     <ID>TooManyFunctions:Matrix.kt:com.kylecorry.sol.math.algebra.Matrix.kt</ID>
     <ID>TooManyFunctions:Meteorology.kt:Meteorology</ID>
     <ID>TooManyFunctions:Moon.kt:Moon : ICelestialLocator</ID>
+    <ID>TooManyFunctions:MoonFacade.kt:MoonFacade</ID>
     <ID>TooManyFunctions:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator</ID>
     <ID>TooManyFunctions:Quaternion.kt:Quaternion</ID>
     <ID>TooManyFunctions:Quaternion.kt:QuaternionMath</ID>
     <ID>TooManyFunctions:Statistics.kt:Statistics</ID>
     <ID>TooManyFunctions:Sun.kt:Sun : ICelestialLocator</ID>
+    <ID>TooManyFunctions:SunFacade.kt:SunFacade</ID>
     <ID>TooManyFunctions:Time.kt:Time</ID>
     <ID>TooManyFunctions:Trigonometry.kt:Trigonometry</ID>
     <ID>TooManyFunctions:UniversalTime.kt:com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
