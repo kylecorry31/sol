@@ -7,6 +7,7 @@ import com.kylecorry.sol.science.astronomy.stars.PlateSolver
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarLocationCalculator
 import com.kylecorry.sol.science.astronomy.stars.StarReading
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Bearing
@@ -15,26 +16,23 @@ import com.kylecorry.sol.units.Distance
 import java.time.ZonedDateTime
 
 internal object StarFacade {
-    fun getStarAltitude(
+    fun getStarPosition(
         star: Star,
         time: ZonedDateTime,
         location: Coordinate,
         withRefraction: Boolean = false
-    ): Float {
-        return AstroUtils.getAltitude(
+    ): CelestialObservation {
+        val horizonCoordinate = AstroUtils.getLocation(
             StarLocator(star),
             time.toUniversalTime(),
             location,
             withRefraction = withRefraction
         )
-    }
-
-    fun getStarAzimuth(
-        star: Star,
-        time: ZonedDateTime,
-        location: Coordinate
-    ): Bearing {
-        return AstroUtils.getAzimuth(StarLocator(star), time.toUniversalTime(), location)
+        return CelestialObservation(
+            Bearing.from(horizonCoordinate.azimuth.toFloat()),
+            horizonCoordinate.altitude.toFloat(),
+            visualMagnitude = star.magnitude
+        )
     }
 
     /**

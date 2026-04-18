@@ -46,24 +46,6 @@ internal object MeteorFacade {
         return null
     }
 
-    fun getMeteorShowerAltitude(
-        shower: MeteorShower,
-        location: Coordinate,
-        time: Instant
-    ): Float {
-        val locator = MeteorShowerLocator(shower)
-        return AstroUtils.getAltitude(locator, time.toUniversalTime(), location, false)
-    }
-
-    fun getMeteorShowerAzimuth(
-        shower: MeteorShower,
-        location: Coordinate,
-        time: Instant
-    ): Bearing {
-        val locator = MeteorShowerLocator(shower)
-        return AstroUtils.getAzimuth(locator, time.toUniversalTime(), location)
-    }
-
     /**
      * Get a list of meteor showers which are active.
      * This does not check the time of day, so the shower may not currently be visible.
@@ -146,7 +128,7 @@ internal object MeteorFacade {
             var peakAltitude = -1f
             var peakTime = currentTime
             while (currentTime.isBefore(night.end)) {
-                val altitude = getMeteorShowerAltitude(shower, location, currentTime.toInstant())
+                val altitude = getMeteorShowerPosition(shower, location, currentTime.toInstant()).altitude
                 if (altitude > peakAltitude) {
                     peakAltitude = altitude
                     peakTime = currentTime

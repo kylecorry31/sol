@@ -291,22 +291,6 @@ object Astronomy {
         return MeteorFacade.getMeteorShower(location, date)
     }
 
-    fun getMeteorShowerAltitude(
-        shower: MeteorShower,
-        location: Coordinate,
-        time: Instant
-    ): Float {
-        return MeteorFacade.getMeteorShowerAltitude(shower, location, time)
-    }
-
-    fun getMeteorShowerAzimuth(
-        shower: MeteorShower,
-        location: Coordinate,
-        time: Instant
-    ): Bearing {
-        return MeteorFacade.getMeteorShowerAzimuth(shower, location, time)
-    }
-
     /**
      * Get a list of meteor showers which are active.
      * This does not check the time of day, so the shower may not currently be visible.
@@ -326,21 +310,13 @@ object Astronomy {
         return MeteorFacade.getMeteorShowerPosition(shower, location, time)
     }
 
-    fun getStarAltitude(
+    fun getStarPosition(
         star: Star,
         time: ZonedDateTime,
         location: Coordinate,
         withRefraction: Boolean = false
-    ): Float {
-        return StarFacade.getStarAltitude(star, time, location, withRefraction)
-    }
-
-    fun getStarAzimuth(
-        star: Star,
-        time: ZonedDateTime,
-        location: Coordinate
-    ): Bearing {
-        return StarFacade.getStarAzimuth(star, time, location)
+    ): CelestialObservation {
+        return StarFacade.getStarPosition(star, time, location, withRefraction)
     }
 
     /**

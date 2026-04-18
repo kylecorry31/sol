@@ -10,7 +10,6 @@ import com.kylecorry.sol.math.optimization.ConvergenceOptimizer
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.science.astronomy.Astronomy
-import com.kylecorry.sol.science.astronomy.Astronomy.getStarAltitude
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.science.geography.Geography
 import com.kylecorry.sol.science.geology.Geofence
@@ -65,15 +64,14 @@ internal class StarLocationCalculator {
             val location = getLocationFromStarsAltitudeAzimuth(newStars, approximateLocation)
 
             newStars.mapIndexed { i, reading ->
-                val expectedAltitude =
-                    getStarAltitude(reading.star, reading.time, location, true)
-                val expectedAzimuth = Astronomy.getStarAzimuth(
+                val expectedPosition = Astronomy.getStarPosition(
                     reading.star,
                     reading.time,
-                    location
-                ).value
-                square(reading.altitude - expectedAltitude).toDouble() +
-                        square(deltaAngle(checkNotNull(reading.azimuth), expectedAzimuth)).toDouble()
+                    location,
+                    true
+                )
+                square(reading.altitude - expectedPosition.altitude).toDouble() +
+                        square(deltaAngle(checkNotNull(reading.azimuth), expectedPosition.azimuth.value)).toDouble()
             }.sum()
         }
 
@@ -98,7 +96,7 @@ internal class StarLocationCalculator {
 
         for (ignored in 0..<20) {
             val expectedAltitudes = starReadings.map {
-                getStarAltitude(it.star, it.time, Coordinate(lat, lon), true)
+                Astronomy.getStarPosition(it.star, it.time, Coordinate(lat, lon), true).altitude
             }
 
             // Step 3: Determine lines of position
@@ -182,12 +180,12 @@ internal class StarLocationCalculator {
             false
         ) { lon, lat ->
             starReadings.mapIndexed { i, reading ->
-                val expectedAltitude = getStarAltitude(
+                val expectedAltitude = Astronomy.getStarPosition(
                     reading.star,
                     reading.time,
                     Coordinate(lat, lon),
                     true
-                )
+                ).altitude
                 square(
                     reading.altitude + (if (adjustForAltitudeBias) (bias
                         ?: 0f) else 0f) - expectedAltitude.toDouble()

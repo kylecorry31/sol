@@ -90,10 +90,8 @@ internal class PlateSolver(
         // Remove stars that are way below the horizon
         // NOTE: Magnitude is inverted, so lower is brighter
         val starReadings = stars.filter { it.magnitude <= minMagnitude }.map {
-            it to AltitudeAzimuth(
-                Astronomy.getStarAltitude(it, time, approximateLocation, true),
-                Astronomy.getStarAzimuth(it, time, approximateLocation).value
-            )
+            val position = Astronomy.getStarPosition(it, time, approximateLocation, true)
+            it to AltitudeAzimuth(position.altitude, position.azimuth.value)
         }.filter { it.second.altitude > -10 }
 
         val quads = mutableListOf<Pair<Star, Pair<AltitudeAzimuth, FloatArray>>>()

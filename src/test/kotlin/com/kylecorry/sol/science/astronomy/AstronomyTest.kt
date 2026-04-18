@@ -811,11 +811,14 @@ class AstronomyTest {
         altitude: Float
     ) {
         val star = STAR_CATALOG.find { it.name == name } ?: fail("Star not found")
-        val actualAzimuth = Astronomy.getStarAzimuth(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude))
-        val actualAltitude =
-            Astronomy.getStarAltitude(star, ZonedDateTime.parse(time), Coordinate(latitude, longitude), true)
-        assertEquals(azimuth, actualAzimuth.value, 0.01f)
-        assertEquals(altitude, actualAltitude, 0.01f)
+        val actual = Astronomy.getStarPosition(
+            star,
+            ZonedDateTime.parse(time),
+            Coordinate(latitude, longitude),
+            true
+        )
+        assertEquals(azimuth, actual.azimuth.value, 0.01f)
+        assertEquals(altitude, actual.altitude, 0.01f)
     }
 
     @ParameterizedTest
@@ -843,7 +846,7 @@ class AstronomyTest {
         val location = Coordinate(42.0, -72.0)
         val time = ZonedDateTime.of(2024, 12, 3, 0, 0, 0, 0, ZoneId.of("America/New_York"))
         val stars = STAR_CATALOG.asSequence().filter { it.magnitude < 2.5 }.map { star ->
-            val altitude = Astronomy.getStarAltitude(star, time, location, true)
+            val altitude = Astronomy.getStarPosition(star, time, location, true).altitude
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
         }.sortedBy { it.second.value }
@@ -851,8 +854,8 @@ class AstronomyTest {
             .take(numberOfStars).toList()
 
         val readings = stars.map {
-            val altitude = Astronomy.getStarAltitude(it, time, location, true)
-            StarReading(it, altitude, null, time)
+            val position = Astronomy.getStarPosition(it, time, location, true)
+            StarReading(it, position.altitude, null, time)
         }
 
         val actual = Astronomy.getLocationFromStars(readings, Coordinate(40.0, -70.0))
@@ -882,7 +885,7 @@ class AstronomyTest {
         val altitudeBias = if (numberOfStars > 2) 1f else 0f
         val azimuthBias = if (numberOfStars > 2) 3f else 0f
         val stars = STAR_CATALOG.asSequence().filter { it.magnitude < 2.5 }.map { star ->
-            val altitude = Astronomy.getStarAltitude(star, time, location, true)
+            val altitude = Astronomy.getStarPosition(star, time, location, true).altitude
             val distance = Astronomy.getZenithDistance(altitude)
             star to distance
         }.sortedBy { it.second.value }
@@ -890,8 +893,9 @@ class AstronomyTest {
             .take(numberOfStars).toList()
 
         val readings = stars.map {
-            val altitude = Astronomy.getStarAltitude(it, time, location, true) + altitudeBias
-            val azimuth = Astronomy.getStarAzimuth(it, time, location).value + azimuthBias
+            val position = Astronomy.getStarPosition(it, time, location, true)
+            val altitude = position.altitude + altitudeBias
+            val azimuth = position.azimuth.value + azimuthBias
             StarReading(it, altitude, azimuth, time)
         }
 
@@ -911,10 +915,8 @@ class AstronomyTest {
         val location = Coordinate(42.0, -72.0)
         val actualStars = CONSTELLATIONS.first { it.name == "Orion" }.starEdges.flatMap { listOf(it.first, it.second) }.distinct()
         val readings = actualStars.map {
-            AltitudeAzimuth(
-                Astronomy.getStarAltitude(it, time, location, true),
-                Astronomy.getStarAzimuth(it, time, location).value
-            )
+            val position = Astronomy.getStarPosition(it, time, location, true)
+            AltitudeAzimuth(position.altitude, position.azimuth.value)
         }
 
         val stars = Astronomy.plateSolve(readings, time).map { it.star }
