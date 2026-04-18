@@ -16,3 +16,7 @@ output-reports:
 style:
   MagicNumber:
     active: false
+
+sol:
+  NoRecursion:
+    active: true

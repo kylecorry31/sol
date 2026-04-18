@@ -49,6 +49,7 @@ repositories {
 }
 
 dependencies {
+    detektPlugins(project(":detekt-rules"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.4")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
@@ -69,10 +70,12 @@ detekt {
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    dependsOn(":detekt-rules:assemble")
     setSource(files("src/main/kotlin"))
     include("**/*.kt", "**/*.kts")
     exclude("**/build/**")
     exclude("**/gov/nasa/worldwind/**")
+    classpath.setFrom(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
     jvmTarget = "11"
     reports {
         html.required.set(true)
@@ -83,10 +86,12 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+    dependsOn(":detekt-rules:assemble")
     setSource(files("src/main/kotlin"))
     include("**/*.kt", "**/*.kts")
     exclude("**/build/**")
     exclude("**/gov/nasa/worldwind/**")
+    classpath.setFrom(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
     jvmTarget = "11"
 }
 
