@@ -35,7 +35,7 @@ class LeastSquaresOptimizer {
             points.map { it[index] }.average().toFloat()
         }.toMutableList()
 
-        for (i in 0..<maxIterations) {
+        for (ignored in 0..<maxIterations) {
 
             val f = Vector(points.mapIndexed { i, point ->
                 (errors[i] - distanceFn(point, guess)) * weightingFn(i, point, errors[i])

@@ -53,7 +53,7 @@ object Arithmetic {
 
 
         var total = 1
-        for (i in 0..<power) {
+        repeat(power) {
             total *= x
         }
 
@@ -62,7 +62,7 @@ object Arithmetic {
 
     fun power(x: Double, power: Int): Double {
         var total = 1.0
-        for (i in 0..<abs(power)) {
+        repeat(abs(power)) {
             total *= x
         }
 
@@ -75,7 +75,7 @@ object Arithmetic {
 
     fun power(x: Float, power: Int): Float {
         var total = 1f
-        for (i in 0..<abs(power)) {
+        repeat(abs(power)) {
             total *= x
         }
 
