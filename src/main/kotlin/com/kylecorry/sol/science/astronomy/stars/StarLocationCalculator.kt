@@ -61,7 +61,7 @@ internal class StarLocationCalculator {
                 )
             }
 
-            val location = getLocationFromStarsAltitudeAzimuth(newStars, approximateLocation)
+            val location = getLocationFromStarsObservations(newStars, approximateLocation)
 
             newStars.mapIndexed { i, reading ->
                 val expectedPosition = Astronomy.getStarPosition(
@@ -75,7 +75,7 @@ internal class StarLocationCalculator {
             }.sum()
         }
 
-        return getLocationFromStarsAltitudeAzimuth(starReadings.map {
+        return getLocationFromStarsObservations(starReadings.map {
             StarReading(
                 it.star,
                 it.altitude + altitudeBias.toFloat(),
@@ -85,7 +85,7 @@ internal class StarLocationCalculator {
         }, approximateLocation)
     }
 
-    private fun getLocationFromStarsAltitudeAzimuth(
+    private fun getLocationFromStarsObservations(
         starReadings: List<StarReading>,
         approximateLocation: Coordinate?
     ): Coordinate {

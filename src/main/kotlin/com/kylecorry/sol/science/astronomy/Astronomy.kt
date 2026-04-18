@@ -7,7 +7,6 @@ import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShowerPeak
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
-import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
 import com.kylecorry.sol.science.astronomy.stars.DetectedStar
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarReading
@@ -330,7 +329,7 @@ object Astronomy {
      * Matches the readings to stars
      */
     fun plateSolve(
-        readings: List<AltitudeAzimuth>,
+        readings: List<CelestialObservation>,
         time: ZonedDateTime,
         approximateLocation: Coordinate? = null,
         tolerance: Float = 0.04f,

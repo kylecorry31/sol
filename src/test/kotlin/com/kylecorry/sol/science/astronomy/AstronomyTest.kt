@@ -5,10 +5,10 @@ import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
-import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
 import com.kylecorry.sol.science.astronomy.stars.CONSTELLATIONS
 import com.kylecorry.sol.science.astronomy.stars.STAR_CATALOG
 import com.kylecorry.sol.science.astronomy.stars.StarReading
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.tests.assertDate
 import com.kylecorry.sol.tests.assertDuration
@@ -916,7 +916,7 @@ class AstronomyTest {
         val actualStars = CONSTELLATIONS.first { it.name == "Orion" }.starEdges.flatMap { listOf(it.first, it.second) }.distinct()
         val readings = actualStars.map {
             val position = Astronomy.getStarPosition(it, time, location, true)
-            AltitudeAzimuth(position.altitude, position.azimuth.value)
+            CelestialObservation(position.azimuth, position.altitude)
         }
 
         val stars = Astronomy.plateSolve(readings, time).map { it.star }

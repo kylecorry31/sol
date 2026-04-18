@@ -2,6 +2,7 @@ package com.kylecorry.sol.science.astronomy.stars
 
 import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.science.astronomy.Astronomy
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
 import java.time.ZonedDateTime
@@ -16,7 +17,7 @@ internal class PlateSolver(
 ) {
 
     fun solve(
-        readings: List<AltitudeAzimuth>,
+        readings: List<CelestialObservation>,
         time: ZonedDateTime,
         approximateLocation: Coordinate = Time.getLocationFromTimeZone(time.zone)
     ): List<DetectedStar> {
@@ -41,7 +42,7 @@ internal class PlateSolver(
             }.sortedByDescending { it.second }.take(6)
 
             // Go through each possible match and see if it is a better match than what is recorded
-            var mostConfidentMatch: Pair<Star, Pair<AltitudeAzimuth, FloatArray>>? = null
+            var mostConfidentMatch: Pair<Star, Pair<CelestialObservation, FloatArray>>? = null
             for (possibleMatch in possibleMatches) {
                 val confidence = possibleMatch.second
                 val existingConfidence =
@@ -82,7 +83,7 @@ internal class PlateSolver(
         stars: List<Star>,
         time: ZonedDateTime,
         approximateLocation: Coordinate
-    ): List<Pair<Star, Pair<AltitudeAzimuth, FloatArray>>> {
+    ): List<Pair<Star, Pair<CelestialObservation, FloatArray>>> {
         val degreesOfSeparation = 10f
         val degreesStep = 0.2f
         var currentSeparation = 0f
@@ -90,11 +91,10 @@ internal class PlateSolver(
         // Remove stars that are way below the horizon
         // NOTE: Magnitude is inverted, so lower is brighter
         val starReadings = stars.filter { it.magnitude <= minMagnitude }.map {
-            val position = Astronomy.getStarPosition(it, time, approximateLocation, true)
-            it to AltitudeAzimuth(position.altitude, position.azimuth.value)
+            it to Astronomy.getStarPosition(it, time, approximateLocation, true)
         }.filter { it.second.altitude > -10 }
 
-        val quads = mutableListOf<Pair<Star, Pair<AltitudeAzimuth, FloatArray>>>()
+        val quads = mutableListOf<Pair<Star, Pair<CelestialObservation, FloatArray>>>()
         while (currentSeparation <= degreesOfSeparation) {
             quads.addAll(
                 starReadings.map { it.first }.zip(
@@ -113,11 +113,11 @@ internal class PlateSolver(
     }
 
     private fun getQuads(
-        readings: List<AltitudeAzimuth>,
+        readings: List<CelestialObservation>,
         minSeparation: Float = 0f, // Minimum angular separation in degrees
         maxSeparation: Float = 180f // Maximum angular separation in degrees
-    ): List<Pair<AltitudeAzimuth, FloatArray>> {
-        val quads = mutableListOf<Pair<AltitudeAzimuth, FloatArray>>()
+    ): List<Pair<CelestialObservation, FloatArray>> {
+        val quads = mutableListOf<Pair<CelestialObservation, FloatArray>>()
         for (i in readings.indices) {
             val reading = readings[i]
 
@@ -125,9 +125,9 @@ internal class PlateSolver(
             val neighbors = readings.mapIndexedNotNull { j, neighbor ->
                 if (i != j) {
                     val distance = Trigonometry.angularDistance(
-                        reading.azimuth,
+                        reading.azimuth.value,
                         reading.altitude,
-                        neighbor.azimuth,
+                        neighbor.azimuth.value,
                         neighbor.altitude
                     )
                     if (distance in minSeparation..maxSeparation) {
@@ -148,9 +148,9 @@ internal class PlateSolver(
                 for (k in j + 1..<quad.size) {
                     distances.add(
                         Trigonometry.angularDistance(
-                            quad[j].azimuth,
+                            quad[j].azimuth.value,
                             quad[j].altitude,
-                            quad[k].azimuth,
+                            quad[k].azimuth.value,
                             quad[k].altitude
                         )
                     )

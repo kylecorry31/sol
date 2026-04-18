@@ -1,3 +1,5 @@
 package com.kylecorry.sol.science.astronomy.stars
 
-data class DetectedStar(val star: Star, val reading: AltitudeAzimuth, val confidence: Float)
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
+
+data class DetectedStar(val star: Star, val reading: CelestialObservation, val confidence: Float)

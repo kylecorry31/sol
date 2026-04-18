@@ -1,7 +1,6 @@
 package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.science.astronomy.locators.StarLocator
-import com.kylecorry.sol.science.astronomy.stars.AltitudeAzimuth
 import com.kylecorry.sol.science.astronomy.stars.DetectedStar
 import com.kylecorry.sol.science.astronomy.stars.PlateSolver
 import com.kylecorry.sol.science.astronomy.stars.Star
@@ -46,7 +45,7 @@ internal object StarFacade {
      * Matches the readings to stars
      */
     fun plateSolve(
-        readings: List<AltitudeAzimuth>,
+        readings: List<CelestialObservation>,
         time: ZonedDateTime,
         approximateLocation: Coordinate? = null,
         tolerance: Float = 0.04f,
