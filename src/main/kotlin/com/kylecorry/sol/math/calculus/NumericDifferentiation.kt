@@ -57,7 +57,6 @@ internal object NumericDifferentiation {
         i: Int,
         stencil: Stencil
     ): Vector2 {
-        // TODO: dx multiplier
         var derivative = 0f
         var minX = Float.MAX_VALUE
         var maxX = -Float.MAX_VALUE

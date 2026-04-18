@@ -203,7 +203,6 @@ internal object SolForecaster : Forecaster {
                 null
             }
 
-        // TODO: Now, soon, and later buckets (or predict next X hours)
         val now = WeatherForecast(
             null,
             ForecastHelper.addSecondaryConditions(conditions, dailyTemperatureRange),

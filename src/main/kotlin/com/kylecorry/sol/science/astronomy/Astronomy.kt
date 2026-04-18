@@ -431,7 +431,6 @@ object Astronomy {
         type: EclipseType,
         maxSearch: Duration? = null
     ): Eclipse? {
-        // TODO: Apply max search to lunar as well
         val calculator = when (type) {
             EclipseType.PartialLunar -> PartialLunarEclipseCalculator()
             EclipseType.TotalLunar -> TotalLunarEclipseCalculator()

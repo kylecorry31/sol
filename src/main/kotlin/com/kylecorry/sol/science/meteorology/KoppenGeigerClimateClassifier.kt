@@ -122,7 +122,6 @@ internal object KoppenGeigerClimateClassifier {
             factors.precipitationMin >= 60f -> KoppenGeigerSeasonalPrecipitationPattern.Rainforest
             factors.precipitationMin >= 100 - factors.precipitationAnnualMean / 25 ->
                 KoppenGeigerSeasonalPrecipitationPattern.Monsoon
-            // TODO: Replace Savanna with Wet Summer and Dry Summer
             else -> KoppenGeigerSeasonalPrecipitationPattern.Savanna
         }
         return KoppenGeigerClimateClassification(

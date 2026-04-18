@@ -34,7 +34,6 @@ object Calculus {
         return NumericDifferentiation.finiteDifference(values, finiteDifferenceOrder)
     }
 
-    // TODO: Use central difference
     fun derivative(
         x: Double,
         step: Double = 0.0001,
@@ -44,7 +43,6 @@ object Calculus {
         return (fn(x + step) - current) / step
     }
 
-    // TODO: Use central difference
     fun derivative(
         x: Double,
         y: Double,
@@ -57,7 +55,6 @@ object Calculus {
         return xGrad to yGrad
     }
 
-    // TODO: RK4 solver?
     fun integral(
         startX: Double,
         endX: Double,

@@ -191,7 +191,6 @@ object Trigonometry {
 
     fun getCombinationRangeY(waveforms: List<Waveform>): Range<Float> {
         val ranges = waveforms.map { getRangeY(it) }
-        // TODO: To get a more accurate range, factor in the phase of the waveforms
         return Range(ranges.sumOfFloat { it.start }, ranges.sumOfFloat { it.end })
     }
 

@@ -121,7 +121,6 @@ object Oceanography {
         highTideTimes: List<ZonedDateTime>,
         location: Coordinate = Coordinate.zero
     ): Duration? {
-        // TODO: Give more weight to tides closer to full/new moon?
         val intervals = highTideTimes.mapNotNull { getLunitidalInterval(it, location) }
         if (intervals.isEmpty()) {
             return null

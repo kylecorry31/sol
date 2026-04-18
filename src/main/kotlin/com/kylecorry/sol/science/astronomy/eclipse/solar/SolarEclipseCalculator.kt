@@ -123,8 +123,6 @@ internal class SolarEclipseCalculator(
             // Get the next time of a solar eclipse
             val nextEclipse = provider.getNextSolarEclipseParameters(instant)
 
-            // TODO: Check to see if the eclipse will even be visible on earth
-
             // Search around the maximum time of the eclipse to see if it is visible
             val searchAmount = Duration.ofHours(3)
             val minimum = nextEclipse.maximum.minus(searchAmount).coerceIn(after, maxSearch)

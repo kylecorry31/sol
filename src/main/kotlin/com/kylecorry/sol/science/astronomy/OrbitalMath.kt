@@ -76,7 +76,6 @@ internal object OrbitalMath {
         }
     }
 
-    // TODO: Expand the infinite series up to the desired number of terms
     fun estimateEquationOfCenter(eccentricity: Double, meanAnomaly: Double): Double {
         // This is an angular correction, therefore it is not normalized
         return (2 * eccentricity * sinDegrees(meanAnomaly)).toDegrees()

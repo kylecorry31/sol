@@ -214,7 +214,6 @@ class LunitidalWaterLevelCalculator(
         }
 
         val tideTime = transit.plus(interval)
-        // TODO: Check if it approximately contains, in case the time is slightly off
         if (tides.contains(tideTime)) {
             return
         }

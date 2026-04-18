@@ -37,7 +37,6 @@ class GoldenSearchExtremaFinder(
         return Range(start, end)
     }
 
-    // TODO: Extract this
     private fun goldenRatioSearch(
         range: Range<Double>,
         fn: (x: Double) -> Double,

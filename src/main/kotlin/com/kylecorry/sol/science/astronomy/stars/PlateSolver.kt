@@ -88,7 +88,6 @@ internal class PlateSolver(
         var currentSeparation = 0f
 
         // Remove stars that are way below the horizon
-        // TODO: Also remove stars that are way out of sight based on the input readings
         // NOTE: Magnitude is inverted, so lower is brighter
         val starReadings = stars.filter { it.magnitude <= minMagnitude }.map {
             it to AltitudeAzimuth(

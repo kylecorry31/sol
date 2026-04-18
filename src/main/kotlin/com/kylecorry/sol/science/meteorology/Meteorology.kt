@@ -33,7 +33,6 @@ object Meteorology {
     private val cloudService = CloudService()
 
     fun getAltitude(pressure: Pressure, seaLevelPressure: Pressure): Distance {
-        // TODO: Factor in temperature
         val hpa = pressure.hpa().value
         val seaHpa = seaLevelPressure.hpa().value
         val meters = 44330.0 * (1 - (hpa / seaHpa).toDouble().pow(1 / 5.255))
