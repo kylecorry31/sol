@@ -2,225 +2,209 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ImplicitDefaultLocale:NationalGrid.kt$NationalGrid$String.format("%s %05.0f %05.0f", gs.reference, offset[0], offset[1])</ID>
-    <ID>LargeClass:Astronomy.kt$Astronomy</ID>
-    <ID>LongMethod:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
-    <ID>LongMethod:EastingNorthingConversion.kt$EastingNorthingConversion$fun toLatLon( inputCoordinates: DoubleArray, a: Double, b: Double, n0: Double, e0: Double, f0: Double, lat0Degrees: Double, lon0Degrees: Double ): DoubleArray</ID>
-    <ID>LongMethod:Geography.kt$Geography$fun trilaterate( readings: List&lt;Geofence&gt;, isWeighted: Boolean = false, calculateBias: Boolean = false ): TrilaterationResult</ID>
-    <ID>LongMethod:Geography.kt$Geography$fun vincenty( location1: Coordinate, location2: Coordinate ): FloatArray</ID>
-    <ID>LongMethod:LongitudinalNutation.kt$LongitudinalNutation$fun table3(): Array&lt;DoubleArray&gt;</ID>
-    <ID>LongMethod:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$private fun getNextLunarEclipse(ut: UniversalTime): LunarEclipseParameters</ID>
-    <ID>LongMethod:Moon.kt$Moon$private fun table47a(): Array&lt;IntArray&gt;</ID>
-    <ID>LongMethod:Moon.kt$Moon$private fun table47b(): Array&lt;IntArray&gt;</ID>
-    <ID>LongMethod:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$private fun calculateHelper( locator: ICelestialLocator, date: ZonedDateTime, location: Coordinate, standardAltitude: Double, withRefraction: Boolean, withParallax: Boolean ): RiseSetTransitTimes</ID>
-    <ID>LongMethod:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$private fun getNextSolarEclipse(ut: UniversalTime): SolarEclipseParameters</ID>
-    <ID>LongParameterList:Astronomy.kt$Astronomy$( date: ZonedDateTime, location: Coordinate, tilt: Float, azimuth: Bearing, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
-    <ID>LongParameterList:Astronomy.kt$Astronomy$( location: Coordinate, time: ZonedDateTime, nextRiseOffset: Duration = Duration.ofHours(6), mode: SunTimesMode = SunTimesMode.Actual, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
-    <ID>LongParameterList:Astronomy.kt$Astronomy$( readings: List&lt;AltitudeAzimuth&gt;, time: ZonedDateTime, approximateLocation: Coordinate? = null, tolerance: Float = 0.04f, minMatches: Int = 5, numNeighbors: Int = 3, minMagnitude: Float = 4f )</ID>
-    <ID>LongParameterList:CartesianConversion.kt$CartesianConversion$( inputCoordinates: DoubleArray, tX: Double, tY: Double, tZ: Double, s: Double, rX: Double, rY: Double, rZ: Double )</ID>
-    <ID>LongParameterList:EastingNorthingConversion.kt$EastingNorthingConversion$( inputCoordinates: DoubleArray, a: Double, b: Double, n0: Double, e0: Double, f0: Double, lat0: Double, lon0: Double )</ID>
-    <ID>LongParameterList:EastingNorthingConversion.kt$EastingNorthingConversion$( inputCoordinates: DoubleArray, a: Double, b: Double, n0: Double, e0: Double, f0: Double, lat0Degrees: Double, lon0Degrees: Double )</ID>
-    <ID>LongParameterList:Forecaster.kt$Forecaster$( observations: List&lt;WeatherObservation&lt;*&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;? = null, time: Instant = Instant.now(), pressureChangeThreshold: Float = 1.5f, pressureStormChangeThreshold: Float = 2f, location: Coordinate = Coordinate.zero )</ID>
-    <ID>LongParameterList:Geometry.kt$Geometry$( x: Float, y: Float, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float )</ID>
-    <ID>LongParameterList:Geometry.kt$Geometry$( x: Float, y: Float, z: Float, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float )</ID>
-    <ID>LongParameterList:Geometry.kt$Geometry$(point: Vector2, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float)</ID>
-    <ID>LongParameterList:Geometry.kt$Geometry$(point: Vector3, x1: Float, y1: Float, z1: Float, x2: Float, y2: Float, z2: Float)</ID>
-    <ID>LongParameterList:Geometry.kt$Geometry$(x: Float, y: Float, x1: Float, y1: Float, x2: Float, y2: Float)</ID>
-    <ID>LongParameterList:IRiseSetTransitTimeCalculator.kt$IRiseSetTransitTimeCalculator$( locator: ICelestialLocator, date: ZonedDateTime, location: Coordinate, standardAltitude: Double = 0.0, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
-    <ID>LongParameterList:Interpolation.kt$Interpolation$( value: Double, originalMin: Double, originalMax: Double, newMin: Double, newMax: Double, shouldClamp: Boolean = false )</ID>
-    <ID>LongParameterList:Interpolation.kt$Interpolation$( value: Float, originalMin: Float, originalMax: Float, newMin: Float, newMax: Float, shouldClamp: Boolean = false )</ID>
-    <ID>LongParameterList:Interpolation.kt$Interpolation$( x: Float, x0: Float, y0: Float, x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float )</ID>
-    <ID>LongParameterList:LeastSquaresOptimizer.kt$LeastSquaresOptimizer$( points: List&lt;List&lt;Float&gt;&gt;, errors: List&lt;Float&gt;, maxIterations: Int = 100, maxAllowedStep: Float = 500f, dampingFactor: Float = 0.1f, tolerance: Float = 0.0001f, initialValue: List&lt;Float&gt;? = null, distanceFn: (point: List&lt;Float&gt;, guess: List&lt;Float&gt;) -&gt; Float = { a, b -&gt; Geometry.euclideanDistance(a, b) }, weightingFn: (index: Int, point: List&lt;Float&gt;, error: Float) -&gt; Float = { index, point, error -&gt; 1f }, jacobianFn: (index: Int, point: List&lt;Float&gt;, guess: List&lt;Float&gt;) -&gt; List&lt;Float&gt; = { index, point, guess -&gt; val distance = distanceFn(point, guess) point.mapIndexed { j, value -&gt; (guess[j] - value) / distance * weightingFn(index, point, errors[index]) } } )</ID>
-    <ID>LongParameterList:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$( input: List&lt;List&lt;Float&gt;&gt;, output: List&lt;Int&gt;, epochs: Int = 100, learningRate: Float = 0.1f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
-    <ID>LongParameterList:LogisticRegressionClassifier.kt$LogisticRegressionClassifier$( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
-    <ID>LongParameterList:Meteorology.kt$Meteorology$( observations: List&lt;WeatherObservation&lt;*&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;?, pressureChangeThreshold: Float = 0.5f, pressureStormChangeThreshold: Float = 2f, time: Instant = Instant.now(), location: Coordinate = Coordinate.zero, source: ForecastSource = ForecastSource.Sol )</ID>
-    <ID>LongParameterList:Meteorology.kt$Meteorology$( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;?, pressureChangeThreshold: Float = 0.5f, pressureStormChangeThreshold: Float = 2f, time: Instant = Instant.now(), location: Coordinate = Coordinate.zero, source: ForecastSource = ForecastSource.Sol )</ID>
-    <ID>LongParameterList:NeuralNetwork.kt$NeuralNetwork$( input: List&lt;List&lt;Float&gt;&gt;, output: List&lt;Int&gt;, epochs: Int = 100, learningRate: Float = 0.1f, regularization: Float = 0f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
-    <ID>LongParameterList:NeuralNetwork.kt$NeuralNetwork$( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, regularization: Float = 0f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } )</ID>
-    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$( apparentSiderealDegrees: Double, dayFraction: Double, deltaTSeconds: Double, coordinates: Triple&lt;EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate&gt;, distances: Triple&lt;Distance, Distance, Distance&gt;?, date: java.time.LocalDate, location: Coordinate, withRefraction: Boolean, standardAltitudeDegrees: Double, )</ID>
-    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$( date: ZonedDateTime, coordinate: Coordinate, standardAltitude: Double, withRefraction: Boolean, withParallax: Boolean, locator: ICelestialLocator )</ID>
-    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$( locator: ICelestialLocator, date: ZonedDateTime, location: Coordinate, standardAltitude: Double, withRefraction: Boolean, withParallax: Boolean )</ID>
-    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$( ut: UniversalTime, location: Coordinate, standardAltitude: Double, withRefraction: Boolean, coordinates: Triple&lt;EquatorialCoordinate, EquatorialCoordinate, EquatorialCoordinate&gt;, distances: Triple&lt;Distance, Distance, Distance&gt;? )</ID>
-    <ID>LongParameterList:Physics.kt$Physics$( targetPosition: Vector2, velocity: Float, initialPosition: Vector2 = Vector2.zero, dragModel: DragModel = NoDragModel(), timeStep: Float = 0.01f, maxTime: Float = 10f, minAngle: Float = 0f, maxAngle: Float = 90f, optimizer: IOptimizer = HillClimbingOptimizer(0.001, initialValue = 0.0 to 0.0), getInterpolator: (points: List&lt;Vector2&gt;) -&gt; Interpolator = { points -&gt; LinearInterpolator(points) } )</ID>
-    <ID>LongParameterList:PlanetLocator.kt$Planet$( val order: Int, internal val epoch: Double, val orbitalPeriod: Double, val radius: Double, internal val eccentricity: Double, internal val semimajorAxis: Double, internal val angularDiameter: Double, internal val visualMagnitude: Double, internal val inclination: Double, internal val eclipticLongitudeEpoch: Double, internal val eclipticLongitudePerihelion: Double, internal val eclipticLongitudeAscendingNodeEpoch: Double )</ID>
-    <ID>LongParameterList:SolForecaster.kt$SolForecaster$( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;? = null, time: Instant = Instant.now(), pressureChangeThreshold: Float = 1.5f, pressureStormChangeThreshold: Float = 2f )</ID>
-    <ID>LongParameterList:SolForecaster.kt$SolForecaster$( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;? = null, time: Instant = Instant.now(), pressureChangeThreshold: Float = 1.5f, weatherPredictors: List&lt;Pair&lt;WeatherCondition, WeatherPredictor&gt;&gt;, afterWeatherPredictors: List&lt;Pair&lt;WeatherCondition, WeatherPredictor&gt;&gt;, )</ID>
-    <ID>LongParameterList:SolarRadiationCalculator.kt$SolarRadiationCalculator$( ut: UniversalTime, location: Coordinate, tilt: Float? = null, bearing: Bearing? = null, withRefraction: Boolean = false, withParallax: Boolean = false )</ID>
-    <ID>LongParameterList:ZambrettiForecaster.kt$ZambrettiForecaster$( location: Coordinate, pressure: Pressure, tendency: PressureTendency, windDirection: Bearing?, dailyTemperatureRange: Range&lt;Temperature&gt;?, time: ZonedDateTime, changeThreshold: Float )</ID>
-    <ID>LoopWithTooManyJumpStatements:Astronomy.kt$Astronomy$for</ID>
-    <ID>LoopWithTooManyJumpStatements:LoessFilter.kt$LoessFilter$for</ID>
-    <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt$LoessFilter2D$for</ID>
-    <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt$TimeSeriesEnsemble$for</ID>
-    <ID>MapGetWithNotNullAssertionOperator:Constellation.kt$STAR_CATALOG_BY_HIP[hipDesignation]!!</ID>
-    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt$NumericDifferentiation$BACKWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt$NumericDifferentiation$CENTRAL_STENCILS[centerOrder]!!</ID>
-    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt$NumericDifferentiation$FORWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>NestedBlockDepth:Ecology.kt$Ecology$fun getLifecycleEventDates( events: List&lt;LifecycleEvent&gt;, dateRange: Range&lt;LocalDate&gt;, dayLengthProvider: (LocalDate) -&gt; Duration, temperatureProvider: (LocalDate) -&gt; Range&lt;Temperature&gt;, ): List&lt;Pair&lt;LocalDate, LifecycleEvent&gt;&gt;</ID>
-    <ID>NestedBlockDepth:NeuralNetwork.kt$NeuralNetwork$fun fit( input: List&lt;Matrix&gt;, output: List&lt;Matrix&gt;, epochs: Int = 100, learningRate: Float = 0.1f, regularization: Float = 0f, batchSize: Int = input.size, onEpochCompleteFn: (error: Float, epoch: Int) -&gt; Unit = { _, _ -&gt; } ): Float</ID>
-    <ID>NoNameShadowing:Geometry.kt$Geometry${ !visited[it] }</ID>
-    <ID>NoNameShadowing:LeastSquaresOptimizer.kt$LeastSquaresOptimizer$i</ID>
-    <ID>NoNameShadowing:ODESolver.kt$x</ID>
-    <ID>NoNameShadowing:StarLocationCalculator.kt$StarLocationCalculator$approximateLocation</ID>
-    <ID>NoNameShadowing:StarLocationCalculator.kt$StarLocationCalculator$i</ID>
-    <ID>NoNameShadowing:StarLocationCalculator.kt$StarLocationCalculator$lat</ID>
-    <ID>NoNameShadowing:StarLocationCalculator.kt$StarLocationCalculator$lon</ID>
-    <ID>NoRecursion:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$getNextEclipseHelper( parameters.maximum.plus(Duration.ofDays(10)), atLeastInstant, location, iterationsRemaining - 1 )</ID>
-    <ID>NoRecursion:LinearAlgebra.kt$LinearAlgebra$determinant(cofactor(m, 0, c))</ID>
-    <ID>NoRecursion:Lists.kt$Lists$reorder(data, newIndices, false)</ID>
-    <ID>RedundantHigherOrderMapUsage:MedianFilter.kt$MedianFilter$map</ID>
-    <ID>ReturnCount:AbstractUmbralLunarEclipseCalculator.kt$AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper( after: Instant, atLeastInstant: Instant, location: Coordinate, iterationsRemaining: Int ): Eclipse?</ID>
-    <ID>ReturnCount:Algebra.kt$Algebra$fun solve(equation: LinearEquation): Float?</ID>
-    <ID>ReturnCount:Algebra.kt$Algebra$fun solve(equation: QuadraticEquation): Pair&lt;Float, Float&gt;?</ID>
-    <ID>ReturnCount:Arithmetic.kt$Arithmetic$fun power(x: Int, power: Int): Int</ID>
-    <ID>ReturnCount:Arithmetic.kt$Arithmetic$fun wrap(value: Double, min: Double, max: Double): Double</ID>
-    <ID>ReturnCount:ArrivalTimeCalculator.kt$ArrivalTimeCalculator$fun getArrivalTime( time: Instant, forecast: WeatherForecast, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt; ): Instant?</ID>
-    <ID>ReturnCount:AstroSearch.kt$AstroSearch$fun findEvent( range: Range&lt;Instant&gt;, precision: Duration, start: Instant = range.middle(), predicate: (Instant) -&gt; Boolean ): Instant?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$fun getDaylightLength( date: ZonedDateTime, location: Coordinate, sunTimesMode: SunTimesMode = SunTimesMode.Actual, withRefraction: Boolean = false, withParallax: Boolean = false ): Duration</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$fun getNextMoonrise( time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false, withParallax: Boolean = false ): ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$fun getNextMoonset( time: ZonedDateTime, location: Coordinate, withRefraction: Boolean = false, withParallax: Boolean = false ): ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$fun getNextSunrise( time: ZonedDateTime, location: Coordinate, mode: SunTimesMode = SunTimesMode.Actual, withRefraction: Boolean = false, withParallax: Boolean = false ): ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$fun getNextSunset( time: ZonedDateTime, location: Coordinate, mode: SunTimesMode = SunTimesMode.Actual, withRefraction: Boolean = false, withParallax: Boolean = false ): ZonedDateTime?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$private fun getAboveHorizonTimes( location: Coordinate, time: ZonedDateTime, nextRiseOffset: Duration, isUpPredicate: (Coordinate, ZonedDateTime) -&gt; Boolean, riseSetTransitTimesProducer: (Coordinate, ZonedDateTime) -&gt; RiseSetTransitTimes ): Range&lt;ZonedDateTime&gt;?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$private fun getClosestNight( time: ZonedDateTime?, location: Coordinate, sunTimesMode: SunTimesMode ): Range&lt;ZonedDateTime&gt;?</ID>
-    <ID>ReturnCount:Astronomy.kt$Astronomy$private fun getNextMeteorShowerPeak( shower: MeteorShower, location: Coordinate, now: ZonedDateTime ): RiseSetTransitTimes?</ID>
-    <ID>ReturnCount:ClearPredictor.kt$ClearPredictor$override fun isLikely(factors: SolForecastFactors): Boolean</ID>
-    <ID>ReturnCount:CloudPrecipitationCalculator.kt$CloudPrecipitationCalculator$fun getMatch( clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, pattern: List&lt;List&lt;CloudGenus?&gt;&gt;, requireExact: Boolean = false ): List&lt;Reading&lt;CloudGenus?&gt;&gt;?</ID>
-    <ID>ReturnCount:CoordinateBounds.kt$CoordinateBounds.Companion$fun from(points: List&lt;Coordinate&gt;, checkForFullWorld: Boolean = true): CoordinateBounds</ID>
-    <ID>ReturnCount:DecimalDegreesCoordinateFormat.kt$DecimalDegreesCoordinateFormat$override fun parse(text: String): Coordinate?</ID>
-    <ID>ReturnCount:DecimalFormatter.kt$DecimalFormatter$fun format(number: Number, decimalPlaces: Int, strict: Boolean = true): String</ID>
-    <ID>ReturnCount:DegreesDecimalMinutesCoordinateFormat.kt$DegreesDecimalMinutesCoordinateFormat$override fun parse(text: String): Coordinate?</ID>
-    <ID>ReturnCount:DegreesMinutesSecondsCoordinateFormat.kt$DegreesMinutesSecondsCoordinateFormat$override fun parse(text: String): Coordinate?</ID>
-    <ID>ReturnCount:ForecastHelper.kt$ForecastHelper$private fun getPrecipitationType(temperatures: Range&lt;Temperature&gt;?): WeatherCondition?</ID>
-    <ID>ReturnCount:Geography.kt$Geography$fun getAlongTrackDistance( point: Coordinate, start: Coordinate, end: Coordinate ): Distance</ID>
-    <ID>ReturnCount:Geography.kt$Geography$fun getNearestPoint( point: Coordinate, start: Coordinate, end: Coordinate ): Coordinate</ID>
-    <ID>ReturnCount:Geography.kt$Geography$fun triangulateSelf( referenceA: Coordinate, selfToReferenceBearingA: Bearing, referenceB: Coordinate, selfToReferenceBearingB: Bearing ): Coordinate?</ID>
-    <ID>ReturnCount:Geography.kt$Geography$fun trilaterate( readings: List&lt;Geofence&gt;, isWeighted: Boolean = false, calculateBias: Boolean = false ): TrilaterationResult</ID>
-    <ID>ReturnCount:Geography.kt$Geography$private fun trilaterate2(readings: List&lt;Geofence&gt;): List&lt;Coordinate&gt;</ID>
-    <ID>ReturnCount:Geology.kt$Geology$fun getSlopeGrade(horizontal: Distance, vertical: Distance): Float</ID>
-    <ID>ReturnCount:Geology.kt$Geology$fun getSlopeGrade(inclination: Float): Float</ID>
-    <ID>ReturnCount:Geometry.kt$Geometry$fun getIntersection(line: Line, circle: Circle): Line?</ID>
-    <ID>ReturnCount:Geometry.kt$Geometry$fun getIntersectionArea(circle1: Circle, circle2: Circle): Float</ID>
-    <ID>ReturnCount:HorizonCoordinate.kt$HorizonCoordinate$private fun getRefraction(): Double</ID>
-    <ID>ReturnCount:IntersectionMath.kt$IntersectionMath$fun getIntersection(line1: Line, line2: Line): Vector2?</ID>
-    <ID>ReturnCount:IntersectionMath.kt$IntersectionMath$fun getIntersection(line: Line, rectangle: Rectangle): List&lt;Vector2&gt;</ID>
-    <ID>ReturnCount:KalmanFilter.kt$KalmanFilter.Companion$fun filter( measurements: List&lt;Double&gt;, errors: List&lt;Double&gt;, processError: Double, times: List&lt;Double&gt;? = null ): List&lt;Double&gt;</ID>
-    <ID>ReturnCount:KalmanFilter.kt$KalmanFilter.Companion$fun filterWithError( measurements: List&lt;Double&gt;, errors: List&lt;Double&gt;, processError: Double, times: List&lt;Double&gt;? = null ): List&lt;Pair&lt;Double, Double&gt;&gt;</ID>
-    <ID>ReturnCount:LocalNewtonInterpolator.kt$LocalNewtonInterpolator$override fun interpolate(x: Float): Float</ID>
-    <ID>ReturnCount:Moon.kt$Moon$fun getPhase(ut: UniversalTime): MoonPhase</ID>
-    <ID>ReturnCount:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator$private fun getHourAngle( standardAltitudeDegrees: Double, location: Coordinate, coordinate: EquatorialCoordinate ): Double?</ID>
-    <ID>ReturnCount:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$override fun toString(coordinate: Coordinate): String</ID>
-    <ID>ReturnCount:Oceanography.kt$Oceanography$fun getTidalRange(time: ZonedDateTime): TidalRange</ID>
-    <ID>ReturnCount:Range.kt$Range$fun clamp(value: T): T</ID>
-    <ID>ReturnCount:Range.kt$Range.Companion$fun &lt;T : Comparable&lt;T&gt;&gt; intersection( ranges: List&lt;Range&lt;T&gt;&gt;, ignoreNoIntersection: Boolean = false, stopWhenNoIntersection: Boolean = false ): Range&lt;T&gt;?</ID>
-    <ID>ReturnCount:SolForecaster.kt$SolForecaster$private fun forecast( pressures: List&lt;Reading&lt;Pressure&gt;&gt;, clouds: List&lt;Reading&lt;CloudGenus?&gt;&gt;, dailyTemperatureRange: Range&lt;Temperature&gt;? = null, time: Instant = Instant.now(), pressureChangeThreshold: Float = 1.5f, pressureStormChangeThreshold: Float = 2f ): List&lt;WeatherForecast&gt;</ID>
-    <ID>ReturnCount:SolarEclipseCalculator.kt$SolarEclipseCalculator$override fun getNextEclipse(after: Instant, location: Coordinate): Eclipse?</ID>
-    <ID>ReturnCount:SolarEclipseCalculator.kt$SolarEclipseCalculator$private fun getMagnitude( angularDistance: Double, moonRadius: Double, sunRadius: Double ): Pair&lt;Float, Float&gt;</ID>
-    <ID>ReturnCount:SolarEclipseCalculator.kt$SolarEclipseCalculator$private fun getNextEclipseTime(after: Instant, location: Coordinate): Instant?</ID>
-    <ID>ReturnCount:SolarEclipseCalculator.kt$SolarEclipseCalculator$private fun getVisibleMagnitude( time: UniversalTime, location: Coordinate ): Pair&lt;Float, Float&gt;</ID>
-    <ID>ReturnCount:SolarRadiationCalculator.kt$SolarRadiationCalculator$fun getRadiation( ut: UniversalTime, location: Coordinate, tilt: Float? = null, bearing: Bearing? = null, withRefraction: Boolean = false, withParallax: Boolean = false ): Double</ID>
-    <ID>ReturnCount:StarLocationCalculator.kt$StarLocationCalculator$fun getLocationFromStars( starReadings: List&lt;StarReading&gt;, approximateLocation: Coordinate? ): Coordinate?</ID>
-    <ID>ReturnCount:StarLocationCalculator.kt$StarLocationCalculator$private fun triangulateApproximateLocation( starReadings: List&lt;StarReading&gt;, approximateLocation: Coordinate ): Pair&lt;Coordinate?, Float?&gt;</ID>
-    <ID>ReturnCount:Statistics.kt$Statistics$fun quantile(values: List&lt;Float&gt;, quantile: Float, interpolate: Boolean = true): Float</ID>
-    <ID>ReturnCount:StormPredictor.kt$StormPredictor$override fun isLikely(factors: SolForecastFactors): Boolean</ID>
-    <ID>ReturnCount:TextExtensions.kt$internal fun String.toDoubleCompat(): Double?</ID>
-    <ID>ReturnCount:TextExtensions.kt$internal fun String.toFloatCompat(): Float?</ID>
-    <ID>ReturnCount:Time.kt$Time$fun List&lt;Reading&lt;*&gt;&gt;.duration(): Duration</ID>
-    <ID>SwallowedException:MGRSCoordinateFormat.kt$MGRSCoordinateFormat$e: Exception</ID>
-    <ID>SwallowedException:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$e: Exception</ID>
-    <ID>SwallowedException:TextExtensions.kt$e: Exception</ID>
-    <ID>SwallowedException:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
-    <ID>SwallowedException:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
-    <ID>ThrowsCount:NationalGrid.kt$NationalGrid$fun fromNationalGrid(ng: String): DoubleArray</ID>
-    <ID>TooGenericExceptionCaught:MGRSCoordinateFormat.kt$MGRSCoordinateFormat$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:OSGBCoordinateFormat.kt$OSGBCoordinateFormat$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:TextExtensions.kt$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:USNGCoordinateFormat.kt$USNGCoordinateFormat$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt$UTMCoordinateFormat$e: Exception</ID>
-    <ID>TooManyFunctions:Arithmetic.kt$Arithmetic</ID>
-    <ID>TooManyFunctions:Astronomy.kt$Astronomy</ID>
-    <ID>TooManyFunctions:CoordinateBounds.kt$CoordinateBounds : IGeoArea</ID>
-    <ID>TooManyFunctions:Extensions.kt$com.kylecorry.sol.math.Extensions.kt</ID>
-    <ID>TooManyFunctions:FrequencyAnalysis.kt$FrequencyAnalysis</ID>
-    <ID>TooManyFunctions:Geography.kt$Geography</ID>
-    <ID>TooManyFunctions:Geology.kt$Geology</ID>
-    <ID>TooManyFunctions:Geometry.kt$Geometry</ID>
-    <ID>TooManyFunctions:Interpolation.kt$Interpolation</ID>
-    <ID>TooManyFunctions:KoppenGeigerClimateClassifier.kt$KoppenGeigerClimateClassifier</ID>
-    <ID>TooManyFunctions:LinearAlgebra.kt$LinearAlgebra</ID>
-    <ID>TooManyFunctions:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator : IWaterLevelCalculator</ID>
-    <ID>TooManyFunctions:MathExtensions.kt$MathExtensions</ID>
-    <ID>TooManyFunctions:Matrix.kt$Matrix</ID>
-    <ID>TooManyFunctions:Matrix.kt$com.kylecorry.sol.math.algebra.Matrix.kt</ID>
-    <ID>TooManyFunctions:Meteorology.kt$Meteorology</ID>
-    <ID>TooManyFunctions:Moon.kt$Moon : ICelestialLocator</ID>
-    <ID>TooManyFunctions:NewtonsRiseSetTransitTimeCalculator.kt$NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator</ID>
-    <ID>TooManyFunctions:Optics.kt$Optics</ID>
-    <ID>TooManyFunctions:Quaternion.kt$Quaternion</ID>
-    <ID>TooManyFunctions:Quaternion.kt$QuaternionMath</ID>
-    <ID>TooManyFunctions:Statistics.kt$Statistics</ID>
-    <ID>TooManyFunctions:Sun.kt$Sun : ICelestialLocator</ID>
-    <ID>TooManyFunctions:Time.kt$Time</ID>
-    <ID>TooManyFunctions:Trigonometry.kt$Trigonometry</ID>
-    <ID>TooManyFunctions:UniversalTime.kt$com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
-    <ID>TooManyFunctions:Vector2.kt$Vector2</ID>
-    <ID>UnsafeCallOnNullableType:BaselineExtremaFinder.kt$BaselineExtremaFinder$highPeakIndex!!</ID>
-    <ID>UnsafeCallOnNullableType:BaselineExtremaFinder.kt$BaselineExtremaFinder$highPeakValue!!</ID>
-    <ID>UnsafeCallOnNullableType:BaselineExtremaFinder.kt$BaselineExtremaFinder$lowPeakIndex!!</ID>
-    <ID>UnsafeCallOnNullableType:BaselineExtremaFinder.kt$BaselineExtremaFinder$lowPeakValue!!</ID>
-    <ID>UnsafeCallOnNullableType:Constellation.kt$STAR_CATALOG_BY_HIP[hipDesignation]!!</ID>
-    <ID>UnsafeCallOnNullableType:CoordinateBounds.kt$CoordinateBounds.Companion$maxLongitude!!</ID>
-    <ID>UnsafeCallOnNullableType:CoordinateBounds.kt$CoordinateBounds.Companion$minLongitude!!</ID>
-    <ID>UnsafeCallOnNullableType:KalmanFilter.kt$KalmanFilter$lastTime!!</ID>
-    <ID>UnsafeCallOnNullableType:LunitidalWaterLevelCalculator.kt$LunitidalWaterLevelCalculator$cachedCalculator!!</ID>
-    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt$NumericDifferentiation$BACKWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt$NumericDifferentiation$CENTRAL_STENCILS[centerOrder]!!</ID>
-    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt$NumericDifferentiation$FORWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>UnsafeCallOnNullableType:SolarEclipseCalculator.kt$SolarEclipseCalculator$locator.getDistance(time)!!</ID>
-    <ID>UnsafeCallOnNullableType:SphericalHarmonics.kt$SphericalHarmonics.Companion$schmidtQuasiNorm[n - 1]!!</ID>
-    <ID>UnsafeCallOnNullableType:SphericalHarmonics.kt$SphericalHarmonics.Companion$schmidtQuasiNorm[n]!!</ID>
-    <ID>UnsafeCallOnNullableType:StarLocationCalculator.kt$StarLocationCalculator$reading.azimuth!!</ID>
-    <ID>UseOrEmpty:Geography.kt$Geography$readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()</ID>
-    <ID>UseOrEmpty:LeastSquaresOptimizer.kt$LeastSquaresOptimizer$points.firstOrNull() ?: emptyList()</ID>
-    <ID>UseOrEmpty:SolForecaster.kt$SolForecaster$previous .reversed() .firstOrNull { it.conditions.isNotEmpty() } ?.conditions ?: emptyList()</ID>
-    <ID>UseOrEmpty:ZambrettiForecaster.kt$ZambrettiForecaster$conditions[z.toInt()]?.current ?: emptyList()</ID>
-    <ID>UseOrEmpty:ZambrettiForecaster.kt$ZambrettiForecaster$conditions[z.toInt()]?.later ?: emptyList()</ID>
-    <ID>VarCouldBeVal:NewtonInterpolator.kt$NewtonInterpolator$private var polynomial = regression.fit(points)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val M = Trigonometry.normalizeAngle( 2.5534 + 29.1053567 * k - 0.0000014 * power( julianCenturiesSinceJ2000, 2 ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3) )</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val MPrime = Trigonometry.normalizeAngle( 201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power( julianCenturiesSinceJ2000, 3 ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4) )</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
-    <ID>VariableNaming:LunarEclipseParameterProvider.kt$LunarEclipseParameterProvider$var F: Double</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val D = getMeanElongation(tt)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val D = getMeanElongation(ut)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000075)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val E2 = Arithmetic.square(E)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val F = getArgumentOfLatitude(tt)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val L = Trigonometry.normalizeAngle( polynomial( julianCenturiesSinceJ2000, 218.3164477, 481267.88123421, -0.0015786, 1 / 538841.0, -1 / 65194000.0 ) )</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val M = sun.getMeanAnomaly(tt)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val M = sun.getMeanAnomaly(ut)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val Mp = getMeanAnomaly(ut)</ID>
-    <ID>VariableNaming:Moon.kt$Moon$val Mprime = getMeanAnomaly(tt)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val M = Trigonometry.normalizeAngle( 2.5534 + 29.1053567 * k - 0.0000014 * power( julianCenturiesSinceJ2000, 2 ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3) )</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val MPrime = Trigonometry.normalizeAngle( 201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power( julianCenturiesSinceJ2000, 3 ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4) )</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
-    <ID>VariableNaming:SolarEclipseParameterProvider.kt$SolarEclipseParameterProvider$var F: Double</ID>
-    <ID>VariableNaming:StarLocator.kt$StarLocator$val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)</ID>
-    <ID>VariableNaming:StarLocator.kt$StarLocator$val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)</ID>
-    <ID>VariableNaming:StarLocator.kt$StarLocator$val C = sinDegrees(value3) * cosDecCosRA + cosDegrees(value3) * sinDegrees(declination)</ID>
-    <ID>VariableNaming:Sun.kt$Sun$val C = equationOfCenter(julianCenturiesSinceJ2000)</ID>
-    <ID>VariableNaming:Sun.kt$Sun$val L = getGeometricLongitude(julianCenturiesSinceJ2000)</ID>
-    <ID>VariableNaming:Sun.kt$Sun$val M = getMeanAnomaly(julianCenturiesSinceJ2000)</ID>
-    <ID>VariableNaming:UniversalTime.kt$val A = floor(Y / 100)</ID>
-    <ID>VariableNaming:UniversalTime.kt$val B = 2 - A + floor(A / 4)</ID>
-    <ID>VariableNaming:UniversalTime.kt$val D = dayOfMonth.toDouble() + if (includeTime) toLocalTime().toDecimalHours() / 24.0 else 0.0</ID>
-    <ID>VariableNaming:UniversalTime.kt$val Y = (year - 1).toDouble()</ID>
-    <ID>VariableNaming:UniversalTime.kt$var M = month.value.toDouble()</ID>
-    <ID>VariableNaming:UniversalTime.kt$var Y = year.toDouble()</ID>
+    <ID>ImplicitDefaultLocale:NationalGrid.kt:NationalGrid$String.format("%s %05.0f %05.0f", gs.reference, offset[0], offset[1])</ID>
+    <ID>LargeClass:Astronomy.kt:Astronomy</ID>
+    <ID>LongMethod:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper: Eclipse?</ID>
+    <ID>LongMethod:Geography.kt:Geography$fun trilaterate: TrilaterationResult</ID>
+    <ID>LongMethod:Geography.kt:Geography$fun vincenty: FloatArray</ID>
+    <ID>LongMethod:LongitudinalNutation.kt:LongitudinalNutation$fun table3: Array&lt;DoubleArray&gt;</ID>
+    <ID>LongMethod:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$private fun getNextLunarEclipse: LunarEclipseParameters</ID>
+    <ID>LongMethod:Moon.kt:Moon$private fun table47a: Array&lt;IntArray&gt;</ID>
+    <ID>LongMethod:Moon.kt:Moon$private fun table47b: Array&lt;IntArray&gt;</ID>
+    <ID>LongMethod:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun calculateHelper: RiseSetTransitTimes</ID>
+    <ID>LongMethod:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$private fun getNextSolarEclipse: SolarEclipseParameters</ID>
+    <ID>LongParameterList:Astronomy.kt:Astronomy$fun getSolarRadiation: Double</ID>
+    <ID>LongParameterList:Astronomy.kt:Astronomy$fun getSunAboveHorizonTimes: Range&lt;ZonedDateTime&gt;?</ID>
+    <ID>LongParameterList:Astronomy.kt:Astronomy$fun plateSolve: List&lt;DetectedStar&gt;</ID>
+    <ID>LongParameterList:CartesianConversion.kt:CartesianConversion$fun helmertTransformation: DoubleArray</ID>
+    <ID>LongParameterList:EastingNorthingConversion.kt:EastingNorthingConversion$fun fromLatLon: DoubleArray</ID>
+    <ID>LongParameterList:EastingNorthingConversion.kt:EastingNorthingConversion$fun toLatLon: DoubleArray</ID>
+    <ID>LongParameterList:Forecaster.kt:Forecaster$fun forecast: List&lt;WeatherForecast&gt;</ID>
+    <ID>LongParameterList:Geometry.kt:Geometry$fun snapToLine: Vector2</ID>
+    <ID>LongParameterList:Geometry.kt:Geometry$fun snapToLine: Vector3</ID>
+    <ID>LongParameterList:IRiseSetTransitTimeCalculator.kt:IRiseSetTransitTimeCalculator$fun calculate: RiseSetTransitTimes</ID>
+    <ID>LongParameterList:Interpolation.kt:Interpolation$fun cubic: Float</ID>
+    <ID>LongParameterList:Interpolation.kt:Interpolation$fun map: Double</ID>
+    <ID>LongParameterList:Interpolation.kt:Interpolation$fun map: Float</ID>
+    <ID>LongParameterList:LeastSquaresOptimizer.kt:LeastSquaresOptimizer$fun optimize: List&lt;Float&gt;</ID>
+    <ID>LongParameterList:LogisticRegressionClassifier.kt:LogisticRegressionClassifier$fun fit: Float</ID>
+    <ID>LongParameterList:LogisticRegressionClassifier.kt:LogisticRegressionClassifier$fun fitClasses: Float</ID>
+    <ID>LongParameterList:Meteorology.kt:Meteorology$fun forecast: List&lt;WeatherForecast&gt;</ID>
+    <ID>LongParameterList:NeuralNetwork.kt:NeuralNetwork$fun fit: Float</ID>
+    <ID>LongParameterList:NeuralNetwork.kt:NeuralNetwork$fun fitClasses: Float</ID>
+    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun calculateHelper: RiseSetTransitTimes</ID>
+    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun getRiseSetAdjustment: Double</ID>
+    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun getRiseSetTransitTimes: Triple&lt;Double, Double, Double&gt;?</ID>
+    <ID>LongParameterList:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun getTransitTimesHelper: RiseSetTransitTimes</ID>
+    <ID>LongParameterList:Physics.kt:Physics$fun getVelocityVectorForImpact: Vector2</ID>
+    <ID>LongParameterList:PlanetLocator.kt:Planet</ID>
+    <ID>LongParameterList:SolForecaster.kt:SolForecaster$private fun forecast: List&lt;WeatherForecast&gt;</ID>
+    <ID>LongParameterList:SolForecaster.kt:SolForecaster$private fun forecastHelper: List&lt;WeatherForecast&gt;</ID>
+    <ID>LongParameterList:SolarRadiationCalculator.kt:SolarRadiationCalculator$fun getRadiation: Double</ID>
+    <ID>LongParameterList:ZambrettiForecaster.kt:ZambrettiForecaster$private fun forecast: List&lt;WeatherForecast&gt;</ID>
+    <ID>LoopWithTooManyJumpStatements:Astronomy.kt:Astronomy$for</ID>
+    <ID>LoopWithTooManyJumpStatements:LoessFilter.kt:LoessFilter$for</ID>
+    <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt:LoessFilter2D$for</ID>
+    <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt:TimeSeriesEnsemble$for</ID>
+    <ID>MapGetWithNotNullAssertionOperator:Constellation.kt:STAR_CATALOG_BY_HIP[hipDesignation]!!</ID>
+    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt:NumericDifferentiation$BACKWARD_STENCILS[endpointOrder]!!</ID>
+    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt:NumericDifferentiation$CENTRAL_STENCILS[centerOrder]!!</ID>
+    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt:NumericDifferentiation$FORWARD_STENCILS[endpointOrder]!!</ID>
+    <ID>NoNameShadowing:Geometry.kt:Geometry${ !visited[it] }</ID>
+    <ID>NoNameShadowing:ODESolver.kt:x</ID>
+    <ID>NoNameShadowing:StarLocationCalculator.kt:StarLocationCalculator$approximateLocation</ID>
+    <ID>NoRecursion:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$getNextEclipseHelper( parameters.maximum.plus(Duration.ofDays(10)), atLeastInstant, location, iterationsRemaining - 1 )</ID>
+    <ID>NoRecursion:LinearAlgebra.kt:LinearAlgebra$determinant(cofactor(m, 0, c))</ID>
+    <ID>NoRecursion:Lists.kt:Lists$reorder(data, newIndices, false)</ID>
+    <ID>RedundantHigherOrderMapUsage:MedianFilter.kt:MedianFilter$map</ID>
+    <ID>ReturnCount:AbstractUmbralLunarEclipseCalculator.kt:AbstractUmbralLunarEclipseCalculator$private fun getNextEclipseHelper: Eclipse?</ID>
+    <ID>ReturnCount:Algebra.kt:Algebra$fun solve: Float?</ID>
+    <ID>ReturnCount:Algebra.kt:Algebra$fun solve: Pair&lt;Float, Float&gt;?</ID>
+    <ID>ReturnCount:Arithmetic.kt:Arithmetic$fun power: Int</ID>
+    <ID>ReturnCount:Arithmetic.kt:Arithmetic$fun wrap: Double</ID>
+    <ID>ReturnCount:ArrivalTimeCalculator.kt:ArrivalTimeCalculator$fun getArrivalTime: Instant?</ID>
+    <ID>ReturnCount:AstroSearch.kt:AstroSearch$fun findEvent: Instant?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getDaylightLength: Duration</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextMoonrise: ZonedDateTime?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextMoonset: ZonedDateTime?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextSunrise: ZonedDateTime?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$fun getNextSunset: ZonedDateTime?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$private fun getAboveHorizonTimes: Range&lt;ZonedDateTime&gt;?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$private fun getClosestNight: Range&lt;ZonedDateTime&gt;?</ID>
+    <ID>ReturnCount:Astronomy.kt:Astronomy$private fun getNextMeteorShowerPeak: RiseSetTransitTimes?</ID>
+    <ID>ReturnCount:ClearPredictor.kt:ClearPredictor$override fun isLikely: Boolean</ID>
+    <ID>ReturnCount:CloudPrecipitationCalculator.kt:CloudPrecipitationCalculator$fun getMatch: List&lt;Reading&lt;CloudGenus?&gt;&gt;?</ID>
+    <ID>ReturnCount:CoordinateBounds.kt:CoordinateBounds.Companion$fun from: CoordinateBounds</ID>
+    <ID>ReturnCount:DecimalDegreesCoordinateFormat.kt:DecimalDegreesCoordinateFormat$override fun parse: Coordinate?</ID>
+    <ID>ReturnCount:DecimalFormatter.kt:DecimalFormatter$fun format: String</ID>
+    <ID>ReturnCount:DegreesDecimalMinutesCoordinateFormat.kt:DegreesDecimalMinutesCoordinateFormat$override fun parse: Coordinate?</ID>
+    <ID>ReturnCount:DegreesMinutesSecondsCoordinateFormat.kt:DegreesMinutesSecondsCoordinateFormat$override fun parse: Coordinate?</ID>
+    <ID>ReturnCount:ForecastHelper.kt:ForecastHelper$private fun getPrecipitationType: WeatherCondition?</ID>
+    <ID>ReturnCount:Geography.kt:Geography$fun getAlongTrackDistance: Distance</ID>
+    <ID>ReturnCount:Geography.kt:Geography$fun getNearestPoint: Coordinate</ID>
+    <ID>ReturnCount:Geography.kt:Geography$fun triangulateSelf: Coordinate?</ID>
+    <ID>ReturnCount:Geography.kt:Geography$fun trilaterate: TrilaterationResult</ID>
+    <ID>ReturnCount:Geography.kt:Geography$private fun trilaterate2: List&lt;Coordinate&gt;</ID>
+    <ID>ReturnCount:Geology.kt:Geology$fun getSlopeGrade: Float</ID>
+    <ID>ReturnCount:Geometry.kt:Geometry$fun getIntersection: Line?</ID>
+    <ID>ReturnCount:Geometry.kt:Geometry$fun getIntersectionArea: Float</ID>
+    <ID>ReturnCount:HorizonCoordinate.kt:HorizonCoordinate$private fun getRefraction: Double</ID>
+    <ID>ReturnCount:IntersectionMath.kt:IntersectionMath$fun getIntersection: List&lt;Vector2&gt;</ID>
+    <ID>ReturnCount:IntersectionMath.kt:IntersectionMath$fun getIntersection: Vector2?</ID>
+    <ID>ReturnCount:KalmanFilter.kt:KalmanFilter.Companion$fun filter: List&lt;Double&gt;</ID>
+    <ID>ReturnCount:KalmanFilter.kt:KalmanFilter.Companion$fun filterWithError: List&lt;Pair&lt;Double, Double&gt;&gt;</ID>
+    <ID>ReturnCount:LocalNewtonInterpolator.kt:LocalNewtonInterpolator$override fun interpolate: Float</ID>
+    <ID>ReturnCount:Moon.kt:Moon$fun getPhase: MoonPhase</ID>
+    <ID>ReturnCount:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun getHourAngle: Double?</ID>
+    <ID>ReturnCount:OSGBCoordinateFormat.kt:OSGBCoordinateFormat$override fun toString: String</ID>
+    <ID>ReturnCount:Oceanography.kt:Oceanography$fun getTidalRange: TidalRange</ID>
+    <ID>ReturnCount:Range.kt:Range$fun clamp: T</ID>
+    <ID>ReturnCount:Range.kt:Range.Companion$fun &lt;T : Comparable&lt;T&gt;&gt; intersection: Range&lt;T&gt;?</ID>
+    <ID>ReturnCount:SolForecaster.kt:SolForecaster$private fun forecast: List&lt;WeatherForecast&gt;</ID>
+    <ID>ReturnCount:SolarEclipseCalculator.kt:SolarEclipseCalculator$override fun getNextEclipse: Eclipse?</ID>
+    <ID>ReturnCount:SolarEclipseCalculator.kt:SolarEclipseCalculator$private fun getMagnitude: Pair&lt;Float, Float&gt;</ID>
+    <ID>ReturnCount:SolarEclipseCalculator.kt:SolarEclipseCalculator$private fun getNextEclipseTime: Instant?</ID>
+    <ID>ReturnCount:SolarEclipseCalculator.kt:SolarEclipseCalculator$private fun getVisibleMagnitude: Pair&lt;Float, Float&gt;</ID>
+    <ID>ReturnCount:SolarRadiationCalculator.kt:SolarRadiationCalculator$fun getRadiation: Double</ID>
+    <ID>ReturnCount:StarLocationCalculator.kt:StarLocationCalculator$fun getLocationFromStars: Coordinate?</ID>
+    <ID>ReturnCount:StarLocationCalculator.kt:StarLocationCalculator$private fun triangulateApproximateLocation: Pair&lt;Coordinate?, Float?&gt;</ID>
+    <ID>ReturnCount:Statistics.kt:Statistics$fun quantile: Float</ID>
+    <ID>ReturnCount:StormPredictor.kt:StormPredictor$override fun isLikely: Boolean</ID>
+    <ID>ReturnCount:TextExtensions.kt:internal fun String.toDoubleCompat: Double?</ID>
+    <ID>ReturnCount:TextExtensions.kt:internal fun String.toFloatCompat: Float?</ID>
+    <ID>ReturnCount:Time.kt:Time$fun List&lt;Reading&lt;*&gt;&gt;.duration: Duration</ID>
+    <ID>SwallowedException:MGRSCoordinateFormat.kt:MGRSCoordinateFormat$e: Exception</ID>
+    <ID>SwallowedException:OSGBCoordinateFormat.kt:OSGBCoordinateFormat$e: Exception</ID>
+    <ID>SwallowedException:TextExtensions.kt:e: Exception</ID>
+    <ID>SwallowedException:USNGCoordinateFormat.kt:USNGCoordinateFormat$e: Exception</ID>
+    <ID>SwallowedException:UTMCoordinateFormat.kt:UTMCoordinateFormat$e: Exception</ID>
+    <ID>ThrowsCount:NationalGrid.kt:NationalGrid$fun fromNationalGrid: DoubleArray</ID>
+    <ID>TooGenericExceptionCaught:MGRSCoordinateFormat.kt:MGRSCoordinateFormat$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:OSGBCoordinateFormat.kt:OSGBCoordinateFormat$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:TextExtensions.kt:e: Exception</ID>
+    <ID>TooGenericExceptionCaught:USNGCoordinateFormat.kt:USNGCoordinateFormat$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt:UTMCoordinateFormat$e: Exception</ID>
+    <ID>TooManyFunctions:Arithmetic.kt:Arithmetic</ID>
+    <ID>TooManyFunctions:Astronomy.kt:Astronomy</ID>
+    <ID>TooManyFunctions:Extensions.kt:com.kylecorry.sol.math.Extensions.kt</ID>
+    <ID>TooManyFunctions:FrequencyAnalysis.kt:FrequencyAnalysis</ID>
+    <ID>TooManyFunctions:Geography.kt:Geography</ID>
+    <ID>TooManyFunctions:Geometry.kt:Geometry</ID>
+    <ID>TooManyFunctions:Interpolation.kt:Interpolation</ID>
+    <ID>TooManyFunctions:KoppenGeigerClimateClassifier.kt:KoppenGeigerClimateClassifier</ID>
+    <ID>TooManyFunctions:LinearAlgebra.kt:LinearAlgebra</ID>
+    <ID>TooManyFunctions:LunitidalWaterLevelCalculator.kt:LunitidalWaterLevelCalculator : IWaterLevelCalculator</ID>
+    <ID>TooManyFunctions:MathExtensions.kt:MathExtensions</ID>
+    <ID>TooManyFunctions:Matrix.kt:Matrix</ID>
+    <ID>TooManyFunctions:Matrix.kt:com.kylecorry.sol.math.algebra.Matrix.kt</ID>
+    <ID>TooManyFunctions:Meteorology.kt:Meteorology</ID>
+    <ID>TooManyFunctions:Moon.kt:Moon : ICelestialLocator</ID>
+    <ID>TooManyFunctions:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculator</ID>
+    <ID>TooManyFunctions:Quaternion.kt:Quaternion</ID>
+    <ID>TooManyFunctions:Quaternion.kt:QuaternionMath</ID>
+    <ID>TooManyFunctions:Statistics.kt:Statistics</ID>
+    <ID>TooManyFunctions:Sun.kt:Sun : ICelestialLocator</ID>
+    <ID>TooManyFunctions:Time.kt:Time</ID>
+    <ID>TooManyFunctions:Trigonometry.kt:Trigonometry</ID>
+    <ID>TooManyFunctions:UniversalTime.kt:com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
+    <ID>TooManyFunctions:Vector2.kt:Vector2</ID>
+    <ID>UnsafeCallOnNullableType:Constellation.kt:STAR_CATALOG_BY_HIP[hipDesignation]!!</ID>
+    <ID>UnsafeCallOnNullableType:CoordinateBounds.kt:CoordinateBounds.Companion$maxLongitude!!</ID>
+    <ID>UnsafeCallOnNullableType:CoordinateBounds.kt:CoordinateBounds.Companion$minLongitude!!</ID>
+    <ID>UnsafeCallOnNullableType:KalmanFilter.kt:KalmanFilter$lastTime!!</ID>
+    <ID>UnsafeCallOnNullableType:LunitidalWaterLevelCalculator.kt:LunitidalWaterLevelCalculator$cachedCalculator!!</ID>
+    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt:NumericDifferentiation$BACKWARD_STENCILS[endpointOrder]!!</ID>
+    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt:NumericDifferentiation$CENTRAL_STENCILS[centerOrder]!!</ID>
+    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt:NumericDifferentiation$FORWARD_STENCILS[endpointOrder]!!</ID>
+    <ID>UnsafeCallOnNullableType:SolarEclipseCalculator.kt:SolarEclipseCalculator$locator.getDistance(time)!!</ID>
+    <ID>UnsafeCallOnNullableType:SphericalHarmonics.kt:SphericalHarmonics.Companion$schmidtQuasiNorm[n - 1]!!</ID>
+    <ID>UnsafeCallOnNullableType:SphericalHarmonics.kt:SphericalHarmonics.Companion$schmidtQuasiNorm[n]!!</ID>
+    <ID>UnsafeCallOnNullableType:StarLocationCalculator.kt:StarLocationCalculator$reading.azimuth!!</ID>
+    <ID>UnusedVariable:Arithmetic.kt:Arithmetic$i</ID>
+    <ID>UnusedVariable:LeastSquaresOptimizer.kt:LeastSquaresOptimizer$i</ID>
+    <ID>UnusedVariable:StarLocationCalculator.kt:StarLocationCalculator$i</ID>
+    <ID>UseOrEmpty:Geography.kt:Geography$readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()</ID>
+    <ID>UseOrEmpty:LeastSquaresOptimizer.kt:LeastSquaresOptimizer$points.firstOrNull() ?: emptyList()</ID>
+    <ID>UseOrEmpty:SolForecaster.kt:SolForecaster$previous .reversed() .firstOrNull { it.conditions.isNotEmpty() } ?.conditions ?: emptyList()</ID>
+    <ID>UseOrEmpty:ZambrettiForecaster.kt:ZambrettiForecaster$conditions[z.toInt()]?.current ?: emptyList()</ID>
+    <ID>UseOrEmpty:ZambrettiForecaster.kt:ZambrettiForecaster$conditions[z.toInt()]?.later ?: emptyList()</ID>
+    <ID>VarCouldBeVal:NewtonInterpolator.kt:NewtonInterpolator$private var polynomial = regression.fit(points)</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val M = Trigonometry.normalizeAngle( 2.5534 + 29.1053567 * k - 0.0000014 * power( julianCenturiesSinceJ2000, 2 ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3) )</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val MPrime = Trigonometry.normalizeAngle( 201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power( julianCenturiesSinceJ2000, 3 ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4) )</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
+    <ID>VariableNaming:LunarEclipseParameterProvider.kt:LunarEclipseParameterProvider$var F: Double</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val D = getMeanElongation(tt)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val D = getMeanElongation(ut)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000075)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val E2 = Arithmetic.square(E)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val F = getArgumentOfLatitude(tt)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val L = Trigonometry.normalizeAngle( polynomial( julianCenturiesSinceJ2000, 218.3164477, 481267.88123421, -0.0015786, 1 / 538841.0, -1 / 65194000.0 ) )</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val M = sun.getMeanAnomaly(tt)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val M = sun.getMeanAnomaly(ut)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val Mp = getMeanAnomaly(ut)</ID>
+    <ID>VariableNaming:Moon.kt:Moon$val Mprime = getMeanAnomaly(tt)</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val A1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val E = Algebra.polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val F1 = F - 0.02665 * sinDegrees(omega)</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val M = Trigonometry.normalizeAngle( 2.5534 + 29.1053567 * k - 0.0000014 * power( julianCenturiesSinceJ2000, 2 ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3) )</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val MPrime = Trigonometry.normalizeAngle( 201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power( julianCenturiesSinceJ2000, 3 ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4) )</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$val W = cosDegrees(F1).absoluteValue</ID>
+    <ID>VariableNaming:SolarEclipseParameterProvider.kt:SolarEclipseParameterProvider$var F: Double</ID>
+    <ID>VariableNaming:StarLocator.kt:StarLocator$val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)</ID>
+    <ID>VariableNaming:StarLocator.kt:StarLocator$val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)</ID>
+    <ID>VariableNaming:StarLocator.kt:StarLocator$val C = sinDegrees(value3) * cosDecCosRA + cosDegrees(value3) * sinDegrees(declination)</ID>
+    <ID>VariableNaming:Sun.kt:Sun$val C = equationOfCenter(julianCenturiesSinceJ2000)</ID>
+    <ID>VariableNaming:Sun.kt:Sun$val L = getGeometricLongitude(julianCenturiesSinceJ2000)</ID>
+    <ID>VariableNaming:Sun.kt:Sun$val M = getMeanAnomaly(julianCenturiesSinceJ2000)</ID>
+    <ID>VariableNaming:UniversalTime.kt:val A = floor(Y / 100)</ID>
+    <ID>VariableNaming:UniversalTime.kt:val B = 2 - A + floor(A / 4)</ID>
+    <ID>VariableNaming:UniversalTime.kt:val D = dayOfMonth.toDouble() + if (includeTime) toLocalTime().toDecimalHours() / 24.0 else 0.0</ID>
+    <ID>VariableNaming:UniversalTime.kt:val Y = (year - 1).toDouble()</ID>
+    <ID>VariableNaming:UniversalTime.kt:var M = month.value.toDouble()</ID>
+    <ID>VariableNaming:UniversalTime.kt:var Y = year.toDouble()</ID>
   </CurrentIssues>
 </SmellBaseline>

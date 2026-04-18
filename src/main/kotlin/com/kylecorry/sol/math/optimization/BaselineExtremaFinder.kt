@@ -21,33 +21,33 @@ class BaselineExtremaFinder : IListExtremaFinder {
 
         values.forEachIndexed { index, value ->
             if (value > baseline) {
-                if (highPeakValue == null || value > highPeakValue!!) {
+                if (highPeakValue == null || value > highPeakValue) {
                     highPeakIndex = index
                     highPeakValue = value
                 }
             } else if (value < baseline && highPeakIndex != null) {
-                peaks.add(extremum(highPeakIndex!!, true))
+                peaks.add(extremum(highPeakIndex, true))
                 highPeakIndex = null
                 highPeakValue = null
             }
 
             if (value < baseline) {
-                if (lowPeakValue == null || value < lowPeakValue!!) {
+                if (lowPeakValue == null || value < lowPeakValue) {
                     lowPeakIndex = index
                     lowPeakValue = value
                 }
             } else if (value > baseline && lowPeakIndex != null) {
-                peaks.add(extremum(lowPeakIndex!!, false))
+                peaks.add(extremum(lowPeakIndex, false))
                 lowPeakIndex = null
                 lowPeakValue = null
             }
         }
         if (highPeakIndex != null) {
-            peaks.add(extremum(highPeakIndex!!, true))
+            peaks.add(extremum(highPeakIndex, true))
         }
 
         if (lowPeakIndex != null) {
-            peaks.add(extremum(lowPeakIndex!!, false))
+            peaks.add(extremum(lowPeakIndex, false))
         }
         return peaks
     }

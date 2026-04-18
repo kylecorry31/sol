@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     id("java-library")
     id("com.vanniktech.maven.publish") version "0.35.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("dev.detekt") version "2.0.0-alpha.2"
 }
 
 val versionName = "17.0.2"
@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    detektPlugins("com.kylecorry:orion:1.0.1")
+    detektPlugins("com.kylecorry:orion:1.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.4")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
@@ -63,28 +63,20 @@ tasks.test {
 
 detekt {
     buildUponDefaultConfig = true
-    allRules = true
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-    basePath = rootDir.absolutePath
     baseline = file("$rootDir/config/detekt/baseline.xml")
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
     setSource(files("src/main/kotlin"))
     include("**/*.kt", "**/*.kts")
     exclude("**/build/**")
     exclude("**/gov/nasa/worldwind/**")
     classpath.setFrom(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
     jvmTarget = "11"
-    reports {
-        html.required.set(true)
-        sarif.required.set(true)
-        md.required.set(false)
-        xml.required.set(false)
-    }
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach {
     setSource(files("src/main/kotlin"))
     include("**/*.kt", "**/*.kts")
     exclude("**/build/**")
