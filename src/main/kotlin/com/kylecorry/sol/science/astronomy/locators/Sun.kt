@@ -25,9 +25,9 @@ internal class Sun : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plusMillis((delta * 1000).toLong())
-        val T = tt.toJulianCenturies()
-        val apparentLongitude = getApparentLongitude(T)
-        val correctedObliquity = getObliquityCorrection(T)
+        val julianCenturiesSinceJ2000 = tt.toJulianCenturies()
+        val apparentLongitude = getApparentLongitude(julianCenturiesSinceJ2000)
+        val correctedObliquity = getObliquityCorrection(julianCenturiesSinceJ2000)
         val rightAscension = Trigonometry.normalizeAngle(
             atan2(
                 cosDegrees(correctedObliquity) * sinDegrees(apparentLongitude),
@@ -42,9 +42,9 @@ internal class Sun : ICelestialLocator {
     }
 
     override fun getDistance(ut: UniversalTime): Distance {
-        val T = ut.toJulianCenturies()
-        val trueAnomaly = getTrueAnomaly(T)
-        val ecc = getEccentricity(T)
+        val julianCenturiesSinceJ2000 = ut.toJulianCenturies()
+        val trueAnomaly = getTrueAnomaly(julianCenturiesSinceJ2000)
+        val ecc = getEccentricity(julianCenturiesSinceJ2000)
         val f = (1 + ecc * cosDegrees(trueAnomaly)) / (1 - ecc.pow(2))
         return Distance.kilometers((semiMajorAxisLen0 / f).toFloat())
     }
@@ -55,14 +55,14 @@ internal class Sun : ICelestialLocator {
     }
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
-        return getMeanAnomaly(T)
+        val julianCenturiesSinceJ2000 = ut.toJulianCenturies()
+        return getMeanAnomaly(julianCenturiesSinceJ2000)
     }
 
-    private fun getMeanAnomaly(T: Double): Double {
+    private fun getMeanAnomaly(julianCenturiesSinceJ2000: Double): Double {
         return Trigonometry.normalizeAngle(
             Algebra.polynomial(
-                T,
+                julianCenturiesSinceJ2000,
                 357.5291092,
                 35999.0502909,
                 -0.0001536,
@@ -71,42 +71,44 @@ internal class Sun : ICelestialLocator {
         )
     }
 
-    private fun getTrueAnomaly(T: Double): Double {
-        val mean = getMeanAnomaly(T)
-        val center = equationOfCenter(T)
+    private fun getTrueAnomaly(julianCenturiesSinceJ2000: Double): Double {
+        val mean = getMeanAnomaly(julianCenturiesSinceJ2000)
+        val center = equationOfCenter(julianCenturiesSinceJ2000)
         return OrbitalMath.getTrueAnomaly(mean, center)
     }
 
-    private fun getApparentLongitude(T: Double): Double {
-        val trueLng = getTrueLongitude(T)
-        val omega = Algebra.polynomial(T, 125.04, -1934.136)
+    private fun getApparentLongitude(julianCenturiesSinceJ2000: Double): Double {
+        val trueLng = getTrueLongitude(julianCenturiesSinceJ2000)
+        val omega = Algebra.polynomial(julianCenturiesSinceJ2000, 125.04, -1934.136)
         return trueLng - 0.00569 - 0.00478 * sinDegrees(omega)
     }
 
-    private fun getTrueLongitude(T: Double): Double {
-        val L = getGeometricLongitude(T)
-        val C = equationOfCenter(T)
+    private fun getTrueLongitude(julianCenturiesSinceJ2000: Double): Double {
+        val L = getGeometricLongitude(julianCenturiesSinceJ2000)
+        val C = equationOfCenter(julianCenturiesSinceJ2000)
         return L + C
     }
 
-    private fun getGeometricLongitude(T: Double): Double {
-        return Trigonometry.normalizeAngle(Algebra.polynomial(T, 280.46646, 36000.76983, 0.0003032))
+    private fun getGeometricLongitude(julianCenturiesSinceJ2000: Double): Double {
+        return Trigonometry.normalizeAngle(
+            Algebra.polynomial(julianCenturiesSinceJ2000, 280.46646, 36000.76983, 0.0003032)
+        )
     }
 
-    private fun getEccentricity(T: Double): Double {
-        return Algebra.polynomial(T, 0.01675104, -0.0000418, -0.000000126)
+    private fun getEccentricity(julianCenturiesSinceJ2000: Double): Double {
+        return Algebra.polynomial(julianCenturiesSinceJ2000, 0.01675104, -0.0000418, -0.000000126)
     }
 
-    private fun equationOfCenter(T: Double): Double {
-        val M = getMeanAnomaly(T)
-        return Algebra.polynomial(T, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
-                Algebra.polynomial(T, 0.019993, -0.000101) * sinDegrees(2 * M) +
+    private fun equationOfCenter(julianCenturiesSinceJ2000: Double): Double {
+        val M = getMeanAnomaly(julianCenturiesSinceJ2000)
+        return Algebra.polynomial(julianCenturiesSinceJ2000, 1.914602, -0.004817, -0.000014) * sinDegrees(M) +
+                Algebra.polynomial(julianCenturiesSinceJ2000, 0.019993, -0.000101) * sinDegrees(2 * M) +
                 0.000289 * sinDegrees(3 * M)
     }
 
-    private fun getObliquityCorrection(T: Double): Double {
-        val e = EclipticObliquity.getMeanObliquityOfEcliptic(T)
-        val omega = Algebra.polynomial(T, 125.04, -1934.136)
+    private fun getObliquityCorrection(julianCenturiesSinceJ2000: Double): Double {
+        val e = EclipticObliquity.getMeanObliquityOfEcliptic(julianCenturiesSinceJ2000)
+        val omega = Algebra.polynomial(julianCenturiesSinceJ2000, 125.04, -1934.136)
         return e + 0.00256 * cosDegrees(omega)
     }
 

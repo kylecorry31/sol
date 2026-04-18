@@ -190,12 +190,12 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
     }
 
     private fun getMeanSiderealTime(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
+        val julianCenturiesSinceJ2000 = ut.toJulianCenturies()
         val theta0 =
             280.46061837 + 360.98564736629 * (ut.toJulianDay() - 2451545.0) + 0.000387933 * Arithmetic.square(
-                T
+                julianCenturiesSinceJ2000
             ) - Arithmetic.cube(
-                T
+                julianCenturiesSinceJ2000
             ) / 38710000.0
         return wrap(theta0, 0.0, 360.0)
     }

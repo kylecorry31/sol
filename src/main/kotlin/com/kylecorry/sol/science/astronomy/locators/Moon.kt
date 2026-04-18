@@ -35,10 +35,10 @@ internal class Moon : ICelestialLocator {
     override fun getCoordinates(ut: UniversalTime): EquatorialCoordinate {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
-        val T = tt.toJulianCenturies()
+        val julianCenturiesSinceJ2000 = tt.toJulianCenturies()
         val L = Trigonometry.normalizeAngle(
             polynomial(
-                T,
+                julianCenturiesSinceJ2000,
                 218.3164477,
                 481267.88123421,
                 -0.0015786,
@@ -54,10 +54,10 @@ internal class Moon : ICelestialLocator {
 
         val F = getArgumentOfLatitude(tt)
 
-        val a1 = Trigonometry.normalizeAngle(119.75 + 131.849 * T)
-        val a2 = Trigonometry.normalizeAngle(53.09 + 479264.29 * T)
-        val a3 = Trigonometry.normalizeAngle(313.45 + 481266.484 * T)
-        val E = polynomial(T, 1.0, -0.002516, -0.0000074)
+        val a1 = Trigonometry.normalizeAngle(119.75 + 131.849 * julianCenturiesSinceJ2000)
+        val a2 = Trigonometry.normalizeAngle(53.09 + 479264.29 * julianCenturiesSinceJ2000)
+        val a3 = Trigonometry.normalizeAngle(313.45 + 481266.484 * julianCenturiesSinceJ2000)
+        val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)
         val E2 = Arithmetic.square(E)
 
         val t47a = table47a()
@@ -102,13 +102,13 @@ internal class Moon : ICelestialLocator {
     override fun getDistance(ut: UniversalTime): Distance {
         val delta = TerrestrialTime.getDeltaT(ut.year)
         val tt = ut.plus(Duration.ofMillis((delta * 1000).toLong()))
-        val T = tt.toJulianCenturies()
+        val julianCenturiesSinceJ2000 = tt.toJulianCenturies()
         val D = getMeanElongation(tt)
         val F = getArgumentOfLatitude(tt)
         val M = sun.getMeanAnomaly(tt)
 
         val Mprime = getMeanAnomaly(tt)
-        val E = polynomial(T, 1.0, -0.002516, -0.0000075)
+        val E = polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000075)
         val E2 = Arithmetic.square(E)
         val t47a = table47a()
         var sumR = 0.0
@@ -134,10 +134,10 @@ internal class Moon : ICelestialLocator {
     }
 
     fun getMeanAnomaly(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
+        val julianCenturiesSinceJ2000 = ut.toJulianCenturies()
         return Trigonometry.normalizeAngle(
             polynomial(
-                T,
+                julianCenturiesSinceJ2000,
                 134.9633964,
                 477198.8675055,
                 0.0087414,
@@ -245,10 +245,10 @@ internal class Moon : ICelestialLocator {
     }
 
     private fun getMeanElongation(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
+        val julianCenturiesSinceJ2000 = ut.toJulianCenturies()
         return Trigonometry.normalizeAngle(
             polynomial(
-                T,
+                julianCenturiesSinceJ2000,
                 297.8501921,
                 445267.1114034,
                 -0.0018819,
@@ -259,10 +259,10 @@ internal class Moon : ICelestialLocator {
     }
 
     private fun getArgumentOfLatitude(ut: UniversalTime): Double {
-        val T = ut.toJulianCenturies()
+        val julianCenturiesSinceJ2000 = ut.toJulianCenturies()
         return Trigonometry.normalizeAngle(
             polynomial(
-                T,
+                julianCenturiesSinceJ2000,
                 93.2720950,
                 483202.0175233,
                 -0.0036539,
