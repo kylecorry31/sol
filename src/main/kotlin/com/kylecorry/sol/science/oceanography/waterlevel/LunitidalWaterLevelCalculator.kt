@@ -75,7 +75,7 @@ class LunitidalWaterLevelCalculator(
         require(previous.isHigh != next.isHigh)
         synchronized(this) {
             if (cachedCalculator != null && cachedCalculatorTideStart == previous && cachedCalculatorTideEnd == next) {
-                return cachedCalculator!!
+                return checkNotNull(cachedCalculator)
             }
             val calculator = RuleOfTwelfthsWaterLevelCalculator(previous, next)
             cachedCalculator = calculator

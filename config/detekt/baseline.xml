@@ -46,10 +46,6 @@
     <ID>LoopWithTooManyJumpStatements:LoessFilter.kt:LoessFilter$for</ID>
     <ID>LoopWithTooManyJumpStatements:LoessFilter2D.kt:LoessFilter2D$for</ID>
     <ID>LoopWithTooManyJumpStatements:TimeSeriesEnsemble.kt:TimeSeriesEnsemble$for</ID>
-    <ID>MapGetWithNotNullAssertionOperator:Constellation.kt:STAR_CATALOG_BY_HIP[hipDesignation]!!</ID>
-    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt:NumericDifferentiation$BACKWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt:NumericDifferentiation$CENTRAL_STENCILS[centerOrder]!!</ID>
-    <ID>MapGetWithNotNullAssertionOperator:NumericDifferentiation.kt:NumericDifferentiation$FORWARD_STENCILS[endpointOrder]!!</ID>
     <ID>NoNameShadowing:Geometry.kt:Geometry${ !visited[it] }</ID>
     <ID>NoNameShadowing:ODESolver.kt:x</ID>
     <ID>NoNameShadowing:StarLocationCalculator.kt:StarLocationCalculator$approximateLocation</ID>
@@ -148,18 +144,6 @@
     <ID>TooManyFunctions:Trigonometry.kt:Trigonometry</ID>
     <ID>TooManyFunctions:UniversalTime.kt:com.kylecorry.sol.science.astronomy.units.UniversalTime.kt</ID>
     <ID>TooManyFunctions:Vector2.kt:Vector2</ID>
-    <ID>UnsafeCallOnNullableType:Constellation.kt:STAR_CATALOG_BY_HIP[hipDesignation]!!</ID>
-    <ID>UnsafeCallOnNullableType:CoordinateBounds.kt:CoordinateBounds.Companion$maxLongitude!!</ID>
-    <ID>UnsafeCallOnNullableType:CoordinateBounds.kt:CoordinateBounds.Companion$minLongitude!!</ID>
-    <ID>UnsafeCallOnNullableType:KalmanFilter.kt:KalmanFilter$lastTime!!</ID>
-    <ID>UnsafeCallOnNullableType:LunitidalWaterLevelCalculator.kt:LunitidalWaterLevelCalculator$cachedCalculator!!</ID>
-    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt:NumericDifferentiation$BACKWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt:NumericDifferentiation$CENTRAL_STENCILS[centerOrder]!!</ID>
-    <ID>UnsafeCallOnNullableType:NumericDifferentiation.kt:NumericDifferentiation$FORWARD_STENCILS[endpointOrder]!!</ID>
-    <ID>UnsafeCallOnNullableType:SolarEclipseCalculator.kt:SolarEclipseCalculator$locator.getDistance(time)!!</ID>
-    <ID>UnsafeCallOnNullableType:SphericalHarmonics.kt:SphericalHarmonics.Companion$schmidtQuasiNorm[n - 1]!!</ID>
-    <ID>UnsafeCallOnNullableType:SphericalHarmonics.kt:SphericalHarmonics.Companion$schmidtQuasiNorm[n]!!</ID>
-    <ID>UnsafeCallOnNullableType:StarLocationCalculator.kt:StarLocationCalculator$reading.azimuth!!</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val C = sinDegrees(value3) * cosDecCosRA + cosDegrees(value3) * sinDegrees(declination)</ID>

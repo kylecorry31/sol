@@ -16,7 +16,7 @@ class KalmanFilter(
     fun filter(measurement: Double, error: Double = initialError, time: Double? = null): Double {
 
         val timeScale = if (lastTime != null && time != null) {
-            time - lastTime!!
+            time - (lastTime ?: 0.0)
         } else {
             1.0
         }

@@ -157,17 +157,17 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
             val north = getNorthLatitudeBound(points) ?: return empty
             val south = getSouthLatitudeBound(points) ?: return empty
 
-            val minLongitude = points.minByOrNull { it.longitude }?.longitude
-            val maxLongitude = points.maxByOrNull { it.longitude }?.longitude
+            val minLongitude = points.minByOrNull { it.longitude }?.longitude ?: 0.0
+            val maxLongitude = points.maxByOrNull { it.longitude }?.longitude ?: 0.0
 
             // This is to support the case where the whole map is shown
-            if (checkForFullWorld && isCloseTo(minLongitude ?: 0.0, -180.0, 0.001) && isCloseTo(
-                    maxLongitude ?: 0.0,
+            if (checkForFullWorld && isCloseTo(minLongitude, -180.0, 0.001) && isCloseTo(
+                    maxLongitude,
                     180.0,
                     0.001
                 )
             ) {
-                return CoordinateBounds(north, maxLongitude!!, south, minLongitude!!)
+                return CoordinateBounds(north, maxLongitude, south, minLongitude)
             }
 
             return CoordinateBounds(north, east, south, west)

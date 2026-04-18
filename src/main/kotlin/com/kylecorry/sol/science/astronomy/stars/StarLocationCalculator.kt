@@ -73,7 +73,7 @@ internal class StarLocationCalculator {
                     location
                 ).value
                 square(reading.altitude - expectedAltitude).toDouble() +
-                        square(deltaAngle(reading.azimuth!!, expectedAzimuth)).toDouble()
+                        square(deltaAngle(checkNotNull(reading.azimuth), expectedAzimuth)).toDouble()
             }.sum()
         }
 

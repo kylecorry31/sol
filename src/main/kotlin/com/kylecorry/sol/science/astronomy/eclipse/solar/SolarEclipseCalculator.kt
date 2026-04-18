@@ -171,7 +171,7 @@ internal class SolarEclipseCalculator(
             coordinates,
             time,
             location,
-            locator.getDistance(time)!! // Supplying the distance for parallax
+            checkNotNull(locator.getDistance(time)) // Supplying the distance for parallax
         ).withRefraction()
     }
 

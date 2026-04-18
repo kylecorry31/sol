@@ -18,5 +18,5 @@ class Constellation(val name: String, val lines: List<List<Int>>) {
 }
 
 private fun star(hipDesignation: Int): Star {
-    return STAR_CATALOG_BY_HIP[hipDesignation]!!
+    return STAR_CATALOG_BY_HIP[hipDesignation] ?: error("Hip designation $hipDesignation not found")
 }

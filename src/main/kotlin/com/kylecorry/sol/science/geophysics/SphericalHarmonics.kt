@@ -26,7 +26,6 @@ import com.kylecorry.sol.units.Distance
 import java.time.Instant
 import kotlin.math.PI
 import kotlin.math.atan
-import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -66,10 +65,10 @@ internal class SphericalHarmonics(
                     // Adjust for time
                     val g =
                         gCoefficients[n][m] +
-                            yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
+                                yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
                     val h =
                         hCoefficients[n][m] +
-                            yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
+                                yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
 
                     // Negative derivative with respect to latitude, divided by
                     // radius.  This looks like the negation of the version in the
@@ -78,25 +77,25 @@ internal class SphericalHarmonics(
                     // derivative with respect to theta is negated.
                     gcX +=
                         relativeRadiusPower[n + 2] *
-                            (g * cosMLon[m] + h * sinMLon[m]) *
-                            legendre.mPDeriv[n][m] *
-                            schmidtQuasiNormFactors[n][m]
+                                (g * cosMLon[m] + h * sinMLon[m]) *
+                                legendre.mPDeriv[n][m] *
+                                schmidtQuasiNormFactors[n][m]
                     // Negative derivative with respect to longitude, divided by
                     // radius.
                     gcY +=
                         relativeRadiusPower[n + 2] *
-                            m *
-                            (g * sinMLon[m] - h * cosMLon[m]) *
-                            legendre.mP[n][m] *
-                            schmidtQuasiNormFactors[n][m] *
-                            inverseCosLatitude
+                                m *
+                                (g * sinMLon[m] - h * cosMLon[m]) *
+                                legendre.mP[n][m] *
+                                schmidtQuasiNormFactors[n][m] *
+                                inverseCosLatitude
                     // Negative derivative with respect to radius.
                     gcZ -=
                         (n + 1) *
-                            relativeRadiusPower[n + 2] *
-                            (g * cosMLon[m] + h * sinMLon[m]) *
-                            legendre.mP[n][m] *
-                            schmidtQuasiNormFactors[n][m]
+                                relativeRadiusPower[n + 2] *
+                                (g * cosMLon[m] + h * sinMLon[m]) *
+                                legendre.mP[n][m] *
+                                schmidtQuasiNormFactors[n][m]
                 }
             }
 
@@ -126,16 +125,16 @@ internal class SphericalHarmonics(
                     // Adjust for time
                     val g =
                         gCoefficients[n][m] +
-                            yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
+                                yearsSinceBase * (deltaGCoefficients?.get(n)?.get(m) ?: 0f)
                     val h =
                         hCoefficients[n][m] +
-                            yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
+                                yearsSinceBase * (deltaHCoefficients?.get(n)?.get(m) ?: 0f)
 
                     scalar +=
                         relativeRadiusPower[n + 2] *
-                            (g * cosMLon[m] + h * sinMLon[m]) *
-                            legendre.mP[n][m] *
-                            schmidtQuasiNormFactors[n][m]
+                                (g * cosMLon[m] + h * sinMLon[m]) *
+                                legendre.mP[n][m] *
+                                schmidtQuasiNormFactors[n][m]
                 }
             }
 
@@ -236,11 +235,12 @@ internal class SphericalHarmonics(
             val schmidtQuasiNorm = arrayOfNulls<FloatArray>(maxN + 1)
             schmidtQuasiNorm[0] = floatArrayOf(1.0f)
             for (n in 1..maxN) {
-                schmidtQuasiNorm[n] = FloatArray(n + 1)
-                schmidtQuasiNorm[n]!![0] =
-                    schmidtQuasiNorm[n - 1]!![0] * (2 * n - 1) / n.toFloat()
+                val currentArray = FloatArray(n + 1)
+                schmidtQuasiNorm[n] = currentArray
+                currentArray[0] =
+                    checkNotNull(schmidtQuasiNorm[n - 1])[0] * (2 * n - 1) / n.toFloat()
                 for (m in 1..n) {
-                    schmidtQuasiNorm[n]!![m] = (schmidtQuasiNorm[n]!![m - 1]
+                    currentArray[m] = (currentArray[m - 1]
                             * sqrt(
                         ((n - m + 1) * (if (m == 1) 2 else 1)
                                 / (n + m).toFloat()).toDouble()
