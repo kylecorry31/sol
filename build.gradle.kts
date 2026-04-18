@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    detektPlugins("com.kylecorry:orion:1.0.0")
+    detektPlugins("com.kylecorry:orion:1.0.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.4")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
