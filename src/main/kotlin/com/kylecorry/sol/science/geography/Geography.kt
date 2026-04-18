@@ -19,26 +19,23 @@ import com.kylecorry.sol.science.geology.IGeoArea
 import com.kylecorry.sol.science.geology.NavigationVector
 import com.kylecorry.sol.science.geology.ReferenceEllipsoid
 import com.kylecorry.sol.science.geology.Region
-import com.kylecorry.sol.science.geography.TrilaterationResult
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
 import com.kylecorry.sol.units.Location
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
-import kotlin.math.absoluteValue
-import kotlin.math.pow
-import kotlin.math.sign
 
 object Geography {
 
@@ -160,7 +157,7 @@ object Geography {
         calculateBias: Boolean = false
     ): TrilaterationResult {
         if (readings.size < 2) {
-            return TrilaterationResult(readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf())
+            return TrilaterationResult(readings.firstOrNull()?.center?.let { listOf(it) }.orEmpty())
         }
 
         // There are 2 possible solutions for 2 readings
@@ -531,7 +528,7 @@ object Geography {
         )
         val deltaP3Long = atan2(
             sinDegrees(selfToReferenceBearingA.inverse().value.toDouble()) *
-                sin(angularDist13) * cosDegrees(referenceA.latitude),
+                    sin(angularDist13) * cosDegrees(referenceA.latitude),
             cos(angularDist13) - sinDegrees(referenceA.latitude) * sin(p3Lat)
         )
         val p3Lng = referenceA.longitude.toRadians() + deltaP3Long

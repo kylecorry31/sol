@@ -121,7 +121,8 @@ internal object SolForecaster : Forecaster {
             val conditions = previous
                 .reversed()
                 .firstOrNull { it.conditions.isNotEmpty() }
-                ?.conditions ?: emptyList()
+                ?.conditions
+                .orEmpty()
 
             if (conditions.isNotEmpty()) {
                 return forecast.withCurrentConditions(conditions)

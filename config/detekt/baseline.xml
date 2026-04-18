@@ -163,11 +163,6 @@
     <ID>UnusedVariable:Arithmetic.kt:Arithmetic$i</ID>
     <ID>UnusedVariable:LeastSquaresOptimizer.kt:LeastSquaresOptimizer$i</ID>
     <ID>UnusedVariable:StarLocationCalculator.kt:StarLocationCalculator$i</ID>
-    <ID>UseOrEmpty:Geography.kt:Geography$readings.firstOrNull()?.center?.let { listOf(it) } ?: listOf()</ID>
-    <ID>UseOrEmpty:LeastSquaresOptimizer.kt:LeastSquaresOptimizer$points.firstOrNull() ?: emptyList()</ID>
-    <ID>UseOrEmpty:SolForecaster.kt:SolForecaster$previous .reversed() .firstOrNull { it.conditions.isNotEmpty() } ?.conditions ?: emptyList()</ID>
-    <ID>UseOrEmpty:ZambrettiForecaster.kt:ZambrettiForecaster$conditions[z.toInt()]?.current ?: emptyList()</ID>
-    <ID>UseOrEmpty:ZambrettiForecaster.kt:ZambrettiForecaster$conditions[z.toInt()]?.later ?: emptyList()</ID>
     <ID>VarCouldBeVal:NewtonInterpolator.kt:NewtonInterpolator$private var polynomial = regression.fit(points)</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val A = cosDegrees(declination) * sinDegrees(rightAscension + value1)</ID>
     <ID>VariableNaming:StarLocator.kt:StarLocator$val B = cosDegrees(value3) * cosDecCosRA - sinDegrees(value3) * sinDegrees(declination)</ID>

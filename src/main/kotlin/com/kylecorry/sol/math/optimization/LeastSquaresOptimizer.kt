@@ -25,7 +25,7 @@ class LeastSquaresOptimizer {
         }
     ): List<Float> {
         if (points.size < 2) {
-            return points.firstOrNull() ?: emptyList()
+            return points.firstOrNull().orEmpty()
         }
 
         require(points.size == errors.size) { "The number of points and errors must be equal." }

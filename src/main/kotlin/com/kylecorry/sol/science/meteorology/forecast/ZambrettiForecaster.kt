@@ -199,7 +199,7 @@ internal object ZambrettiForecaster : Forecaster {
         dailyTemperatureRange: Range<Temperature>?,
     ): List<WeatherCondition> {
         return ForecastHelper.addSecondaryConditions(
-            conditions[z.toInt()]?.current ?: emptyList(),
+            conditions[z.toInt()]?.current.orEmpty(),
             dailyTemperatureRange
         )
     }
@@ -208,7 +208,7 @@ internal object ZambrettiForecaster : Forecaster {
         z: Double,
         dailyTemperatureRange: Range<Temperature>?,
     ): List<WeatherCondition> {
-        return ForecastHelper.addSecondaryConditions(conditions[z.toInt()]?.later ?: emptyList(), dailyTemperatureRange)
+        return ForecastHelper.addSecondaryConditions(conditions[z.toInt()]?.later.orEmpty(), dailyTemperatureRange)
     }
 
 
