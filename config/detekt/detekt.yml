@@ -17,6 +17,6 @@ style:
   MagicNumber:
     active: false
 
-sol:
+orion:
   NoRecursion:
     active: true
