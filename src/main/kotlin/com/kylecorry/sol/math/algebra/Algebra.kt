@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.algebra
 
+import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import kotlin.math.sqrt
 
@@ -72,6 +73,24 @@ object Algebra {
 
         check(runningTotal.isFinite())
         return runningTotal
+    }
+
+    fun getIntersection(equation1: LinearEquation, equation2: LinearEquation): Vector2? {
+        require(equation1.m.isFinite()) { "equation1.m must be finite" }
+        require(equation1.b.isFinite()) { "equation1.b must be finite" }
+        require(equation2.m.isFinite()) { "equation2.m must be finite" }
+        require(equation2.b.isFinite()) { "equation2.b must be finite" }
+        val denominator = equation1.m - equation2.m
+        if (Arithmetic.isZero(denominator)) {
+            return null
+        }
+
+        val x = (equation2.b - equation1.b) / denominator
+        val y = equation1.evaluate(x)
+        check(x.isFinite())
+        check(y.isFinite())
+
+        return Vector2(x, y)
     }
 
 }

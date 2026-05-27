@@ -1,7 +1,9 @@
 package com.kylecorry.sol.math.algebra
 
+import com.kylecorry.sol.math.Vector2
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -32,6 +34,30 @@ internal class AlgebraTest {
     fun inverse() {
         val inverted = Algebra.inverse(LinearEquation(5f, 2f))
         assertEquals(0.2f to -0.4f, inverted.m to inverted.b, 0.0001f)
+    }
+
+    @Test
+    fun getIntersection() {
+        val intersection = Algebra.getIntersection(LinearEquation(2f, 1f), LinearEquation(-1f, 7f))
+
+        assertEquals(Vector2(2f, 5f), intersection)
+        assertNull(Algebra.getIntersection(LinearEquation(2f, 1f), LinearEquation(2f, 7f)))
+    }
+
+    @Test
+    fun getIntersectionRequiresFiniteEquations() {
+        assertThrows(IllegalArgumentException::class.java) {
+            Algebra.getIntersection(LinearEquation(Float.NaN, 1f), LinearEquation(2f, 7f))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            Algebra.getIntersection(LinearEquation(1f, Float.POSITIVE_INFINITY), LinearEquation(2f, 7f))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            Algebra.getIntersection(LinearEquation(1f, 1f), LinearEquation(Float.NEGATIVE_INFINITY, 7f))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            Algebra.getIntersection(LinearEquation(1f, 1f), LinearEquation(2f, Float.NaN))
+        }
     }
 
     @ParameterizedTest
