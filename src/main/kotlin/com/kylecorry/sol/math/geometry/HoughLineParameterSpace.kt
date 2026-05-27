@@ -24,8 +24,8 @@ class HoughLineParameterSpace(
         var bestThetaIndex = -1
         var bestRhoIndex = -1
 
-        for (thetaIndex in 0 until thetaBinCount) {
-            for (rhoIndex in 0 until rhoBinCount) {
+        for (thetaIndex in 0..<thetaBinCount) {
+            for (rhoIndex in 0..<rhoBinCount) {
                 val score = score(thetaIndex, rhoIndex)
                 if (score > bestScore) {
                     bestScore = score
@@ -38,8 +38,6 @@ class HoughLineParameterSpace(
         if (bestThetaIndex == -1) {
             return null
         }
-
-        println(bestScore)
 
         return getLineCandidate(bestThetaIndex, bestRhoIndex)
     }
