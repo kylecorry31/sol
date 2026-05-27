@@ -8,6 +8,8 @@ import kotlin.math.sqrt
 class WeightedLinearRegression(data: List<Vector2>, weights: List<Float>, accuracy: Float = 0f) :
     IRegression1D {
 
+    var hasBadFit = false
+        private set
     val equation = fit(data, weights, accuracy)
 
     override fun predict(x: Float): Float {
@@ -21,6 +23,7 @@ class WeightedLinearRegression(data: List<Vector2>, weights: List<Float>, accura
         accuracy: Float = 0f
     ): LinearEquation {
         if (data.size <= 1) {
+            hasBadFit = true
             return LinearEquation(0f, 0f)
         }
 
@@ -43,17 +46,19 @@ class WeightedLinearRegression(data: List<Vector2>, weights: List<Float>, accura
             sumXY += yi * xiw
         }
 
-        require(sumWeights > 0){ "Weights must be greater than zero." }
+        require(sumWeights > 0) { "Weights must be greater than zero." }
 
         val meanX = sumX / sumWeights
         val meanY = sumY / sumWeights
         val meanXY = sumXY / sumWeights
         val meanXSquared = sumXSquared / sumWeights
 
-        val slope = if (sqrt(
-                abs(meanXSquared - meanX * meanX).toDouble()
-            ) < accuracy
-        ) 0f else (meanXY - meanX * meanY) / (meanXSquared - meanX * meanX)
+        val slope = if (sqrt(abs(meanXSquared - meanX * meanX)) < accuracy) {
+            hasBadFit = true
+            0f
+        } else {
+            (meanXY - meanX * meanY) / (meanXSquared - meanX * meanX)
+        }
 
         val intercept = meanY - slope * meanX
         return LinearEquation(slope, intercept)
