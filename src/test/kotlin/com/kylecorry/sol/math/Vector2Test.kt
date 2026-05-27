@@ -198,6 +198,34 @@ internal class Vector2Test {
         assertEquals(expected, vector.angleBetween(other), 0.0001f)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, -1, -1, 1, 1, 0, 0",
+        "-2, 0, -1, -1, 1, 1, -1, 0",
+        "0, 2, -1, -1, 1, 1, 0, 1",
+        "-2, 2, -1, -1, 1, 1, -1, 1",
+        "2, -2, -1, -1, 1, 1, 1, -1",
+    )
+    fun coerceIn(
+        x: Float,
+        y: Float,
+        minimumX: Float,
+        minimumY: Float,
+        maximumX: Float,
+        maximumY: Float,
+        expectedX: Float,
+        expectedY: Float
+    ) {
+        val vector = Vector2(x, y)
+        val minimum = Vector2(minimumX, minimumY)
+        val maximum = Vector2(maximumX, maximumY)
+
+        val result = vector.coerceIn(minimum, maximum)
+
+        assertEquals(expectedX, result.x, 0.0001f)
+        assertEquals(expectedY, result.y, 0.0001f)
+    }
+
 
     companion object {
         @JvmStatic

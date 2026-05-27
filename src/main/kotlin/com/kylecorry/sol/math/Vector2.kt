@@ -80,6 +80,13 @@ value class Vector2 internal constructor(internal val packed: Long) {
         return Vector2(x, y)
     }
 
+    fun coerceIn(minimum: Vector2, maximum: Vector2): Vector2 {
+        return Vector2(
+            x.coerceIn(minimum.x, maximum.x),
+            y.coerceIn(minimum.y, maximum.y)
+        )
+    }
+
     override fun toString(): String {
         return "Vector2(x=$x, y=$y)"
     }
