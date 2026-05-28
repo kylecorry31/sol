@@ -5,7 +5,7 @@ plugins {
     id("dev.detekt") version "2.0.0-alpha.2"
 }
 
-val versionName = "17.0.2"
+val versionName = "18.0.0"
 
 mavenPublishing {
     coordinates("com.kylecorry", "sol", versionName)
