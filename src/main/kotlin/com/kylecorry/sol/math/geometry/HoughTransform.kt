@@ -32,7 +32,8 @@ object HoughTransform {
             val thetaDeg = if (thetaBinCount == 1) {
                 (startThetaDegrees + endThetaDegrees) / 2f
             } else {
-                startThetaDegrees + (endThetaDegrees - startThetaDegrees) * thetaBinIndex / (thetaBinCount - 1).toFloat()
+                startThetaDegrees +
+                        (endThetaDegrees - startThetaDegrees) * thetaBinIndex / (thetaBinCount - 1).toFloat()
             }
             val theta = thetaDeg.toRadians()
             thetaValues[thetaBinIndex] = theta

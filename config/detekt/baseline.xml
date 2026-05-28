@@ -21,6 +21,7 @@
     <ID>LongParameterList:Forecaster.kt:Forecaster$fun forecast: List&lt;WeatherForecast&gt;</ID>
     <ID>LongParameterList:Geometry.kt:Geometry$fun snapToLine: Vector2</ID>
     <ID>LongParameterList:Geometry.kt:Geometry$fun snapToLine: Vector3</ID>
+    <ID>LongParameterList:HoughTransform.kt:HoughTransform$private fun castVotes</ID>
     <ID>LongParameterList:IRiseSetTransitTimeCalculator.kt:IRiseSetTransitTimeCalculator$fun calculate: RiseSetTransitTimes</ID>
     <ID>LongParameterList:Interpolation.kt:Interpolation$fun cubic: Float</ID>
     <ID>LongParameterList:Interpolation.kt:Interpolation$fun map: Double</ID>
@@ -89,6 +90,7 @@
     <ID>ReturnCount:NewtonsRiseSetTransitTimeCalculator.kt:NewtonsRiseSetTransitTimeCalculator$private fun getHourAngle: Double?</ID>
     <ID>ReturnCount:OSGBCoordinateFormat.kt:OSGBCoordinateFormat$override fun toString: String</ID>
     <ID>ReturnCount:Oceanography.kt:Oceanography$fun getTidalRange: TidalRange</ID>
+    <ID>ReturnCount:Polygon.kt:Polygon$fun isConvex: Boolean</ID>
     <ID>ReturnCount:Range.kt:Range$fun clamp: T</ID>
     <ID>ReturnCount:Range.kt:Range.Companion$fun &lt;T : Comparable&lt;T&gt;&gt; intersection: Range&lt;T&gt;?</ID>
     <ID>ReturnCount:SolForecaster.kt:SolForecaster$private fun forecast: List&lt;WeatherForecast&gt;</ID>
