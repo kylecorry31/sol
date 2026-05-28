@@ -49,6 +49,10 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
         return rawData[1].toRawBits()
     }
 
+    fun size(): Int {
+        return rows() + columns()
+    }
+
     fun clone(): Matrix {
         return Matrix(rawData.clone())
     }
@@ -259,6 +263,14 @@ fun Matrix.mapRows(fn: (FloatArray) -> FloatArray): Matrix {
 
 fun Matrix.mapColumns(fn: (FloatArray) -> FloatArray): Matrix {
     return LinearAlgebra.mapColumns(this, fn)
+}
+
+inline fun Matrix.forEach(crossinline fn: (value: Float) -> Unit) {
+    for (row in 0..<rows()) {
+        for (column in 0..<columns()) {
+            fn(get(row, column))
+        }
+    }
 }
 
 fun Matrix.sumRows(): Matrix {
