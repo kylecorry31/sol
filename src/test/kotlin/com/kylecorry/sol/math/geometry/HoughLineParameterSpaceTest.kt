@@ -1,7 +1,7 @@
 package com.kylecorry.sol.math.geometry
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.math.PI
 
@@ -63,7 +63,7 @@ internal class HoughLineParameterSpaceTest {
     }
 
     @Test
-    fun findStrongestLineCandidateReturnsHighestPositiveScoringLine() {
+    fun findStrongestLineCandidatesReturnsHighestPositiveScoringLine() {
         val parameterSpace = HoughLineParameterSpace(
             accumulatorBins = floatArrayOf(
                 0f, 2f, 1f,
@@ -75,14 +75,67 @@ internal class HoughLineParameterSpaceTest {
             thetaValues = floatArrayOf(0f, PI.toFloat() / 2f)
         )
 
-        val line = requireNotNull(parameterSpace.findStrongestLineCandidate())
+        val candidates = parameterSpace.findStrongestLineCandidates(maxCandidates = 1)
 
-        assertEquals(8f, line.rho, 0.0001f)
-        assertEquals(PI.toFloat() / 2f, line.thetaRadians, 0.0001f)
+        assertEquals(1, candidates.size)
+        assertEquals(5f, candidates.first().score, 0.0001f)
+        assertEquals(8f, candidates.first().line.rho, 0.0001f)
+        assertEquals(PI.toFloat() / 2f, candidates.first().line.thetaRadians, 0.0001f)
     }
 
     @Test
-    fun findStrongestLineCandidateReturnsNullWhenThereAreNoPositiveScores() {
+    fun findStrongestLineCandidatesCanReturnMultipleCandidates() {
+        val parameterSpace = HoughLineParameterSpace(
+            accumulatorBins = floatArrayOf(
+                0f, 2f, 1f,
+                3f, 4f, 5f
+            ),
+            rhoBinCount = 3,
+            thetaBinCount = 2,
+            maxRho = 8f,
+            thetaValues = floatArrayOf(0f, PI.toFloat() / 2f)
+        )
+
+        val candidates = parameterSpace.findStrongestLineCandidates(
+            maxCandidates = 2,
+            suppressionThetaRadius = 0,
+            suppressionRhoRadius = 0
+        )
+
+        assertEquals(2, candidates.size)
+        assertEquals(5f, candidates[0].score, 0.0001f)
+        assertEquals(4f, candidates[1].score, 0.0001f)
+        assertEquals(8f, candidates[0].line.rho, 0.0001f)
+        assertEquals(0f, candidates[1].line.rho, 0.0001f)
+        assertEquals(PI.toFloat() / 2f, candidates[0].line.thetaRadians, 0.0001f)
+        assertEquals(PI.toFloat() / 2f, candidates[1].line.thetaRadians, 0.0001f)
+    }
+
+    @Test
+    fun findStrongestLineCandidatesUsesNonMaximalSuppression() {
+        val parameterSpace = HoughLineParameterSpace(
+            accumulatorBins = floatArrayOf(0f, 4f, 5f, 3f, 0f, 2f),
+            rhoBinCount = 6,
+            thetaBinCount = 1,
+            maxRho = 10f,
+            thetaValues = floatArrayOf(0f)
+        )
+
+        val candidates = parameterSpace.findStrongestLineCandidates(
+            maxCandidates = 2,
+            suppressionThetaRadius = 0,
+            suppressionRhoRadius = 1
+        )
+
+        assertEquals(2, candidates.size)
+        assertEquals(5f, candidates[0].score, 0.0001f)
+        assertEquals(-2f, candidates[0].line.rho, 0.0001f)
+        assertEquals(2f, candidates[1].score, 0.0001f)
+        assertEquals(10f, candidates[1].line.rho, 0.0001f)
+    }
+
+    @Test
+    fun findStrongestLineCandidatesReturnsEmptyWhenThereAreNoPositiveScores() {
         val parameterSpace = HoughLineParameterSpace(
             accumulatorBins = floatArrayOf(0f, -1f, -2f),
             rhoBinCount = 3,
@@ -91,6 +144,6 @@ internal class HoughLineParameterSpaceTest {
             thetaValues = floatArrayOf(0f)
         )
 
-        assertNull(parameterSpace.findStrongestLineCandidate())
+        assertTrue(parameterSpace.findStrongestLineCandidates(maxCandidates = 1).isEmpty())
     }
 }
