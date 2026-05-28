@@ -50,7 +50,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun size(): Int {
-        return rows() + columns()
+        return rows() * columns()
     }
 
     fun clone(): Matrix {
