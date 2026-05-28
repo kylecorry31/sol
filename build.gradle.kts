@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.3.0"
     id("java-library")
     id("com.vanniktech.maven.publish") version "0.35.0"
-    id("dev.detekt") version "2.0.0-alpha.2"
+    id("dev.detekt") version "2.0.0-alpha.3"
 }
 
 val versionName = "18.0.0"
