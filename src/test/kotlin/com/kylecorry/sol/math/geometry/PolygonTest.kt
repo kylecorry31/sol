@@ -134,4 +134,27 @@ internal class PolygonTest {
 
         assertFalse(polygon.isConvex())
     }
+
+    @Test
+    fun connectCounterClockwiseOrdersPointsCounterClockwise() {
+        val points = listOf(
+            Vector2(4f, 3f),
+            Vector2(0f, 3f),
+            Vector2(4f, 0f),
+            Vector2(0f, 0f)
+        )
+
+        val polygon = Polygon.connectCounterClockwise(points)
+
+        assertEquals(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(4f, 0f),
+                Vector2(4f, 3f),
+                Vector2(0f, 3f)
+            ),
+            polygon.vertices
+        )
+        assertTrue(polygon.signedArea() > 0f)
+    }
 }

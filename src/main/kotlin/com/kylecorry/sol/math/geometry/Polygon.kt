@@ -2,7 +2,9 @@ package com.kylecorry.sol.math.geometry
 
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.absoluteValue
+import kotlin.math.atan2
 
 data class Polygon(val vertices: List<Vector2>) {
     val edges: List<Line>
@@ -72,5 +74,16 @@ data class Polygon(val vertices: List<Vector2>) {
 
     private fun getIndex(i: Int): Int {
         return i % vertices.size
+    }
+
+    companion object {
+        fun connectCounterClockwise(points: List<Vector2>): Polygon {
+            val centerX = Statistics.mean(points.map { it.x })
+            val centerY = Statistics.mean(points.map { it.y })
+            val ordered = points.sortedBy {
+                atan2(it.y - centerY, it.x - centerX)
+            }
+            return Polygon(ordered)
+        }
     }
 }
