@@ -3,6 +3,8 @@ package com.kylecorry.sol.math.geometry
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.tests.assertVector
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 internal class PolygonTest {
@@ -86,5 +88,50 @@ internal class PolygonTest {
         val polygon = Polygon(emptyList())
 
         assertVector(Vector2.zero, polygon.centroid(), 0.00001f)
+    }
+
+    @Test
+    fun isConvexReturnsTrueForConvexPolygon() {
+        val polygon = Polygon(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(4f, 0f),
+                Vector2(4f, 3f),
+                Vector2(0f, 3f)
+            )
+        )
+
+        assertTrue(polygon.isConvex())
+        assertTrue(Polygon(polygon.vertices.reversed()).isConvex())
+    }
+
+    @Test
+    fun isConvexReturnsFalseForConcavePolygon() {
+        val polygon = Polygon(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(4f, 0f),
+                Vector2(2f, 2f),
+                Vector2(4f, 4f),
+                Vector2(0f, 4f)
+            )
+        )
+
+        assertFalse(polygon.isConvex())
+    }
+
+    @Test
+    fun isConvexReturnsFalseForCollinearVertices() {
+        val polygon = Polygon(
+            listOf(
+                Vector2(0f, 0f),
+                Vector2(2f, 0f),
+                Vector2(4f, 0f),
+                Vector2(4f, 3f),
+                Vector2(0f, 3f)
+            )
+        )
+
+        assertFalse(polygon.isConvex())
     }
 }
