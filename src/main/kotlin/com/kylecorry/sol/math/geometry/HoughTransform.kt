@@ -9,16 +9,16 @@ import kotlin.math.sin
 
 object HoughTransform {
     fun vote(
-        featurePoints: List<WeightedPoint>,
-        imageWidth: Int,
-        imageHeight: Int,
+        gradients: Gradients,
+        threshold: Float,
         thetaBinCount: Int,
-        startThetaDegrees: Float,
-        endThetaDegrees: Float
+        startThetaDegrees: Float = 0f,
+        endThetaDegrees: Float = 180f
     ): HoughLineParameterSpace {
-        require(thetaBinCount > 0) { "thetaBins must be greater than 0" }
-        require(imageWidth > 0) { "imageWidth must be greater than 0" }
-        require(imageHeight > 0) { "imageHeight must be greater than 0" }
+        require(thetaBinCount > 0) { "thetaBinCount must be greater than 0" }
+
+        val imageWidth = gradients.magnitude.columns()
+        val imageHeight = gradients.magnitude.rows()
 
         val maxRho = hypot(imageWidth.toFloat(), imageHeight.toFloat())
         val rhoBinCount = max(1, (maxRho * 2).roundToInt() + 1)
@@ -40,8 +40,25 @@ object HoughTransform {
             sinThetaValues[thetaBinIndex] = sin(theta)
         }
 
-        for (featurePoint in featurePoints) {
-            castVotes(featurePoint, thetaBinCount, rhoBinCount, maxRho, cosThetaValues, sinThetaValues, accumulatorBins)
+        for (y in 0..<imageHeight) {
+            for (x in 0..<imageWidth) {
+                val magnitude = gradients.magnitude[y, x]
+                if (magnitude < threshold) {
+                    continue
+                }
+
+                castVotes(
+                    x.toFloat(),
+                    y.toFloat(),
+                    magnitude,
+                    thetaBinCount,
+                    rhoBinCount,
+                    maxRho,
+                    cosThetaValues,
+                    sinThetaValues,
+                    accumulatorBins
+                )
+            }
         }
 
         return HoughLineParameterSpace(
@@ -54,7 +71,9 @@ object HoughTransform {
     }
 
     private fun castVotes(
-        featurePoint: WeightedPoint,
+        x: Float,
+        y: Float,
+        weight: Float,
         thetaBinCount: Int,
         rhoBinCount: Int,
         maxRho: Float,
@@ -63,13 +82,12 @@ object HoughTransform {
         accumulatorBins: FloatArray
     ) {
         for (thetaBinIndex in 0..<thetaBinCount) {
-            val rho = featurePoint.point.x * cosThetaValues[thetaBinIndex] +
-                    featurePoint.point.y * sinThetaValues[thetaBinIndex]
+            val rho = x * cosThetaValues[thetaBinIndex] +
+                    y * sinThetaValues[thetaBinIndex]
 
             val rhoBinIndex = rhoToBinIndex(rho, maxRho, rhoBinCount)
-
             val accumulatorIndex = thetaBinIndex * rhoBinCount + rhoBinIndex
-            accumulatorBins[accumulatorIndex] += featurePoint.weight
+            accumulatorBins[accumulatorIndex] += weight
         }
     }
 

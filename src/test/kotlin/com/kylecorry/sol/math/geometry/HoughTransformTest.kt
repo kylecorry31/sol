@@ -1,6 +1,6 @@
 package com.kylecorry.sol.math.geometry
 
-import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.algebra.Matrix
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -12,9 +12,15 @@ internal class HoughTransformTest {
     @Test
     fun voteCreatesParameterSpace() {
         val parameterSpace = HoughTransform.vote(
-            emptyList(),
-            imageWidth = 3,
-            imageHeight = 4,
+            gradients = gradients(
+                arrayOf(
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f)
+                )
+            ),
+            threshold = 1f,
             thetaBinCount = 3,
             startThetaDegrees = 0f,
             endThetaDegrees = 180f
@@ -32,9 +38,15 @@ internal class HoughTransformTest {
     @Test
     fun voteUsesMidpointThetaWhenThereIsOneThetaBin() {
         val parameterSpace = HoughTransform.vote(
-            emptyList(),
-            imageWidth = 3,
-            imageHeight = 4,
+            gradients = gradients(
+                arrayOf(
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f)
+                )
+            ),
+            threshold = 1f,
             thetaBinCount = 1,
             startThetaDegrees = 30f,
             endThetaDegrees = 90f
@@ -46,9 +58,15 @@ internal class HoughTransformTest {
     @Test
     fun voteCastsPointWeightIntoEachThetaBin() {
         val parameterSpace = HoughTransform.vote(
-            listOf(WeightedPoint(Vector2(1f, 2f), 3f)),
-            imageWidth = 3,
-            imageHeight = 4,
+            gradients = gradients(
+                arrayOf(
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 3f, 0f),
+                    floatArrayOf(0f, 0f, 0f)
+                )
+            ),
+            threshold = 1f,
             thetaBinCount = 2,
             startThetaDegrees = 0f,
             endThetaDegrees = 90f
@@ -62,12 +80,15 @@ internal class HoughTransformTest {
     @Test
     fun voteAccumulatesWeightsInSameBin() {
         val parameterSpace = HoughTransform.vote(
-            listOf(
-                WeightedPoint(Vector2(1f, 0f), 2f),
-                WeightedPoint(Vector2(1f, 3f), 4f)
+            gradients = gradients(
+                arrayOf(
+                    floatArrayOf(0f, 2f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 4f, 0f)
+                )
             ),
-            imageWidth = 3,
-            imageHeight = 4,
+            threshold = 1f,
             thetaBinCount = 1,
             startThetaDegrees = 0f,
             endThetaDegrees = 0f
@@ -78,15 +99,37 @@ internal class HoughTransformTest {
     }
 
     @Test
-    fun voteRequiresPositiveInputs() {
+    fun voteIgnoresPointsBelowThreshold() {
+        val parameterSpace = HoughTransform.vote(
+            gradients = gradients(
+                arrayOf(
+                    floatArrayOf(0f, 0f, 0f),
+                    floatArrayOf(0f, 0.5f, 0f),
+                    floatArrayOf(0f, 2f, 0f),
+                    floatArrayOf(0f, 0f, 0f)
+                )
+            ),
+            threshold = 1f,
+            thetaBinCount = 1,
+            startThetaDegrees = 90f,
+            endThetaDegrees = 90f
+        )
+
+        assertEquals(0f, parameterSpace.score(thetaBinIndex = 0, rhoBinIndex = rhoToBinIndex(1f, 5f, 11)), 0.0001f)
+        assertEquals(2f, parameterSpace.score(thetaBinIndex = 0, rhoBinIndex = rhoToBinIndex(2f, 5f, 11)), 0.0001f)
+        assertEquals(2f, parameterSpace.accumulatorBins.sum(), 0.0001f)
+    }
+
+    @Test
+    fun voteRequiresPositiveThetaBinCount() {
         assertThrows(IllegalArgumentException::class.java) {
-            HoughTransform.vote(emptyList(), 1, 1, 0, 0f, 180f)
-        }
-        assertThrows(IllegalArgumentException::class.java) {
-            HoughTransform.vote(emptyList(), 0, 1, 1, 0f, 180f)
-        }
-        assertThrows(IllegalArgumentException::class.java) {
-            HoughTransform.vote(emptyList(), 1, 0, 1, 0f, 180f)
+            HoughTransform.vote(
+                gradients = gradients(arrayOf(floatArrayOf(0f))),
+                threshold = 1f,
+                thetaBinCount = 0,
+                startThetaDegrees = 0f,
+                endThetaDegrees = 180f
+            )
         }
     }
 
@@ -94,5 +137,14 @@ internal class HoughTransformTest {
         return (((rho + maxRho) / (2f * maxRho)) * (rhoBinCount - 1))
             .roundToInt()
             .coerceIn(0, rhoBinCount - 1)
+    }
+
+    private fun gradients(magnitude: Array<FloatArray>): Gradients {
+        val matrix = Matrix.create(magnitude)
+        return Gradients(
+            x = Matrix.zeros(matrix.rows(), matrix.columns()),
+            y = Matrix.zeros(matrix.rows(), matrix.columns()),
+            magnitude = matrix
+        )
     }
 }
