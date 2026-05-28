@@ -223,6 +223,46 @@ internal class GeometryTest {
         )
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, 1, 0, 0, 1, 0, 90",
+        "-1, 0, 0, 0, 1, 0, 180",
+        "1, 0, 0, 0, 0.5, 0.8660254, 60"
+    )
+    fun getInteriorAngle(
+        previousX: Float,
+        previousY: Float,
+        currentX: Float,
+        currentY: Float,
+        nextX: Float,
+        nextY: Float,
+        expected: Float
+    ) {
+        assertEquals(
+            expected,
+            Geometry.getInteriorAngle(
+                Vector2(previousX, previousY),
+                Vector2(currentX, currentY),
+                Vector2(nextX, nextY)
+            ),
+            0.0001f
+        )
+    }
+
+    @Test
+    fun getInteriorAngleReturnsZeroForDegenerateSegments() {
+        assertEquals(
+            0f,
+            Geometry.getInteriorAngle(Vector2(0f, 0f), Vector2(0f, 0f), Vector2(1f, 0f)),
+            0.0001f
+        )
+        assertEquals(
+            0f,
+            Geometry.getInteriorAngle(Vector2(1f, 0f), Vector2(0f, 0f), Vector2(0f, 0f)),
+            0.0001f
+        )
+    }
+
     private fun assertEquals(expected: Line, actual: Line, delta: Float = 0f) {
         assertEquals(expected.start, actual.start, delta)
         assertEquals(expected.end, actual.end, delta)

@@ -1,13 +1,16 @@
 package com.kylecorry.sol.math.geometry
 
+import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.acos
 import kotlin.math.absoluteValue
+import kotlin.math.acos
+import kotlin.math.hypot
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -390,5 +393,25 @@ object Geometry {
         maxHeight: Float
     ): Float {
         return min(maxWidth / width, maxHeight / height)
+    }
+
+    fun getInteriorAngle(
+        previous: Vector2,
+        current: Vector2,
+        next: Vector2
+    ): Float {
+        val ax = previous.x - current.x
+        val ay = previous.y - current.y
+        val bx = next.x - current.x
+        val by = next.y - current.y
+        val magnitudeA = hypot(ax, ay)
+        val magnitudeB = hypot(bx, by)
+
+        if (Arithmetic.isZero(magnitudeA) || Arithmetic.isZero(magnitudeB)) {
+            return 0f
+        }
+
+        val cosine = ((ax * bx + ay * by) / (magnitudeA * magnitudeB)).coerceIn(-1f, 1f)
+        return acos(cosine).toDegrees()
     }
 }
