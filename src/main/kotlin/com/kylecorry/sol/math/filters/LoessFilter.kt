@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.math.regression.WeightedLeastSquaresRegression
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.floor
 import kotlin.math.pow
 
@@ -58,7 +59,7 @@ class LoessFilter(
                 } else {
 
                     val w = nearest.map {
-                        tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                        tricube(it.second.absoluteValue / maxDistance.absoluteValue) * weights[it.third] * robustnessWeights[it.third]
                     }
 
                     val regression = WeightedLeastSquaresRegression(

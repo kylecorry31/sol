@@ -70,4 +70,14 @@ class LoessFilterTest {
 
         assertEquals(0.0f, fitResiduals, 0.0001f)
     }
+
+    @Test
+    fun robustnessIterationsRejectOutlier() {
+        val xs = (0..20).map { listOf(it.toFloat()) }
+        val ys = (0..20).map { if (it == 10) 100f else it.toFloat() }
+
+        val smoothed = LoessFilter(span = 0.4f, robustnessIterations = 20).filter(xs, ys)
+
+        assertEquals(9f, smoothed[9], 1f)
+    }
 }
