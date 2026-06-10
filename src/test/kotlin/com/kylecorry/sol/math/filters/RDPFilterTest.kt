@@ -60,6 +60,14 @@ internal class RDPFilterTest {
         assertEquals(emptyList<Vector2>(), rdp1.filter(emptyList()))
     }
 
+    @Test
+    fun rdpFilterKeepsSinglePoint() {
+        val point = Vector2(1f, 1f)
+        val filter = RDPFilter<Vector2>(0.1f) { _, _, _ -> 0f }
+
+        assertEquals(listOf(point), filter.filter(listOf(point)))
+    }
+
 //    @Test
 //    fun performance(){
 //        val random = Random(1)

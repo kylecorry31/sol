@@ -13,7 +13,7 @@ class RDPFilter<T>(
 
     fun filter(points: List<T>): List<T> {
         if (points.size < 2) {
-            return emptyList()
+            return points
         }
 
         val size = points.size
