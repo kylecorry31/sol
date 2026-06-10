@@ -63,9 +63,11 @@ class NoisyExtremaFinder(private val step: Double = 1.0, private val debounceCou
     }
 
     override fun find(values: List<Float>): List<Extremum> {
+        require(step >= 1.0) { "step must be at least 1 for list input" }
         if (values.isEmpty()) {
             return emptyList()
         }
+        val stride = step.toInt()
         val last = values.first()
         var decreasing = false
 
@@ -110,7 +112,7 @@ class NoisyExtremaFinder(private val step: Double = 1.0, private val debounceCou
                 }
             }
 
-            x += step.toInt()
+            x += stride
         }
         return extrema
     }

@@ -3,6 +3,8 @@ package com.kylecorry.sol.math.optimization
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -38,6 +40,13 @@ class ExtremaFinderTest {
         val finder = IterativeSimpleExtremaFinder(initialStep, finalStep, 3)
         val actual = finder.find(Range(start, end), fn)
         assertExtremasEqual(expected, actual, finalStep.toFloat() * 2, 0.01f)
+    }
+
+    @Test
+    fun noisyExtremaFinderRejectsSubUnitStepForListInput() {
+        assertThrows(IllegalArgumentException::class.java) {
+            NoisyExtremaFinder(0.5).find(listOf(1f, 2f, 3f, 4f, 5f))
+        }
     }
 
     private fun assertExtremasEqual(
