@@ -10,6 +10,7 @@ internal object FastFourierTransform {
         data: List<Float>,
         twiddleFactors: List<ComplexNumber> = getTwiddleFactors(data.size)
     ): List<ComplexNumber> {
+        requirePowerOfTwo(data.size)
         val complexData = Array(data.size) { ComplexNumber(data[it], 0f) }
         bitReverse(complexData)
         return fftIterative(complexData, twiddleFactors).toList()
@@ -51,6 +52,7 @@ internal object FastFourierTransform {
 
     fun ifft(fft: List<ComplexNumber>, twiddleFactors: List<ComplexNumber> = getTwiddleFactors(fft.size)): List<Float> {
         val size = fft.size
+        requirePowerOfTwo(size)
         val conjugatedInput = Array(size) { fft[it].conjugate() }
         bitReverse(conjugatedInput)
         return fftIterative(conjugatedInput, twiddleFactors)
@@ -62,6 +64,10 @@ internal object FastFourierTransform {
             val twiddleIndex = k.toFloat() / size.toFloat()
             ComplexNumber.exp(-2 * PI.toFloat() * twiddleIndex)
         }
+    }
+
+    private fun requirePowerOfTwo(size: Int) {
+        require(size == 0 || size and (size - 1) == 0) { "FFT size must be a power of 2" }
     }
 
 }

@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.analysis
 
 import com.kylecorry.sol.math.ComplexNumber
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import kotlin.math.sin
 
@@ -25,6 +26,13 @@ class FrequencyAnalysisTest {
         assertEquals(expected.size, calculated.size)
         for (i in expected.indices) {
             complexEquals(expected[i], calculated[i], 0.001f)
+        }
+    }
+
+    @Test
+    fun fftRejectsNonPowerOfTwoInputInsteadOfHanging() {
+        assertThrows(IllegalArgumentException::class.java) {
+            FrequencyAnalysis.fft(List(6) { it.toFloat() })
         }
     }
 
