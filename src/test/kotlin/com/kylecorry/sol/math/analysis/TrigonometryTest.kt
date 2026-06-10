@@ -107,6 +107,46 @@ internal class TrigonometryTest {
         assertEquals(7f, range.end, 0.0001f)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        // Identical points
+        "0.0, 0.0, 0.0, 0.0, 0.0",
+        "123.4, 45.6, 123.4, 45.6, 0.0",
+        // Along the horizon
+        "0.0, 0.0, 45.0, 0.0, 45.0",
+        "0.0, 0.0, 90.0, 0.0, 90.0",
+        "0.0, 0.0, 180.0, 0.0, 180.0",
+        // Along the same azimuth
+        "0.0, 0.0, 0.0, 45.0, 45.0",
+        "0.0, -45.0, 0.0, 0.0, 45.0",
+        "0.0, 0.0, 0.0, -90.0, 90.0",
+        // Zenith and nadir
+        "0.0, 90.0, 0.0, -90.0, 180.0",
+        "0.0, 90.0, 45.0, 0.0, 90.0",
+        "0.0, 90.0, 135.0, 90.0, 0.0",
+        // Across the 0/360 azimuth boundary
+        "359.0, 0.0, 1.0, 0.0, 2.0",
+        // Antipodal points
+        "10.0, 45.0, 190.0, -45.0, 180.0",
+        // Same altitude, different azimuth
+        "0.0, 60.0, 90.0, 60.0, 41.40962",
+        // Arbitrary points (and symmetry)
+        "30.0, 60.0, 100.0, -30.0, 106.55474",
+        "100.0, -30.0, 30.0, 60.0, 106.55474",
+        // Small separation
+        "0.0, 0.0, 0.5, 0.0, 0.5"
+    )
+    fun angularDistance(
+        azimuth1: Float,
+        altitude1: Float,
+        azimuth2: Float,
+        altitude2: Float,
+        expected: Float
+    ) {
+        val distance = Trigonometry.angularDistance(azimuth1, altitude1, azimuth2, altitude2)
+        assertEquals(expected, distance, 0.05f)
+    }
+
     @Test
     fun normalizeAngle() {
         assertEquals(0.0, Trigonometry.normalizeAngle(0.0), 0.0)

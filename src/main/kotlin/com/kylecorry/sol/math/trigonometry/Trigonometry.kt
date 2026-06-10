@@ -195,11 +195,20 @@ object Trigonometry {
     }
 
     fun angularDistance(azimuth1: Float, altitude1: Float, azimuth2: Float, altitude2: Float): Float {
+        if (Arithmetic.isApproximatelyEqual(altitude1, altitude2) && Arithmetic.isApproximatelyEqual(
+                azimuth1,
+                azimuth2
+            )
+        ) {
+            return 0f
+        }
+
         val sinAlt1 = sinDegrees(altitude1)
         val cosAlt1 = cosDegrees(altitude1)
         val sinAlt2 = sinDegrees(altitude2)
         val cosAlt2 = cosDegrees(altitude2)
-        return toDegrees(acos(sinAlt1 * sinAlt2 + cosAlt1 * cosAlt2 * cosDegrees(azimuth2 - azimuth1)))
+        val value = sinAlt1 * sinAlt2 + cosAlt1 * cosAlt2 * cosDegrees(azimuth2 - azimuth1)
+        return toDegrees(acos(value.coerceIn(-1f, 1f)))
     }
 
 }
