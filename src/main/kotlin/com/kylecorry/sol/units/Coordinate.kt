@@ -115,11 +115,11 @@ value class Coordinate internal constructor(val packed: Long) : ICoordinate {
      * Get the angle between two coordinates (through the center of the Earth)
      */
     fun degreesBetween(other: Coordinate): Float {
-        return acos(
+        val value =
             sinDegrees(latitude) * sinDegrees(other.latitude) +
                     cosDegrees(latitude) * cosDegrees(other.latitude) *
                     cosDegrees(longitude - other.longitude)
-        ).toDegrees().toFloat().absoluteValue
+        return acos(value.coerceIn(-1.0, 1.0)).toDegrees().toFloat().absoluteValue
     }
 
     companion object {

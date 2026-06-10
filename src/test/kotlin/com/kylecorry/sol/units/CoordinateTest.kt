@@ -76,4 +76,48 @@ class CoordinateTest {
         assertEquals(expected.longitude, actual.longitude, 0.01)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        // Identical coordinates
+        "0.0, 0.0, 0.0, 0.0, 0.0",
+        "42.0, -70.0, 42.0, -70.0, 0.0",
+        // Along the equator
+        "0.0, 0.0, 0.0, 45.0, 45.0",
+        "0.0, 0.0, 0.0, 90.0, 90.0",
+        "0.0, 0.0, 0.0, 180.0, 180.0",
+        // Along a meridian
+        "0.0, 0.0, 45.0, 0.0, 45.0",
+        "-45.0, 0.0, 0.0, 0.0, 45.0",
+        "0.0, 0.0, -90.0, 0.0, 90.0",
+        // Poles
+        "90.0, 0.0, -90.0, 0.0, 180.0",
+        "90.0, 0.0, 0.0, 45.0, 90.0",
+        "90.0, 0.0, 90.0, 135.0, 0.0",
+        // Across the antimeridian
+        "0.0, 179.0, 0.0, -179.0, 2.0",
+        // Antipodal points
+        "45.0, 10.0, -45.0, -170.0, 180.0",
+        // Same latitude, different longitude
+        "60.0, 0.0, 60.0, 90.0, 41.40962",
+        // Arbitrary coordinates (and symmetry)
+        "60.0, 30.0, -30.0, 100.0, 106.55474",
+        "-30.0, 100.0, 60.0, 30.0, 106.55474",
+        // Small separation
+        "0.0, 0.0, 0.0, 0.5, 0.5"
+    )
+    fun degreesBetween(
+        latitude1: Double,
+        longitude1: Double,
+        latitude2: Double,
+        longitude2: Double,
+        expected: Float
+    ) {
+        val start = Coordinate(latitude1, longitude1)
+        val end = Coordinate(latitude2, longitude2)
+
+        val degrees = start.degreesBetween(end)
+
+        assertEquals(expected, degrees, 0.01f)
+    }
+
 }
