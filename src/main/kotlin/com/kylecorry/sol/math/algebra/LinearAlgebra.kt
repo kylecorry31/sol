@@ -263,7 +263,7 @@ object LinearAlgebra {
      * Returns a column matrix of the diagonal of the matrix
      */
     fun diagonal(m: Matrix): Matrix {
-        return Matrix.create(1, min(m.rows(), m.columns())) { i, _ ->
+        return Matrix.create(1, min(m.rows(), m.columns())) { _, i ->
             m[i, i]
         }
     }

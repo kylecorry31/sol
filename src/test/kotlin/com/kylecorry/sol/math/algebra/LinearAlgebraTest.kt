@@ -696,6 +696,16 @@ class LinearAlgebraTest {
         assertEquals(expected3, actual3, 0.00001f)
     }
 
+    @Test
+    fun diagonalReturnsEveryDiagonalEntry() {
+        val matrix = Matrix.create(arrayOf(floatArrayOf(1f, 2f), floatArrayOf(3f, 4f)))
+
+        val diagonal = LinearAlgebra.diagonal(matrix)
+
+        assertEquals(1f, diagonal[0, 0])
+        assertEquals(4f, diagonal[0, 1])
+    }
+
     private fun assertEquals(m1: Matrix, m2: Matrix, tolerance: Float = 0f) {
         assertEquals(m1.rows(), m2.rows())
         assertEquals(m1.columns(), m2.columns())
