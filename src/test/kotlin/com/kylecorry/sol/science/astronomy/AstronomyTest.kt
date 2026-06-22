@@ -1,6 +1,7 @@
 package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
+import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
@@ -29,6 +30,8 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.*
 import java.util.stream.Stream
+import kotlin.math.absoluteValue
+import kotlin.math.min
 
 class AstronomyTest {
 
@@ -443,23 +446,27 @@ class AstronomyTest {
 
     @ParameterizedTest
     @CsvSource(
-        "2020-03-02T14:58:00-05, FirstQuarter, 50.0",
-        "2020-03-09T13:48:00-05, Full, 100.0",
-        "2020-03-16T05:35:00-04, ThirdQuarter, 50.0",
-        "2020-03-24T05:29:00-04, New, 0.0",
-        "2020-03-29T12:00:00-04, WaxingCrescent, 23.0",
-        "2020-03-05T12:00:00-05, WaxingGibbous, 79.0",
-        "2020-03-13T12:00:00-04, WaningGibbous, 79.0",
-        "2020-03-18T12:00:00-04, WaningCrescent, 28.0",
-
-        )
-    fun getMoonPhase(date: String, phase: MoonTruePhase, illumination: Float) {
+        "2020-03-02T14:58:00-05, FirstQuarter, 50.0, 100.0, 8.2",
+        "2020-03-09T13:48:00-05, Full, 100.0, 184.1, 15.1",
+        "2020-03-16T05:35:00-04, ThirdQuarter, 50.0, 265.8, 21.8",
+        "2020-03-24T05:29:00-04, New, 0.0, 0.0, 0.0",
+        "2020-03-29T12:00:00-04, WaxingCrescent, 23.0, 64.6, 5.3",
+        "2020-03-05T12:00:00-05, WaxingGibbous, 79.0, 135.3, 11.1",
+        "2020-03-13T12:00:00-04, WaningGibbous, 79.0, 231.6, 19.0",
+        "2020-03-18T12:00:00-04, WaningCrescent, 28.0, 292.6, 24.0",
+    )
+    fun getMoonPhase(
+        date: String,
+        phase: MoonTruePhase,
+        illumination: Float,
+        angle: Float,
+        ageDays: Float
+    ) {
         val tolerance = 0.5f
 
         val actual = Astronomy.getMoonPhase(ZonedDateTime.parse(date))
         assertMoonPhases(
-            // TODO: Not testing angle right now
-            MoonPhase(phase, illumination, 0f),
+            MoonPhase(phase, illumination, angle, ageDays),
             actual,
             tolerance
         )
@@ -930,6 +937,16 @@ class AstronomyTest {
     private fun assertMoonPhases(expected: MoonPhase, actual: MoonPhase, tolerance: Float) {
         assertEquals(expected.phase, actual.phase)
         assertEquals(expected.illumination, actual.illumination, tolerance)
+        val angleDifference = (expected.phaseAngle - actual.phaseAngle).absoluteValue
+        val circularAngleDifference = min(angleDifference, 360f - angleDifference)
+        val oneDayInDegrees = 360f / Moon.SYNODIC_MONTH_DAYS.toFloat()
+        assertEquals(0f, circularAngleDifference, oneDayInDegrees)
+        val ageDifference = (expected.lunarAge - actual.lunarAge).absoluteValue
+        val circularAgeDifference = min(
+            ageDifference,
+            Moon.SYNODIC_MONTH_DAYS.toFloat() - ageDifference
+        )
+        assertEquals(0f, circularAgeDifference, 1f)
     }
 
     private fun assertRst(

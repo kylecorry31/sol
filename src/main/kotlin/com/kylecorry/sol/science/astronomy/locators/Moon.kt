@@ -179,29 +179,32 @@ internal class Moon : ICelestialLocator {
     }
 
     fun getPhase(ut: UniversalTime): MoonPhase {
-        val phaseAngle = getMoonPhaseAngle(ut)
-        val illumination = getMoonIllumination(phaseAngle).toFloat()
+        val illuminationAngle = getMoonIlluminationAngle(ut)
+        val illumination = getMoonIllumination(illuminationAngle).toFloat()
+        val phaseAngle = Trigonometry.normalizeAngle(360 - illuminationAngle)
+        val age = (SYNODIC_MONTH_DAYS * phaseAngle / 360).toFloat()
 
         for (phase in MoonTruePhase.entries) {
-            if (phase.startAngle <= phaseAngle && phase.endAngle >= phaseAngle) {
-                return MoonPhase(phase, illumination, phaseAngle.toFloat())
+            if (phase.startAngle <= illuminationAngle && phase.endAngle >= illuminationAngle) {
+                return MoonPhase(phase, illumination, phaseAngle.toFloat(), age)
             }
 
             // Handle new moon
             if (phase.startAngle >= phase.endAngle) {
-                if (phase.startAngle <= phaseAngle || phase.endAngle >= phaseAngle) {
-                    return MoonPhase(phase, illumination, phaseAngle.toFloat())
+                if (phase.startAngle <= illuminationAngle || phase.endAngle >= illuminationAngle) {
+                    return MoonPhase(phase, illumination, phaseAngle.toFloat(), age)
                 }
             }
         }
 
-        return MoonPhase(MoonTruePhase.New, illumination, phaseAngle.toFloat())
+        return MoonPhase(MoonTruePhase.New, illumination, phaseAngle.toFloat(), age)
     }
 
     fun getNextMeanPhase(date: UniversalTime, moonTruePhase: MoonTruePhase): UniversalTime {
         val k = getNextPhaseK(date, moonTruePhase)
         val t = k / 1236.85
-        val jde = 2451550.09766 + 29.530588861 * k + polynomial(t, 0.0, 0.0, 0.00015437, -0.000000150, 0.00000000073)
+        val jde =
+            2451550.09766 + SYNODIC_MONTH_DAYS * k + polynomial(t, 0.0, 0.0, 0.00015437, -0.000000150, 0.00000000073)
         return fromJulianDay(jde)
     }
 
@@ -258,7 +261,7 @@ internal class Moon : ICelestialLocator {
         return polynomial(julianCenturiesSinceJ2000, 1.0, -0.002516, -0.0000074)
     }
 
-    private fun getMoonPhaseAngle(ut: UniversalTime): Double {
+    private fun getMoonIlluminationAngle(ut: UniversalTime): Double {
         val meanElongation = getMeanElongation(ut)
         val sunMeanAnomaly = sun.getMeanAnomaly(ut)
         val moonMeanAnomaly = getMeanAnomaly(ut)
@@ -275,8 +278,8 @@ internal class Moon : ICelestialLocator {
         return (phaseAngle + 180) % 360.0
     }
 
-    private fun getMoonIllumination(phaseAngle: Double): Double {
-        return ((1 + cosDegrees(phaseAngle - 180)) / 2) * 100
+    private fun getMoonIllumination(illuminationAngle: Double): Double {
+        return ((1 + cosDegrees(illuminationAngle - 180)) / 2) * 100
     }
 
     private fun getMeanElongation(ut: UniversalTime): Double {
@@ -435,6 +438,10 @@ internal class Moon : ICelestialLocator {
             intArrayOf(4, -1, 0, -1, 115),
             intArrayOf(2, -2, 0, 1, 107)
         )
+    }
+
+    companion object {
+        const val SYNODIC_MONTH_DAYS = 29.530588861
     }
 
 }
