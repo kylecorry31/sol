@@ -946,7 +946,7 @@ class AstronomyTest {
             ageDifference,
             Moon.SYNODIC_MONTH_DAYS.toFloat() - ageDifference
         )
-        assertEquals(0f, circularAgeDifference, 1f)
+        assertEquals(0f, circularAgeDifference, 0.05f)
     }
 
     private fun assertRst(

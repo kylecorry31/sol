@@ -1,11 +1,12 @@
 package com.kylecorry.sol.science.astronomy.eclipse.solar
 
-import com.kylecorry.sol.math.arithmetic.Arithmetic.power
-import com.kylecorry.sol.math.trigonometry.Trigonometry
+import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.locators.Moon
+import com.kylecorry.sol.science.astronomy.moon.MoonPhaseTimeCalculator
+import com.kylecorry.sol.science.astronomy.moon.MoonPhaseTimeParameters
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.UniversalTime
 import com.kylecorry.sol.science.astronomy.units.fromJulianDay
@@ -24,51 +25,34 @@ internal class SolarEclipseParameterProvider {
 
     private fun getNextSolarEclipse(ut: UniversalTime): SolarEclipseParameters {
         var k = moon.getNextPhaseK(ut, MoonTruePhase.New)
-        var julianCenturiesSinceJ2000: Double
-        var argumentOfLatitude: Double
+        var phaseParameters: MoonPhaseTimeParameters
         var iterations = 0
         do {
-            julianCenturiesSinceJ2000 = k / 1236.85
-            argumentOfLatitude = Trigonometry.normalizeAngle(
-                160.7108 + 390.67050284 * k - 0.0016118 * power(julianCenturiesSinceJ2000, 2) - 0.00000227 * power(
-                    julianCenturiesSinceJ2000,
-                    3
-                ) + 0.000000011 * power(julianCenturiesSinceJ2000, 4)
-            )
-            if (sinDegrees(argumentOfLatitude).absoluteValue > 0.36) {
+            phaseParameters = MoonPhaseTimeCalculator.getParameters(k)
+            if (sinDegrees(phaseParameters.argumentOfLatitude).absoluteValue > 0.36) {
                 k += 1
             }
             iterations++
-        } while (sinDegrees(argumentOfLatitude).absoluteValue > 0.36 && iterations < MAX_PHASE_SEARCH_ITERATIONS)
+        } while (
+            sinDegrees(phaseParameters.argumentOfLatitude).absoluteValue > 0.36 &&
+            iterations < MAX_PHASE_SEARCH_ITERATIONS
+        )
 
-        check(sinDegrees(argumentOfLatitude).absoluteValue <= 0.36) {
+        check(sinDegrees(phaseParameters.argumentOfLatitude).absoluteValue <= 0.36) {
             "Solar eclipse phase search did not converge within $MAX_PHASE_SEARCH_ITERATIONS iterations"
         }
 
-        val meanJulianDay = getJDEOfMeanMoonPhase(k)
-        val sunMeanAnomaly = Trigonometry.normalizeAngle(
-            2.5534 + 29.1053567 * k - 0.0000014 * power(
-                julianCenturiesSinceJ2000,
-                2
-            ) - 0.00000011 * power(julianCenturiesSinceJ2000, 3)
-        )
-        val moonMeanAnomaly = Trigonometry.normalizeAngle(
-            201.5643 + 385.81693528 * k + 0.0107582 * power(julianCenturiesSinceJ2000, 2) + 0.00001238 * power(
-                julianCenturiesSinceJ2000,
-                3
-            ) - 0.000000058 * power(julianCenturiesSinceJ2000, 4)
-        )
-        val omega = Trigonometry.normalizeAngle(
-            124.7746 - 1.56375588 * k + 0.0020672 * power(
-                julianCenturiesSinceJ2000,
-                2
-            ) + 0.00000215 * power(julianCenturiesSinceJ2000, 3)
-        )
-        val eccentricity = moon.getEccentricity(julianCenturiesSinceJ2000)
+        val meanJulianDay = phaseParameters.meanJulianEphemerisDay
+        val sunMeanAnomaly = phaseParameters.sunMeanAnomaly
+        val moonMeanAnomaly = phaseParameters.moonMeanAnomaly
+        val argumentOfLatitude = phaseParameters.argumentOfLatitude
+        val omega = phaseParameters.ascendingNode
+        val eccentricity = phaseParameters.eccentricity
 
         val adjustedArgumentOfLatitude = argumentOfLatitude - 0.02665 * sinDegrees(omega)
         // The astronomical algorithms book does not specify what this adjustment is for
-        val adjustment1 = 299.77 + 0.107408 * k - 0.009173 * power(julianCenturiesSinceJ2000, 2)
+        val adjustment1 =
+            299.77 + 0.107408 * k - 0.009173 * square(phaseParameters.julianCenturiesSinceJ2000)
 
         var correction = 0.0
         val table = table54Part1()
@@ -118,14 +102,6 @@ internal class SolarEclipseParameterProvider {
             umbralConeRadius
         )
 
-    }
-
-    private fun getJDEOfMeanMoonPhase(k: Double): Double {
-        val julianCenturiesSinceJ2000 = k / 1236.85
-        return 2451550.09766 + 29.530588861 * k + 0.00015437 * power(julianCenturiesSinceJ2000, 2) - 0.00000015 * power(
-            julianCenturiesSinceJ2000,
-            3
-        ) + 0.00000000074 * power(julianCenturiesSinceJ2000, 4)
     }
 
     private fun table54Part1(): Array<IntArray> {

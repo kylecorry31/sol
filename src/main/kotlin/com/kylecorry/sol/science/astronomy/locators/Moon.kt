@@ -12,6 +12,7 @@ import com.kylecorry.sol.science.astronomy.corrections.EclipticObliquity
 import com.kylecorry.sol.science.astronomy.corrections.LongitudinalNutation
 import com.kylecorry.sol.science.astronomy.corrections.TerrestrialTime
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
+import com.kylecorry.sol.science.astronomy.moon.MoonPhaseTimeCalculator
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.astronomy.units.EquatorialCoordinate
@@ -182,7 +183,8 @@ internal class Moon : ICelestialLocator {
         val illuminationAngle = getMoonIlluminationAngle(ut)
         val illumination = getMoonIllumination(illuminationAngle).toFloat()
         val phaseAngle = Trigonometry.normalizeAngle(360 - illuminationAngle)
-        val age = (SYNODIC_MONTH_DAYS * phaseAngle / 360).toFloat()
+        val previousNewMoon = getPreviousNewMoon(ut)
+        val age = Duration.between(previousNewMoon, ut).toSeconds() / SECONDS_PER_DAY
 
         for (phase in MoonTruePhase.entries) {
             if (phase.startAngle <= illuminationAngle && phase.endAngle >= illuminationAngle) {
@@ -200,12 +202,22 @@ internal class Moon : ICelestialLocator {
         return MoonPhase(MoonTruePhase.New, illumination, phaseAngle.toFloat(), age)
     }
 
+    private fun getPreviousNewMoon(ut: UniversalTime): UniversalTime {
+        var k = getNextPhaseK(ut, MoonTruePhase.New)
+        var newMoon = MoonPhaseTimeCalculator.getNewMoon(k)
+        val maxIterations = 10
+        var iterationCount = 0
+        while (newMoon > ut && iterationCount < maxIterations) {
+            iterationCount++
+            k--
+            newMoon = MoonPhaseTimeCalculator.getNewMoon(k)
+        }
+        return newMoon
+    }
+
     fun getNextMeanPhase(date: UniversalTime, moonTruePhase: MoonTruePhase): UniversalTime {
         val k = getNextPhaseK(date, moonTruePhase)
-        val t = k / 1236.85
-        val jde =
-            2451550.09766 + SYNODIC_MONTH_DAYS * k + polynomial(t, 0.0, 0.0, 0.00015437, -0.000000150, 0.00000000073)
-        return fromJulianDay(jde)
+        return fromJulianDay(MoonPhaseTimeCalculator.getMeanPhaseJulianEphemerisDay(k))
     }
 
     fun getNextPhaseK(date: UniversalTime, moonTruePhase: MoonTruePhase): Double {
@@ -441,7 +453,8 @@ internal class Moon : ICelestialLocator {
     }
 
     companion object {
-        const val SYNODIC_MONTH_DAYS = 29.530588861
+        const val SYNODIC_MONTH_DAYS = MoonPhaseTimeCalculator.SYNODIC_MONTH_DAYS
+        private const val SECONDS_PER_DAY = 86400f
     }
 
 }
