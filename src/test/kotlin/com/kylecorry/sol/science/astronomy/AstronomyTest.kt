@@ -63,11 +63,12 @@ class AstronomyTest {
 
     @Test
     fun canGetSunAngularDiameter() {
-        val diameter = Astronomy.getSunAngularDiameter(
-            ZonedDateTime.parse("2015-02-15T00:00:00Z")
+        val position = Astronomy.getSunPosition(
+            ZonedDateTime.parse("2015-02-15T00:00:00Z"),
+            Coordinate(0.0, 0.0)
         )
 
-        assertEquals(0.539790f, diameter, 0.0001f)
+        assertEquals(0.539790f, position.angularDiameter!!, 0.0001f)
     }
 
     @Test
@@ -224,9 +225,9 @@ class AstronomyTest {
         val coordinate = Coordinate(latitude, longitude)
         val datetime = ZonedDateTime.parse(time)
 
-        val actual = Astronomy.getSunAltitude(datetime, coordinate, true)
+        val actual = Astronomy.getSunPosition(datetime, coordinate, true)
 
-        assertEquals(altitude, actual, 0.05f)
+        assertEquals(altitude, actual.altitude, 0.05f)
     }
 
     @ParameterizedTest
@@ -238,8 +239,8 @@ class AstronomyTest {
     fun getSunAzimuth(latitude: Double, longitude: Double, date: String, expected: Float) {
         val coordinate = Coordinate(latitude, longitude)
         val datetime = ZonedDateTime.parse(date)
-        val azimuth = Astronomy.getSunAzimuth(datetime, coordinate)
-        assertEquals(expected, azimuth.value, 0.5f)
+        val position = Astronomy.getSunPosition(datetime, coordinate)
+        assertEquals(expected, position.azimuth.value, 0.5f)
     }
 
     @Test

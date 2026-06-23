@@ -6,6 +6,7 @@ import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.science.astronomy.locators.Sun
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.astronomy.units.fromJulianDay
 import com.kylecorry.sol.science.astronomy.units.toJulianDay
@@ -52,27 +53,26 @@ internal object SunFacade {
         )
     }
 
-    fun getSunAltitude(
+    fun getSunPosition(
         time: ZonedDateTime,
         location: Coordinate,
         withRefraction: Boolean = false,
         withParallax: Boolean = false
-    ): Float {
-        return AstroUtils.getAltitude(
+    ): CelestialObservation {
+        val ut = time.toUniversalTime()
+        val horizonCoordinate = AstroUtils.getLocation(
             sun,
-            time.toUniversalTime(),
+            ut,
             location,
             withRefraction,
             withParallax
         )
-    }
-
-    fun getSunAzimuth(
-        time: ZonedDateTime,
-        location: Coordinate,
-        withParallax: Boolean = false
-    ): Bearing {
-        return AstroUtils.getAzimuth(sun, time.toUniversalTime(), location, withParallax)
+        val diameter = sun.getAngularDiameter(ut)
+        return CelestialObservation(
+            Bearing.from(horizonCoordinate.azimuth.toFloat()),
+            horizonCoordinate.altitude.toFloat(),
+            diameter.toFloat()
+        )
     }
 
     fun getNextSunset(
@@ -121,7 +121,7 @@ internal object SunFacade {
         withRefraction: Boolean = false,
         withParallax: Boolean = false
     ): Boolean {
-        return getSunAltitude(time, location, withRefraction, withParallax) > 0
+        return getSunPosition(time, location, withRefraction, withParallax).altitude > 0
     }
 
     fun getDaylightLength(
@@ -166,10 +166,6 @@ internal object SunFacade {
 
     fun getSunDistance(time: ZonedDateTime): Distance {
         return sun.getDistance(time.toUniversalTime())
-    }
-
-    fun getSunAngularDiameter(time: ZonedDateTime): Float {
-        return sun.getAngularDiameter(time.toUniversalTime()).toFloat()
     }
 
     /**

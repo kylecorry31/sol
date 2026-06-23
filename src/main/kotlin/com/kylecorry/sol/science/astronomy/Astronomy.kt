@@ -30,21 +30,21 @@ object Astronomy {
         return SunFacade.getSunEvents(date, location, mode, withRefraction, withParallax)
     }
 
-    fun getSunAltitude(
+    /**
+     * Get the position of the sun at a given time and location.
+     * @param time the observer's time
+     * @param location the observer's location
+     * @param withRefraction whether to factor in refraction
+     * @param withParallax whether to factor in parallax
+     * @return a celestial observation containing an altitude, azimuth, and angular diameter (won't be null)
+     */
+    fun getSunPosition(
         time: ZonedDateTime,
         location: Coordinate,
         withRefraction: Boolean = false,
         withParallax: Boolean = false
-    ): Float {
-        return SunFacade.getSunAltitude(time, location, withRefraction, withParallax)
-    }
-
-    fun getSunAzimuth(
-        time: ZonedDateTime,
-        location: Coordinate,
-        withParallax: Boolean = false
-    ): Bearing {
-        return SunFacade.getSunAzimuth(time, location, withParallax)
+    ): CelestialObservation {
+        return SunFacade.getSunPosition(time, location, withRefraction, withParallax)
     }
 
     fun getNextSunset(
@@ -94,13 +94,6 @@ object Astronomy {
 
     fun getSunDistance(time: ZonedDateTime): Distance {
         return SunFacade.getSunDistance(time)
-    }
-
-    /**
-     * Gets the angular diameter of the sun in degrees.
-     */
-    fun getSunAngularDiameter(time: ZonedDateTime): Float {
-        return SunFacade.getSunAngularDiameter(time)
     }
 
     /**
