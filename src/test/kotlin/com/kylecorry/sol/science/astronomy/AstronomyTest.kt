@@ -67,7 +67,7 @@ class AstronomyTest {
             ZonedDateTime.parse("2015-02-15T00:00:00Z")
         )
 
-        assertEquals(0.539790, diameter, 0.0001)
+        assertEquals(0.539790f, diameter, 0.0001f)
     }
 
     @Test
@@ -76,7 +76,7 @@ class AstronomyTest {
             ZonedDateTime.parse("2015-02-15T00:00:00Z")
         )
 
-        assertEquals(0.529422, diameter, 0.0001)
+        assertEquals(0.529422f, diameter, 0.0001f)
     }
 
     @ParameterizedTest
