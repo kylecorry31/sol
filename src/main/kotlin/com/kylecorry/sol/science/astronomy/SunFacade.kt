@@ -16,7 +16,6 @@ import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
-import com.kylecorry.sol.units.Distance
 import java.time.Duration
 import java.time.ZonedDateTime
 import kotlin.math.absoluteValue
@@ -68,10 +67,12 @@ internal object SunFacade {
             withParallax
         )
         val diameter = sun.getAngularDiameter(ut)
+        val distance = sun.getDistance(ut)
         return CelestialObservation(
             Bearing.from(horizonCoordinate.azimuth.toFloat()),
             horizonCoordinate.altitude.toFloat(),
-            diameter.toFloat()
+            diameter.toFloat(),
+            distance = distance
         )
     }
 
@@ -162,10 +163,6 @@ internal object SunFacade {
             return Duration.between(startOfDay, sunset)
                 .plus(Duration.between(sunrise, startOfDay.plusDays(1)))
         }
-    }
-
-    fun getSunDistance(time: ZonedDateTime): Distance {
-        return sun.getDistance(time.toUniversalTime())
     }
 
     /**

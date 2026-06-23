@@ -72,6 +72,14 @@ class AstronomyTest {
     }
 
     @Test
+    fun canGetSunDistance() {
+        val date = ZonedDateTime.parse("2015-02-15T00:00:00Z")
+        val position = Astronomy.getSunPosition(date, Coordinate.zero)
+
+        assertEquals(147740816f, position.distance!!.value, 1f)
+    }
+
+    @Test
     fun canGetMoonAngularDiameter() {
         val position = Astronomy.getMoonPosition(
             ZonedDateTime.parse("2015-02-15T00:00:00Z"),
