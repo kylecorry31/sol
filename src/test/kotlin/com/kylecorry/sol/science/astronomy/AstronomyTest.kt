@@ -57,8 +57,8 @@ class AstronomyTest {
     )
     fun canGetMoonDistance(time: String, expected: Float) {
         val date = ZonedDateTime.parse(time)
-        val distance = Astronomy.getMoonDistance(date)
-        assertEquals(expected, distance.value, 1f)
+        val position = Astronomy.getMoonPosition(date, Coordinate.zero)
+        assertEquals(expected, position.distance!!.value, 1f)
     }
 
     @Test
@@ -73,11 +73,12 @@ class AstronomyTest {
 
     @Test
     fun canGetMoonAngularDiameter() {
-        val diameter = Astronomy.getMoonAngularDiameter(
-            ZonedDateTime.parse("2015-02-15T00:00:00Z")
+        val position = Astronomy.getMoonPosition(
+            ZonedDateTime.parse("2015-02-15T00:00:00Z"),
+            Coordinate.zero
         )
 
-        assertEquals(0.529422f, diameter, 0.0001f)
+        assertEquals(0.529422f, position.angularDiameter!!, 0.0001f)
     }
 
     @ParameterizedTest
@@ -406,12 +407,12 @@ class AstronomyTest {
         "40.7128, -74.0060, 2020-09-13T21:58:00-04, -28.0"
     )
     fun getMoonAltitude(latitude: Double, longitude: Double, time: String, altitude: Float) {
-        val actual = Astronomy.getMoonAltitude(
+        val actual = Astronomy.getMoonPosition(
             ZonedDateTime.parse(time),
             Coordinate(latitude, longitude),
             true
         )
-        assertEquals(altitude, actual, 0.8f)
+        assertEquals(altitude, actual.altitude, 0.8f)
     }
 
     @ParameterizedTest
@@ -420,11 +421,11 @@ class AstronomyTest {
         "40.7128, -74.0060, 2020-09-13T21:58:00-04, 360.0"
     )
     fun getMoonAzimuth(latitude: Double, longitude: Double, time: String, azimuth: Float) {
-        val actual = Astronomy.getMoonAzimuth(
+        val actual = Astronomy.getMoonPosition(
             ZonedDateTime.parse(time),
             Coordinate(latitude, longitude)
         )
-        assertEquals(azimuth, actual.value, 2f)
+        assertEquals(azimuth, actual.azimuth.value, 2f)
     }
 
     @ParameterizedTest

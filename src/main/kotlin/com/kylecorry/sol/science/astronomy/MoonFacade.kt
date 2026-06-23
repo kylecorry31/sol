@@ -5,6 +5,7 @@ import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
 import com.kylecorry.sol.science.astronomy.moon.MoonTruePhase
 import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
+import com.kylecorry.sol.science.astronomy.units.CelestialObservation
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -48,12 +49,28 @@ internal object MoonFacade {
         )
     }
 
-    fun getMoonAzimuth(
+    fun getMoonPosition(
         time: ZonedDateTime,
         location: Coordinate,
+        withRefraction: Boolean = false,
         withParallax: Boolean = false
-    ): Bearing {
-        return AstroUtils.getAzimuth(moon, time.toUniversalTime(), location, withParallax)
+    ): CelestialObservation {
+        val ut = time.toUniversalTime()
+        val horizonCoordinate = AstroUtils.getLocation(
+            moon,
+            ut,
+            location,
+            withRefraction,
+            withParallax
+        )
+        val diameter = moon.getAngularDiameter(ut, location)
+        val distance = moon.getDistance(ut)
+        return CelestialObservation(
+            Bearing.from(horizonCoordinate.azimuth.toFloat()),
+            horizonCoordinate.altitude.toFloat(),
+            diameter.toFloat(),
+            distance = distance
+        )
     }
 
     fun getNextMoonset(
@@ -104,18 +121,11 @@ internal object MoonFacade {
         withRefraction: Boolean = false,
         withParallax: Boolean = false
     ): Boolean {
-        return getMoonAltitude(time, location, withRefraction, withParallax) > 0
+        return getMoonPosition(time, location, withRefraction, withParallax).altitude > 0
     }
 
-    fun getMoonDistance(time: ZonedDateTime): Distance {
+    private fun getMoonDistance(time: ZonedDateTime): Distance {
         return moon.getDistance(time.toUniversalTime())
-    }
-
-    fun getMoonAngularDiameter(
-        time: ZonedDateTime,
-        location: Coordinate = Coordinate.zero
-    ): Float {
-        return moon.getAngularDiameter(time.toUniversalTime(), location).toFloat()
     }
 
     fun isSuperMoon(time: ZonedDateTime): Boolean {

@@ -168,21 +168,21 @@ object Astronomy {
         return MoonFacade.getMoonEvents(date, location, withRefraction, withParallax)
     }
 
-    fun getMoonAltitude(
+    /**
+     * Get the position of the moon at a given time and location.
+     * @param time the observer's time
+     * @param location the observer's location
+     * @param withRefraction whether to factor in refraction
+     * @param withParallax whether to factor in parallax
+     * @return a celestial observation containing an altitude, azimuth, angular diameter (won't be null), and distance (won't be null)
+     */
+    fun getMoonPosition(
         time: ZonedDateTime,
         location: Coordinate,
         withRefraction: Boolean = false,
         withParallax: Boolean = false
-    ): Float {
-        return MoonFacade.getMoonAltitude(time, location, withRefraction, withParallax)
-    }
-
-    fun getMoonAzimuth(
-        time: ZonedDateTime,
-        location: Coordinate,
-        withParallax: Boolean = false
-    ): Bearing {
-        return MoonFacade.getMoonAzimuth(time, location, withParallax)
+    ): CelestialObservation {
+        return MoonFacade.getMoonPosition(time, location, withRefraction, withParallax)
     }
 
     fun getNextMoonset(
@@ -214,20 +214,6 @@ object Astronomy {
         withParallax: Boolean = false
     ): Boolean {
         return MoonFacade.isMoonUp(time, location, withRefraction, withParallax)
-    }
-
-    fun getMoonDistance(time: ZonedDateTime): Distance {
-        return MoonFacade.getMoonDistance(time)
-    }
-
-    /**
-     * Gets the angular diameter of the moon in degrees.
-     */
-    fun getMoonAngularDiameter(
-        time: ZonedDateTime,
-        location: Coordinate = Coordinate.zero
-    ): Float {
-        return MoonFacade.getMoonAngularDiameter(time, location)
     }
 
     fun isSuperMoon(time: ZonedDateTime): Boolean {
