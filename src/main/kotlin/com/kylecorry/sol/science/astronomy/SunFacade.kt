@@ -168,6 +168,10 @@ internal object SunFacade {
         return sun.getDistance(time.toUniversalTime())
     }
 
+    fun getSunAngularDiameter(time: ZonedDateTime): Double {
+        return sun.getAngularDiameter(time.toUniversalTime())
+    }
+
     /**
      * Gets the solar radiation for the given time in kW/m^2
      */

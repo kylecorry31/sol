@@ -111,6 +111,13 @@ internal object MoonFacade {
         return moon.getDistance(time.toUniversalTime())
     }
 
+    fun getMoonAngularDiameter(
+        time: ZonedDateTime,
+        location: Coordinate = Coordinate.zero
+    ): Double {
+        return moon.getAngularDiameter(time.toUniversalTime(), location)
+    }
+
     fun isSuperMoon(time: ZonedDateTime): Boolean {
         val phase = getMoonPhase(time)
         if (phase.phase != MoonTruePhase.Full) {

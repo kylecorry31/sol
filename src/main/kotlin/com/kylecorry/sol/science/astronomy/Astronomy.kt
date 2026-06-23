@@ -97,6 +97,13 @@ object Astronomy {
     }
 
     /**
+     * Gets the angular diameter of the sun in degrees.
+     */
+    fun getSunAngularDiameter(time: ZonedDateTime): Double {
+        return SunFacade.getSunAngularDiameter(time)
+    }
+
+    /**
      * Gets the solar radiation for the given time in kW/m^2
      */
     fun getSolarRadiation(
@@ -218,6 +225,16 @@ object Astronomy {
 
     fun getMoonDistance(time: ZonedDateTime): Distance {
         return MoonFacade.getMoonDistance(time)
+    }
+
+    /**
+     * Gets the angular diameter of the moon in degrees.
+     */
+    fun getMoonAngularDiameter(
+        time: ZonedDateTime,
+        location: Coordinate = Coordinate.zero
+    ): Double {
+        return MoonFacade.getMoonAngularDiameter(time, location)
     }
 
     fun isSuperMoon(time: ZonedDateTime): Boolean {

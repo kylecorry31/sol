@@ -61,6 +61,24 @@ class AstronomyTest {
         assertEquals(expected, distance.value, 1f)
     }
 
+    @Test
+    fun canGetSunAngularDiameter() {
+        val diameter = Astronomy.getSunAngularDiameter(
+            ZonedDateTime.parse("2015-02-15T00:00:00Z")
+        )
+
+        assertEquals(0.539790, diameter, 0.0001)
+    }
+
+    @Test
+    fun canGetMoonAngularDiameter() {
+        val diameter = Astronomy.getMoonAngularDiameter(
+            ZonedDateTime.parse("2015-02-15T00:00:00Z")
+        )
+
+        assertEquals(0.529422, diameter, 0.0001)
+    }
+
     @ParameterizedTest
     @MethodSource("providePartialLunarEclipses")
     fun canGetNextPartialLunarEclipse(
