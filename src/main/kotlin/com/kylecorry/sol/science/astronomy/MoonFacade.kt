@@ -114,8 +114,8 @@ internal object MoonFacade {
     fun getMoonAngularDiameter(
         time: ZonedDateTime,
         location: Coordinate = Coordinate.zero
-    ): Double {
-        return moon.getAngularDiameter(time.toUniversalTime(), location)
+    ): Float {
+        return moon.getAngularDiameter(time.toUniversalTime(), location).toFloat()
     }
 
     fun isSuperMoon(time: ZonedDateTime): Boolean {

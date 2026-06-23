@@ -4,13 +4,13 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
 import com.kylecorry.sol.science.astronomy.locators.Sun
+import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.science.astronomy.sun.SolarRadiationCalculator
 import com.kylecorry.sol.science.astronomy.units.EclipticCoordinate
 import com.kylecorry.sol.science.astronomy.units.fromJulianDay
 import com.kylecorry.sol.science.astronomy.units.toJulianDay
 import com.kylecorry.sol.science.astronomy.units.toLocal
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
-import com.kylecorry.sol.science.astronomy.rst.RobustRiseSetTransitTimeCalculator
 import com.kylecorry.sol.time.Time.atEndOfDay
 import com.kylecorry.sol.time.Time.atStartOfDay
 import com.kylecorry.sol.units.Bearing
@@ -168,8 +168,8 @@ internal object SunFacade {
         return sun.getDistance(time.toUniversalTime())
     }
 
-    fun getSunAngularDiameter(time: ZonedDateTime): Double {
-        return sun.getAngularDiameter(time.toUniversalTime())
+    fun getSunAngularDiameter(time: ZonedDateTime): Float {
+        return sun.getAngularDiameter(time.toUniversalTime()).toFloat()
     }
 
     /**

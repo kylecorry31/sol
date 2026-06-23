@@ -99,7 +99,7 @@ object Astronomy {
     /**
      * Gets the angular diameter of the sun in degrees.
      */
-    fun getSunAngularDiameter(time: ZonedDateTime): Double {
+    fun getSunAngularDiameter(time: ZonedDateTime): Float {
         return SunFacade.getSunAngularDiameter(time)
     }
 
@@ -233,7 +233,7 @@ object Astronomy {
     fun getMoonAngularDiameter(
         time: ZonedDateTime,
         location: Coordinate = Coordinate.zero
-    ): Double {
+    ): Float {
         return MoonFacade.getMoonAngularDiameter(time, location)
     }
 
