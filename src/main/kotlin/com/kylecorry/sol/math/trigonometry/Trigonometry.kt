@@ -1,18 +1,21 @@
 package com.kylecorry.sol.math.trigonometry
 
+import com.kylecorry.sol.math.MathExtensions.toDegrees
+import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
+import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
+import kotlin.math.atan2
 import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.log2
 import kotlin.math.min
-import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.tan
 
@@ -194,7 +197,7 @@ object Trigonometry {
         return Range(ranges.sumOfFloat { it.start }, ranges.sumOfFloat { it.end })
     }
 
-    fun angularDistance(azimuth1: Float, altitude1: Float, azimuth2: Float, altitude2: Float): Float {
+    fun getAngularDistance(azimuth1: Float, altitude1: Float, azimuth2: Float, altitude2: Float): Float {
         if (Arithmetic.isApproximatelyEqual(altitude1, altitude2) && Arithmetic.isApproximatelyEqual(
                 azimuth1,
                 azimuth2
@@ -209,6 +212,52 @@ object Trigonometry {
         val cosAlt2 = cosDegrees(altitude2)
         val value = sinAlt1 * sinAlt2 + cosAlt1 * cosAlt2 * cosDegrees(azimuth2 - azimuth1)
         return toDegrees(acos(value.coerceIn(-1f, 1f)))
+    }
+
+    fun getAngularOffset(
+        azimuth1: Float,
+        altitude1: Float,
+        azimuth2: Float,
+        altitude2: Float
+    ): Vector2 {
+        val sinAlt1 = sinDegrees(altitude1)
+        val cosAlt1 = cosDegrees(altitude1)
+        val sinAz1 = sinDegrees(azimuth1)
+        val cosAz1 = cosDegrees(azimuth1)
+
+        val vector1 = toEastNorthUpVector(azimuth1, altitude1, 1f)
+        val vector2 = toEastNorthUpVector(azimuth2, altitude2, 1f)
+
+        val east = Vector3(cosAz1, -sinAz1, 0f)
+        val up = Vector3(-sinAlt1 * sinAz1, -sinAlt1 * cosAz1, cosAlt1)
+        val forward = vector2.dot(vector1)
+
+        val dx = atan2(vector2.dot(east), forward).toDegrees()
+        val dy = atan2(vector2.dot(up), forward).toDegrees()
+
+        return Vector2(dx, dy)
+    }
+
+    /**
+     * Converts a spherical coordinate to a Cartesian coordinate in the East-North-Up (ENU) coordinate system.
+     * @param azimuth The azimuth in degrees (positive is clockwise)
+     * @param elevation The elevation in degrees (positive is up)
+     * @param distance The distance
+     * @return The ENU coordinate
+     */
+    fun toEastNorthUpVector(
+        azimuth: Float,
+        elevation: Float,
+        distance: Float
+    ): Vector3 {
+        val elevationRad = elevation.toRadians()
+        val azimuthRad = azimuth.toRadians()
+
+        val cosElevation = cos(elevationRad)
+        val x = distance * cosElevation * sin(azimuthRad) // East
+        val y = distance * cosElevation * cos(azimuthRad) // North
+        val z = distance * sin(elevationRad) // Up
+        return Vector3(x, y, z)
     }
 
 }

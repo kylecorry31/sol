@@ -10,6 +10,7 @@ import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.arithmetic.Arithmetic.wrap
 import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
+import com.kylecorry.sol.math.trigonometry.Trigonometry
 import com.kylecorry.sol.math.trigonometry.Trigonometry.cosDegrees
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.math.trigonometry.Trigonometry.sinDegrees
@@ -69,14 +70,7 @@ object Geography {
         elevation: Float,
         distance: Float
     ): Vector3 {
-        val elevationRad = elevation.toRadians()
-        val bearingRad = bearing.toRadians()
-
-        val cosElevation = cos(elevationRad)
-        val x = distance * cosElevation * sin(bearingRad) // East
-        val y = distance * cosElevation * cos(bearingRad) // North
-        val z = distance * sin(elevationRad) // Up
-        return Vector3(x, y, z)
+        return Trigonometry.toEastNorthUpVector(bearing, elevation, distance)
     }
 
     /**

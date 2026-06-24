@@ -136,15 +136,41 @@ internal class TrigonometryTest {
         // Small separation
         "0.0, 0.0, 0.5, 0.0, 0.5"
     )
-    fun angularDistance(
+    fun getAngularDistance(
         azimuth1: Float,
         altitude1: Float,
         azimuth2: Float,
         altitude2: Float,
         expected: Float
     ) {
-        val distance = Trigonometry.angularDistance(azimuth1, altitude1, azimuth2, altitude2)
+        val distance = Trigonometry.getAngularDistance(azimuth1, altitude1, azimuth2, altitude2)
         assertEquals(expected, distance, 0.05f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0.0, 0.0, 0.0, 0.0, 0.0, 0.0",
+        "0.0, 0.0, 1.0, 0.0, 1.0, 0.0",
+        "0.0, 0.0, 359.0, 0.0, -1.0, 0.0",
+        "0.0, 0.0, 0.0, 1.0, 0.0, 1.0",
+        "0.0, 1.0, 0.0, 0.0, 0.0, -1.0",
+        "359.0, 0.0, 0.0, 0.0, 1.0, 0.0",
+        "0.0, 30.0, 1.0, 30.0, 0.8660144, 0.0037791",
+        "30.0, 45.0, 31.0, 46.0, 0.6947468, 1.0043609",
+        "350.0, 60.0, 10.0, 61.0, 9.5533876, 2.4858885",
+        "45.0, 30.0, 50.0, 32.0, 4.2415596, 2.0982498",
+    )
+    fun getAngularOffset(
+        azimuth1: Float,
+        altitude1: Float,
+        azimuth2: Float,
+        altitude2: Float,
+        expectedEast: Float,
+        expectedZenith: Float
+    ) {
+        val offset = Trigonometry.getAngularOffset(azimuth1, altitude1, azimuth2, altitude2)
+        assertEquals(expectedEast, offset.x, 0.0001f)
+        assertEquals(expectedZenith, offset.y, 0.0001f)
     }
 
     @Test
