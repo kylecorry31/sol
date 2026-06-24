@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.4.0"
     id("java-library")
-    id("com.vanniktech.maven.publish") version "0.35.0"
-    id("dev.detekt") version "2.0.0-alpha.2"
+    id("com.vanniktech.maven.publish") version "0.37.0"
+    id("dev.detekt") version "2.0.0-alpha.5"
 }
 
 val versionName = "19.0.1"
@@ -50,11 +50,11 @@ repositories {
 
 dependencies {
     detektPlugins("com.kylecorry:orion:1.1.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.14.4")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.4")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.4")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.4")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.14.4")
 }
 
 tasks.test {
