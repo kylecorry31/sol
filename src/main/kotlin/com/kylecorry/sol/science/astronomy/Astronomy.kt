@@ -3,6 +3,7 @@ package com.kylecorry.sol.science.astronomy
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
+import com.kylecorry.sol.science.astronomy.eclipse.LunarEclipseShadow
 import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShowerPeak
@@ -278,6 +279,10 @@ object Astronomy {
 
     fun getEclipseObscuration(time: ZonedDateTime, location: Coordinate, type: EclipseType): Float? {
         return EclipseFacade.getEclipseObscuration(time, location, type)
+    }
+
+    fun getLunarEclipseShadow(time: ZonedDateTime, location: Coordinate): LunarEclipseShadow {
+        return EclipseFacade.getLunarEclipseShadow(time, location)
     }
 
     fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {

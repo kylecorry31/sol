@@ -459,6 +459,8 @@ internal class Moon : ICelestialLocator {
     companion object {
         const val SYNODIC_MONTH_DAYS = MoonPhaseTimeCalculator.SYNODIC_MONTH_DAYS
         private const val SECONDS_PER_DAY = 86400f
+        const val DIAMETER_IN_EARTH_RADII = 0.545
+        const val RADIUS_IN_EARTH_RADII = DIAMETER_IN_EARTH_RADII / 2
     }
 
 }

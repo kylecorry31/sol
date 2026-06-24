@@ -7,6 +7,7 @@ import com.kylecorry.sol.math.geometry.Geometry
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseCalculator
+import com.kylecorry.sol.science.astronomy.locators.Moon
 import com.kylecorry.sol.time.Time.toZonedDateTime
 import com.kylecorry.sol.units.Coordinate
 import java.time.Duration
@@ -35,11 +36,12 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         val provider = LunarEclipseParameterProvider()
         val parameters = provider.getNextLunarEclipseParameters(after)
 
-        val moonDiameterInEarthRadii = 0.545
-        val moonRadiusInEarthRadii = moonDiameterInEarthRadii / 2
-        val umbraRadius = 0.7403 - parameters.umbralConeRadius
+        val moonDiameterInEarthRadii = Moon.DIAMETER_IN_EARTH_RADII
+        val umbraRadius = LUNAR_ECLIPSE_UMBRA_RADIUS - parameters.umbralConeRadius
 
-        val umbralDiff = 1.0128 - parameters.umbralConeRadius - parameters.minDistanceFromCenter.absoluteValue
+        val umbralDiff = LUNAR_ECLIPSE_UMBRA_OUTER_CONTACT_RADIUS -
+            parameters.umbralConeRadius -
+            parameters.minDistanceFromCenter.absoluteValue
         val magnitude = umbralDiff / moonDiameterInEarthRadii
 
         if (magnitude < getMagnitudeThreshold()) {
@@ -73,7 +75,7 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         val upAtEnd = Astronomy.isMoonUp(time.end.atZone(ZoneId.of("UTC")), location)
 
         if (upAtStart || upAtEnd) {
-            val circle1 = Circle(Vector2.zero, moonRadiusInEarthRadii.toFloat())
+            val circle1 = Circle(Vector2.zero, Moon.RADIUS_IN_EARTH_RADII.toFloat())
             val circle2 = Circle(Vector2(parameters.minDistanceFromCenter.toFloat(), 0f), umbraRadius.toFloat())
             val obscuration = Geometry.getIntersectionArea(circle2, circle1) / circle1.area()
 

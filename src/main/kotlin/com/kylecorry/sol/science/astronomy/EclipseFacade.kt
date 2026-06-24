@@ -2,6 +2,8 @@ package com.kylecorry.sol.science.astronomy
 
 import com.kylecorry.sol.science.astronomy.eclipse.Eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.EclipseType
+import com.kylecorry.sol.science.astronomy.eclipse.LunarEclipseShadow
+import com.kylecorry.sol.science.astronomy.eclipse.lunar.LunarEclipseShadowCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.TotalLunarEclipseCalculator
 import com.kylecorry.sol.science.astronomy.eclipse.solar.SolarEclipseCalculator
@@ -42,5 +44,9 @@ internal object EclipseFacade {
         }
 
         return calculator.getObscuration(time.toInstant(), location)
+    }
+
+    fun getLunarEclipseShadow(time: ZonedDateTime, location: Coordinate): LunarEclipseShadow {
+        return LunarEclipseShadowCalculator().getPeakShadow(time, location)
     }
 }

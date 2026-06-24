@@ -11,7 +11,7 @@ internal class PartialLunarEclipseCalculator : AbstractUmbralLunarEclipseCalcula
     }
 
     override fun getSemiDuration(parameters: LunarEclipseParameters): Duration {
-        val p = 1.0128 - parameters.umbralConeRadius
+        val p = LUNAR_ECLIPSE_UMBRA_OUTER_CONTACT_RADIUS - parameters.umbralConeRadius
         val minutes =
             (60 / parameters.n) * sqrt(power(p, 2) - power(parameters.minDistanceFromCenter, 2))
         return Duration.ofSeconds((minutes * 60).toLong())

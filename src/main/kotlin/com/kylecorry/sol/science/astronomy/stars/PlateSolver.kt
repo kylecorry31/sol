@@ -124,7 +124,7 @@ internal class PlateSolver(
             // Find all neighbors within the specified angular separation range
             val neighbors = readings.mapIndexedNotNull { j, neighbor ->
                 if (i != j) {
-                    val distance = Trigonometry.angularDistance(
+                    val distance = Trigonometry.getAngularDistance(
                         reading.azimuth.value,
                         reading.altitude,
                         neighbor.azimuth.value,
@@ -147,7 +147,7 @@ internal class PlateSolver(
             for (j in quad.indices) {
                 for (k in j + 1..<quad.size) {
                     distances.add(
-                        Trigonometry.angularDistance(
+                        Trigonometry.getAngularDistance(
                             quad[j].azimuth.value,
                             quad[j].altitude,
                             quad[k].azimuth.value,

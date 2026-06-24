@@ -19,7 +19,9 @@ import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.CoordinateLongConverter
 import com.kylecorry.sol.units.Distance
 import com.kylecorry.sol.units.DistanceUnits
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull
 import org.junit.jupiter.api.fail
@@ -28,7 +30,13 @@ import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
-import java.time.*
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.Month
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.stream.Stream
 import kotlin.math.absoluteValue
 import kotlin.math.min
@@ -813,6 +821,35 @@ class AstronomyTest {
             Coordinate(latitude, longitude)
         )
         assertEquals(expected, actual, 1.5f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "2031-10-30T07:45:39Z, 251.38295, 39.244385, 1.37678, 2.4432278",
+        "2035-08-19T01:10:35Z, 124.23559, 15.728419, 1.3635244, 2.4342468",
+        "2026-08-28T04:12:34Z, 169.2296, 37.858307, 1.378456, 2.4430807"
+    )
+    fun getLunarEclipseShadowPosition(
+        timeString: String,
+        expectedShadowAzimuth: Float,
+        expectedShadowAltitude: Float,
+        expectedUmbraDiameter: Float,
+        expectedPenumbraDiameter: Float
+    ) {
+        val location = Coordinate(41.8240, -71.4128)
+        val time = ZonedDateTime.parse(timeString)
+        val shadow = Astronomy.getLunarEclipseShadow(time, location)
+
+        assertEquals(expectedShadowAzimuth, shadow.umbra.azimuth.value, 0.0001f)
+        assertEquals(expectedShadowAltitude, shadow.umbra.altitude, 0.0001f)
+        assertEquals(expectedShadowAzimuth, shadow.penumbra.azimuth.value, 0.0001f)
+        assertEquals(expectedShadowAltitude, shadow.penumbra.altitude, 0.0001f)
+        assertEquals(expectedUmbraDiameter, checkNotNull(shadow.umbra.angularDiameter), 0.0001f)
+        assertEquals(
+            expectedPenumbraDiameter,
+            checkNotNull(shadow.penumbra.angularDiameter),
+            0.0001f
+        )
     }
 
 //    @Test
