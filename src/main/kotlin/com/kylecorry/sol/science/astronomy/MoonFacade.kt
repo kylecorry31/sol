@@ -56,15 +56,16 @@ internal object MoonFacade {
         withParallax: Boolean = false
     ): CelestialObservation {
         val ut = time.toUniversalTime()
+        val distance = moon.getDistance(ut)
         val horizonCoordinate = AstroUtils.getLocation(
             moon,
             ut,
             location,
             withRefraction,
-            withParallax
+            withParallax,
+            distance
         )
-        val diameter = moon.getAngularDiameter(ut, location)
-        val distance = moon.getDistance(ut)
+        val diameter = moon.getAngularDiameter(ut, location, distance)
         return CelestialObservation(
             Bearing.from(horizonCoordinate.azimuth.toFloat()),
             horizonCoordinate.altitude.toFloat(),

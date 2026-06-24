@@ -36,7 +36,8 @@ object Astronomy {
      * @param location the observer's location
      * @param withRefraction whether to factor in refraction
      * @param withParallax whether to factor in parallax
-     * @return a celestial observation containing an altitude, azimuth, angular diameter (won't be null), and distance (won't be null)
+     * @return a celestial observation containing an altitude, azimuth,
+     * angular diameter (won't be null), and distance (won't be null)
      */
     fun getSunPosition(
         time: ZonedDateTime,
@@ -170,7 +171,8 @@ object Astronomy {
      * @param location the observer's location
      * @param withRefraction whether to factor in refraction
      * @param withParallax whether to factor in parallax
-     * @return a celestial observation containing an altitude, azimuth, angular diameter (won't be null), and distance (won't be null)
+     * @return a celestial observation containing an altitude, azimuth,
+     * angular diameter (won't be null), and distance (won't be null)
      */
     fun getMoonPosition(
         time: ZonedDateTime,

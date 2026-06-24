@@ -59,21 +59,27 @@ internal object AstroUtils {
         return Bearing.from(azimuth)
     }
 
+    @Suppress("LongParameterList")
     fun getLocation(
         locator: ICelestialLocator,
         ut: UniversalTime,
         location: Coordinate,
         withRefraction: Boolean = false,
-        withParallax: Boolean = false
+        withParallax: Boolean = false,
+        distance: Distance? = null
     ): HorizonCoordinate {
         val coords = locator.getCoordinates(ut)
-        val distance = if (withParallax) locator.getDistance(ut) else null
+        val parallaxDistance = if (withParallax) {
+            distance ?: locator.getDistance(ut)
+        } else {
+            null
+        }
         return getLocation(
             coords,
             ut,
             location,
             withRefraction,
-            distance
+            parallaxDistance
         )
     }
 

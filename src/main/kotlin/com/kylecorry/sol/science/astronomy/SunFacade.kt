@@ -59,15 +59,16 @@ internal object SunFacade {
         withParallax: Boolean = false
     ): CelestialObservation {
         val ut = time.toUniversalTime()
+        val distance = sun.getDistance(ut)
         val horizonCoordinate = AstroUtils.getLocation(
             sun,
             ut,
             location,
             withRefraction,
-            withParallax
+            withParallax,
+            distance
         )
-        val diameter = sun.getAngularDiameter(ut)
-        val distance = sun.getDistance(ut)
+        val diameter = sun.getAngularDiameter(ut, distance)
         return CelestialObservation(
             Bearing.from(horizonCoordinate.azimuth.toFloat()),
             horizonCoordinate.altitude.toFloat(),
