@@ -64,6 +64,7 @@ internal class LunarEclipseShadowCalculator {
         )
     }
 
+    @Suppress("LongParameterList")
     private fun getShadowPosition(
         shadowCoordinates: EquatorialCoordinate,
         time: ZonedDateTime,
