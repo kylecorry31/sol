@@ -852,6 +852,40 @@ class AstronomyTest {
         )
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "2031-10-30T07:45:39Z, 251.37576, 38.514446, 1.402901, 2.489582",
+        "2035-08-19T01:10:35Z, 124.22613, 14.905734, 1.3494445, 2.4091105",
+        "2026-08-28T04:12:34Z, 169.22636, 37.149998, 1.3822962, 2.449887"
+    )
+    fun getLunarEclipseShadowPositionWithRefractionAndParallax(
+        timeString: String,
+        expectedShadowAzimuth: Float,
+        expectedShadowAltitude: Float,
+        expectedUmbraDiameter: Float,
+        expectedPenumbraDiameter: Float
+    ) {
+        val location = Coordinate(41.8240, -71.4128)
+        val time = ZonedDateTime.parse(timeString)
+        val shadow = Astronomy.getLunarEclipseShadow(
+            time,
+            location,
+            withRefraction = true,
+            withParallax = true
+        )
+
+        assertEquals(expectedShadowAzimuth, shadow.umbra.azimuth.value, 0.0001f)
+        assertEquals(expectedShadowAltitude, shadow.umbra.altitude, 0.0001f)
+        assertEquals(expectedShadowAzimuth, shadow.penumbra.azimuth.value, 0.0001f)
+        assertEquals(expectedShadowAltitude, shadow.penumbra.altitude, 0.0001f)
+        assertEquals(expectedUmbraDiameter, checkNotNull(shadow.umbra.angularDiameter), 0.0001f)
+        assertEquals(
+            expectedPenumbraDiameter,
+            checkNotNull(shadow.penumbra.angularDiameter),
+            0.0001f
+        )
+    }
+
 //    @Test
 //    fun solarEclipsePerformance() {
 //        val start = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)

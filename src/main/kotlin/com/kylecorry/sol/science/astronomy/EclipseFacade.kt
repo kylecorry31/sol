@@ -46,7 +46,17 @@ internal object EclipseFacade {
         return calculator.getObscuration(time.toInstant(), location)
     }
 
-    fun getLunarEclipseShadow(time: ZonedDateTime, location: Coordinate): LunarEclipseShadow {
-        return LunarEclipseShadowCalculator().getPeakShadow(time, location)
+    fun getLunarEclipseShadow(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
+    ): LunarEclipseShadow {
+        return LunarEclipseShadowCalculator().getPeakShadow(
+            time,
+            location,
+            withRefraction,
+            withParallax
+        )
     }
 }

@@ -281,8 +281,13 @@ object Astronomy {
         return EclipseFacade.getEclipseObscuration(time, location, type)
     }
 
-    fun getLunarEclipseShadow(time: ZonedDateTime, location: Coordinate): LunarEclipseShadow {
-        return EclipseFacade.getLunarEclipseShadow(time, location)
+    fun getLunarEclipseShadow(
+        time: ZonedDateTime,
+        location: Coordinate,
+        withRefraction: Boolean = false,
+        withParallax: Boolean = false
+    ): LunarEclipseShadow {
+        return EclipseFacade.getLunarEclipseShadow(time, location, withRefraction, withParallax)
     }
 
     fun getMeteorShower(location: Coordinate, date: ZonedDateTime): MeteorShowerPeak? {
