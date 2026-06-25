@@ -29,7 +29,7 @@ internal class LoessFilter2DTest {
         val originalResiduals = Statistics.rmse(expected.map { it.y }, values.map { it.y })
 
         assertTrue(fitResiduals < originalResiduals)
-        assertEquals(0.006f, fitResiduals, 0.001f)
+        assertEquals(0.007f, fitResiduals, 0.001f)
     }
 
     @Test
@@ -110,5 +110,16 @@ internal class LoessFilter2DTest {
         }
 
         assertEquals(0.0f, fitResiduals, 0.0001f)
+    }
+
+    @Test
+    fun robustnessIterationsRejectOutlier() {
+        val values = (0..100).map {
+            Vector2(it.toFloat(), if (it == 50) 100f else it.toFloat())
+        }
+
+        val smoothed = LoessFilter2D(span = 0.4f, robustnessIterations = 4).filter(values)
+
+        assertEquals(49f, smoothed[49].y, 3f)
     }
 }

@@ -8,6 +8,7 @@ import com.kylecorry.sol.math.lists.Lists
 import com.kylecorry.sol.math.regression.WeightedLinearRegression
 import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.floor
 import kotlin.math.pow
 
@@ -133,7 +134,7 @@ class LoessFilter2D(
             if (Arithmetic.isZero(maxDistance)) {
                 1f
             } else {
-                tricube(robustnessWeights[it.third] * weights[it.third] * it.second / maxDistance)
+                tricube(it.second.absoluteValue / maxDistance.absoluteValue) * weights[it.third] * robustnessWeights[it.third]
             }
         }
     }
