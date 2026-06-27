@@ -8,6 +8,7 @@ import com.kylecorry.sol.math.algebra.Matrix
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.optimization.ConvergenceOptimizer
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
+import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
 import com.kylecorry.sol.science.astronomy.Astronomy
 import com.kylecorry.sol.science.astronomy.units.toUniversalTime
@@ -16,6 +17,7 @@ import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
 import kotlin.math.cos
+import kotlin.math.sqrt
 import kotlin.math.sin
 import kotlin.math.tan
 
@@ -70,8 +72,8 @@ internal class StarLocationCalculator {
                     location,
                     true
                 )
-                square(reading.altitude - expectedPosition.altitude).toDouble() +
-                        square(deltaAngle(checkNotNull(reading.azimuth), expectedPosition.azimuth.value)).toDouble()
+                loss(reading.altitude - expectedPosition.altitude) +
+                        loss(deltaAngle(checkNotNull(reading.azimuth), expectedPosition.azimuth.value))
             }.sum()
         }
 
@@ -112,9 +114,10 @@ internal class StarLocationCalculator {
             }
 
             // Solve using least squares
-            val ls = LinearAlgebra.leastSquares(
+            val ls = LinearAlgebra.robustLeastSquares(
                 Matrix.create(linesOfPosition.map { it.first }.toTypedArray()),
-                Vector(linesOfPosition.map { it.second }.toFloatArray())
+                Vector(linesOfPosition.map { it.second }.toFloatArray()),
+                minScale = 0.05f
             )
 
             if (ls.norm() < 0.000001) {
@@ -186,9 +189,9 @@ internal class StarLocationCalculator {
                     Coordinate(lat, lon),
                     true
                 ).altitude
-                square(
-                    reading.altitude + (if (adjustForAltitudeBias) (bias
-                        ?: 0f) else 0f) - expectedAltitude.toDouble()
+                loss(
+                    (reading.altitude + (if (adjustForAltitudeBias) (bias
+                        ?: 0f) else 0f) - expectedAltitude.toDouble()).toFloat()
                 ) * weights[i]
             }.sum()
         }
@@ -222,6 +225,10 @@ internal class StarLocationCalculator {
 
     private fun constrainLatitude(latitude: Double): Double {
         return latitude.coerceIn(-90.0, 90.0)
+    }
+
+    private fun loss(residual: Float, threshold: Float = 1f): Double {
+        return Statistics.huberLoss(residual, threshold).toDouble()
     }
 
 }
