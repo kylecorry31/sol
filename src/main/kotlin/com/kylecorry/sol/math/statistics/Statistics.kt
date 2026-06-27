@@ -418,4 +418,19 @@ object Statistics {
             threshold * absResidual - square(threshold) / 2
         }
     }
+
+    fun range(values: List<Float>): Float {
+        if (values.size < 2) {
+            return 0f
+        }
+        return values.max() - values.min()
+    }
+
+    fun interquartileRange(values: List<Float>, interpolate: Boolean = true): Float {
+        if (values.size < 2) {
+            return 0f
+        }
+
+        return quantile(values, 0.75f, interpolate) - quantile(values, 0.25f, interpolate)
+    }
 }

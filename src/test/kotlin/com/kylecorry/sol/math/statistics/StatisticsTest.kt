@@ -44,6 +44,22 @@ internal class StatisticsTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideRange")
+    fun range(values: List<Float>, expected: Float) {
+        val actual = Statistics.range(values)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInterquartileRange")
+    fun interquartileRange(values: List<Float>, interpolate: Boolean, expected: Float) {
+        val actual = Statistics.interquartileRange(values, interpolate)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @ParameterizedTest
     @MethodSource("provideMedianAbsoluteDeviation")
     fun medianAbsoluteDeviation(values: List<Float>, median: Float?, expected: Float) {
         val actual = Statistics.medianAbsoluteDeviation(values, median)
@@ -178,6 +194,36 @@ internal class StatisticsTest {
                 Arguments.of(listOf(1f, 2f, 3f, 4f), 0.1f, false, 1f),
                 Arguments.of(listOf(1f, 2f, 3f, 4f), 0.9f, false, 4f),
 
+            )
+        }
+
+        @JvmStatic
+        fun provideRange(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(listOf<Float>(), 0f),
+                Arguments.of(listOf(5f), 0f),
+                Arguments.of(listOf(1f, 2f), 1f),
+                Arguments.of(listOf(5f, 1f, 3f, 2f, 4f), 4f),
+                Arguments.of(listOf(-3f, -1f, -7f), 6f),
+                Arguments.of(listOf(-2f, 4f, 0f), 6f),
+                Arguments.of(listOf(2f, 2f, 2f), 0f)
+            )
+        }
+
+        @JvmStatic
+        fun provideInterquartileRange(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(listOf<Float>(), true, 0f),
+                Arguments.of(listOf(5f), true, 0f),
+                Arguments.of(listOf(1f, 2f), true, 0.5f),
+                Arguments.of(listOf(1f, 2f), false, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), true, 2f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), false, 2f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), true, 1.5f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), false, 1f),
+                Arguments.of(listOf(5f, 1f, 3f, 2f, 4f), true, 2f),
+                Arguments.of(listOf(-3f, -1f, -7f, 2f), true, 3.75f),
+                Arguments.of(listOf(2f, 2f, 2f, 2f), true, 0f)
             )
         }
 
