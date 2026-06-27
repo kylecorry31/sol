@@ -2,8 +2,11 @@ package com.kylecorry.sol.math.algebra
 
 import com.kylecorry.sol.math.Vector
 import com.kylecorry.sol.math.arithmetic.Arithmetic
+import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.absoluteValue
+import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 object LinearAlgebra {
 
@@ -25,6 +28,14 @@ object LinearAlgebra {
         }
 
         return product
+    }
+
+    fun dot(matrix: Matrix, vector: Vector): Matrix {
+        return if (matrix.rows() == vector.size) {
+            dot(matrix, vector.toRowMatrix())
+        } else {
+            dot(matrix, vector.toColumnMatrix())
+        }
     }
 
     fun subtract(mat1: Matrix, mat2: Matrix): Matrix {
@@ -162,7 +173,7 @@ object LinearAlgebra {
     }
 
     fun inverse(m: Matrix): Matrix {
-        require(m.rows() == m.columns()){
+        require(m.rows() == m.columns()) {
             "Matrix must be square to calculate inverse"
         }
 
@@ -175,7 +186,7 @@ object LinearAlgebra {
     }
 
     fun adjugate(m: Matrix): Matrix {
-        require(m.rows() == m.columns()){
+        require(m.rows() == m.columns()) {
             "Matrix must be square to calculate adjugate"
         }
 
@@ -198,7 +209,7 @@ object LinearAlgebra {
     }
 
     fun determinant(m: Matrix): Float {
-        require(m.rows() == m.columns()){
+        require(m.rows() == m.columns()) {
             "Matrix must be square to calculate determinant"
         }
 
@@ -352,6 +363,79 @@ object LinearAlgebra {
         return solveLinear(jtj, Vector(jtr.getColumn(0)))
     }
 
+    /**
+     * Solves the weighted least squares problem for the matrix equation Ax = b.
+     * If A is underdetermined, the least norm solution is returned instead.
+     * @param a The matrix A
+     * @param b The vector b
+     * @param weights The row weights
+     * @return The solution x
+     */
+    fun weightedLeastSquares(a: Matrix, b: Vector, weights: Vector): Vector {
+        require(weights.size == a.rows()) { "Weights must have the same size as the number of rows in A" }
+        require(b.size == a.rows()) { "B must have the same size as the number of rows in A" }
+        require(weights.data.all { it >= 0f }) { "Weights must be greater than or equal to 0" }
+
+        val weightedA = Matrix.create(a.rows(), a.columns()) { row, col ->
+            a[row, col] * sqrt(weights[row])
+        }
+        val weightedB = Vector(FloatArray(b.size) { index ->
+            b[index] * sqrt(weights[index])
+        })
+
+        val isUnderdetermined = weightedA.rows() < weightedA.columns()
+        return if (isUnderdetermined) {
+            leastNorm(weightedA, weightedB)
+        } else {
+            leastSquares(weightedA, weightedB)
+        }
+    }
+
+    /**
+     * Solves the robust least squares problem for the matrix equation Ax = b using Huber weights.
+     * This is iteratively reweighted least squares, which reduces the influence of outliers.
+     * @param a The matrix A
+     * @param b The vector b
+     * @param tuningConstant The Huber tuning constant applied to the residual scale
+     * @param minScale The minimum residual scale
+     * @param maxIterations The maximum number of reweighting iterations
+     * @return The solution x
+     */
+    fun robustLeastSquares(
+        a: Matrix,
+        b: Vector,
+        tuningConstant: Float = 1.5f,
+        minScale: Float = 1e-5f,
+        maxIterations: Int = 10
+    ): Vector {
+        require(b.size == a.rows()) { "B must have the same size as the number of rows in A" }
+        require(tuningConstant > 0f) { "Tuning constant must be greater than 0" }
+        require(minScale > 0f) { "Minimum scale must be greater than 0" }
+        require(maxIterations >= 0) { "Maximum iterations must be greater than or equal to 0" }
+
+        var weights = Vector(FloatArray(a.rows()) { 1f })
+        var solution = weightedLeastSquares(a, b, weights)
+
+        repeat(maxIterations) {
+            val residuals = getResiduals(a, b, solution)
+            val scale = max(
+                minScale,
+                Statistics.medianAbsoluteDeviationToStandardDeviation(
+                    Statistics.medianAbsoluteDeviation(
+                        residuals.data.toList(),
+                        0f
+                    )
+                )
+            )
+            weights = Vector(FloatArray(a.rows()) { index ->
+                Statistics.huberWeight(residuals[index], scale * tuningConstant)
+            })
+            solution = weightedLeastSquares(a, b, weights)
+        }
+
+        return solution
+    }
+
     fun appendColumn(m: Matrix, col: FloatArray): Matrix {
         require(col.size == m.rows())
         return Matrix.create(m.rows(), m.columns() + 1) { r, c ->
@@ -361,6 +445,10 @@ object LinearAlgebra {
                 col[r]
             }
         }
+    }
+
+    private fun getResiduals(a: Matrix, b: Vector, x: Vector): Vector {
+        return dot(a, x).toVector() - b
     }
 
     fun appendColumn(m: Matrix, value: Float): Matrix {

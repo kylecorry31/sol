@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -42,6 +43,29 @@ internal class StatisticsTest {
         assertEquals(expected, actual, 0.00001f)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideMedianAbsoluteDeviation")
+    fun medianAbsoluteDeviation(values: List<Float>, median: Float?, expected: Float) {
+        val actual = Statistics.medianAbsoluteDeviation(values, median)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0",
+        "1, 1.4826",
+        "2.5, 3.7065"
+    )
+    fun medianAbsoluteDeviationToStandardDeviation(
+        medianAbsoluteDeviation: Float,
+        expected: Float
+    ) {
+        val actual = Statistics.medianAbsoluteDeviationToStandardDeviation(medianAbsoluteDeviation)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
     @Test
     fun textureFeatures() {
         val glcm4x4 = arrayOf(
@@ -65,7 +89,53 @@ internal class StatisticsTest {
         assertEquals(0.33f, features.max, 0.1f)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "0, 2, 0",
+        "1, 2, 0.5",
+        "-1, 2, 0.5",
+        "2, 2, 2",
+        "-2, 2, 2",
+        "3, 2, 4",
+        "-3, 2, 4"
+    )
+    fun huberLoss(residual: Float, threshold: Float, expected: Float) {
+        val actual = Statistics.huberLoss(residual, threshold)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 2, 1",
+        "1, 2, 1",
+        "-1, 2, 1",
+        "2, 2, 1",
+        "-2, 2, 1",
+        "4, 2, 0.5",
+        "-4, 2, 0.5"
+    )
+    fun huberWeight(residual: Float, threshold: Float, expected: Float) {
+        val actual = Statistics.huberWeight(residual, threshold)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
     companion object {
+
+        @JvmStatic
+        fun provideMedianAbsoluteDeviation(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(listOf<Float>(), null, 0f),
+                Arguments.of(listOf(5f), null, 0f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), null, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f), null, 1f),
+                Arguments.of(listOf(5f, 1f, 3f, 2f, 4f), null, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 100f), null, 1f),
+                Arguments.of(listOf(1f, 2f, 3f, 4f, 5f), 4f, 1f),
+                Arguments.of(listOf(-2f, -1f, 0f, 1f, 2f), null, 1f)
+            )
+        }
 
         @JvmStatic
         fun provideQuantile(): Stream<Arguments> {

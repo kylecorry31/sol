@@ -1,5 +1,6 @@
 package com.kylecorry.sol.math.algebra
 
+import com.kylecorry.sol.math.Vector
 import kotlin.math.sqrt
 
 @JvmInline
@@ -37,7 +38,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
         for (i in 2..rawData.lastIndex) {
             sum += rawData[i] * rawData[i].toDouble()
         }
-        check(sum >= 0){ "Sum of squares must be non-negative but was $sum" }
+        check(sum >= 0) { "Sum of squares must be non-negative but was $sum" }
         return sqrt(sum.toFloat())
     }
 
@@ -58,7 +59,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun setRow(row: Int, rowData: FloatArray) {
-        require(rowData.size == columns()){
+        require(rowData.size == columns()) {
             "Expected row to be of length ${columns()} but got ${rowData.size}"
         }
         val startIndex = getIndex(row, 0)
@@ -66,7 +67,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun getRow(row: Int, destination: FloatArray = FloatArray(columns())): FloatArray {
-        require(destination.size == columns()){
+        require(destination.size == columns()) {
             "Expected destination to be of length ${columns()} but got ${destination.size}"
         }
         val startIndex = getIndex(row, 0)
@@ -75,7 +76,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun setColumn(column: Int, columnData: FloatArray) {
-        require(columnData.size == rows()){
+        require(columnData.size == rows()) {
             "Expected column to be of length ${rows()} but got ${columnData.size}"
         }
         for (row in 0..<rows()) {
@@ -84,7 +85,7 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
     }
 
     fun getColumn(column: Int, destination: FloatArray = FloatArray(rows())): FloatArray {
-        require(destination.size == rows()){
+        require(destination.size == rows()) {
             "Expected destination to be of length ${rows()} but got ${destination.size}"
         }
         for (row in 0..<rows()) {
@@ -99,11 +100,16 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
         setRow(row2, temp)
     }
 
+    fun toVector(): Vector {
+        require(rows() == 1 || columns() == 1) { "Expected the matrix to be a row or column matrix" }
+        return Vector(if (rows() == 1) getRow(0) else getColumn(0))
+    }
+
     private fun getIndex(row: Int, column: Int): Int {
-        require(row in 0..<rows()){
+        require(row in 0..<rows()) {
             "Expected row to be between 0 and ${rows()} but got $row"
         }
-        require(column in 0..<columns()){
+        require(column in 0..<columns()) {
             "Expected column to be between 0 and ${columns()} but got $column"
         }
         return 2 + columns() * row + column
@@ -222,6 +228,10 @@ value class Matrix internal constructor(private val rawData: FloatArray) {
 
 
 fun Matrix.dot(other: Matrix): Matrix {
+    return LinearAlgebra.dot(this, other)
+}
+
+fun Matrix.dot(other: Vector): Matrix {
     return LinearAlgebra.dot(this, other)
 }
 

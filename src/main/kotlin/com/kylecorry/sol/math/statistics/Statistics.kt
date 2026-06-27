@@ -17,7 +17,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -79,12 +78,25 @@ object Statistics {
             .toFloat() / (values.size - if (!forPopulation) 1 else 0)
     }
 
-    fun stdev(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
+    fun standardDeviation(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
         return sqrt(variance(values, forPopulation, mean))
+    }
+
+    fun stdev(values: List<Float>, forPopulation: Boolean = false, mean: Float? = null): Float {
+        return standardDeviation(values, forPopulation, mean)
     }
 
     fun median(values: List<Float>): Float {
         return quantile(values, 0.5f, interpolate = false)
+    }
+
+    fun medianAbsoluteDeviation(values: List<Float>, median: Float? = null): Float {
+        val medianValue = median ?: median(values)
+        return median(values.map { (it - medianValue).absoluteValue })
+    }
+
+    fun medianAbsoluteDeviationToStandardDeviation(medianAbsoluteDeviation: Float): Float {
+        return medianAbsoluteDeviation * 1.4826f
     }
 
     fun quantile(values: List<Float>, quantile: Float, interpolate: Boolean = true): Float {
@@ -387,5 +399,23 @@ object Statistics {
             correlation,
             maximum
         )
+    }
+
+    fun huberWeight(residual: Float, threshold: Float): Float {
+        val absResidual = residual.absoluteValue
+        return if (absResidual <= threshold) {
+            1f
+        } else {
+            threshold / absResidual
+        }
+    }
+
+    fun huberLoss(residual: Float, threshold: Float): Float {
+        val absResidual = residual.absoluteValue
+        return if (absResidual <= threshold) {
+            square(absResidual) / 2
+        } else {
+            threshold * absResidual - square(threshold) / 2
+        }
     }
 }

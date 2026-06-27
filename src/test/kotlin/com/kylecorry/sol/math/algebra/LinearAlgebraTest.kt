@@ -43,6 +43,38 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun dotWithVectorAsColumnMatrix() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(1f, 2f, 3f),
+                floatArrayOf(4f, 5f, 6f)
+            )
+        )
+        val vector = Vector.from(7f, 8f, 9f)
+
+        val actual = LinearAlgebra.dot(matrix, vector)
+
+        assertEquals(Matrix.column(50f, 122f), actual)
+    }
+
+    @Test
+    fun dotWithVectorAsRowMatrix() {
+        val matrix = Matrix.column(1f, 2f, 3f)
+        val vector = Vector.from(4f, 5f, 6f)
+
+        val actual = LinearAlgebra.dot(matrix, vector)
+
+        val expected = Matrix.create(
+            arrayOf(
+                floatArrayOf(4f, 5f, 6f),
+                floatArrayOf(8f, 10f, 12f),
+                floatArrayOf(12f, 15f, 18f)
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun dotAssertions() {
         val m1 = Matrix.create(2, 2, 0f)
         val m2 = Matrix.create(3, 3, 0f)
@@ -694,6 +726,43 @@ class LinearAlgebraTest {
         val expected3 = Vector.from(2.5f, 2f, 1.5f)
         val actual3 = LinearAlgebra.leastSquares(a3, b3)
         assertEquals(expected3, actual3, 0.00001f)
+    }
+
+    @Test
+    fun weightedLeastSquares() {
+        val a = Matrix.create(
+            arrayOf(
+                floatArrayOf(1f, 0f),
+                floatArrayOf(1f, 1f),
+                floatArrayOf(1f, 2f),
+                floatArrayOf(1f, 3f)
+            )
+        )
+        val b = Vector.from(1f, 3f, 5f, 50f)
+        val weights = Vector.from(1f, 1f, 1f, 0.001f)
+
+        val actual = LinearAlgebra.weightedLeastSquares(a, b, weights)
+
+        assertEquals(Vector.from(1f, 2f), actual, 0.05f)
+    }
+
+    @Test
+    fun robustLeastSquares() {
+        val a = Matrix.create(
+            arrayOf(
+                floatArrayOf(1f, 0f),
+                floatArrayOf(1f, 1f),
+                floatArrayOf(1f, 2f),
+                floatArrayOf(1f, 3f),
+                floatArrayOf(1f, 4f),
+                floatArrayOf(1f, 5f)
+            )
+        )
+        val b = Vector.from(1f, 3f, 40f, 7f, 9f, 11f)
+
+        val actual = LinearAlgebra.robustLeastSquares(a, b)
+
+        assertEquals(Vector.from(1f, 2f), actual, 0.15f)
     }
 
     @Test
