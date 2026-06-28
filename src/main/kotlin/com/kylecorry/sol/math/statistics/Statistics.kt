@@ -433,4 +433,14 @@ object Statistics {
 
         return quantile(values, 0.75f, interpolate) - quantile(values, 0.25f, interpolate)
     }
+
+    /**
+     * Computes the PCA of the input matrix.
+     * @param x the input matrix where rows are samples and columns are features
+     * @param k the number of components to extract
+     * @return a matrix where rows are samples and columns are principal component projections (centered)
+     */
+    fun principalComponentAnalysis(x: Matrix, k: Int): Matrix {
+        return PrincipalComponentAnalysis.getComponents(x, k)
+    }
 }

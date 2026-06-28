@@ -137,6 +137,50 @@ internal class StatisticsTest {
         assertEquals(expected, actual, 0.00001f)
     }
 
+    @Test
+    fun principalComponentAnalysis() {
+        val data = Matrix.create(
+            arrayOf(
+                floatArrayOf(2f, 1f, 5f),
+                floatArrayOf(4f, 3f, 4f),
+                floatArrayOf(6f, 2f, 3f),
+                floatArrayOf(8f, 5f, 2f),
+                floatArrayOf(10f, 7f, 1f)
+            )
+        )
+
+        val actual = Statistics.principalComponentAnalysis(data, 2)
+
+        assertEquals(5, actual.rows())
+        assertEquals(2, actual.columns())
+        assertProjectedEquals(
+            Matrix.create(
+                arrayOf(
+                    floatArrayOf(-5.164735f, 0.292427f),
+                    floatArrayOf(-2.196894f, 0.730517f),
+                    floatArrayOf(-0.881081f, -1.335551f),
+                    floatArrayOf(2.637435f, -0.062742f),
+                    floatArrayOf(5.605276f, 0.375348f)
+                )
+            ),
+            actual
+        )
+    }
+
+    private fun assertProjectedEquals(
+        expected: Matrix,
+        actual: Matrix,
+        tolerance: Float = 0.0001f
+    ) {
+        assertEquals(expected.rows(), actual.rows())
+        assertEquals(expected.columns(), actual.columns())
+        for (row in 0..<expected.rows()) {
+            for (col in 0..<expected.columns()) {
+                assertEquals(expected[row, col], actual[row, col], tolerance)
+            }
+        }
+    }
+
     companion object {
 
         @JvmStatic
