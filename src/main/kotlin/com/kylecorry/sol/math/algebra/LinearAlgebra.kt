@@ -264,7 +264,11 @@ object LinearAlgebra {
             }
 
             r[j, j] = norm(v)
-            q.setColumn(j, v.divide(r[j, j]).getRow(0))
+            if (Arithmetic.isZero(r[j, j])) {
+                q.setColumn(j, orthogonalUnitVector(q, j))
+            } else {
+                q.setColumn(j, v.divide(r[j, j]).getRow(0))
+            }
         }
 
         return q to r
@@ -279,21 +283,32 @@ object LinearAlgebra {
         }
     }
 
-    fun eigenvalues(m: Matrix, tolerance: Float = 1e-12f, maxIterations: Int = 1000): FloatArray {
+    fun eigen(
+        m: Matrix,
+        tolerance: Float = 1e-12f,
+        maxIterations: Int = 1000
+    ): EigenDecomposition {
+        require(m.rows() == m.columns()) { "Matrix must be square" }
+        require(m.rows() > 0) { "Matrix must not be empty" }
+        require(tolerance > 0f) { "Tolerance must be greater than zero" }
+        require(maxIterations >= 0) { "Max iterations must be non-negative" }
+
         var old = m
         var new = m
+        var vectors = Matrix.identity(m.rows())
 
         var diff = Float.MAX_VALUE
         var iterations = 0
         while (diff > tolerance && iterations < maxIterations) {
             val (q, r) = qr(new)
             new = r.dot(q)
+            vectors = vectors.dot(q)
             diff = max(new.subtract(old).mapped { it.absoluteValue })
             old = new
             iterations++
         }
 
-        return diagonal(new).getRow(0)
+        return EigenDecomposition(Vector(diagonal(new).getRow(0)), normalizeEigenvectorSigns(vectors))
     }
 
     fun norm(m: Matrix): Float {
@@ -451,6 +466,45 @@ object LinearAlgebra {
         return dot(a, x).toVector() - b
     }
 
+    private fun orthogonalUnitVector(q: Matrix, column: Int): FloatArray {
+        for (attempt in 0..<q.rows()) {
+            val vector = FloatArray(q.rows()) { index ->
+                if (index == (column + attempt) % q.rows()) 1f else 0f
+            }
+
+            for (previous in 0..<column) {
+                var projection = 0f
+                for (row in 0..<q.rows()) {
+                    projection += vector[row] * q[row, previous]
+                }
+
+                for (row in 0..<q.rows()) {
+                    vector[row] -= projection * q[row, previous]
+                }
+            }
+
+            val norm = sqrt(vector.sumOf { it * it.toDouble() }).toFloat()
+            if (!Arithmetic.isZero(norm)) {
+                return FloatArray(vector.size) { index -> vector[index] / norm }
+            }
+        }
+
+        return FloatArray(q.rows()) { index -> if (index == column % q.rows()) 1f else 0f }
+    }
+
+    private fun normalizeEigenvectorSigns(vectors: Matrix): Matrix {
+        return Matrix.create(vectors.rows(), vectors.columns()) { row, column ->
+            var maxIndex = 0
+            for (i in 1..<vectors.rows()) {
+                if (vectors[i, column].absoluteValue > vectors[maxIndex, column].absoluteValue) {
+                    maxIndex = i
+                }
+            }
+
+            vectors[row, column] * if (vectors[maxIndex, column] >= 0f) 1f else -1f
+        }
+    }
+
     fun appendColumn(m: Matrix, value: Float): Matrix {
         return Matrix.create(m.rows(), m.columns() + 1) { r, c ->
             if (c < m.columns()) {
@@ -481,5 +535,7 @@ object LinearAlgebra {
             }
         }
     }
+
+    data class EigenDecomposition(val values: Vector, val vectors: Matrix)
 
 }

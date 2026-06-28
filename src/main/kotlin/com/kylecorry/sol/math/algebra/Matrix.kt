@@ -239,8 +239,16 @@ fun Matrix.add(other: Matrix): Matrix {
     return LinearAlgebra.add(this, other)
 }
 
+fun Matrix.add(value: Float): Matrix {
+    return LinearAlgebra.add(this, value)
+}
+
 fun Matrix.subtract(other: Matrix): Matrix {
     return LinearAlgebra.subtract(this, other)
+}
+
+fun Matrix.subtract(value: Float): Matrix {
+    return LinearAlgebra.subtract(this, value)
 }
 
 fun Matrix.multiply(other: Matrix): Matrix {

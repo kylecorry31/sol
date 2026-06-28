@@ -506,6 +506,34 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun eigen() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(4f, 1f, 1f),
+                floatArrayOf(1f, 3f, 0.5f),
+                floatArrayOf(1f, 0.5f, 2f)
+            )
+        )
+
+        val result = LinearAlgebra.eigen(matrix)
+
+        assertEquals(5.028030f, result.values[0], 0.0001f)
+        assertEquals(2.392581f, result.values[1], 0.0001f)
+        assertEquals(1.579389f, result.values[2], 0.0001f)
+        assertEquals(3, result.vectors.rows())
+        assertEquals(3, result.vectors.columns())
+        assertEquals(0.805083f, result.vectors[0, 0], 0.0001f)
+        assertEquals(0.482157f, result.vectors[1, 0], 0.0001f)
+        assertEquals(0.345493f, result.vectors[2, 0], 0.0001f)
+        assertEquals(-0.477410f, result.vectors[0, 1], 0.0001f)
+        assertEquals(0.872386f, result.vectors[1, 1], 0.0001f)
+        assertEquals(-0.104989f, result.vectors[2, 1], 0.0001f)
+        assertEquals(-0.352024f, result.vectors[0, 2], 0.0001f)
+        assertEquals(-0.080417f, result.vectors[1, 2], 0.0001f)
+        assertEquals(0.932530f, result.vectors[2, 2], 0.0001f)
+    }
+
+    @Test
     fun max() {
         val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
