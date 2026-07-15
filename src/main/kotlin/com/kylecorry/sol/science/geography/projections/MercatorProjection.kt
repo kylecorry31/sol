@@ -36,6 +36,9 @@ class MercatorProjection(private val scale: Float = 1f) : IMapProjection {
         fun getScaleForLatitude(latitude: Double): Float {
             return cosDegrees(latitude).toFloat()
         }
+
+        const val MAX_LATITUDE = 85.05112878
+        const val MIN_LATITUDE = -85.05112878
     }
 
 }
