@@ -166,10 +166,21 @@ internal object MoonFacade {
     }
 
     /**
-     * The tilt of the illuminated fraction of the moon in degrees clockwise from the top of the moon.
+     * The position angle of the midpoint of the Moon's illuminated limb relative to the
+     * observer's local zenith, in degrees. Positive angles are eastward (counterclockwise in an
+     * upright, non-mirrored view of the sky).
      */
-    fun getMoonTilt(time: ZonedDateTime, location: Coordinate): Float {
-        return moon.getTilt(time.toUniversalTime(), location)
+    fun getZenithAngleOfBrightLimb(time: ZonedDateTime, location: Coordinate): Float {
+        return moon.getZenithAngleOfBrightLimb(time.toUniversalTime(), location)
+    }
+
+    /**
+     * The position angle of the midpoint of the Moon's illuminated limb relative to the
+     * moon's North Pole, in degrees. Positive angles are eastward (counterclockwise in an
+     * upright, non-mirrored view of the sky).
+     */
+    fun getPositionAngleOfBrightLimb(time: ZonedDateTime): Float {
+        return moon.getPositionAngleOfBrightLimb(time.toUniversalTime()).toFloat()
     }
 
     /**

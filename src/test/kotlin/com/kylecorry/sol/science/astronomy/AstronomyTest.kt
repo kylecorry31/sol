@@ -787,28 +787,40 @@ class AstronomyTest {
 
     @ParameterizedTest
     @CsvSource(
-        "0, 0, 2020-09-13T12:00:00Z, -3.4",
-        "42, -72, 2024-10-25T00:00:00Z, 113.6",
-        "-60, 180, 2024-10-25T00:00:00Z, -43.1",
+        "0, 0, 2020-09-13T12:00:00Z, -3.2",
+        "42, -72, 2024-10-25T00:00:00Z, 113.4",
+        "-60, 180, 2024-10-25T00:00:00Z, -42.9",
     )
-    fun getMoonTilt(
+    fun getMoonZenithAngleOfBrightLimb(
         latitude: Double,
         longitude: Double,
         time: String,
         expected: Float
     ) {
-        val actual = Astronomy.getMoonTilt(
+        val actual = Astronomy.getMoonZenithAngleOfBrightLimb(
             ZonedDateTime.parse(time),
             Coordinate(latitude, longitude)
         )
-        assertEquals(expected, actual, 0.5f)
+        assertEquals(expected, actual, 0.1f)
     }
 
     @ParameterizedTest
     @CsvSource(
-        "0, 0, 2020-09-13T12:00:00Z, 108.1",
-        "42, -72, 2024-10-25T00:00:00Z, -7.5",
-        "-60, 180, 2024-10-25T00:00:00Z, 149.2",
+        "2020-09-13T12:00:00Z, 103.8",
+        "2024-10-25T00:00:00Z, 106.5",
+        "2026-01-01T00:00:00Z, -92.6",
+    )
+    fun getMoonPositionAngleOfBrightLimb(time: String, expected: Float) {
+        val actual = Astronomy.getMoonPositionAngleOfBrightLimb(ZonedDateTime.parse(time))
+
+        assertEquals(expected, actual, 0.1f)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "0, 0, 2020-09-13T12:00:00Z, 107.0",
+        "42, -72, 2024-10-25T00:00:00Z, -6.9",
+        "-60, 180, 2024-10-25T00:00:00Z, 149.4",
     )
     fun getMoonParallacticAngle(
         latitude: Double,
@@ -820,7 +832,7 @@ class AstronomyTest {
             ZonedDateTime.parse(time),
             Coordinate(latitude, longitude)
         )
-        assertEquals(expected, actual, 1.5f)
+        assertEquals(expected, actual, 0.1f)
     }
 
     @ParameterizedTest

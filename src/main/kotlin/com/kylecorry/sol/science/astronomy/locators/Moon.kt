@@ -253,13 +253,13 @@ internal class Moon : ICelestialLocator {
         }
     }
 
-    fun getTilt(date: UniversalTime, location: Coordinate): Float {
+    fun getZenithAngleOfBrightLimb(date: UniversalTime, location: Coordinate): Float {
         val parallacticAngle = AstroUtils.getParallacticAngle(this, date, location)
-        val moonPositionAngle = getMoonPositionAngle(date)
+        val moonPositionAngle = getPositionAngleOfBrightLimb(date)
         return (moonPositionAngle - parallacticAngle).toFloat()
     }
 
-    private fun getMoonPositionAngle(ut: UniversalTime): Double {
+    fun getPositionAngleOfBrightLimb(ut: UniversalTime): Double {
         val sunCoords = sun.getCoordinates(ut)
         val moonCoords = getCoordinates(ut)
         val sunRA = sunCoords.rightAscension.toRadians()
