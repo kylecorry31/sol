@@ -3,10 +3,27 @@ package com.kylecorry.sol.science.astronomy.eclipse
 import com.kylecorry.sol.science.astronomy.eclipse.lunar.PartialLunarEclipseCalculator
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.tests.assertDate
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.*
 
 class PartialLunarEclipseCalculatorTest {
+
+    @Test
+    fun skipsEclipseWhenMoonRisesAfterEclipseEnds() {
+        val calculator = PartialLunarEclipseCalculator()
+        val date = ZonedDateTime.of(LocalDateTime.of(2030, 6, 15, 0, 0), ZoneId.of("UTC"))
+        val location = Coordinate(20.0, -16.0)
+
+        var eclipse: Eclipse? = null
+        assertDoesNotThrow {
+            eclipse = calculator.getNextEclipse(date.toInstant(), location)
+        }
+
+        // The June 15 eclipse ends before the Moon rises at this location, so it must be skipped.
+        assertTrue(eclipse!!.start.isAfter(Instant.parse("2030-07-01T00:00:00Z")))
+    }
 
     @Test
     fun canGetNextEclipse() {

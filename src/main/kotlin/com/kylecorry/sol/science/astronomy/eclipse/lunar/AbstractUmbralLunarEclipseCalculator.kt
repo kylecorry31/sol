@@ -40,8 +40,8 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
         val umbraRadius = LUNAR_ECLIPSE_UMBRA_RADIUS - parameters.umbralConeRadius
 
         val umbralDiff = LUNAR_ECLIPSE_UMBRA_OUTER_CONTACT_RADIUS -
-            parameters.umbralConeRadius -
-            parameters.minDistanceFromCenter.absoluteValue
+                parameters.umbralConeRadius -
+                parameters.minDistanceFromCenter.absoluteValue
         val magnitude = umbralDiff / moonDiameterInEarthRadii
 
         if (magnitude < getMagnitudeThreshold()) {
@@ -71,8 +71,18 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
             )
         }
 
-        val upAtStart = Astronomy.isMoonUp(time.start.atZone(ZoneId.of("UTC")), location)
-        val upAtEnd = Astronomy.isMoonUp(time.end.atZone(ZoneId.of("UTC")), location)
+        val upAtStart = Astronomy.isMoonUp(
+            time.start.atZone(ZoneId.of("UTC")),
+            location,
+            withRefraction = true,
+            withParallax = true
+        )
+        val upAtEnd = Astronomy.isMoonUp(
+            time.end.atZone(ZoneId.of("UTC")),
+            location,
+            withRefraction = true,
+            withParallax = true
+        )
 
         if (upAtStart || upAtEnd) {
             val circle1 = Circle(Vector2.zero, Moon.RADIUS_IN_EARTH_RADII.toFloat())
@@ -104,8 +114,10 @@ internal abstract class AbstractUmbralLunarEclipseCalculator : EclipseCalculator
                 end = moonSet?.toInstant() ?: end
             }
 
-            val maximum = time.start.plus(Duration.between(time.start, time.end).dividedBy(2)).coerceIn(start, end)
-            return Eclipse(start, end, magnitude.toFloat(), obscuration, maximum)
+            if (start < end && time.contains(start) && time.contains(end)) {
+                val maximum = time.start.plus(Duration.between(time.start, time.end).dividedBy(2)).coerceIn(start, end)
+                return Eclipse(start, end, magnitude.toFloat(), obscuration, maximum)
+            }
         }
 
         return getNextEclipseHelper(
