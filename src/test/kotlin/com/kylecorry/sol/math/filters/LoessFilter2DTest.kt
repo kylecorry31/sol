@@ -122,4 +122,32 @@ internal class LoessFilter2DTest {
 
         assertEquals(49f, smoothed[49].y, 3f)
     }
+
+    @Test
+    fun filterConsecutiveNoisyReadings() {
+        val values = List(30) { index ->
+            val value = if (index in 10..19) {
+                if (index % 2 == 0) 900f else 1100f
+            } else {
+                1000f + (index % 3 - 1) * 0.1f
+            }
+            Vector2(index.toFloat(), value)
+        }
+
+        val initial = LoessFilter2D(
+            span = 0.15f,
+            robustnessIterations = 0,
+            minimumSpanSize = 10
+        ).filter(values)
+        val smoothed = LoessFilter2D(
+            span = 0.15f,
+            robustnessIterations = 1,
+            minimumSpanSize = 10
+        ).filter(values)
+
+        assertEquals(values.size, smoothed.size)
+        assertTrue(smoothed.all { it.x.isFinite() && it.y.isFinite() })
+        assertEquals(initial[14].y, smoothed[14].y)
+        assertEquals(initial[15].y, smoothed[15].y)
+    }
 }

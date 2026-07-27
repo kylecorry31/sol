@@ -107,6 +107,9 @@ class LoessFilter2D(
             val nearest = getNearestPoints(sortedData, point, interval)
             val maxDistance = state.mappedMaxDistance ?: nearest.last().second
             val regressionWeights = getRegressionWeights(nearest, state.robustnessWeights, state.weights, maxDistance)
+            if (regressionWeights.none { it > 0f }) {
+                continue
+            }
             val regression = WeightedLinearRegression(nearest.map { it.first }, regressionWeights, accuracy)
 
             state.result[i] = Vector2(point.x, regression.predict(point.x))

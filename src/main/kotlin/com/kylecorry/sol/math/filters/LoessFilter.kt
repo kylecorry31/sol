@@ -61,6 +61,10 @@ class LoessFilter(
                     val w = nearest.map {
                         tricube(it.second.absoluteValue / maxDistance.absoluteValue) * weights[it.third] * robustnessWeights[it.third]
                     }
+                    val minimumPoints = x.size + 1
+                    if (w.count { it > 0f } < minimumPoints) {
+                        continue
+                    }
 
                     val regression = WeightedLeastSquaresRegression(
                         nearest.map { it.first.first },
