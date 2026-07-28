@@ -86,3 +86,4 @@ temp/
 sonarqube-issues.json
 sonarqube-report.json
 .codex
+.scratch/
