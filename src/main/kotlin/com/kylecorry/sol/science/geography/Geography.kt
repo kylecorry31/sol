@@ -5,6 +5,7 @@ import com.kylecorry.sol.math.MathExtensions.toDegrees
 import com.kylecorry.sol.math.MathExtensions.toRadians
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.Vector3Precise
+import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.clamp
 import com.kylecorry.sol.math.arithmetic.Arithmetic.power
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
@@ -484,6 +485,10 @@ object Geography {
             )
         )
 
+        if (Arithmetic.isZero(angularDist.toFloat())) {
+            return null
+        }
+
         val initialBearing = acos(
             (sinDegrees(referenceB.latitude) - sinDegrees(referenceA.latitude) * cos(angularDist)) / (sin(
                 angularDist
@@ -529,6 +534,10 @@ object Geography {
 
         val normalizedLat = clamp(p3Lat.toDegrees(), -90.0, 90.0)
         val normalizedLng = wrap(p3Lng.toDegrees(), -180.0, 180.0)
+
+        if (normalizedLat.isNaN() || normalizedLng.isNaN()) {
+            return null
+        }
 
         return Coordinate(normalizedLat, normalizedLng)
     }

@@ -142,6 +142,34 @@ class GeographyTest {
         assertThat(actual).isNotNull().isCloseTo(expected, 20f)
     }
 
+    @Test
+    fun triangulateSelfReturnsNullWhenReferenceLocationsAreTheSame() {
+        val location = Coordinate(40.0, 10.0)
+
+        val actual = Geography.triangulateSelf(
+            location,
+            Bearing.from(220f),
+            location,
+            Bearing.from(295f)
+        )
+
+        assertThat(actual).isNull()
+    }
+
+    @Test
+    fun triangulateDestinationReturnsNullWhenReferenceLocationsAreTheSame() {
+        val location = Coordinate(40.0, 10.0)
+
+        val actual = Geography.triangulateDestination(
+            location,
+            Bearing.from(220f),
+            location,
+            Bearing.from(295f)
+        )
+
+        assertThat(actual).isNull()
+    }
+
     @ParameterizedTest
     @CsvSource(
         "41.94301,-71.78259,201.8,41.94177,-71.78014,228.9,41.93875,-71.78488",
