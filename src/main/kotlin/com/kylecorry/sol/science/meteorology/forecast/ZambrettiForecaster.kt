@@ -93,13 +93,16 @@ internal object ZambrettiForecaster : Forecaster {
     ): List<WeatherForecast> {
         val pressures = observations
             .filterIsInstance<WeatherObservation.Pressure>()
+            .filter { it.time <= time }
+            .sortedBy { it.time }
             .map { it.asReading() }
 
         val pressure = pressures.lastOrNull()?.value ?: return emptyList()
         val tendency = ForecastHelper.getTendency(pressures, pressureChangeThreshold)
         val windDirection = observations
             .filterIsInstance<WeatherObservation.WindDirection>()
-            .filter { it.time >= time.minus(Duration.ofHours(3)) }
+            .filter { it.time in time.minus(Duration.ofHours(3))..time }
+            .sortedBy { it.time }
             .map { it.value }
             .lastOrNull()
 
@@ -127,7 +130,7 @@ internal object ZambrettiForecaster : Forecaster {
 
         val hpa = pressure.hpa().value
         val season = Astronomy.getSeason(location, time)
-        val z = getZambrettiValue(hpa, tendency, changeThreshold)
+        val z = getZambrettiValue(hpa, tendency)
         val windAdjustment = getWindAdjustment(windDirection)
         val seasonAdjustment = getSeasonAdjustment(season, tendency, changeThreshold)
         val zAdjusted = (z + windAdjustment + seasonAdjustment).coerceIn(1.0, 32.0)
@@ -149,12 +152,11 @@ internal object ZambrettiForecaster : Forecaster {
 
     private fun getZambrettiValue(
         hpa: Float,
-        tendency: PressureTendency,
-        changeThreshold: Float
+        tendency: PressureTendency
     ): Double {
-        return if (tendency.amount < changeThreshold) {
+        return if (tendency.characteristic.isFalling) {
             144 - 0.13 * hpa
-        } else if (tendency.amount > 0) {
+        } else if (tendency.characteristic.isRising) {
             185 - 0.16 * hpa
         } else {
             127 - 0.12 * hpa
