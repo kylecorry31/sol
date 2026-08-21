@@ -366,6 +366,26 @@ class TimeTest {
         val date = LocalDate.of(2020, Month.JANUARY, 1)
         val step = Duration.ofHours(1)
         val readings = Time.getReadings(date, ZoneId.systemDefault(), step) { it.toEpochSecond() }
+        assertEquals(25, readings.size)
+        val end = date
+            .atTime(LocalTime.MAX)
+            .atZone(ZoneId.systemDefault())
+        val start = date
+            .atTime(0, 0)
+            .atZone(ZoneId.systemDefault())
+
+        assertEquals(start.toEpochSecond(), readings.first().value)
+        assertEquals(start.toInstant(), readings.first().time)
+        assertEquals(end.toEpochSecond(), readings.last().value)
+        assertEquals(end.toInstant(), readings.last().time)
+    }
+
+    @Test
+    fun getReadingsDateWithoutEndOfDay() {
+        val date = LocalDate.of(2020, Month.JANUARY, 1)
+        val step = Duration.ofHours(1)
+        val readings =
+            Time.getReadings(date, ZoneId.systemDefault(), step, false) { it.toEpochSecond() }
         assertEquals(24, readings.size)
         val end = date
             .atTime(23, 0)
@@ -378,6 +398,69 @@ class TimeTest {
         assertEquals(start.toInstant(), readings.first().time)
         assertEquals(end.toEpochSecond(), readings.last().value)
         assertEquals(end.toInstant(), readings.last().time)
+    }
+
+    @Test
+    fun getReadingsIncludesEndWhenNotOnStep() {
+        val start = zdt(2020, Month.JANUARY, 1, 0)
+        val end = zdt(2020, Month.JANUARY, 1, 2, 30)
+        val step = Duration.ofHours(1)
+        val readings = Time.getReadings(start, end, step) { it.toEpochSecond() }
+
+        val expected = listOf(
+            start,
+            start.plusHours(1),
+            start.plusHours(2),
+            end
+        )
+
+        assertEquals(expected.map { it.toInstant() }, readings.map { it.time })
+        assertEquals(expected.map { it.toEpochSecond() }, readings.map { it.value })
+    }
+
+    @Test
+    fun getReadingsExcludesEndWhenNotOnStep() {
+        val start = zdt(2020, Month.JANUARY, 1, 0)
+        val end = zdt(2020, Month.JANUARY, 1, 2, 30)
+        val step = Duration.ofHours(1)
+        val readings = Time.getReadings(start, end, step, false) { it.toEpochSecond() }
+
+        val expected = listOf(
+            start,
+            start.plusHours(1),
+            start.plusHours(2)
+        )
+
+        assertEquals(expected.map { it.toInstant() }, readings.map { it.time })
+    }
+
+    @Test
+    fun getReadingsDoesNotDuplicateEndWhenOnStep() {
+        val start = zdt(2020, Month.JANUARY, 1, 0)
+        val end = zdt(2020, Month.JANUARY, 1, 2)
+        val step = Duration.ofHours(1)
+        val readings = Time.getReadings(start, end, step) { it.toEpochSecond() }
+
+        val expected = listOf(start, start.plusHours(1), end)
+
+        assertEquals(expected.map { it.toInstant() }, readings.map { it.time })
+    }
+
+    @Test
+    fun getReadingsStartEqualsEnd() {
+        val time = zdt(2020, Month.JANUARY, 1, 0)
+        val step = Duration.ofHours(1)
+        val readings = Time.getReadings(time, time, step) { it.toEpochSecond() }
+
+        assertEquals(listOf(time.toInstant()), readings.map { it.time })
+    }
+
+    @Test
+    fun getReadingsNoStepWithAlwaysIncludeEnd() {
+        val start = zdt(2020, Month.JANUARY, 1, 0)
+        val end = zdt(2020, Month.JANUARY, 1, 23)
+        val readings = Time.getReadings(start, end, Duration.ZERO, true) { it.toEpochSecond() }
+        assertEquals(0, readings.size)
     }
 
     @Test

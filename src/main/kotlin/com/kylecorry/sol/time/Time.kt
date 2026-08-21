@@ -148,12 +148,14 @@ object Time {
         date: LocalDate,
         zone: ZoneId,
         step: Duration,
+        alwaysIncludeEndOfDay: Boolean = true,
         valueFn: (time: ZonedDateTime) -> T
     ): List<Reading<T>> {
         return getReadings(
             date.atStartOfDay().atZone(zone),
             date.atEndOfDay().atZone(zone),
             step,
+            alwaysIncludeEndOfDay,
             valueFn
         )
     }
@@ -162,6 +164,7 @@ object Time {
         start: ZonedDateTime,
         end: ZonedDateTime,
         step: Duration,
+        alwaysIncludeEnd: Boolean = true,
         valueFn: (time: ZonedDateTime) -> T
     ): List<Reading<T>> {
 
@@ -171,10 +174,19 @@ object Time {
 
         val readings = mutableListOf<Reading<T>>()
         var time = start
+        var hasRecordedEnd = false
         while (time <= end) {
             readings.add(Reading(valueFn(time), time.toInstant()))
+            if (time == end) {
+                hasRecordedEnd = true
+            }
             time = time.plus(step)
         }
+
+        if (!hasRecordedEnd && alwaysIncludeEnd && !start.isAfter(end)) {
+            readings.add(Reading(valueFn(end), end.toInstant()))
+        }
+
         return readings
     }
 
