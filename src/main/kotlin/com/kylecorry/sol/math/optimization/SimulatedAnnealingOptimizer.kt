@@ -26,8 +26,8 @@ class SimulatedAnnealingOptimizer(
     ): Pair<Double, Double> {
         val myFn = { x: Double, y: Double -> if (maximize) -fn(x, y) else fn(x, y) }
 
-        var bestX = initialValue?.first ?: lerp(random.nextDouble(), xRange.start, xRange.end)
-        var bestY = initialValue?.second ?: lerp(random.nextDouble(), yRange.start, yRange.end)
+        var bestX = xRange.clamp(initialValue?.first ?: lerp(random.nextDouble(), xRange.start, xRange.end))
+        var bestY = yRange.clamp(initialValue?.second ?: lerp(random.nextDouble(), yRange.start, yRange.end))
         var bestZ = myFn(bestX, bestY)
 
         var x = bestX
@@ -40,8 +40,8 @@ class SimulatedAnnealingOptimizer(
             if (t < minimumTemperature) {
                 break
             }
-            val newX = x + random.nextDouble(-1.0, 1.0) * stepSize
-            val newY = y + random.nextDouble(-1.0, 1.0) * stepSize
+            val newX = xRange.clamp(x + random.nextDouble(-1.0, 1.0) * stepSize)
+            val newY = yRange.clamp(y + random.nextDouble(-1.0, 1.0) * stepSize)
             val newZ = myFn(newX, newY)
 
             if (newZ < bestZ) {
