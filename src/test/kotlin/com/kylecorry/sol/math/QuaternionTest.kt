@@ -85,6 +85,20 @@ class QuaternionTest {
     }
 
     @ParameterizedTest
+    @CsvSource(
+        "0, 0",
+        "0.25, 0.000125",
+        "0.5, 0.00025",
+        "1, 0.0005",
+    )
+    fun slerpNearlyIdentical(t: Float, expectedY: Float) {
+        val a = Quaternion(0f, 0f, 0f, 1f)
+        val b = Quaternion(0f, 0.0005f, 0f, 1f).normalize()
+
+        approxEquals(Quaternion(0f, expectedY, 0f, 1f), a.slerp(b, t), 0.00001f)
+    }
+
+    @ParameterizedTest
     @MethodSource("provideLerp")
     fun lerp(a: Quaternion, b: Quaternion, t: Float, expected: Quaternion) {
         approxEquals(expected, a.lerp(b, t), 0.001f)

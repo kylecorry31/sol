@@ -259,10 +259,11 @@ object QuaternionMath {
         val sinHalfTheta = sqrt(1 - cosHalfTheta * cosHalfTheta)
 
         if (sinHalfTheta.absoluteValue < 0.001) {
-            out[X] = quat1[X] * 0.5f + endQuaternion[X] * 0.5f
-            out[Y] = quat1[Y] * 0.5f + endQuaternion[Y] * 0.5f
-            out[Z] = quat1[Z] * 0.5f + endQuaternion[Z] * 0.5f
-            out[W] = quat1[W] * 0.5f + endQuaternion[W] * 0.5f
+            val ratioA = 1 - t
+            out[X] = quat1[X] * ratioA + endQuaternion[X] * t
+            out[Y] = quat1[Y] * ratioA + endQuaternion[Y] * t
+            out[Z] = quat1[Z] * ratioA + endQuaternion[Z] * t
+            out[W] = quat1[W] * ratioA + endQuaternion[W] * t
             return
         }
 
