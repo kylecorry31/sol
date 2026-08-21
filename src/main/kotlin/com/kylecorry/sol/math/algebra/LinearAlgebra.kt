@@ -213,7 +213,9 @@ object LinearAlgebra {
             "Matrix must be square to calculate determinant"
         }
 
-        return if (m.rows() == 1 && m.columns() == 1) {
+        return if (m.rows() == 0) {
+            1f
+        } else if (m.rows() == 1 && m.columns() == 1) {
             m[0, 0]
         } else if (m.rows() == 2 && m.columns() == 2) {
             (m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0])

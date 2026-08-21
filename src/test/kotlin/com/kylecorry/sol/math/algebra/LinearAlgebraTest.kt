@@ -588,6 +588,17 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun inverse1x1() {
+        val m1 = Matrix.create(1, 1, 2f)
+
+        val expected = Matrix.create(1, 1, 0.5f)
+
+        val actual = LinearAlgebra.inverse(m1)
+
+        assertEquals(expected, actual, 0.00001f)
+    }
+
+    @Test
     fun inverse2x2() {
         val m1 = Matrix.create(2, 2, 0f)
         m1[0, 0] = 1f
