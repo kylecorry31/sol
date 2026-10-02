@@ -147,6 +147,11 @@ internal class GeometryTest {
         )
     }
 
+    @Test
+    fun snapToLine2DTo2DZeroLengthLine() {
+        assertEquals(Vector2(2f, 3f), Geometry.snapToLine(5f, -4f, 2f, 3f, 2f, 3f), 0.00001f)
+    }
+
     @ParameterizedTest
     @CsvSource(
         "0, 0, 0, 0, 0",
@@ -220,6 +225,24 @@ internal class GeometryTest {
             Vector3(expectedX, expectedY, expectedZ),
             Geometry.snapToLine(Vector3(x, y, z), x1, y1, z1, x2, y2, z2),
             0.0001f
+        )
+    }
+
+    @Test
+    fun snapToLine2DTo3DZeroLengthLine() {
+        assertEquals(
+            Vector3(2f, 3f, 4f),
+            Geometry.snapToLine(5f, -4f, 2f, 3f, 4f, 2f, 3f, 4f),
+            0.00001f
+        )
+    }
+
+    @Test
+    fun snapToLine3DTo3DZeroLengthLine() {
+        assertEquals(
+            Vector3(2f, 3f, 4f),
+            Geometry.snapToLine(Vector3(5f, -4f, 1f), 2f, 3f, 4f, 2f, 3f, 4f),
+            0.00001f
         )
     }
 

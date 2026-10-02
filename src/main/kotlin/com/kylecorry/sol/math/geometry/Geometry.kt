@@ -217,14 +217,14 @@ object Geometry {
      * @return the point snapped onto the line
      */
     fun snapToLine(x: Float, y: Float, x1: Float, y1: Float, x2: Float, y2: Float): Vector2 {
-        val ab = square(x2 - x1) + square(y2 - y1)
-        val ap = square(x - x1) + square(y - y1)
-        val bp = square(x - x2) + square(y - y2)
-
-        val t = ((ap - bp + ab) / (2 * ab)).coerceIn(0f, 1f)
-        val projectedX = x1 + t * (x2 - x1)
-        val projectedY = y1 + t * (y2 - y1)
-        return Vector2(projectedX, projectedY)
+        val dx = (x2 - x1).toDouble()
+        val dy = (y2 - y1).toDouble()
+        val lengthSquared = dx * dx + dy * dy
+        if (lengthSquared == 0.0) {
+            return Vector2(x1, y1)
+        }
+        val t = (((x - x1) * dx + (y - y1) * dy) / lengthSquared).coerceIn(0.0, 1.0)
+        return Vector2((x1 + t * dx).toFloat(), (y1 + t * dy).toFloat())
     }
 
     /**
@@ -264,15 +264,15 @@ object Geometry {
         y2: Float,
         z2: Float
     ): Vector3 {
-        val ab = square(x2 - x1) + square(y2 - y1)
-        val ap = square(x - x1) + square(y - y1)
-        val bp = square(x - x2) + square(y - y2)
-
-        val t = ((ap - bp + ab) / (2 * ab)).coerceIn(0f, 1f)
-        val projectedX = x1 + t * (x2 - x1)
-        val projectedY = y1 + t * (y2 - y1)
-        val projectedZ = z1 + t * (z2 - z1)
-        return Vector3(projectedX, projectedY, projectedZ)
+        val dx = (x2 - x1).toDouble()
+        val dy = (y2 - y1).toDouble()
+        val dz = (z2 - z1).toDouble()
+        val lengthSquared = dx * dx + dy * dy
+        if (lengthSquared == 0.0) {
+            return Vector3(x1, y1, z1)
+        }
+        val t = (((x - x1) * dx + (y - y1) * dy) / lengthSquared).coerceIn(0.0, 1.0)
+        return Vector3((x1 + t * dx).toFloat(), (y1 + t * dy).toFloat(), (z1 + t * dz).toFloat())
     }
 
     /**
@@ -314,15 +314,15 @@ object Geometry {
         y2: Float,
         z2: Float
     ): Vector3 {
-        val ab = square(x2 - x1) + square(y2 - y1) + square(z2 - z1)
-        val ap = square(x - x1) + square(y - y1) + square(z - z1)
-        val bp = square(x - x2) + square(y - y2) + square(z - z2)
-
-        val t = ((ap - bp + ab) / (2 * ab)).coerceIn(0f, 1f)
-        val projectedX = x1 + t * (x2 - x1)
-        val projectedY = y1 + t * (y2 - y1)
-        val projectedZ = z1 + t * (z2 - z1)
-        return Vector3(projectedX, projectedY, projectedZ)
+        val dx = (x2 - x1).toDouble()
+        val dy = (y2 - y1).toDouble()
+        val dz = (z2 - z1).toDouble()
+        val lengthSquared = dx * dx + dy * dy + dz * dz
+        if (lengthSquared == 0.0) {
+            return Vector3(x1, y1, z1)
+        }
+        val t = (((x - x1) * dx + (y - y1) * dy + (z - z1) * dz) / lengthSquared).coerceIn(0.0, 1.0)
+        return Vector3((x1 + t * dx).toFloat(), (y1 + t * dy).toFloat(), (z1 + t * dz).toFloat())
     }
 
     fun <T> getConnectedLines(segments: List<Pair<T, T>>): List<List<T>> {
