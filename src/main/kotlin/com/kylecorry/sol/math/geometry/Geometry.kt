@@ -5,7 +5,6 @@ import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.Vector3
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.arithmetic.Arithmetic.square
-import com.kylecorry.sol.math.sumOfFloat
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.absoluteValue
@@ -157,11 +156,19 @@ object Geometry {
     }
 
     fun manhattanDistance(p1: List<Float>, p2: List<Float>): Float {
-        return p1.zip(p2).sumOfFloat { abs(it.first - it.second) }
+        var sum = 0.0
+        for (i in 0 until min(p1.size, p2.size)) {
+            sum += abs(p1[i] - p2[i])
+        }
+        return sum.toFloat()
     }
 
     fun euclideanDistance(p1: List<Float>, p2: List<Float>): Float {
-        return sqrt(p1.zip(p2).sumOfFloat { square(it.first - it.second) })
+        var sum = 0.0
+        for (i in 0 until min(p1.size, p2.size)) {
+            sum += square(p1[i] - p2[i])
+        }
+        return sqrt(sum.toFloat())
     }
 
     // Area

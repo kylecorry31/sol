@@ -402,4 +402,22 @@ internal class GeometryTest {
             )
         }
     }
+
+    @Test
+    fun manhattanDistance() {
+        assertEquals(7f, Geometry.manhattanDistance(listOf(1f, 2f), listOf(4f, -2f)), 0.0001f)
+        assertEquals(0f, Geometry.manhattanDistance(emptyList(), emptyList()), 0.0001f)
+    }
+
+    @Test
+    fun euclideanDistance() {
+        assertEquals(5f, Geometry.euclideanDistance(listOf(1f, 2f), listOf(4f, -2f)), 0.0001f)
+        assertEquals(0f, Geometry.euclideanDistance(emptyList(), emptyList()), 0.0001f)
+    }
+
+    @Test
+    fun distanceIgnoresExtraDimensions() {
+        assertEquals(3f, Geometry.manhattanDistance(listOf(1f, 5f), listOf(4f)), 0.0001f)
+        assertEquals(3f, Geometry.euclideanDistance(listOf(4f), listOf(1f, 5f)), 0.0001f)
+    }
 }

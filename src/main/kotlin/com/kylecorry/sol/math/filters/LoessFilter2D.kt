@@ -1,28 +1,40 @@
 package com.kylecorry.sol.math.filters
 
-import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector2
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.interpolation.Interpolation
 import com.kylecorry.sol.math.lists.Lists
-import com.kylecorry.sol.math.regression.WeightedLinearRegression
-import com.kylecorry.sol.math.statistics.Statistics
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.floor
-import kotlin.math.pow
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
+import kotlin.math.ulp
 
 // Based on org.apache.commons.math.analysis.interpolation.LoessInterpolator
 // from http://commons.apache.org/math/
 
 /**
  * A filter for smoothing data
+ *
+ * Smoothing a point costs work proportional to the number of points in its span, so the total work
+ * is proportional to the input size times the span size. With the default proportional [span] that
+ * is quadratic in the input size. To bound the work for large inputs, limit the span with
+ * [maximumSpanSize] (a point count) and/or [maximumSpanDistance] (an X distance). Both limits
+ * smooth each point using a smaller neighborhood than [span] alone would, so they change the output.
+ *
  * @param span the percentage of the dataset to use for smoothing each point
  * @param robustnessIterations the number of iterations to do for the robustness step for outlier removal
  * @param accuracy the threshold to stop the robustness at (short circuit)
- * @param minimumSpanSize the minimum number of points to be considered in the span
- * @param maximumSpanSize the maximum number of points to be considered in the span
- * @param maximumSpanDistance the maximum X distance of the span
+ * @param minimumSpanSize the minimum number of points to be considered in the span. Must not exceed
+ * [maximumSpanSize] (an IllegalArgumentException is thrown when filtering otherwise). It does not guarantee
+ * that many points are weighted when [maximumSpanDistance] is set, so keep the distance wide enough to
+ * cover several points.
+ * @param maximumSpanSize the maximum number of points to be considered in the span. Bounds the work per point
+ * regardless of how the points are distributed in X.
+ * @param maximumSpanDistance the maximum X distance of the span. Points farther than this from the point being
+ * smoothed get no weight and are not visited, so it bounds the work per point to the points within that distance.
+ * Unlike [maximumSpanSize], it is independent of how densely the data was sampled.
  */
 class LoessFilter2D(
     private val span: Float = 0.3f,
@@ -44,34 +56,37 @@ class LoessFilter2D(
             return data
         }
 
-        val rangeX = Range(data.minOf { it.x }, data.maxOf { it.x })
-        val rangeY = Range(data.minOf { it.y }, data.maxOf { it.y })
-
-        val wasResorted = !Lists.isIncreasingX(data)
-        var sortOrder = data.indices.toList()
-
-        val sortedData = if (wasResorted) {
-            sortOrder = Lists.sortIndices(data.map { it.x })
-            Lists.reorder(data, sortOrder)
-        } else {
-            data
-        }.map {
-            Vector2(
-                Interpolation.norm(it.x, rangeX.start, rangeX.end),
-                Interpolation.norm(it.y, rangeY.start, rangeY.end)
-            )
+        var minX = Float.POSITIVE_INFINITY
+        var maxX = Float.NEGATIVE_INFINITY
+        var minY = Float.POSITIVE_INFINITY
+        var maxY = Float.NEGATIVE_INFINITY
+        for (point in data) {
+            minX = minOf(minX, point.x)
+            maxX = maxOf(maxX, point.x)
+            minY = minOf(minY, point.y)
+            maxY = maxOf(maxY, point.y)
         }
 
-        val weights = MutableList(n) { 1f }
-        val result = sortedData.toMutableList()
-        val residuals = MutableList(n) { 0f }
-        val robustnessWeights = MutableList(n) { 1f }
-        val mappedMaxDistance =
-            maximumSpanDistance?.let { Interpolation.norm(maximumSpanDistance, rangeX.start, rangeX.end) }
-        val state = SmoothingState(weights, result, residuals, robustnessWeights, mappedMaxDistance)
+        val sortOrder = if (Lists.isIncreasingX(data)) null else Lists.sortIndices(data.map { it.x })
+
+        // The points are normalized so the smoothing is independent of the units of X and Y
+        val xs = FloatArray(n)
+        val ys = FloatArray(n)
+        for (i in 0 until n) {
+            val point = data[sortOrder?.get(i) ?: i]
+            xs[i] = Interpolation.norm(point.x, minX, maxX)
+            ys[i] = Interpolation.norm(point.y, minY, maxY)
+        }
+
+        val state = SmoothingState(
+            xs,
+            ys,
+            spanSize = floor(span * n).toInt().coerceIn(minimumSpanSize, maximumSpanSize),
+            maxDistance = maximumSpanDistance?.let { normalizeDistance(it, maxX - minX) }
+        )
 
         for (iteration in 0..robustnessIterations) {
-            smoothIteration(sortedData, state)
+            smoothIteration(state)
 
             if (iteration == robustnessIterations) {
                 break
@@ -83,120 +98,175 @@ class LoessFilter2D(
             }
         }
 
-        return if (wasResorted) {
-            Lists.reorder(state.result, sortOrder, true)
-        } else {
-            state.result
-        }.map {
-            Vector2(
-                Interpolation.lerp(it.x, rangeX.start, rangeX.end),
-                Interpolation.lerp(it.y, rangeY.start, rangeY.end)
-            )
-        }
+        return buildOutput(data, sortOrder, state.result, minY, maxY)
     }
 
-    private fun smoothIteration(sortedData: List<Vector2>, state: SmoothingState) {
-        for (i in sortedData.indices) {
-            val point = sortedData[i]
-            val interval = getNearest(sortedData, i)
+    // A distance is scaled like the X values, but not shifted by their minimum
+    private fun normalizeDistance(distance: Float, rangeX: Float): Float {
+        return if (Arithmetic.isZero(rangeX)) 0f else abs(distance / rangeX)
+    }
 
-            if (interval.second - interval.first < 2) {
+    private fun buildOutput(
+        data: List<Vector2>,
+        sortOrder: List<Int>?,
+        result: FloatArray,
+        minY: Float,
+        maxY: Float
+    ): List<Vector2> {
+        val output = arrayOfNulls<Vector2>(data.size)
+        for (i in result.indices) {
+            val index = sortOrder?.get(i) ?: i
+            output[index] = Vector2(data[index].x, Interpolation.lerp(result[i], minY, maxY))
+        }
+        @Suppress("UNCHECKED_CAST")
+        val filtered = output as Array<Vector2>
+        return filtered.asList()
+    }
+
+    private fun smoothIteration(state: SmoothingState) {
+        val xs = state.xs
+        val ys = state.ys
+        val robustnessWeights = state.robustnessWeights
+        val window = IntArray(2)
+
+        for (i in xs.indices) {
+            selectWindow(xs, i, state.spanSize, state.windowLimit, window)
+            val start = window[0]
+            val end = window[1]
+
+            if (end - start < 2) {
                 continue
             }
 
-            val nearest = getNearestPoints(sortedData, point, interval)
-            val maxDistance = state.mappedMaxDistance ?: nearest.last().second
-            val regressionWeights = getRegressionWeights(nearest, state.robustnessWeights, state.weights, maxDistance)
-            if (regressionWeights.none { it > 0f }) {
+            val x = xs[i]
+            val maxDistance = state.maxDistance ?: max(abs(x - xs[start]), abs(xs[end - 1] - x))
+            // With no distance to scale by, every point in the span is weighted equally
+            val isUniform = Arithmetic.isZero(maxDistance)
+            val inverseMaxDistance = 1.0 / maxDistance.toDouble()
+
+            // The regression is centered on the point being smoothed, so the prediction is the
+            // intercept and the sums stay well conditioned for dense, narrow spans.
+            var sumWeights = 0.0
+            var sumX = 0.0
+            var sumXSquared = 0.0
+            var sumY = 0.0
+            var sumXY = 0.0
+            for (j in start until end) {
+                val dx = xs[j].toDouble() - x
+                val weight = if (isUniform) {
+                    1.0
+                } else {
+                    tricube(abs(dx) * inverseMaxDistance) * robustnessWeights[j]
+                }
+                if (weight <= 0.0) {
+                    continue
+                }
+                val y = ys[j]
+                val wx = weight * dx
+                sumWeights += weight
+                sumX += wx
+                sumXSquared += wx * dx
+                sumY += weight * y
+                sumXY += wx * y
+            }
+
+            if (sumWeights <= 0.0) {
                 continue
             }
-            val regression = WeightedLinearRegression(nearest.map { it.first }, regressionWeights, accuracy)
 
-            state.result[i] = Vector2(point.x, regression.predict(point.x))
-            state.residuals[i] = abs(point.y - state.result[i].y)
-        }
-    }
-
-    private fun getNearestPoints(
-        sortedData: List<Vector2>,
-        point: Vector2,
-        interval: Pair<Int, Int>
-    ): List<Triple<Vector2, Float, Int>> {
-        return sortedData.subList(interval.first, interval.second).mapIndexed { index, candidate ->
-            Triple(candidate, abs(point.x - candidate.x), interval.first + index)
-        }.sortedBy { it.second }
-    }
-
-    private fun getRegressionWeights(
-        nearest: List<Triple<Vector2, Float, Int>>,
-        robustnessWeights: List<Float>,
-        weights: List<Float>,
-        maxDistance: Float
-    ): List<Float> {
-        return nearest.map {
-            if (Arithmetic.isZero(maxDistance)) {
-                1f
+            val meanX = sumX / sumWeights
+            val meanY = sumY / sumWeights
+            val varianceX = sumXSquared / sumWeights - meanX * meanX
+            val slope = if (varianceX <= 0.0 || sqrt(varianceX) < accuracy) {
+                0.0
             } else {
-                tricube(it.second.absoluteValue / maxDistance.absoluteValue) * weights[it.third] * robustnessWeights[it.third]
+                (sumXY / sumWeights - meanX * meanY) / varianceX
+            }
+
+            val prediction = (meanY - slope * meanX).toFloat()
+            state.result[i] = prediction
+            state.residuals[i] = abs(ys[i] - prediction)
+        }
+    }
+
+    /**
+     * Selects the span of the point at index i as the half-open index range [window] (start, end).
+     * The span grows toward whichever side's boundary point is closer to the point, until it
+     * covers spanSize indices. Growth stops early once both sides are at least maxDistance
+     * away, since the points beyond that are given no weight.
+     */
+    private fun selectWindow(xs: FloatArray, i: Int, spanSize: Int, maxDistance: Float, window: IntArray) {
+        val last = xs.lastIndex
+        val x = xs[i]
+        var start = i
+        var end = i
+        while (end - start < spanSize) {
+            // A side that has run out of points is infinitely far away
+            val dStart = if (start > 0) abs(xs[start] - x) else Float.POSITIVE_INFINITY
+            val dEnd = if (end < last) abs(xs[end] - x) else Float.POSITIVE_INFINITY
+            if (min(dStart, dEnd) >= maxDistance) {
+                break
+            }
+
+            if (dStart <= dEnd) {
+                start--
+            } else {
+                end++
             }
         }
+        window[0] = start
+        window[1] = end
     }
 
     private fun updateRobustnessWeights(state: SmoothingState): Boolean {
-        val medianResidual = Statistics.median(state.residuals)
-        if (abs(medianResidual) < accuracy) {
+        val sortedResiduals = state.residuals.sortedArray()
+        val medianResidual = sortedResiduals[(sortedResiduals.lastIndex * 0.5f).toInt()]
+
+        // Residuals below the resolution of the data are rounding noise. When most points fit
+        // exactly, the median alone would be zero and outliers would never be rejected.
+        if (sortedResiduals.last() <= max(accuracy, NOISE)) {
             return true
         }
 
+        val scale = 6 * max(medianResidual, NOISE)
         for (i in state.residuals.indices) {
-            val a = state.residuals[i] / (6 * medianResidual)
+            val a = state.residuals[i] / scale
             state.robustnessWeights[i] = if (a >= 1) {
                 0f
             } else {
-                (1 - a * a).pow(2)
+                val b = 1 - a * a
+                b * b
             }
         }
 
         return false
     }
 
-    private fun getNearest(points: List<Vector2>, i: Int): Pair<Int, Int> {
-        val size = floor(span * points.size).toInt().coerceIn(minimumSpanSize, maximumSpanSize)
-        var start = i
-        var end = i
-        val x = points[i].x
-        while ((end - start) < size) {
-            val dStart = abs(points[start].x - x)
-            val dEnd = abs(points[end].x - x)
-            if (start == 0 && end < points.size - 1) {
-                end++
-            } else if (end == points.size - 1 && start > 0) {
-                start--
-            } else if (start > 0 && dStart <= dEnd) {
-                start--
-            } else if (end < points.size - 1 && dEnd <= dStart) {
-                end++
-            } else {
-                break
-            }
+    private fun tricube(x: Double): Double {
+        if (x >= 1.0) {
+            return 0.0
         }
-        return start to end
-
+        val a = 1 - x * x * x
+        return a * a * a
     }
 
-    private fun tricube(x: Float): Float {
-        if (abs(x) >= 1f) {
-            return 0f
-        }
-        return (1 - x.pow(3)).pow(3)
+    private companion object {
+        // The resolution of the normalized Y values
+        val NOISE = 1f.ulp
     }
 
-    private data class SmoothingState(
-        val weights: List<Float>,
-        val result: MutableList<Vector2>,
-        val residuals: MutableList<Float>,
-        val robustnessWeights: MutableList<Float>,
-        val mappedMaxDistance: Float?
-    )
+    private class SmoothingState(
+        val xs: FloatArray,
+        val ys: FloatArray,
+        val spanSize: Int,
+        val maxDistance: Float?
+    ) {
+        val result = ys.copyOf()
+        val residuals = FloatArray(xs.size)
+        val robustnessWeights = FloatArray(xs.size) { 1f }
+
+        // A zero distance gives every point in the span equal weight, so it can't limit the span
+        val windowLimit = maxDistance?.takeUnless { Arithmetic.isZero(it) } ?: Float.POSITIVE_INFINITY
+    }
 
 }
