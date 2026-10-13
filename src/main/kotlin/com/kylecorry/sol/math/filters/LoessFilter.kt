@@ -2,6 +2,7 @@ package com.kylecorry.sol.math.filters
 
 import com.kylecorry.sol.math.arithmetic.Arithmetic
 import com.kylecorry.sol.math.geometry.Geometry
+import com.kylecorry.sol.math.geometry.SpatialGrid
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
@@ -23,14 +24,19 @@ import kotlin.math.ulp
  * @param accuracy the threshold to stop the robustness at (short circuit)
  * @param minimumSpanSize the minimum number of points to be considered in the span
  * @param maximumSpanSize the maximum number of points to be considered in the span
+ * @param maximumSpanDistance the maximum distance of a neighbor, also the scale of the weights. Limits the work per
+ * point to the points within this distance. The [distanceFn] must be at least as large as the difference in any
+ * single coordinate (true for Manhattan, Euclidean, and Chebyshev).
  * @param distanceFn the distance between two points, it is called with the point being smoothed first
  */
+@Suppress("LongParameterList")
 class LoessFilter(
     private val span: Float = 0.3f,
     private val robustnessIterations: Int = 2,
     private val accuracy: Float = 1e-12f,
     private val minimumSpanSize: Int = 0,
     private val maximumSpanSize: Int = Int.MAX_VALUE,
+    private val maximumSpanDistance: Float? = null,
     private val distanceFn: (p1: List<Float>, p2: List<Float>) -> Float = Geometry::manhattanDistance
 ) {
 
@@ -46,7 +52,8 @@ class LoessFilter(
         val state = SmoothingState(
             xs,
             ys,
-            spanSize = floor(span * n).toInt().coerceIn(minimumSpanSize, maximumSpanSize).coerceAtMost(n - 1)
+            spanSize = floor(span * n).toInt().coerceIn(minimumSpanSize, maximumSpanSize).coerceAtMost(n - 1),
+            grid = maximumSpanDistance?.takeIf { it > 0f }?.let { SpatialGrid(xs, it) }
         )
 
         for (iteration in 0..robustnessIterations) {
@@ -73,12 +80,17 @@ class LoessFilter(
         val distances = FloatArray(xs.size)
         val scratch = FloatArray(xs.size)
         val equations = NormalEquations(dimensions + 1)
+        val grid = state.grid
 
         for (i in xs.indices) {
             val x = xs[i]
             val y = ys[i]
 
-            val maxDistance = selectNeighbors(state, i, neighbors, distances, scratch)
+            val maxDistance = if (grid != null) {
+                selectNearbyNeighbors(state, grid, i, neighbors, distances)
+            } else {
+                selectNeighbors(state, i, neighbors, distances, scratch)
+            }
 
             if (Arithmetic.isZero(maxDistance)) {
                 state.result[i] = y
@@ -90,7 +102,8 @@ class LoessFilter(
             // intercept and the normal equations stay well conditioned.
             equations.reset()
             var weightedPoints = 0
-            for (j in neighbors) {
+            for (n in 0 until state.neighborCount) {
+                val j = neighbors[n]
                 val weight = tricube(distances[j] / maxDistance.toDouble()) * state.robustnessWeights[j]
                 if (weight <= 0.0) {
                     continue
@@ -123,6 +136,7 @@ class LoessFilter(
         scratch: FloatArray
     ): Float {
         val k = neighbors.size
+        state.neighborCount = k
         if (k == 0) {
             return 0f
         }
@@ -148,6 +162,54 @@ class LoessFilter(
             if (distances[j] == maxDistance && j != i) {
                 neighbors[count++] = j
             }
+        }
+        return maxDistance
+    }
+
+    /**
+     * Like [selectNeighbors], but only considers points within the maximum span distance.
+     * @return the maximum span distance, or 0 if there are no neighbors
+     */
+    private fun selectNearbyNeighbors(
+        state: SmoothingState,
+        grid: SpatialGrid,
+        i: Int,
+        neighbors: IntArray,
+        distances: FloatArray
+    ): Float {
+        val maxDistance = grid.cellSize
+        if (neighbors.isEmpty()) {
+            state.neighborCount = 0
+            return 0f
+        }
+
+        val x = state.xs[i]
+        val candidates = state.candidates
+        var count = grid.getCandidates(x, candidates)
+        var within = 0
+        for (c in 0 until count) {
+            val j = candidates[c]
+            if (j == i) {
+                continue
+            }
+            val distance = distanceFn(x, state.xs[j])
+            if (distance < maxDistance) {
+                distances[j] = distance
+                candidates[within++] = j
+            }
+        }
+        count = within
+
+        if (count > neighbors.size) {
+            val nearest = (0 until count).map { candidates[it] }
+                .sortedWith(compareBy<Int> { distances[it] }.thenBy { it })
+            for (n in neighbors.indices) {
+                neighbors[n] = nearest[n]
+            }
+            state.neighborCount = neighbors.size
+        } else {
+            candidates.copyInto(neighbors, 0, 0, count)
+            state.neighborCount = count
         }
         return maxDistance
     }
@@ -223,8 +285,11 @@ class LoessFilter(
     private class SmoothingState(
         val xs: List<List<Float>>,
         val ys: List<Float>,
-        val spanSize: Int
+        val spanSize: Int,
+        val grid: SpatialGrid?
     ) {
+        var neighborCount = 0
+        val candidates = IntArray(xs.size)
         val dimensions = xs[0].size
         val result = ys.toFloatArray()
         val residuals = FloatArray(xs.size)

@@ -233,4 +233,72 @@ class LoessFilterTest {
 
         smoothed.zip(ys).forEach { assertEquals(it.second, it.first, 0.01f) }
     }
+
+    @Test
+    fun maximumSpanDistanceFitsAPlane() {
+        val xs = List(200) { listOf(it * 0.01f, (it % 7) * 0.01f) }
+        val ys = xs.map { 3f * it[0] - 2f * it[1] + 5f }
+
+        val smoothed = LoessFilter(0.1f, 2, minimumSpanSize = 10, maximumSpanDistance = 0.2f).filter(xs, ys)
+
+        smoothed.zip(ys).forEach { assertEquals(it.second, it.first, 0.01f) }
+    }
+
+    @Test
+    fun maximumSpanDistanceReducesNoise() {
+        val random = Random(2)
+        val xs = List(500) { listOf(it * 0.01f, 0f) }
+        val clean = xs.map { sin(it[0]) }
+        val noisy = clean.map { it + (random.nextFloat() - 0.5f) * 0.4f }
+
+        val smoothed = LoessFilter(0.1f, 1, minimumSpanSize = 10, maximumSpanDistance = 0.5f).filter(xs, noisy)
+
+        val before = clean.indices.sumOf { abs(noisy[it] - clean[it]).toDouble() }
+        val after = clean.indices.sumOf { abs(smoothed[it] - clean[it]).toDouble() }
+        assertTrue(after < before / 2)
+    }
+
+    @Test
+    fun maximumSpanDistanceLeavesPointsWithoutNeighborsUnchanged() {
+        val xs = List(20) { listOf(it * 10f, 0f) }
+        val ys = List(20) { it.toFloat() }
+
+        val smoothed = LoessFilter(0.1f, 1, minimumSpanSize = 10, maximumSpanDistance = 1f).filter(xs, ys)
+
+        assertEquals(ys, smoothed)
+    }
+
+    @Test
+    fun maximumSpanDistanceHandlesIdenticalPoints() {
+        val xs = List(20) { listOf(1f, 1f) }
+        val ys = List(20) { it.toFloat() }
+
+        val smoothed = LoessFilter(0.1f, 1, minimumSpanSize = 10, maximumSpanDistance = 1f).filter(xs, ys)
+
+        assertEquals(20, smoothed.size)
+        assertTrue(smoothed.all { it.isFinite() })
+    }
+
+    @Test
+    fun maximumSpanDistanceIgnoresFarAwayPoints() {
+        val near = List(30) { listOf(it * 0.01f, 0f) }
+        val far = List(30) { listOf(100f + it * 0.01f, 0f) }
+        val ys = List(30) { 1f } + List(30) { 1000f }
+
+        val smoothed = LoessFilter(0.1f, 0, minimumSpanSize = 10, maximumSpanDistance = 0.5f).filter(near + far, ys)
+
+        assertTrue(smoothed.take(30).all { abs(it - 1f) < 0.01f })
+        assertTrue(smoothed.drop(30).all { abs(it - 1000f) < 0.01f })
+    }
+
+    @Test
+    fun maximumSpanDistanceCanUseTheLastPoint() {
+        val xs = List(50) { listOf(it * 0.01f) }
+        val ys = List(50) { if (it == 49) 10f else 0f }
+
+        val smoothed = LoessFilter(0.1f, 0, minimumSpanSize = 10, maximumSpanDistance = 0.2f).filter(xs, ys)
+
+        assertTrue(smoothed.all { it in 0f..10f })
+        assertTrue(smoothed[48] > 0f)
+    }
 }
