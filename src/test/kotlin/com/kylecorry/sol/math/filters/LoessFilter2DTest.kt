@@ -50,6 +50,43 @@ internal class LoessFilter2DTest {
     }
 
     @Test
+    fun filterDoesNotExtrapolateTheLastPoint() {
+        val values = listOf(
+            Vector2(0f, 30f),
+            Vector2(0.6f, 14.9f),
+            Vector2(1.2f, 49.8f),
+            Vector2(1.6f, 11.1f)
+        )
+
+        val smoothed = LoessFilter2D(0.1f, 1, minimumSpanSize = 10).filter(values)
+
+        assertTrue(smoothed.all { it.y in 11.1f..49.8f })
+    }
+
+    @Test
+    fun filterLineKeepsTheLastPoints() {
+        val values = (0..29).map { Vector2(it.toFloat(), 3f * it) }
+
+        val smoothed = LoessFilter2D(0.3f, 2).filter(values)
+
+        smoothed.takeLast(3).zip(values.takeLast(3)).forEach {
+            assertEquals(it.second.y, it.first.y, 0.001f)
+        }
+    }
+
+    @Test
+    fun lastPointIsInfluencedByItsNeighbors() {
+        val spanSize = 10
+        val values = List(30) { Vector2(it.toFloat(), if (it == 29) 100f else 0f) }
+
+        val smoothed = LoessFilter2D(0.1f, 0, minimumSpanSize = spanSize).filter(values)
+
+        val window = values.takeLast(spanSize).map { it.y }
+        assertTrue(smoothed.last().y in window.min()..window.max())
+        assertTrue(smoothed.last().y > 0f)
+    }
+
+    @Test
     fun filterSamePoint() {
         val values = listOf(
             Vector2(x = 1f, y = 1.0f),

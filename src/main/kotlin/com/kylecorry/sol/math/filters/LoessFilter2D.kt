@@ -196,14 +196,13 @@ class LoessFilter2D(
      * away, since the points beyond that are given no weight.
      */
     private fun selectWindow(xs: FloatArray, i: Int, spanSize: Int, maxDistance: Float, window: IntArray) {
-        val last = xs.lastIndex
         val x = xs[i]
         var start = i
         var end = i
         while (end - start < spanSize) {
             // A side that has run out of points is infinitely far away
             val dStart = if (start > 0) abs(xs[start] - x) else Float.POSITIVE_INFINITY
-            val dEnd = if (end < last) abs(xs[end] - x) else Float.POSITIVE_INFINITY
+            val dEnd = if (end < xs.size) abs(xs[end] - x) else Float.POSITIVE_INFINITY
             if (min(dStart, dEnd) >= maxDistance) {
                 break
             }
