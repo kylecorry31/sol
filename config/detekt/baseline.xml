@@ -27,6 +27,7 @@
     <ID>LongParameterList:Interpolation.kt:Interpolation$fun map: Double</ID>
     <ID>LongParameterList:Interpolation.kt:Interpolation$fun map: Float</ID>
     <ID>LongParameterList:LeastSquaresOptimizer.kt:LeastSquaresOptimizer$fun optimize: List&lt;Float&gt;</ID>
+    <ID>LongParameterList:LoessFilter2D.kt:LoessFilter2D.Companion$fun getSpanForNoise: Float</ID>
     <ID>LongParameterList:LogisticRegressionClassifier.kt:LogisticRegressionClassifier$fun fit: Float</ID>
     <ID>LongParameterList:LogisticRegressionClassifier.kt:LogisticRegressionClassifier$fun fitClasses: Float</ID>
     <ID>LongParameterList:Meteorology.kt:Meteorology$fun forecast: List&lt;WeatherForecast&gt;</ID>
