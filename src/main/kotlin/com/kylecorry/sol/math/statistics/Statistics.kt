@@ -12,6 +12,7 @@ import com.kylecorry.sol.math.filters.MovingAverageFilter
 import com.kylecorry.sol.math.interpolation.Interpolation.lerp
 import com.kylecorry.sol.math.regression.LinearRegression
 import com.kylecorry.sol.math.sumOfFloat
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.exp
@@ -97,6 +98,31 @@ object Statistics {
 
     fun medianAbsoluteDeviationToStandardDeviation(medianAbsoluteDeviation: Float): Float {
         return medianAbsoluteDeviation * 1.4826f
+    }
+
+    /**
+     * Estimates the standard deviation of the random error in a series of values which change smoothly
+     * (ex. elevations along a path). The series is close to a straight line between neighboring values, so
+     * the distance of a value from the line through its neighbors is mostly error (which has a variance of
+     * (1 + w^2 + (1 - w)^2) * sd^2, where w is how far along the line the value is). The mean is used
+     * instead of the median so isolated spikes are also treated as error.
+     * @param xs the x values in strictly ascending order, used so unevenly spaced values aren't mistaken for error
+     * @param values the values in order, a null value is skipped along with the lines it is part of
+     * @return the estimated standard deviation of the error, or 0 if there are less than 3 consecutive values
+     */
+    fun estimateNoise(xs: List<Float>, values: List<Float?>): Float {
+        val deviations = (1..<values.size - 1).mapNotNull { i ->
+            val before = values[i - 1] ?: return@mapNotNull null
+            val current = values[i] ?: return@mapNotNull null
+            val after = values[i + 1] ?: return@mapNotNull null
+            val w = (xs[i] - xs[i - 1]) / (xs[i + 1] - xs[i - 1])
+            val expected = before + (after - before) * w
+            abs(current - expected) / sqrt(1 + w * w + (1 - w) * (1 - w))
+        }
+        if (deviations.isEmpty()) {
+            return 0f
+        }
+        return MEAN_ABSOLUTE_DEVIATION_TO_STANDARD_DEVIATION * mean(deviations)
     }
 
     fun quantile(values: List<Float>, quantile: Float, interpolate: Boolean = true): Float {
@@ -443,4 +469,6 @@ object Statistics {
     fun principalComponentAnalysis(x: Matrix, k: Int): Matrix {
         return PrincipalComponentAnalysis.getComponents(x, k)
     }
+
+    private val MEAN_ABSOLUTE_DEVIATION_TO_STANDARD_DEVIATION = sqrt(PI / 2).toFloat()
 }

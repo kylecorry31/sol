@@ -16,6 +16,55 @@ import kotlin.random.Random
 internal class LoessFilter2DTest {
 
     @Test
+    fun getSpanForNoiseUsesMinimumSpanWhenAlreadySmooth() {
+        val xs = List(500) { it.toFloat() }
+
+        val span = LoessFilter2D.getSpanForNoise(xs, 0.1f, 1f, 10f, 100f, 10f)
+
+        assertEquals(10f, span)
+    }
+
+    @Test
+    fun getSpanForNoiseUsesMaximumSpanWhenTargetIsUnreachable() {
+        val xs = List(500) { it.toFloat() }
+
+        // The step doesn't evenly divide the range, so the last step is clamped
+        val span = LoessFilter2D.getSpanForNoise(xs, 5f, 0.001f, 10f, 105f, 10f)
+
+        assertEquals(105f, span)
+    }
+
+    @Test
+    fun getSpanForNoiseWithNoPoints() {
+        assertEquals(10f, LoessFilter2D.getSpanForNoise(emptyList(), 5f, 1f, 10f, 100f, 10f))
+    }
+
+    @Test
+    fun getSpanForNoiseWidensForLowerTargets() {
+        val xs = List(2000) { it.toFloat() }
+
+        val loose = LoessFilter2D.getSpanForNoise(xs, 1f, 0.2f, 5f, 500f, 5f)
+        val strict = LoessFilter2D.getSpanForNoise(xs, 1f, 0.1f, 5f, 500f, 5f)
+
+        // For evenly spaced points with a spacing of 1, the noise is 0.19 at a span of 20 and 0.10 at a span of 70
+        assertEquals(20f, loose, 5f)
+        assertEquals(70f, strict, 10f)
+        assertTrue(strict > loose)
+    }
+
+    @Test
+    fun getSpanForNoiseWidensForSparserPoints() {
+        val dense = List(2000) { it.toFloat() }
+        val sparse = List(1000) { it * 2f }
+
+        val denseSpan = LoessFilter2D.getSpanForNoise(dense, 1f, 0.15f, 5f, 500f, 5f)
+        val sparseSpan = LoessFilter2D.getSpanForNoise(sparse, 1f, 0.15f, 5f, 500f, 5f)
+
+        // Fewer points within a distance average away less of the noise
+        assertTrue(sparseSpan > denseSpan)
+    }
+
+    @Test
     fun filterSin() {
         val random = Random(1)
         val indices = (0..100).map { it / 100f }

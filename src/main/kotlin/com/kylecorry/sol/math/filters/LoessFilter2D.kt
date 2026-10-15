@@ -241,17 +241,70 @@ class LoessFilter2D(
         return false
     }
 
-    private fun tricube(x: Double): Double {
-        if (x >= 1.0) {
-            return 0.0
-        }
-        val a = 1 - x * x * x
-        return a * a * a
-    }
-
-    private companion object {
+    companion object {
         // The resolution of the normalized Y values
-        val NOISE = 1f.ulp
+        private val NOISE = 1f.ulp
+
+        // The most points used to estimate the noise left by a span, since it is only used to choose a span
+        private const val SMOOTHED_NOISE_SAMPLE_SIZE = 200
+
+        /**
+         * Gets the narrowest span distance which smooths the noise down to a target. Smoothing more than
+         * needed removes real changes in the data, so this is useful for choosing the maximumSpanDistance
+         * of a [LoessFilter2D] when the amount of noise is known (see Statistics.estimateNoise).
+         * @param xs the x values in ascending order
+         * @param noise the standard deviation of the error in the y values
+         * @param targetNoise the standard deviation of the noise that is acceptable after smoothing
+         * @param minimumSpan the narrowest span distance to use
+         * @param maximumSpan the widest span distance to use, even if the target noise isn't reached
+         * @param step the amount to widen the span distance by when searching
+         * @return the span distance, from the minimumSpan to the maximumSpan
+         */
+        fun getSpanForNoise(
+            xs: List<Float>,
+            noise: Float,
+            targetNoise: Float,
+            minimumSpan: Float,
+            maximumSpan: Float,
+            step: Float
+        ): Float {
+            var span = minimumSpan
+            while (span < maximumSpan && getSmoothedNoise(xs, noise, span) > targetNoise) {
+                span = min(span + step, maximumSpan)
+            }
+            return span
+        }
+
+        /**
+         * Gets the average standard deviation of the noise which remains after smoothing with a tricube
+         * weighted local regression over the span distance. Only a sample of the points is checked.
+         */
+        private fun getSmoothedNoise(xs: List<Float>, noise: Float, span: Float): Float {
+            if (xs.isEmpty()) {
+                return 0f
+            }
+            val sampled = xs.indices.step(max(1, xs.size / SMOOTHED_NOISE_SAMPLE_SIZE))
+            return sampled.map { i ->
+                var start = i
+                while (start > 0 && xs[i] - xs[start - 1] < span) {
+                    start--
+                }
+                var end = i
+                while (end < xs.lastIndex && xs[end + 1] - xs[i] < span) {
+                    end++
+                }
+                val weights = (start..end).map { tricube(abs(xs[it] - xs[i]) / span.toDouble()) }
+                noise * sqrt(weights.sumOf { it * it }) / weights.sum()
+            }.average().toFloat()
+        }
+
+        private fun tricube(x: Double): Double {
+            if (x >= 1.0) {
+                return 0.0
+            }
+            val a = 1 - x * x * x
+            return a * a * a
+        }
     }
 
     private class SmoothingState(

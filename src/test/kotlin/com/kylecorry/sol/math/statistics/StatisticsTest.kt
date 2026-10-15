@@ -1,6 +1,7 @@
 package com.kylecorry.sol.math.statistics
 
 import com.kylecorry.sol.math.algebra.Matrix
+import com.kylecorry.sol.math.random.nextGaussian
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -8,9 +9,54 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import kotlin.random.Random
 
 internal class StatisticsTest {
     
+    @Test
+    fun estimateNoiseIgnoresUnevenSpacingOnALine() {
+        val xs = listOf(0f, 10f, 20f, 120f, 130f, 330f, 340f)
+
+        val noise = Statistics.estimateNoise(xs, xs.map { it * 0.1f })
+
+        assertEquals(0f, noise, 0.001f)
+    }
+
+    @Test
+    fun estimateNoiseFindsAlternatingError() {
+        val xs = List(40) { it * 10f }
+        val values = xs.mapIndexed { index, x -> x * 0.1f + if (index % 2 == 0) 2f else -2f }
+
+        val noise = Statistics.estimateNoise(xs, values)
+
+        // Each value is 4 from the line through its neighbors, which is 4 * 1.2533 / sqrt(1.5) for normal error
+        assertEquals(4.09f, noise, 0.01f)
+    }
+
+    @Test
+    fun estimateNoiseFindsRandomError() {
+        val random = Random(1)
+        val xs = List(2000) { it.toFloat() }
+        val values = xs.map { it * 0.5f + (random.nextGaussian() * 3).toFloat() }
+
+        val noise = Statistics.estimateNoise(xs, values)
+
+        assertEquals(3f, noise, 0.15f)
+    }
+
+    @Test
+    fun estimateNoiseSkipsMissingValues() {
+        val xs = listOf(0f, 1f, 2f, 3f)
+
+        assertEquals(0f, Statistics.estimateNoise(xs, listOf(0f, null, 2f, null)), 0f)
+    }
+
+    @Test
+    fun estimateNoiseWithTooFewValues() {
+        assertEquals(0f, Statistics.estimateNoise(emptyList(), emptyList()), 0f)
+        assertEquals(0f, Statistics.estimateNoise(listOf(0f, 1f), listOf(1f, 5f)), 0f)
+    }
+
     @ParameterizedTest
     @MethodSource("provideWeightedSum")
     fun weightedSum(values: List<Pair<Float, Float>>, expected: Float) {
