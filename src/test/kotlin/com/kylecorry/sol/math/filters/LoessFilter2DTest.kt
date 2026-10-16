@@ -361,6 +361,28 @@ internal class LoessFilter2DTest {
     }
 
     @Test
+    fun filterDoesNotExtrapolateWhenTheNeighborsAreNearlyRejected() {
+        // The outliers at 1, 4, and 11 nearly zero the robustness weight of the neighbors of point 9, which
+        // used to leave a span that was too bunched up to fit a line and put point 9 at about -3
+        val xs = listOf(
+            0f, 0.05290934f, 0.10578137f, 0.13085011f, 0.1661629f, 0.1965353f,
+            0.23292394f, 0.26614529f, 0.31784117f, 0.35475302f, 0.38622153f, 0.42073753f
+        )
+        val ys = listOf(
+            100.2711f, 79.0544f, 101.62445f, 102.62003f, 91.88113f, 103.67919f,
+            103.81322f, 106.1824f, 105.86272f, 106.64763f, 108.38954f, 69.55956f
+        )
+        val values = xs.zip(ys).map { Vector2(it.first, it.second) }
+
+        val filtered = LoessFilter2D(0.3f, 1, minimumSpanSize = 10, maximumSpanDistance = 0.04f).filter(values)
+
+        assertEquals(ys[9], filtered[9].y, 5f)
+        filtered.forEach {
+            assertTrue(it.y in ys.min() - 10f..ys.max() + 10f, "Smoothed value was outside of the data: ${it.y}")
+        }
+    }
+
+    @Test
     fun minimumSpanSizeWidensTheNeighborhood() {
         val random = Random(4)
         val truth = List(600) { Vector2(it.toFloat(), profile(it)) }

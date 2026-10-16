@@ -177,16 +177,29 @@ class LoessFilter2D(
             val meanX = sumX / sumWeights
             val meanY = sumY / sumWeights
             val varianceX = sumXSquared / sumWeights - meanX * meanX
-            val slope = if (varianceX <= 0.0 || sqrt(varianceX) < accuracy) {
-                0.0
-            } else {
+            val slope = if (canFitSlope(varianceX, maxDistance, isUniform)) {
                 (sumXY / sumWeights - meanX * meanY) / varianceX
+            } else {
+                0.0
             }
 
             val prediction = (meanY - slope * meanX).toFloat()
             state.result[i] = prediction
             state.residuals[i] = abs(ys[i] - prediction)
         }
+    }
+
+    /**
+     * Whether the weighted x values are spread out enough to fit a slope. When almost all of the weight is on
+     * the point itself (ex. the robustness weights nearly rejected its neighbors), the x values are too bunched
+     * up to determine a slope. The fit is numerically unstable and can extrapolate wildly, so the weighted mean
+     * is used instead.
+     */
+    private fun canFitSlope(varianceX: Double, maxDistance: Float, isUniform: Boolean): Boolean {
+        if (varianceX <= 0.0 || sqrt(varianceX) < accuracy) {
+            return false
+        }
+        return isUniform || varianceX >= MIN_RELATIVE_VARIANCE * maxDistance * maxDistance
     }
 
     /**
@@ -244,6 +257,9 @@ class LoessFilter2D(
     companion object {
         // The resolution of the normalized Y values
         private val NOISE = 1f.ulp
+
+        // The smallest variance of the weighted x values (relative to the squared max distance) that a slope is fit to
+        private const val MIN_RELATIVE_VARIANCE = 1e-5
 
         // The most points used to estimate the noise left by a span, since it is only used to choose a span
         private const val SMOOTHED_NOISE_SAMPLE_SIZE = 200
