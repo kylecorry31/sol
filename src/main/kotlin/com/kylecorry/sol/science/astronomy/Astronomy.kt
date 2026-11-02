@@ -8,10 +8,14 @@ import com.kylecorry.sol.science.astronomy.locators.Planet
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShower
 import com.kylecorry.sol.science.astronomy.meteors.MeteorShowerPeak
 import com.kylecorry.sol.science.astronomy.moon.MoonPhase
+import com.kylecorry.sol.science.astronomy.navigation.SkyImage
+import com.kylecorry.sol.science.astronomy.navigation.StarIdentification
+import com.kylecorry.sol.science.astronomy.navigation.StarIdentifierSettings
 import com.kylecorry.sol.science.astronomy.stars.DetectedStar
 import com.kylecorry.sol.science.astronomy.stars.Star
 import com.kylecorry.sol.science.astronomy.stars.StarReading
 import com.kylecorry.sol.science.astronomy.units.CelestialObservation
+import com.kylecorry.sol.science.geophysics.VerticalDeflectionModel
 import com.kylecorry.sol.science.shared.Season
 import com.kylecorry.sol.units.Bearing
 import com.kylecorry.sol.units.Coordinate
@@ -372,6 +376,43 @@ object Astronomy {
         approximateLocation: Coordinate? = null
     ): Coordinate? {
         return StarFacade.getLocationFromStars(starReadings, approximateLocation)
+    }
+
+    /**
+     * Identifies the stars in a photo of the sky. Only the angles between stars are used, so no compass is needed.
+     */
+    fun identifyStars(
+        image: SkyImage,
+        approximateLocation: Coordinate,
+        settings: StarIdentifierSettings = StarIdentifierSettings()
+    ): StarIdentification? {
+        return CelestialNavigationFacade.identifyStars(image, approximateLocation, settings)
+    }
+
+    /**
+     * Gets the location from a photo of the sky using gravity's up direction (SkyImage.up)
+     * @param deflection converts the astronomic location to geodetic, if provided
+     */
+    fun getLocationFromStars(
+        image: SkyImage,
+        approximateLocation: Coordinate,
+        settings: StarIdentifierSettings = StarIdentifierSettings(),
+        deflection: VerticalDeflectionModel? = null
+    ): Coordinate? {
+        return CelestialNavigationFacade.getLocationFromStars(image, approximateLocation, settings, deflection)
+    }
+
+    /**
+     * Gets the camera's true orientation from a photo of the sky at a known location. Gravity is
+     * optional, it only narrows the search.
+     * @return the identification, with a rotation from the camera's frame to East-North-Up
+     */
+    fun getOrientationFromStars(
+        image: SkyImage,
+        location: Coordinate,
+        settings: StarIdentifierSettings = StarIdentifierSettings(maxZenithOffsetDegrees = 5.0)
+    ): StarIdentification? {
+        return CelestialNavigationFacade.getOrientationFromStars(image, location, settings)
     }
 
     fun getPlanetPosition(
