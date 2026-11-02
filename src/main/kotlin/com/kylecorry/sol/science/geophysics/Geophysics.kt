@@ -77,4 +77,28 @@ object Geophysics {
     fun getAzimuth(gravity: Vector3, magneticField: Vector3): Bearing {
         return AzimuthCalculator.calculate(gravity, magneticField) ?: Bearing.from(0f)
     }
+
+    /**
+     * Converts an astronomic location (from gravity and the stars) to a geodetic location
+     */
+    fun getGeodeticLocation(astronomic: Coordinate, deflection: VerticalDeflection): Coordinate {
+        return VerticalDeflectionCalculator.toGeodetic(astronomic, deflection)
+    }
+
+    /**
+     * Converts a geodetic location to the astronomic location that gravity would indicate
+     */
+    fun getAstronomicLocation(geodetic: Coordinate, deflection: VerticalDeflection): Coordinate {
+        return VerticalDeflectionCalculator.toAstronomic(geodetic, deflection)
+    }
+
+    /**
+     * Estimates the vertical deflection from the slope of a geoid model. This only captures what the geoid
+     * model resolves, so a coarse geoid misses the effect of nearby terrain.
+     * @param stepDegrees the spacing used for the central difference
+     * @param geoid the geoid height in meters at a location
+     */
+    fun getVerticalDeflectionModel(stepDegrees: Double, geoid: (Coordinate) -> Double): VerticalDeflectionModel {
+        return VerticalDeflectionCalculator.fromGeoid(stepDegrees, geoid)
+    }
 }
