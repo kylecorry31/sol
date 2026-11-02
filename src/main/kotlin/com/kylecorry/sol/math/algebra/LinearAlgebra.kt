@@ -285,6 +285,10 @@ object LinearAlgebra {
         }
     }
 
+    /**
+     * Eigenvalues are ordered by decreasing magnitude. Symmetric matrices use the Jacobi method, which ignores
+     * [tolerance].
+     */
     fun eigen(
         m: Matrix,
         tolerance: Float = 1e-12f,
@@ -294,6 +298,10 @@ object LinearAlgebra {
         require(m.rows() > 0) { "Matrix must not be empty" }
         require(tolerance > 0f) { "Tolerance must be greater than zero" }
         require(maxIterations >= 0) { "Max iterations must be non-negative" }
+
+        if (isSymmetric(m)) {
+            return symmetricEigen(m, maxIterations)
+        }
 
         var old = m
         var new = m
@@ -492,6 +500,32 @@ object LinearAlgebra {
         }
 
         return FloatArray(q.rows()) { index -> if (index == column % q.rows()) 1f else 0f }
+    }
+
+    private fun isSymmetric(m: Matrix): Boolean {
+        for (r in 0..<m.rows()) {
+            for (c in r + 1..<m.columns()) {
+                if (m[r, c] != m[c, r]) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun symmetricEigen(m: Matrix, maxSweeps: Int): EigenDecomposition {
+        val (values, vectors) = SymmetricEigen.decompose(
+            Array(m.rows()) { r -> DoubleArray(m.columns()) { c -> m[r, c].toDouble() } },
+            maxSweeps
+        )
+        val order = values.indices.sortedByDescending { values[it].absoluteValue }
+        val sortedVectors = Matrix.create(m.rows(), m.columns()) { row, column ->
+            vectors[order[column]][row].toFloat()
+        }
+        return EigenDecomposition(
+            Vector(FloatArray(values.size) { values[order[it]].toFloat() }),
+            normalizeEigenvectorSigns(sortedVectors)
+        )
     }
 
     private fun normalizeEigenvectorSigns(vectors: Matrix): Matrix {

@@ -534,6 +534,43 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun eigenOfSymmetricMatrixWithOppositeEigenvalues() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(0f, 1f, 0f),
+                floatArrayOf(1f, 0f, 0f),
+                floatArrayOf(0f, 0f, 3f)
+            )
+        )
+
+        val result = LinearAlgebra.eigen(matrix)
+
+        assertEquals(3f, result.values[0], 0.0001f)
+        assertEquals(setOf(1f, -1f), setOf(result.values[1], result.values[2]))
+        for (i in 0..2) {
+            for (row in 0..2) {
+                val product = (0..2).sumOf { (matrix[row, it] * result.vectors[it, i]).toDouble() }
+                assertEquals(result.values[i] * result.vectors[row, i], product.toFloat(), 0.0001f)
+            }
+        }
+    }
+
+    @Test
+    fun eigenOfNonSymmetricMatrix() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(2f, 1f),
+                floatArrayOf(0f, 1f)
+            )
+        )
+
+        val result = LinearAlgebra.eigen(matrix)
+
+        assertEquals(2f, result.values[0], 0.0001f)
+        assertEquals(1f, result.values[1], 0.0001f)
+    }
+
+    @Test
     fun max() {
         val m1 = Matrix.create(3, 2, 0f)
         m1[0, 0] = 1f
