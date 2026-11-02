@@ -101,7 +101,6 @@
     <ID>ReturnCount:SolarEclipseCalculator.kt:SolarEclipseCalculator$private fun getVisibleMagnitude: Pair&lt;Float, Float&gt;</ID>
     <ID>ReturnCount:SolarRadiationCalculator.kt:SolarRadiationCalculator$fun getRadiation: Double</ID>
     <ID>ReturnCount:StarLocationCalculator.kt:StarLocationCalculator$fun getLocationFromStars: Coordinate?</ID>
-    <ID>ReturnCount:StarLocationCalculator.kt:StarLocationCalculator$private fun triangulateApproximateLocation: Pair&lt;Coordinate?, Float?&gt;</ID>
     <ID>ReturnCount:Statistics.kt:Statistics$fun quantile: Float</ID>
     <ID>ReturnCount:StormPredictor.kt:StormPredictor$override fun isLikely: Boolean</ID>
     <ID>ReturnCount:SunFacade.kt:SunFacade$fun getClosestNight: Range&lt;ZonedDateTime&gt;?</ID>

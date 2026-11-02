@@ -50,10 +50,14 @@ internal object StarFacade {
         approximateLocation: Coordinate? = null,
         tolerance: Float = 0.04f,
         minMatches: Int = 5,
-        numNeighbors: Int = 3,
         minMagnitude: Float = 4f
     ): List<DetectedStar> {
-        return PlateSolver(tolerance, minMatches, numNeighbors, minMagnitude).solve(
+        val maxZenithOffset = if (approximateLocation == null) {
+            PlateSolver.UNKNOWN_LOCATION_ZENITH_OFFSET
+        } else {
+            PlateSolver.DEFAULT_MAX_ZENITH_OFFSET
+        }
+        return PlateSolver(tolerance, minMatches, minMagnitude, maxZenithOffset).solve(
             readings,
             time,
             approximateLocation ?: Time.getLocationFromTimeZone(time.zone)

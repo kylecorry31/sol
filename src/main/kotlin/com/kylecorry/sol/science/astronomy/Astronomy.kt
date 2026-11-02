@@ -345,7 +345,13 @@ object Astronomy {
     }
 
     /**
-     * Matches the readings to stars
+     * Matches the readings to stars. Readings are compared by the angles between them, so a constant
+     * compass error doesn't matter.
+     * @param readings the altitude and azimuth of each observed star
+     * @param approximateLocation the location to within ~30° (the whole sky is searched if null)
+     * @param tolerance the fractional tolerance on the angular separation between readings
+     * @param minMatches the minimum number of identified stars
+     * @param minMagnitude the faintest catalog stars to consider
      */
     fun plateSolve(
         readings: List<CelestialObservation>,
@@ -353,7 +359,6 @@ object Astronomy {
         approximateLocation: Coordinate? = null,
         tolerance: Float = 0.04f,
         minMatches: Int = 5,
-        numNeighbors: Int = 3,
         minMagnitude: Float = 4f
     ): List<DetectedStar> {
         return StarFacade.plateSolve(
@@ -362,7 +367,6 @@ object Astronomy {
             approximateLocation,
             tolerance,
             minMatches,
-            numNeighbors,
             minMagnitude
         )
     }
