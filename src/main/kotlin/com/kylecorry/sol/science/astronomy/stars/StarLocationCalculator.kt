@@ -5,8 +5,8 @@ import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.math.Vector
 import com.kylecorry.sol.math.algebra.LinearAlgebra
 import com.kylecorry.sol.math.algebra.Matrix
-import com.kylecorry.sol.math.arithmetic.Arithmetic.square
 import com.kylecorry.sol.math.optimization.ConvergenceOptimizer
+import com.kylecorry.sol.math.optimization.LeastSquaresOptimizer
 import com.kylecorry.sol.math.optimization.SimulatedAnnealingOptimizer
 import com.kylecorry.sol.math.statistics.Statistics
 import com.kylecorry.sol.math.trigonometry.Trigonometry.deltaAngle
@@ -17,8 +17,8 @@ import com.kylecorry.sol.science.geology.Geofence
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
 import kotlin.math.cos
-import kotlin.math.sqrt
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.math.tan
 
 internal class StarLocationCalculator {
@@ -33,7 +33,7 @@ internal class StarLocationCalculator {
 
         // If there are no azimuth readings, delegate to the other method
         if (starReadings.any { it.azimuth == null } || starReadings.size == 2) {
-            return getLocationFromStarsAltitudeOnly(starReadings, approximateLocation, false)
+            return getLocationFromStarsAltitudeOnly(starReadings, approximateLocation)
         }
 
         val optimizer = ConvergenceOptimizer(
@@ -132,95 +132,86 @@ internal class StarLocationCalculator {
         return Coordinate(lat, lon)
     }
 
+    /**
+     * Each altitude puts the location on a circle around the star's zenith point. The circles'
+     * intersections (and the approximate location) seed a least squares fit of the altitudes, and
+     * the best fit wins. Ties (ex. two stars) go to the solution closest to the approximate location.
+     */
     private fun getLocationFromStarsAltitudeOnly(
         starReadings: List<StarReading>,
-        approximateLocation: Coordinate?,
-        adjustForAltitudeBias: Boolean = false
+        approximateLocation: Coordinate?
     ): Coordinate? {
         if (starReadings.size <= 1) {
             return null
         }
 
-        // Step 1: Determine an approximate location of the user using their timezone
-        val timezoneLocation = Time.getLocationFromTimeZone(starReadings.first().time.zone)
-
-        var step = 10.0
-        var lat = constrainLatitude(approximateLocation?.latitude ?: timezoneLocation.latitude)
-        var lon = approximateLocation?.longitude ?: timezoneLocation.longitude
-
-
-        // Step 2: Refine the location using triangulation
-        val (updatedApproximateLocation, bias) = triangulateApproximateLocation(starReadings, Coordinate(lat, lon))
-        if (updatedApproximateLocation != null) {
-            lat = updatedApproximateLocation.latitude
-            lon = updatedApproximateLocation.longitude
-            step = 1.0
+        val reference = approximateLocation ?: Time.getLocationFromTimeZone(starReadings.first().time.zone)
+        val seeds = getZenithCircleIntersections(starReadings) + reference
+        val fits = seeds.map { seed ->
+            val location = fitAltitudes(starReadings, seed)
+            location to altitudeRms(starReadings, location)
         }
-
-        // Step 3: Further refine the location using simulated annealing
-        val optimizer = ConvergenceOptimizer(
-            step.toFloat(),
-            0.0001f,
-            lon to lat,
-        ) { stepSize, center ->
-            SimulatedAnnealingOptimizer(
-                1000.0,
-                stepSize = stepSize.toDouble(),
-                maxIterations = 200,
-                initialValue = center
-            )
-        }
-
-
-        var weights = starReadings.map {
-            1 / square(90.0 - it.altitude)
-        }
-        val totalWeight = weights.sum()
-        weights = weights.map { it / totalWeight }
-        val result = optimizer.optimize(
-            Range(lon - step * 2, lon + step * 2),
-            Range(constrainLatitude(lat - step * 6), constrainLatitude(lat + step * 6)),
-            false
-        ) { lon, lat ->
-            starReadings.mapIndexed { i, reading ->
-                val expectedAltitude = Astronomy.getStarPosition(
-                    reading.star,
-                    reading.time,
-                    Coordinate(lat, lon),
-                    true
-                ).altitude
-                loss(
-                    (reading.altitude + (if (adjustForAltitudeBias) (bias
-                        ?: 0f) else 0f) - expectedAltitude.toDouble()).toFloat()
-                ) * weights[i]
-            }.sum()
-        }
-
-        lat = result.second
-        lon = result.first
-
-        return Coordinate(lat, lon)
+        val bestRms = fits.minOf { it.second }
+        return fits.filter { it.second <= bestRms + RMS_TIE_TOLERANCE }
+            .minByOrNull { it.first.distanceTo(reference) }?.first
     }
 
-    private fun triangulateApproximateLocation(
-        starReadings: List<StarReading>,
-        approximateLocation: Coordinate
-    ): Pair<Coordinate?, Float?> {
-        if (starReadings.size <= 1) {
-            return null to null
-        }
-
-        val zenithLocations = starReadings.mapIndexed { index, reading ->
+    private fun getZenithCircleIntersections(starReadings: List<StarReading>): List<Coordinate> {
+        val zenithLocations = starReadings.map { reading ->
             val distance = Astronomy.getZenithDistance(reading.altitude)
             val coordinate = reading.star.coordinate.getZenithCoordinate(reading.time.toUniversalTime())
             Geofence(coordinate, distance)
         }
-        val result = Geography.trilaterate(zenithLocations, calculateBias = true)
-        if (result.locations.size <= 1) {
-            return result.locations.firstOrNull() to result.biasDegrees
+        return Geography.trilaterate(zenithLocations).locations
+    }
+
+    private fun fitAltitudes(starReadings: List<StarReading>, start: Coordinate): Coordinate {
+        fun altitude(index: Int, guess: List<Float>): Float {
+            val reading = starReadings[index]
+            val location = Coordinate(
+                constrainLatitude(guess[0].toDouble()),
+                Coordinate.toLongitude(guess[1].toDouble())
+            )
+            return Astronomy.getStarPosition(reading.star, reading.time, location, true).altitude
         }
 
-        return result.locations.minByOrNull { it.distanceTo(approximateLocation) } to result.biasDegrees
+        val result = try {
+            LeastSquaresOptimizer().optimize(
+                starReadings.indices.map { listOf(it.toFloat()) },
+                starReadings.map { it.altitude },
+                maxIterations = MAX_FIT_ITERATIONS,
+                dampingFactor = 1f,
+                tolerance = FIT_TOLERANCE,
+                initialValue = listOf(start.latitude.toFloat(), start.longitude.toFloat()),
+                distanceFn = { point, guess -> altitude(point[0].toInt(), guess) },
+                jacobianFn = { index, _, guess ->
+                    val current = altitude(index, guess)
+                    guess.indices.map { j ->
+                        val stepped = guess.toMutableList().also { it[j] += JACOBIAN_STEP }
+                        (altitude(index, stepped) - current) / JACOBIAN_STEP
+                    }
+                }
+            )
+        } catch (_: IllegalStateException) {
+            return start
+        }
+        return Coordinate(constrainLatitude(result[0].toDouble()), Coordinate.toLongitude(result[1].toDouble()))
+    }
+
+    private fun altitudeResiduals(starReadings: List<StarReading>, lat: Double, lon: Double): DoubleArray {
+        val location = Coordinate(constrainLatitude(lat), Coordinate.toLongitude(lon))
+        return DoubleArray(starReadings.size) {
+            val reading = starReadings[it]
+            reading.altitude.toDouble() - Astronomy.getStarPosition(reading.star, reading.time, location, true).altitude
+        }
+    }
+
+    private fun altitudeCost(starReadings: List<StarReading>, lat: Double, lon: Double): Double {
+        return altitudeResiduals(starReadings, lat, lon).sumOf { it * it }
+    }
+
+    private fun altitudeRms(starReadings: List<StarReading>, location: Coordinate): Double {
+        return sqrt(altitudeCost(starReadings, location.latitude, location.longitude) / starReadings.size)
     }
 
     private fun constrainLatitude(latitude: Double): Double {
@@ -231,4 +222,10 @@ internal class StarLocationCalculator {
         return Statistics.huberLoss(residual, threshold).toDouble()
     }
 
+    companion object {
+        private const val RMS_TIE_TOLERANCE = 0.001
+        private const val MAX_FIT_ITERATIONS = 50
+        private const val JACOBIAN_STEP = 1e-3f
+        private const val FIT_TOLERANCE = 1e-6f
+    }
 }
