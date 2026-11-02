@@ -17,7 +17,7 @@ internal class CatalogPairs(val catalog: List<BodyPosition>, minSeparation: Doub
         val all = mutableListOf<CatalogPair>()
         for (i in catalog.indices) {
             for (j in i + 1 until catalog.size) {
-                val d = StarIdentifier.angle(catalog[i].vector, catalog[j].vector)
+                val d = CatalogMatcher.angle(catalog[i].vector, catalog[j].vector)
                 if (d in minSeparation..maxSeparation) all.add(CatalogPair(d, i, j))
             }
         }
