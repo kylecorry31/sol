@@ -54,4 +54,26 @@ internal class HarmonicWaterLevelCalculatorTest {
             ), 1.13f, delta
         )
     }
+
+    // Expected heights are from pyTMD for unit amplitude constituents with zero phase
+    @Test
+    fun usesNodalCorrectionsForTheDate() {
+        val harmonics = listOf(
+            TidalHarmonic(TideConstituent.M2, 1f, 0f),
+            TidalHarmonic(TideConstituent.K1, 1f, 0f),
+            TidalHarmonic(TideConstituent.O1, 1f, 0f)
+        )
+        val calculator = HarmonicWaterLevelCalculator(harmonics)
+
+        assertEquals(
+            0.7992f - 0.9693f - 0.5533f,
+            calculator.calculate(ZonedDateTime.of(2020, 3, 15, 6, 0, 0, 0, ZoneId.of("UTC"))),
+            0.02f
+        )
+        assertEquals(
+            0.1778f - 0.996f - 0.0742f,
+            calculator.calculate(ZonedDateTime.of(2030, 3, 15, 6, 0, 0, 0, ZoneId.of("UTC"))),
+            0.02f
+        )
+    }
 }
