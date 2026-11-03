@@ -24,7 +24,7 @@ internal class NodalCorrection private constructor(nodeDegrees: Double, perigeeD
     fun of(constituent: TideConstituent): Pair<Double, Double> {
         var f = 1.0
         var u = 0.0
-        for (term in terms[constituent] ?: emptyList()) {
+        for (term in terms[constituent].orEmpty()) {
             val (baseF, baseU) = base(term.base)
             f *= baseF.pow(term.fPower)
             u += term.uMultiple * baseU

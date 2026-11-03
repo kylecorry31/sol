@@ -47,8 +47,8 @@ internal class AstronomicalArgument private constructor(epochSeconds: Double) {
 
         // Multiples of the lunar time, moon, sun, lunar perigee and solar perigee longitudes and of
         // 90 degrees (which converts sine terms into cosine terms)
-        private fun c(tau: Int, s: Int, h: Int, p: Int, pp: Int, quarter: Int): DoubleArray {
-            return doubleArrayOf(tau.toDouble(), s.toDouble(), h.toDouble(), p.toDouble(), pp.toDouble(), quarter.toDouble())
+        private fun c(vararg multiples: Int): DoubleArray {
+            return DoubleArray(multiples.size) { multiples[it].toDouble() }
         }
 
         private val coefficients = mapOf(
