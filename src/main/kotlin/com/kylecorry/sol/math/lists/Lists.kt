@@ -78,4 +78,26 @@ object Lists {
             index to value
         }.sortedByDescending { it.second }.map { it.first }
     }
+
+    /**
+     * The first index in 0 until [count] where [condition] is true, or [count] if there is none. The condition must be
+     * false for every index before that one and true for every index after it (ex. comparing a sorted list to a value).
+     */
+    inline fun binarySearch(count: Int, condition: (Int) -> Boolean): Int {
+        var low = 0
+        var high = count
+        while (low < high) {
+            val middle = (low + high) ushr 1
+            if (condition(middle)) {
+                high = middle
+            } else {
+                low = middle + 1
+            }
+        }
+        return low
+    }
+
+    fun <T> binarySearch(list: List<T>, condition: (T) -> Boolean): Int {
+        return binarySearch(list.size) { condition(list[it]) }
+    }
 }
