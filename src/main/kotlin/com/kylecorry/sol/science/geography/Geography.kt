@@ -661,6 +661,11 @@ object Geography {
     ): Coordinate {
         val alongTrack = getAlongTrackDistance(point, start, end)
 
+        // The along track distance is undefined when the point is too far from the line
+        if (alongTrack.value.isNaN()) {
+            return if (point.distanceTo(start) <= point.distanceTo(end)) start else end
+        }
+
         if (alongTrack.value < 0) {
             return start
         }

@@ -178,8 +178,8 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
             val first = locations.firstOrNull() ?: return null
             return locations.minByOrNull {
                 deltaAngle(
-                    first.longitude.toFloat() + 180,
-                    it.longitude.toFloat() + 180
+                    first.longitude + 180,
+                    it.longitude + 180
                 )
             }?.longitude
         }
@@ -188,8 +188,8 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
             val first = locations.firstOrNull() ?: return null
             return locations.maxByOrNull {
                 deltaAngle(
-                    first.longitude.toFloat() + 180,
-                    it.longitude.toFloat() + 180
+                    first.longitude + 180,
+                    it.longitude + 180
                 )
             }?.longitude
         }

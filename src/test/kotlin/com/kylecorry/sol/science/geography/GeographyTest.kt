@@ -316,6 +316,26 @@ class GeographyTest {
         assertThat(actual.west).isCloseTo(expected.west, 0.0001)
     }
 
+    @Test
+    fun getBoundsOfCloseLongitudes() {
+        val actual = Geography.getBounds(
+            listOf(Coordinate(10.0, 100.000004), Coordinate(10.0, 100.000009))
+        )
+        assertThat(actual.west).isCloseTo(100.000004, 0.0000001)
+        assertThat(actual.east).isCloseTo(100.000009, 0.0000001)
+    }
+
+    @Test
+    fun getNearestPointWhenTheAlongTrackDistanceIsUndefined() {
+        val point = Coordinate(8.0, 148.0)
+        val start = Coordinate(-90.0, -174.0)
+        val end = Coordinate(-39.0, 58.0)
+
+        val actual = Geography.getNearestPoint(point, start, end)
+
+        assertThat(actual).isEqualTo(end)
+    }
+
     companion object {
 
         @JvmStatic

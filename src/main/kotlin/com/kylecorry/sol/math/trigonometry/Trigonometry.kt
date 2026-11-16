@@ -89,6 +89,16 @@ object Trigonometry {
         }
     }
 
+    fun deltaAngle(angle1: Double, angle2: Double): Double {
+        val a = normalizeAngle(angle1 - angle2)
+        val b = normalizeAngle(angle2 - angle1)
+        return if (a < b) {
+            -a
+        } else {
+            b
+        }
+    }
+
     fun roundNearestAngle(angle: Double, nearest: Double): Double {
         val normalized = normalizeAngle(angle)
         return normalizeAngle(Arithmetic.roundNearest(normalized, nearest))
