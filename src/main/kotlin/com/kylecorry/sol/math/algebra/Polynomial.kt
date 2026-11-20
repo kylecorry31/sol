@@ -20,7 +20,7 @@ class Polynomial(terms: List<PolynomialTerm>) {
             val coefficient = groupedTerms.sumOfFloat { it.coefficient }
             PolynomialTerm(coefficient, exponent)
         }
-        .filter { !Arithmetic.isZero(it.coefficient) }
+        .filter { it.coefficient != 0f }
         .sortedBy { -it.exponent }
 
     fun evaluate(x: Float): Float {

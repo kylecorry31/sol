@@ -268,4 +268,12 @@ class PolynomialTest {
         val result7 = sq1 * sq2
         assertEquals(Polynomial.of("x^4 - 1"), result7)
     }
+
+    @Test
+    fun keepsSmallCoefficients() {
+        val polynomial = Polynomial.fromCoefficients(0f, 0f, 0f, 1e-9f)
+
+        assertEquals(1, polynomial.terms.size)
+        assertEquals(27f, polynomial.evaluate(3000f), 0.1f)
+    }
 }
