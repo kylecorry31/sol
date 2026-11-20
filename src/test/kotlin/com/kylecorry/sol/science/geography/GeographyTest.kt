@@ -21,6 +21,19 @@ import java.util.stream.Stream
 
 class GeographyTest {
 
+    @Test
+    fun haversineFinalBearingMatchesVincenty() {
+        val newYork = Coordinate(40.7128, -74.0060)
+        val london = Coordinate(51.5074, -0.1278)
+
+        val haversine = Geography.haversine(newYork, london)
+        val vincenty = Geography.vincenty(newYork, london)
+
+        assertEquals(Bearing.getBearing(vincenty[2]), haversine[2], 1f)
+        assertEquals(108f, haversine[2], 2f)
+    }
+
+
     @ParameterizedTest
     @CsvSource(
         "0, 0, 0, 6378137, 0, 0",

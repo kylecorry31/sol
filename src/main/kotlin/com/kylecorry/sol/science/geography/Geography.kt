@@ -398,7 +398,7 @@ object Geography {
     ): FloatArray {
         val distance = getGreatCircleDistance(location1, location2, radius)
         val initial = getInitialGreatCircleBearing(location1, location2)
-        val final = Bearing.getBearing(initial + 180)
+        val final = Bearing.getBearing(getInitialGreatCircleBearing(location2, location1) + 180)
         return floatArrayOf(distance, initial, final)
     }
 
