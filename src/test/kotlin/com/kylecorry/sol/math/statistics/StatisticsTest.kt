@@ -105,6 +105,18 @@ internal class StatisticsTest {
         assertEquals(expected, actual, 0.00001f)
     }
 
+    @Test
+    fun medianOfEvenCountAveragesMiddleValues() {
+        assertEquals(2.5f, Statistics.median(listOf(4f, 1f, 3f, 2f)), 0.00001f)
+        assertEquals(2f, Statistics.median(listOf(4f, 1f, 3f, 2f), interpolate = false), 0.00001f)
+    }
+
+    @Test
+    fun medianOfOddCount() {
+        assertEquals(3f, Statistics.median(listOf(5f, 1f, 3f)), 0.00001f)
+        assertEquals(3f, Statistics.median(listOf(5f, 1f, 3f), interpolate = false), 0.00001f)
+    }
+
     @ParameterizedTest
     @MethodSource("provideMedianAbsoluteDeviation")
     fun medianAbsoluteDeviation(values: List<Float>, median: Float?, expected: Float) {

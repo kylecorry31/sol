@@ -12,7 +12,7 @@ class MedianFilter1DTest {
         val filter = MedianFilter1D(3)
 
         val filtered = filter.filter(data)
-        assertEquals(listOf(1f, 1f, 2f, 2f, 2f), filtered)
+        assertEquals(listOf(1f, 1.5f, 2f, 2f, 2f), filtered)
     }
 
     @Test

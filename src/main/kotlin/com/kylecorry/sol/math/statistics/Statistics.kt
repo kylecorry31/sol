@@ -87,8 +87,12 @@ object Statistics {
         return standardDeviation(values, forPopulation, mean)
     }
 
-    fun median(values: List<Float>): Float {
-        return quantile(values, 0.5f, interpolate = false)
+    /**
+     * @param interpolate if true, the median of an even number of values is the average of the two middle
+     * values, otherwise it is the lower of the two
+     */
+    fun median(values: List<Float>, interpolate: Boolean = true): Float {
+        return quantile(values, 0.5f, interpolate)
     }
 
     fun medianAbsoluteDeviation(values: List<Float>, median: Float? = null): Float {
