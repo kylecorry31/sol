@@ -354,14 +354,14 @@ object LinearAlgebra {
         val n = m.rows()
         val shift = eigenvalue + 1e-3f * (1 + eigenvalue.absoluteValue)
         val shifted = m.subtract(Matrix.identity(n).multiply(shift))
-        var vector = FloatArray(n) { 1f + it * 0.1f }
+        var vector = FloatArray(n) { i -> 1f + i * 0.1f }
         repeat(5) {
             val next = solveLinear(shifted, Vector(vector)).data
-            val norm = sqrt(next.sumOf { it * it.toDouble() }).toFloat()
+            val norm = sqrt(next.sumOf { value -> value * value.toDouble() }).toFloat()
             if (!norm.isFinite() || norm == 0f) {
                 return vector
             }
-            vector = FloatArray(n) { next[it] / norm }
+            vector = FloatArray(n) { i -> next[i] / norm }
         }
         return vector
     }
