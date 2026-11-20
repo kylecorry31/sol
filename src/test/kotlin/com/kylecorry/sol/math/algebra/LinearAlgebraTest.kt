@@ -593,6 +593,36 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun inverseOfSmallScaleMatrix() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(1e-3f, 0f),
+                floatArrayOf(0f, 1e-3f)
+            )
+        )
+
+        val actual = LinearAlgebra.inverse(matrix)
+
+        assertEquals(1000f, actual[0, 0], 0.1f)
+        assertEquals(1000f, actual[1, 1], 0.1f)
+        assertEquals(0f, actual[0, 1], 0.1f)
+    }
+
+    @Test
+    fun inverseOfSingularMatrixIsZero() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(1f, 2f),
+                floatArrayOf(2f, 4f)
+            )
+        )
+
+        val actual = LinearAlgebra.inverse(matrix)
+
+        assertEquals(0f, actual.sum())
+    }
+
+    @Test
     fun eigenOfNonSymmetricMatrix() {
         val matrix = Matrix.create(
             arrayOf(

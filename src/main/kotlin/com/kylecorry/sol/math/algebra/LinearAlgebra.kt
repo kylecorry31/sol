@@ -178,11 +178,30 @@ object LinearAlgebra {
         }
 
         val det = determinant(m)
-        if (Arithmetic.isZero(det)) {
+        if (isSingular(m, det)) {
             // No inverse exists
             return Matrix.zeros(m.rows(), m.columns())
         }
-        return adjugate(m).transpose().divide(determinant(m))
+        return adjugate(m).transpose().divide(det)
+    }
+
+    /**
+     * The determinant is compared to its upper bound (the product of the row norms), so the check
+     * doesn't depend on the scale of the matrix.
+     */
+    private fun isSingular(m: Matrix, det: Float): Boolean {
+        if (!det.isFinite()) {
+            return true
+        }
+        var bound = 1.0
+        for (r in 0..<m.rows()) {
+            var sum = 0.0
+            for (c in 0..<m.columns()) {
+                sum += m[r, c] * m[r, c].toDouble()
+            }
+            bound *= sqrt(sum)
+        }
+        return bound == 0.0 || det.absoluteValue <= 1e-6 * bound
     }
 
     fun adjugate(m: Matrix): Matrix {
