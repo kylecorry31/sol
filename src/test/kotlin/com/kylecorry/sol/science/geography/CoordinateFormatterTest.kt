@@ -65,6 +65,20 @@ class CoordinateFormatterTest {
         assertEquals(expected.longitude, actual.longitude, 0.01)
     }
 
+    @Test
+    fun dmsCarriesRoundedSeconds() {
+        val actual = DegreesMinutesSecondsCoordinateFormat(1).toString(Coordinate(10.9999999, 20.0))
+
+        assertEquals("11°0'0.0\"N    20°0'0.0\"E", actual)
+    }
+
+    @Test
+    fun ddmCarriesRoundedMinutes() {
+        val actual = DegreesDecimalMinutesCoordinateFormat(3).toString(Coordinate(10.9999999, 20.0))
+
+        assertEquals("11°0.0'N    20°0.0'E", actual)
+    }
+
     @ParameterizedTest
     @MethodSource("provideDDM")
     fun toDDM(expected: String, @ConvertWith(CoordinateLongConverter::class) coordinate: Coordinate, precision: Int) {

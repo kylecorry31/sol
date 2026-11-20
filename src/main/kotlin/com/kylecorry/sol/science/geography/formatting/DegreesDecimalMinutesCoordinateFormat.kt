@@ -47,8 +47,12 @@ class DegreesDecimalMinutesCoordinateFormat(private val precision: Int = 3) : Co
     }
 
     private fun ddmString(degrees: Double, precision: Int): String {
-        val deg = abs(degrees.toInt())
-        val minutes = abs((degrees % 1) * 60).roundPlaces(precision)
+        var deg = abs(degrees.toInt())
+        var minutes = abs((degrees % 1) * 60).roundPlaces(precision)
+        if (minutes >= 60) {
+            minutes = 0.0
+            deg += 1
+        }
         return "$deg°$minutes'"
     }
 }

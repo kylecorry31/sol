@@ -49,9 +49,14 @@ class DegreesMinutesSecondsCoordinateFormat(private val precision: Int = 1) : Co
     }
 
     private fun dmsString(degrees: Double, precision: Int): String {
-        val deg = abs(degrees.toInt())
-        val minutes = abs((degrees % 1) * 60)
-        val seconds = abs(((minutes % 1) * 60).roundPlaces(precision))
-        return "$deg°${minutes.toInt()}'$seconds\""
+        var deg = abs(degrees.toInt())
+        val totalSeconds = abs((degrees % 1) * 3600).roundPlaces(precision)
+        var minutes = (totalSeconds / 60).toInt()
+        val seconds = (totalSeconds - minutes * 60).roundPlaces(precision).coerceAtLeast(0.0)
+        if (minutes >= 60) {
+            minutes -= 60
+            deg += 1
+        }
+        return "$deg°$minutes'$seconds\""
     }
 }
