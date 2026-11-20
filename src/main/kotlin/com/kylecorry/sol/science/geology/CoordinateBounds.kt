@@ -7,6 +7,7 @@ import com.kylecorry.sol.units.CompassDirection
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Distance
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
 import kotlin.math.max
 
 data class CoordinateBounds(val north: Double, val east: Double, val south: Double, val west: Double) :
@@ -56,15 +57,26 @@ data class CoordinateBounds(val north: Double, val east: Double, val south: Doub
 
     fun width(): Distance {
         if (0.0 in south..north) {
-            return Distance.meters(Coordinate(0.0, west).distanceTo(Coordinate(0.0, east)))
+            return Distance.meters(widthAtLatitude(0.0))
         }
 
-        return Distance.meters(
-            max(
-                southEast.distanceTo(southWest),
-                northEast.distanceTo(northWest)
-            )
-        )
+        return Distance.meters(max(widthAtLatitude(south), widthAtLatitude(north)))
+    }
+
+    /**
+     * Distance along a parallel, split into segments of at most 90 degrees so that
+     * widths of 180 degrees or more aren't measured the short way around.
+     */
+    private fun widthAtLatitude(latitude: Double): Float {
+        val degrees = widthDegrees()
+        val segments = ceil(degrees / 90).toInt().coerceAtLeast(1)
+        var total = 0f
+        for (i in 0..<segments) {
+            val from = Coordinate(latitude, west + degrees * i / segments)
+            val to = Coordinate(latitude, west + degrees * (i + 1) / segments)
+            total += from.distanceTo(to)
+        }
+        return total
     }
 
     private fun containsAllLongitudes(): Boolean {

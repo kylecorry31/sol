@@ -6,6 +6,8 @@ import assertk.assertions.isEqualTo
 import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.CoordinateLongConverter
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.converter.ConvertWith
 import org.junit.jupiter.params.provider.Arguments
@@ -13,6 +15,22 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 internal class CoordinateBoundsTest {
+
+    @Test
+    fun widthOfTheWorldIsTheEquatorLength() {
+        val width = CoordinateBounds.world.width().meters().value
+
+        assertEquals(40_075_000f, width, 100_000f)
+    }
+
+    @Test
+    fun widthOverHalfTheWorldIsNotMeasuredTheShortWay() {
+        val bounds = CoordinateBounds(10.0, 100.0, -10.0, -100.0)
+
+        val width = bounds.width().meters().value
+
+        assertEquals(22_264_000f, width, 50_000f)
+    }
 
     @ParameterizedTest
     @MethodSource("provideContains")
