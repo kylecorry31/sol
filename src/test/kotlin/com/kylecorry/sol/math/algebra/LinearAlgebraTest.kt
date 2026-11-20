@@ -571,6 +571,28 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun eigenvectorsOfNonSymmetricMatrixSatisfyDefinition() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(2f, 1f),
+                floatArrayOf(0f, 3f)
+            )
+        )
+
+        val result = LinearAlgebra.eigen(matrix)
+
+        assertEquals(3f, result.values[0], 0.001f)
+        assertEquals(2f, result.values[1], 0.001f)
+        for (column in 0..1) {
+            val v = result.vectors.getColumn(column)
+            val av = matrix.dot(Vector(v)).getColumn(0)
+            for (i in 0..1) {
+                assertEquals(result.values[column] * v[i], av[i], 0.01f)
+            }
+        }
+    }
+
+    @Test
     fun eigenOfNonSymmetricMatrix() {
         val matrix = Matrix.create(
             arrayOf(

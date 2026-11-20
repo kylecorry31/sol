@@ -305,20 +305,46 @@ object LinearAlgebra {
 
         var old = m
         var new = m
-        var vectors = Matrix.identity(m.rows())
 
         var diff = Float.MAX_VALUE
         var iterations = 0
         while (diff > tolerance && iterations < maxIterations) {
             val (q, r) = qr(new)
             new = r.dot(q)
-            vectors = vectors.dot(q)
             diff = max(new.subtract(old).mapped { it.absoluteValue })
             old = new
             iterations++
         }
 
-        return EigenDecomposition(Vector(diagonal(new).getRow(0)), normalizeEigenvectorSigns(vectors))
+        // The accumulated Q is the Schur basis, not the eigenvectors, for non-symmetric matrices
+        val values = diagonal(new).getRow(0)
+        val order = values.indices.sortedByDescending { values[it].absoluteValue }
+        val columns = order.map { eigenvectorFor(m, values[it]) }
+        val vectors = Matrix.create(m.rows(), m.columns()) { row, column -> columns[column][row] }
+
+        return EigenDecomposition(
+            Vector(FloatArray(values.size) { values[order[it]] }),
+            normalizeEigenvectorSigns(vectors)
+        )
+    }
+
+    /**
+     * Finds a unit eigenvector for an approximate eigenvalue using inverse iteration.
+     */
+    private fun eigenvectorFor(m: Matrix, eigenvalue: Float): FloatArray {
+        val n = m.rows()
+        val shift = eigenvalue + 1e-3f * (1 + eigenvalue.absoluteValue)
+        val shifted = m.subtract(Matrix.identity(n).multiply(shift))
+        var vector = FloatArray(n) { 1f + it * 0.1f }
+        repeat(5) {
+            val next = solveLinear(shifted, Vector(vector)).data
+            val norm = sqrt(next.sumOf { it * it.toDouble() }).toFloat()
+            if (!norm.isFinite() || norm == 0f) {
+                return vector
+            }
+            vector = FloatArray(n) { next[it] / norm }
+        }
+        return vector
     }
 
     fun norm(m: Matrix): Float {
