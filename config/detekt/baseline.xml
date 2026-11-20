@@ -123,7 +123,7 @@
     <ID>TooGenericExceptionCaught:UTMCoordinateFormat.kt:UTMCoordinateFormat$e: Exception</ID>
     <ID>TooManyFunctions:Arithmetic.kt:Arithmetic</ID>
     <ID>TooManyFunctions:Astronomy.kt:Astronomy</ID>
-    <ID>TooManyFunctions:CoordinateBounds.kt:CoordinateBounds</ID>
+    <ID>TooManyFunctions:CoordinateBounds.kt:CoordinateBounds : IGeoArea</ID>
     <ID>TooManyFunctions:Extensions.kt:com.kylecorry.sol.math.Extensions.kt</ID>
     <ID>TooManyFunctions:FrequencyAnalysis.kt:FrequencyAnalysis</ID>
     <ID>TooManyFunctions:Geography.kt:Geography</ID>
