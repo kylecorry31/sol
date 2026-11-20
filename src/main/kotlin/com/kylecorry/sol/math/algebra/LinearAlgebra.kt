@@ -31,7 +31,7 @@ object LinearAlgebra {
     }
 
     fun dot(matrix: Matrix, vector: Vector): Matrix {
-        return if (matrix.rows() == vector.size) {
+        return if (matrix.columns() != vector.size && matrix.rows() == vector.size) {
             dot(matrix, vector.toRowMatrix())
         } else {
             dot(matrix, vector.toColumnMatrix())

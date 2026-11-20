@@ -556,6 +556,21 @@ class LinearAlgebraTest {
     }
 
     @Test
+    fun dotSquareMatrixWithVector() {
+        val matrix = Matrix.create(
+            arrayOf(
+                floatArrayOf(1f, 2f),
+                floatArrayOf(3f, 4f)
+            )
+        )
+
+        val actual = matrix.dot(Vector(floatArrayOf(1f, 1f)))
+
+        assertEquals(3f, actual[0, 0], 0.0001f)
+        assertEquals(7f, actual[1, 0], 0.0001f)
+    }
+
+    @Test
     fun eigenOfNonSymmetricMatrix() {
         val matrix = Matrix.create(
             arrayOf(
