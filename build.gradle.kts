@@ -6,41 +6,50 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "2.4.21"
     id("java-library")
-    id("com.vanniktech.maven.publish") version "0.37.0"
+    id("maven-publish")
     id("dev.detekt") version "2.0.0-alpha.6"
 }
 
-val versionName = "19.4.2"
+val versionName = "19.4.3"
 
-mavenPublishing {
-    coordinates("com.kylecorry", "sol", versionName)
+group = "com.kylecorry"
+version = versionName
 
-    pom {
-        name.set("Sol")
-        description.set("A Kotlin library for science and math in the real world.")
-        url.set("https://github.com/kylecorry31/sol")
-        licenses {
-            license {
-                name.set("MIT License")
-                url.set("https://opensource.org/licenses/MIT")
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            artifactId = "sol"
+            from(components["java"])
+
+            pom {
+                name.set("Sol")
+                description.set("A Kotlin library for science and math in the real world.")
+                url.set("https://github.com/kylecorry31/sol")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("kylecorry31")
+                        name.set("Kyle Corry")
+                        email.set("kylecorry31@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/kylecorry31/sol.git")
+                    developerConnection.set("scm:git:ssh://github.com:kylecorry31/sol.git")
+                    url.set("https://github.com/kylecorry31/sol")
+                }
             }
-        }
-        developers {
-            developer {
-                id.set("kylecorry31")
-                name.set("Kyle Corry")
-                email.set("kylecorry31@gmail.com")
-            }
-        }
-        scm {
-            connection.set("scm:git:git://github.com/kylecorry31/sol.git")
-            developerConnection.set("scm:git:ssh://github.com:kylecorry31/sol.git")
-            url.set("https://github.com/kylecorry31/sol")
         }
     }
-
-    publishToMavenCentral()
-    signAllPublications()
 }
 
 repositories {
@@ -111,15 +120,6 @@ tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach {
     exclude("**/gov/nasa/worldwind/**")
     classpath.setFrom(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
     jvmTarget = "11"
-}
-
-// Setup javadocs
-tasks.withType<Javadoc> {
-    // Add the sources to the javadoc task
-    source = sourceSets.main.get().allJava
-    classpath += files(sourceSets.main.get().compileClasspath)
-    // Only include public and protected classes
-    include("**/public/**", "**/protected/**")
 }
 
 kotlin {
