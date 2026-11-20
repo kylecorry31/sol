@@ -168,8 +168,8 @@ internal class NewtonsRiseSetTransitTimeCalculator : IRiseSetTransitTimeCalculat
             withRefraction,
             Triple(astroCoordsYesterday, astroCoords, astroCoordsTomorrow),
             if (distance != null && distanceYesterday != null && distanceTomorrow != null) Triple(
-                distance,
                 distanceYesterday,
+                distance,
                 distanceTomorrow
             ) else null
         )
