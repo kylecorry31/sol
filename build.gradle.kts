@@ -10,7 +10,7 @@ plugins {
     id("dev.detekt") version "2.0.0-alpha.6"
 }
 
-val versionName = "19.4.3"
+val versionName = "19.5.0"
 
 group = "com.kylecorry"
 version = versionName
