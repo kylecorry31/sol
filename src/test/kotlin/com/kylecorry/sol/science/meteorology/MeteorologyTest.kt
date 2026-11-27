@@ -543,6 +543,19 @@ class MeteorologyTest {
     }
 
     @ParameterizedTest
+    @CsvSource("4, 1.5, true", "4, 1.2, false", "12, 4.5, true", "12, 3.5, false")
+    fun aShortPressureHistoryIsScaledToTheTwelveHourWindow(hours: Long, fall: Float, expectPrecipitation: Boolean) {
+        val forecast = Meteorology.forecast(
+            linearPressure(1025f, 1025f - fall, hours = hours),
+            emptyList(),
+            null,
+            time = weatherTime
+        )
+
+        assertEquals(expectPrecipitation, WeatherCondition.Precipitation in forecast.first().conditions)
+    }
+
+    @ParameterizedTest
     @CsvSource(
         "2026-11-27T09:44:00Z, 0.0, 0.0, 1.3496",
         "2026-11-27T03:44:00Z, 0.0, 0.0, -0.5776",
@@ -972,7 +985,7 @@ class MeteorologyTest {
                 ),
                 // Pressure only - worsening slow
                 Arguments.of(
-                    pressures(1030f, 1027f),
+                    steadyThenFalling(1030f, 1027f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
                     weatherAt(
@@ -1228,7 +1241,7 @@ class MeteorologyTest {
 
                 // warm front (slow)
                 Arguments.of(
-                    pressures(1030f, 1027f),
+                    steadyThenFalling(1030f, 1027f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Stratus),
                     null,
                     weatherAt(
@@ -1287,7 +1300,7 @@ class MeteorologyTest {
                 ),
                 // cold front (slow)
                 Arguments.of(
-                    pressures(1030f, 1027f),
+                    steadyThenFalling(1030f, 1027f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
                     weatherAt(
@@ -1437,11 +1450,11 @@ class MeteorologyTest {
                 // Replaces unknown forecast (using pressure)
                 Arguments.of(
                     pressures(
-                        1020.5f,
-                        1020.5f
+                        1020.2f,
+                        1020.2f
                     ).map { it.copy(time = it.time.minus(Duration.ofHours(6))) } + pressures(
-                        1019.5f,
-                        1019.5f
+                        1019.8f,
+                        1019.8f
                     ),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
@@ -1660,6 +1673,10 @@ class MeteorologyTest {
                 ),
                 weatherLater(PressureSystem.Low, WeatherCondition.Precipitation, WeatherCondition.Overcast, WeatherCondition.Rain)
             )
+        }
+
+        private fun steadyThenFalling(steady: Float, now: Float): List<Reading<Pressure>> {
+            return listOf(Reading(Pressure.hpa(steady), weatherTime.minus(Duration.ofHours(12)))) + pressures(steady, now)
         }
 
         private fun pressures(last: Float, now: Float): List<Reading<Pressure>> {

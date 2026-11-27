@@ -80,21 +80,12 @@ internal object SolForecastFactorCalculator {
 
     private fun getChange(pressures: List<Reading<Pressure>>, window: Duration): Float? {
         val latest = pressures.lastOrNull() ?: return null
-        val past = getPastReading(pressures, latest, window)
-        return past?.let { latest.value.hpa().value - it.value.hpa().value }
-    }
-
-    private fun getPastReading(
-        pressures: List<Reading<Pressure>>,
-        latest: Reading<Pressure>,
-        window: Duration
-    ): Reading<Pressure>? {
-        val target = latest.time.minus(window)
-        val oldest = pressures.first()
-        return if (oldest.time.isAfter(target)) {
-            oldest.takeIf { Duration.between(it.time, latest.time) >= MINIMUM_HISTORY }
-        } else {
-            pressures.minBy { abs(Duration.between(it.time, target).seconds) }
+        val past = pressures
+            .filter { Duration.between(it.time, latest.time) >= MINIMUM_HISTORY }
+            .minByOrNull { abs(Duration.between(it.time, latest.time).seconds - window.seconds) }
+        return past?.let {
+            val span = Duration.between(it.time, latest.time).seconds.toFloat()
+            (latest.value.hpa().value - it.value.hpa().value) * window.seconds / span
         }
     }
 
