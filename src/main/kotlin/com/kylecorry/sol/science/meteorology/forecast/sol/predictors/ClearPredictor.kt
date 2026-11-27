@@ -19,10 +19,15 @@ internal class ClearPredictor : WeatherPredictor {
 
         val pressure = factors.pressure ?: return false
         factors.change3h ?: return false
-        return pressure >= HIGH_HPA && !overcastPredictor.isLikely(factors)
+        val monthlyPrecipitation = factors.monthlyPrecipitationMm
+        val isDry = monthlyPrecipitation != null && monthlyPrecipitation < DRY_MONTH_MM
+        val minimumPressure = if (isDry) DRY_HIGH_HPA else HIGH_HPA
+        return pressure >= minimumPressure && !overcastPredictor.isLikely(factors)
     }
 
     private companion object {
         const val HIGH_HPA = 1020f
+        const val DRY_HIGH_HPA = 1010f
+        const val DRY_MONTH_MM = 50f
     }
 }

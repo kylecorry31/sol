@@ -51,7 +51,7 @@ class MeteorologyTest {
         now: WeatherForecast,
         then: WeatherForecast
     ) {
-        val weather = Meteorology.forecast(pressures, clouds, temperatures, time = weatherTime)
+        val weather = Meteorology.forecast(pressures, clouds, ForecastClimate(temperatures), time = weatherTime)
         assertEquals(now, weather.first())
         assertEquals(then, weather.last())
     }
@@ -527,6 +527,21 @@ class MeteorologyTest {
             )
             assertEquals(classification, climate.code)
         }
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideClimateForecasts")
+    fun forecastWithClimate(
+        description: String,
+        pressures: List<Reading<Pressure>>,
+        climate: ForecastClimate,
+        condition: WeatherCondition,
+        isLater: Boolean,
+        expected: Boolean
+    ) {
+        val forecast = Meteorology.forecast(pressures, emptyList(), climate, time = weatherTime)
+        val conditions = if (isLater) forecast.last().conditions else forecast.first().conditions
+        assertEquals(expected, condition in conditions)
     }
 
     @Test
@@ -1538,6 +1553,79 @@ class MeteorologyTest {
                     ),
                     weatherLater(null)
                 )
+            )
+        }
+
+        @JvmStatic
+        fun provideClimateForecasts(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    "A shallow fall in a dry month is not precipitation",
+                    linearPressure(1011f, 1010f), climate(precipitationMm = 20f),
+                    WeatherCondition.Precipitation, false, false
+                ),
+                Arguments.of(
+                    "A shallow fall in a wet month is precipitation",
+                    linearPressure(1011f, 1010f), climate(precipitationMm = 120f),
+                    WeatherCondition.Precipitation, false, true
+                ),
+                Arguments.of(
+                    "A real fall in a dry month is precipitation",
+                    linearPressure(1011f, 1007f), climate(precipitationMm = 20f),
+                    WeatherCondition.Precipitation, false, true
+                ),
+                Arguments.of(
+                    "Low steady pressure in a dry month is not later precipitation",
+                    steadyPressure(1010f), climate(precipitationMm = 20f),
+                    WeatherCondition.Precipitation, true, false
+                ),
+                Arguments.of(
+                    "Low steady pressure in a wet month is later precipitation",
+                    steadyPressure(1010f), climate(precipitationMm = 120f),
+                    WeatherCondition.Precipitation, true, true
+                ),
+                Arguments.of(
+                    "Precipitation in a warm, wet month is a thunderstorm",
+                    linearPressure(1020f, 1014f), climate(precipitationMm = 100f, highCelsius = 25f),
+                    WeatherCondition.Thunderstorm, false, true
+                ),
+                Arguments.of(
+                    "Precipitation in a cool, wet month is not a thunderstorm",
+                    linearPressure(1020f, 1014f), climate(precipitationMm = 100f, highCelsius = 12f),
+                    WeatherCondition.Thunderstorm, false, false
+                ),
+                Arguments.of(
+                    "Precipitation in a warm, dry month is not a thunderstorm",
+                    linearPressure(1020f, 1014f), climate(precipitationMm = 20f, highCelsius = 25f),
+                    WeatherCondition.Thunderstorm, false, false
+                ),
+                Arguments.of(
+                    "Moderate pressure in a dry month is clear",
+                    steadyPressure(1015f, hours = 12), climate(precipitationMm = 20f),
+                    WeatherCondition.Clear, false, true
+                ),
+                Arguments.of(
+                    "Moderate pressure in a wet month is not clear",
+                    steadyPressure(1015f, hours = 12), climate(precipitationMm = 120f),
+                    WeatherCondition.Clear, false, false
+                ),
+                Arguments.of(
+                    "Low pressure in a very dry month is not overcast",
+                    linearPressure(1007f, 1008f), climate(precipitationMm = 5f),
+                    WeatherCondition.Overcast, false, false
+                ),
+                Arguments.of(
+                    "Low pressure in a moderately dry month is overcast",
+                    linearPressure(1007f, 1008f), climate(precipitationMm = 25f),
+                    WeatherCondition.Overcast, false, true
+                )
+            )
+        }
+
+        private fun climate(precipitationMm: Float, highCelsius: Float = 20f): ForecastClimate {
+            return ForecastClimate(
+                temperatures(highCelsius - 10f, highCelsius),
+                Distance.from(precipitationMm, DistanceUnits.Millimeters)
             )
         }
 

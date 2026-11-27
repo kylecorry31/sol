@@ -2,6 +2,7 @@ package com.kylecorry.sol.science.meteorology.forecast
 
 import com.kylecorry.sol.math.Range
 import com.kylecorry.sol.science.astronomy.Astronomy
+import com.kylecorry.sol.science.meteorology.ForecastClimate
 import com.kylecorry.sol.science.meteorology.Meteorology
 import com.kylecorry.sol.science.meteorology.PressureSystem
 import com.kylecorry.sol.science.meteorology.PressureTendency
@@ -85,7 +86,7 @@ internal object ZambrettiForecaster : Forecaster {
 
     override fun forecast(
         observations: List<WeatherObservation<*>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        climate: ForecastClimate?,
         time: Instant,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
@@ -111,7 +112,7 @@ internal object ZambrettiForecaster : Forecaster {
             pressure,
             tendency,
             windDirection,
-            dailyTemperatureRange,
+            climate?.dailyTemperatureRange,
             time.toZonedDateTime(),
             pressureChangeThreshold
         )

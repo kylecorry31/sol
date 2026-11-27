@@ -19,15 +19,23 @@ internal class PrecipitationPredictor : WeatherPredictor {
     private fun isPrecipitationFromPressure(factors: SolForecastFactors): Boolean {
         val pressure = factors.pressure
         val change12h = factors.change12h
+        val lowPressureFall = if (isDry(factors)) DRY_LOW_FALL_HPA * factors.sensitivityScale else 0f
         return pressure != null && factors.change3h != null && change12h != null &&
             (
-                (pressure <= LOW_HPA && change12h <= 0) ||
+                (pressure <= LOW_HPA && change12h <= -lowPressureFall) ||
                     change12h <= -FALL_HPA * factors.sensitivityScale
                 )
+    }
+
+    private fun isDry(factors: SolForecastFactors): Boolean {
+        val monthlyPrecipitation = factors.monthlyPrecipitationMm ?: return false
+        return monthlyPrecipitation < DRY_MONTH_MM
     }
 
     private companion object {
         const val LOW_HPA = 1012f
         const val FALL_HPA = 4f
+        const val DRY_MONTH_MM = 30f
+        const val DRY_LOW_FALL_HPA = 3f
     }
 }

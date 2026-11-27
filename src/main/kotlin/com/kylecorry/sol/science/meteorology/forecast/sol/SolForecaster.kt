@@ -1,6 +1,6 @@
 package com.kylecorry.sol.science.meteorology.forecast.sol
 
-import com.kylecorry.sol.math.Range
+import com.kylecorry.sol.science.meteorology.ForecastClimate
 import com.kylecorry.sol.science.meteorology.PressureSystem
 import com.kylecorry.sol.science.meteorology.WeatherCondition
 import com.kylecorry.sol.science.meteorology.WeatherForecast
@@ -23,7 +23,6 @@ import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
-import com.kylecorry.sol.units.Temperature
 import java.time.Duration
 import java.time.Instant
 
@@ -53,8 +52,8 @@ internal object SolForecaster : Forecaster {
     private data class Inputs(
         val pressures: List<Reading<Pressure>>,
         val clouds: List<Reading<CloudGenus?>>,
-        val dailyTemperatureRange: Range<Temperature>?,
-        val thresholds: SolForecastThresholds
+        val thresholds: SolForecastThresholds,
+        val climate: ForecastClimate?
     )
 
     private class Prediction(
@@ -66,7 +65,7 @@ internal object SolForecaster : Forecaster {
 
     override fun forecast(
         observations: List<WeatherObservation<*>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        climate: ForecastClimate?,
         time: Instant,
         pressureChangeThreshold: Float,
         pressureStormChangeThreshold: Float,
@@ -87,8 +86,8 @@ internal object SolForecaster : Forecaster {
             Inputs(
                 pressures,
                 clouds,
-                dailyTemperatureRange,
-                SolForecastThresholds(pressureChangeThreshold, pressureStormChangeThreshold)
+                SolForecastThresholds(pressureChangeThreshold, pressureStormChangeThreshold),
+                climate
             ),
             time
         )
@@ -146,9 +145,9 @@ internal object SolForecaster : Forecaster {
             filteredPressures,
             filteredClouds,
             inputs.thresholds,
-            inputs.dailyTemperatureRange,
+            inputs.climate?.dailyTemperatureRange,
             time
-        )
+        ).copy(climate = inputs.climate)
 
         val conditions = weatherPredictors.filter { it.second.isLikely(factors) }.map { it.first }
         val afterConditions = afterWeatherPredictors.filter { it.second.isLikely(factors) }.map { it.first }
@@ -164,14 +163,14 @@ internal object SolForecaster : Forecaster {
 
         val now = WeatherForecast(
             null,
-            ForecastHelper.addSecondaryConditions(conditions, inputs.dailyTemperatureRange),
+            ForecastHelper.addSecondaryConditions(conditions, inputs.climate?.dailyTemperatureRange),
             factors.weatherFront,
             factors.pressureSystem,
             factors.pressureTendency
         )
         val after = WeatherForecast(
             null,
-            ForecastHelper.addSecondaryConditions(afterConditions, inputs.dailyTemperatureRange),
+            ForecastHelper.addSecondaryConditions(afterConditions, inputs.climate?.dailyTemperatureRange),
             null,
             afterSystem
         )

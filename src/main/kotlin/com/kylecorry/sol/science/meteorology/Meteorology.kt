@@ -137,8 +137,7 @@ object Meteorology {
      * Forecast the weather for the next few hours
      * @param pressures the pressure readings
      * @param clouds the cloud readings, null cloud genus = Clear
-     * @param dailyTemperatureRange The daily temperature range for the given time
-     *   (the next 24 hours, but can be less than that)
+     * @param climate the climate information for the location being forecasted (null if unknown)
      * @param pressureChangeThreshold (Optional) The change threshold for pressure to be
      *   considered changing (hPa / hr)
      * @param pressureStormChangeThreshold (Optional) The change threshold for pressure
@@ -152,7 +151,7 @@ object Meteorology {
     fun forecast(
         pressures: List<Reading<Pressure>>,
         clouds: List<Reading<CloudGenus?>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        climate: ForecastClimate? = null,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
         time: Instant = Instant.now(),
@@ -163,7 +162,7 @@ object Meteorology {
         val cloudObservations = clouds.map { WeatherObservation.CloudGenus(it.time, it.value) }
         return forecast(
             pressureObservations + cloudObservations,
-            dailyTemperatureRange,
+            climate,
             pressureChangeThreshold,
             pressureStormChangeThreshold,
             time,
@@ -175,8 +174,7 @@ object Meteorology {
     /**
      * Forecast the weather for the next few hours
      * @param observations the weather observations
-     * @param dailyTemperatureRange The daily temperature range for the given time
-     *   (the next 24 hours, but can be less than that)
+     * @param climate the climate information for the location being forecasted (null if unknown)
      * @param pressureChangeThreshold (Optional) The change threshold for pressure to be
      *   considered changing (hPa / hr)
      * @param pressureStormChangeThreshold (Optional) The change threshold for pressure
@@ -189,7 +187,7 @@ object Meteorology {
      */
     fun forecast(
         observations: List<WeatherObservation<*>>,
-        dailyTemperatureRange: Range<Temperature>?,
+        climate: ForecastClimate? = null,
         pressureChangeThreshold: Float = 0.5f,
         pressureStormChangeThreshold: Float = 2f,
         time: Instant = Instant.now(),
@@ -204,7 +202,7 @@ object Meteorology {
 
         return forecaster.forecast(
             observations.sortedBy { it.time },
-            dailyTemperatureRange,
+            climate,
             time,
             pressureChangeThreshold,
             pressureStormChangeThreshold,
