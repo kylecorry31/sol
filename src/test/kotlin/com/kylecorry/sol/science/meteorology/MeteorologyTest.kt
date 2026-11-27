@@ -8,6 +8,9 @@ import com.kylecorry.sol.tests.isCloseTo
 import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertFalse
+import com.kylecorry.sol.science.meteorology.forecast.ForecastSource
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -526,6 +529,35 @@ class MeteorologyTest {
         }
     }
 
+    @Test
+    fun lowForecastSensitivityNeedsALargerFallForPrecipitation() {
+        val forecast = Meteorology.forecast(
+            linearPressure(1025f, 1020.5f),
+            emptyList(),
+            null,
+            pressureChangeThreshold = 2.5f / 3,
+            time = weatherTime
+        )
+
+        assertFalse(WeatherCondition.Precipitation in forecast.first().conditions)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "2026-11-27T09:44:00Z, 0.0, 0.0, 1.3496",
+        "2026-11-27T03:44:00Z, 0.0, 0.0, -0.5776",
+        "2026-11-27T05:12:00Z, 0.0, 0.0, -0.1990",
+        "2026-11-27T14:00:00Z, 41.9, -71.7, 0.5828",
+        "2026-06-01T20:30:00Z, -33.9, 151.2, 0.2634",
+        "2026-03-15T11:04:00Z, 90.0, 0.0, 0.0850",
+        "2026-01-10T00:00:00Z, 13.5, 144.8, 1.2489",
+        "2026-08-20T18:15:00Z, 61.2, -150.0, 0.0937"
+    )
+    fun getPressureTide(time: String, latitude: Double, longitude: Double, expectedHpa: Float) {
+        val tide = Meteorology.getPressureTide(Instant.parse(time), Coordinate(latitude, longitude))
+        assertEquals(expectedHpa, tide.hpa().value, 0.001f)
+    }
+
     companion object {
 
         @JvmStatic
@@ -648,6 +680,207 @@ class MeteorologyTest {
         @JvmStatic
         fun provideWeatherForecasts(): Stream<Arguments> {
             return Stream.of(
+                // Steady high pressure is clear
+                Arguments.of(
+                    steadyPressure(1025f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weatherAt(weatherTime, null, PressureSystem.High, tendencyOf(steadyPressure(1025f), PressureCharacteristic.Steady), WeatherCondition.Clear),
+                    weatherLater(PressureSystem.High)
+                ),
+
+                // Steady middling pressure has no conditions
+                Arguments.of(
+                    steadyPressure(1015f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(null, null, tendencyOf(steadyPressure(1015f), PressureCharacteristic.Steady)),
+                    weatherLater(null)
+                ),
+
+                // Falling low pressure brings precipitation
+                Arguments.of(
+                    linearPressure(1011.5f, 1010.5f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        null,
+                        null,
+                        tendencyOf(linearPressure(1011.5f, 1010.5f), PressureCharacteristic.Steady),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(null, WeatherCondition.Precipitation, WeatherCondition.Overcast)
+                ),
+
+                // A 12 hour fall of 4 hPa brings precipitation even at high pressure
+                Arguments.of(
+                    linearPressure(1025f, 1020.5f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        null,
+                        null,
+                        tendencyOf(linearPressure(1025f, 1020.5f), PressureCharacteristic.Steady),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(null, WeatherCondition.Precipitation, WeatherCondition.Overcast)
+                ),
+
+                // A 12 hour fall of 5 hPa also brings wind
+                Arguments.of(
+                    linearPressure(1025f, 1019.5f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        null,
+                        null,
+                        tendencyOf(linearPressure(1025f, 1019.5f), PressureCharacteristic.Steady),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(null, WeatherCondition.Precipitation, WeatherCondition.Overcast)
+                ),
+
+                // A sudden 3 hour drop is a storm
+                Arguments.of(
+                    suddenDrop(1015f, 7f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        WeatherFront.Warm,
+                        PressureSystem.Low,
+                        tendencyOf(suddenDrop(1015f, 7f), PressureCharacteristic.FallingFast),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(PressureSystem.Low, WeatherCondition.Precipitation, WeatherCondition.Overcast)
+                ),
+
+                // A deep low that is still falling is a storm
+                Arguments.of(
+                    linearPressure(1005.5f, 1002f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        null,
+                        PressureSystem.Low,
+                        tendencyOf(linearPressure(1005.5f, 1002f), PressureCharacteristic.Steady),
+                        WeatherCondition.Storm,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(PressureSystem.Low, WeatherCondition.Precipitation, WeatherCondition.Overcast)
+                ),
+
+                // Less than 2 hours of history has no pressure based conditions
+                Arguments.of(
+                    steadyPressure(1025f, hours = 1),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(null, PressureSystem.High, tendencyOf(steadyPressure(1025f, hours = 1), PressureCharacteristic.Steady)),
+                    weatherLater(PressureSystem.High)
+                ),
+
+                // The last sky condition carries forward for up to 8 hours
+                Arguments.of(
+                    skySwitch(3),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weatherAt(weatherTime, null, null, tendencyOf(skySwitch(3), PressureCharacteristic.Steady), WeatherCondition.Clear),
+                    weatherLater(null)
+                ),
+
+                // But not for longer
+                Arguments.of(
+                    skySwitch(10),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(null, null, tendencyOf(skySwitch(10), PressureCharacteristic.Steady)),
+                    weatherLater(null)
+                ),
+
+                // Low pressure that is still falling brings precipitation later
+                Arguments.of(
+                    linearPressure(1012f, 1010f, hours = 24),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(
+                        null,
+                        null,
+                        tendencyOf(linearPressure(1012f, 1010f, hours = 24), PressureCharacteristic.Steady),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(null, WeatherCondition.Precipitation, WeatherCondition.Overcast)
+                ),
+
+                // Low pressure that is rising does not bring precipitation later, and clears
+                Arguments.of(
+                    linearPressure(1006f, 1010f, hours = 24),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weatherAt(
+                        weatherTime,
+                        null,
+                        null,
+                        tendencyOf(linearPressure(1006f, 1010f, hours = 24), PressureCharacteristic.Steady),
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(null, WeatherCondition.Clear)
+                ),
+
+                // Rising pressure clears later
+                Arguments.of(
+                    linearPressure(1014f, 1016f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(null, null, tendencyOf(linearPressure(1014f, 1016f), PressureCharacteristic.Steady)),
+                    weatherLater(null, WeatherCondition.Clear)
+                ),
+
+                // Unsettled, falling pressure is overcast later
+                Arguments.of(
+                    unsettledPressure(),
+                    emptyList<Reading<CloudGenus?>>(),
+                    null,
+                    weather(null, null, tendencyOf(unsettledPressure(), PressureCharacteristic.Steady)),
+                    weatherLater(null, WeatherCondition.Overcast)
+                ),
+
+                // Precipitation type follows the mean temperature
+                precipitationType(-6f, 1f, WeatherCondition.Snow),
+                precipitationType(-2f, 2f, WeatherCondition.Snow),
+                precipitationType(-1f, 4f, WeatherCondition.Rain),
+                precipitationType(5f, 12f, WeatherCondition.Rain),
+
+                // Storms are only thunderstorms when the high is at least 15 C
+                thunderstorm(6f, 14f, false),
+                thunderstorm(8f, 16f, true),
+
+                // Temperatures do not add conditions without precipitation
+                Arguments.of(
+                    steadyPressure(1025f),
+                    emptyList<Reading<CloudGenus?>>(),
+                    temperatures(-10f, -5f),
+                    weatherAt(weatherTime, null, PressureSystem.High, tendencyOf(steadyPressure(1025f), PressureCharacteristic.Steady), WeatherCondition.Clear),
+                    weatherLater(PressureSystem.High)
+                ),
+
+                // An overcast cloud is overcast even at steady high pressure
+                Arguments.of(
+                    steadyPressure(1025f),
+                    listOf(Reading<CloudGenus?>(CloudGenus.Stratus, weatherTime)),
+                    null,
+                    weatherAt(weatherTime, null, PressureSystem.High, tendencyOf(steadyPressure(1025f), PressureCharacteristic.Steady), WeatherCondition.Overcast),
+                    weatherLater(PressureSystem.High)
+                ),
+
                 // Pressure only - storm (warm temps)
                 Arguments.of(
                     pressures(1030f, 1021f),
@@ -658,6 +891,7 @@ class MeteorologyTest {
                         null,
                         PressureTendency(PressureCharacteristic.FallingFast, -3f),
                         WeatherCondition.Storm,
+                        WeatherCondition.Thunderstorm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
@@ -665,7 +899,9 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast,
+                        WeatherCondition.Rain
                     )
                 ),
                 // Pressure only - storm (cold temps)
@@ -685,7 +921,9 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast,
+                        WeatherCondition.Snow
                     )
                 ),
                 // Pressure only - storm (slightly warm temps)
@@ -701,10 +939,13 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
+                        WeatherCondition.Rain
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast,
+                        WeatherCondition.Rain
                     )
                 ),
                 // Pressure only - storm (slightly cold temps)
@@ -720,10 +961,13 @@ class MeteorologyTest {
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
                         WeatherCondition.Overcast,
+                        WeatherCondition.Snow
                     ),
                     weatherLater(
                         PressureSystem.Low,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast,
+                        WeatherCondition.Snow
                     )
                 ),
                 // Pressure only - worsening slow
@@ -731,11 +975,11 @@ class MeteorologyTest {
                     pressures(1030f, 1027f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weather(
+                    weatherAt(
+                        weatherTime,
                         WeatherFront.Warm,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Falling, -1f),
-                        WeatherCondition.Precipitation,
                         WeatherCondition.Overcast,
                     ),
                     weatherLater(
@@ -757,6 +1001,7 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
+                        WeatherCondition.Precipitation,
                         WeatherCondition.Overcast
                     )
                 ),
@@ -766,7 +1011,8 @@ class MeteorologyTest {
                     pressures(1027f, 1030f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weather(
+                    weatherAt(
+                        weatherTime,
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Rising, 1f),
@@ -797,15 +1043,14 @@ class MeteorologyTest {
                     pressures(1005f, 1009f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weatherAt(
-                        weatherTime,
+                    weather(
                         WeatherFront.Cold,
                         PressureSystem.Low,
-                        PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f),
-                        WeatherCondition.Wind
+                        PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f)
                     ),
                     weatherLater(
-                        null
+                        null,
+                        WeatherCondition.Clear
                     )
                 ),
 
@@ -924,7 +1169,8 @@ class MeteorologyTest {
                         WeatherCondition.Storm,
                         WeatherCondition.Precipitation,
                         WeatherCondition.Wind,
-                        WeatherCondition.Overcast
+                        WeatherCondition.Overcast,
+                        WeatherCondition.Snow
                     ),
                     weatherLater(
                         PressureSystem.High,
@@ -994,7 +1240,8 @@ class MeteorologyTest {
                         WeatherCondition.Overcast
                     ),
                     weatherLater(
-                        null
+                        null,
+                        WeatherCondition.Overcast
                     )
                 ),
                 // warm front (fast)
@@ -1013,6 +1260,7 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
+                        WeatherCondition.Precipitation,
                         WeatherCondition.Overcast
                     )
                 ),
@@ -1033,6 +1281,7 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.Low,
+                        WeatherCondition.Precipitation,
                         WeatherCondition.Overcast
                     )
                 ),
@@ -1072,7 +1321,9 @@ class MeteorologyTest {
                         WeatherCondition.Overcast
                     ),
                     weatherLater(
-                        null
+                        null,
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast
                     )
                 ),
                 // cold front (storm)
@@ -1092,7 +1343,8 @@ class MeteorologyTest {
                     ),
                     weatherLater(
                         PressureSystem.High,
-                        WeatherCondition.Clear
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Overcast
                     )
                 ),
 
@@ -1101,7 +1353,8 @@ class MeteorologyTest {
                     pressures(1027f, 1030f),
                     clouds(CloudGenus.Cirrus, CloudGenus.Altocumulus, CloudGenus.Cumulus),
                     null,
-                    weather(
+                    weatherAt(
+                        weatherTime,
                         WeatherFront.Cold,
                         PressureSystem.High,
                         PressureTendency(PressureCharacteristic.Rising, 1f),
@@ -1126,32 +1379,51 @@ class MeteorologyTest {
                         WeatherCondition.Overcast
                     ),
                     weatherLater(
-                        PressureSystem.High,
-                        WeatherCondition.Clear
+                        PressureSystem.High
                     )
                 ),
 
-                // Clear in low pressure
+                // Clear in low pressure (rising)
                 Arguments.of(
-                    pressures(1000f, 1000f),
+                    pressures(1000f, 1004f),
                     clouds(null),
                     null,
                     weatherAt(
                         weatherTime,
-                        null,
+                        WeatherFront.Cold,
                         PressureSystem.Low,
-                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        PressureTendency(PressureCharacteristic.RisingFast, 4 / 3f),
                         WeatherCondition.Clear
                     ),
                     weatherLater(
+                        null,
+                        WeatherCondition.Clear
+                    )
+                ),
+
+                // Clear cloud reading does not override steady low pressure precipitation
+                Arguments.of(
+                    pressures(1000f, 1000f),
+                    clouds(null),
+                    null,
+                    weather(
+                        null,
                         PressureSystem.Low,
+                        PressureTendency(PressureCharacteristic.Steady, 0f),
+                        WeatherCondition.Precipitation,
+                        WeatherCondition.Wind,
+                        WeatherCondition.Overcast
+                    ),
+                    weatherLater(
+                        PressureSystem.Low,
+                        WeatherCondition.Precipitation,
                         WeatherCondition.Overcast
                     )
                 ),
 
                 // Unknown
                 Arguments.of(
-                    pressures(1022f, 1022f),
+                    pressures(1015f, 1015f),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
                     weather(
@@ -1165,15 +1437,16 @@ class MeteorologyTest {
                 // Replaces unknown forecast (using pressure)
                 Arguments.of(
                     pressures(
-                        1024f,
-                        1023f
+                        1020.5f,
+                        1020.5f
                     ).map { it.copy(time = it.time.minus(Duration.ofHours(6))) } + pressures(
-                        1022f,
-                        1022f
+                        1019.5f,
+                        1019.5f
                     ),
                     emptyList<Reading<CloudGenus?>>(),
                     null,
-                    weather(
+                    weatherAt(
+                        weatherTime,
                         null,
                         null,
                         PressureTendency(PressureCharacteristic.Steady, 0f),
@@ -1182,19 +1455,18 @@ class MeteorologyTest {
                     weatherLater(null)
                 ),
 
-                // Replaces unknown forecast (using clouds)
+                // Does not replace unknown forecast using clouds older than 3 hours
                 Arguments.of(
                     pressures(
-                        1022f,
-                        1022f
+                        1015f,
+                        1015f
                     ),
                     clouds(CloudGenus.Stratus).map { it.copy(time = it.time.minus(Duration.ofHours(6))) },
                     null,
                     weather(
                         null,
                         null,
-                        PressureTendency(PressureCharacteristic.Steady, 0f),
-                        WeatherCondition.Overcast
+                        PressureTendency(PressureCharacteristic.Steady, 0f)
                     ),
                     weatherLater(null)
                 ),
@@ -1301,6 +1573,92 @@ class MeteorologyTest {
                 front,
                 system,
                 tendency
+            )
+        }
+
+        private fun steadyPressure(hpa: Float, hours: Long = 24): List<Reading<Pressure>> {
+            return linearPressure(hpa, hpa, hours)
+        }
+
+        private fun linearPressure(
+            from: Float,
+            to: Float,
+            hours: Long = 12,
+            start: Instant = weatherTime.minus(Duration.ofHours(hours))
+        ): List<Reading<Pressure>> {
+            return (0..hours).map {
+                Reading(Pressure.hpa(from + (to - from) * it / hours), start.plus(Duration.ofHours(it)))
+            }
+        }
+
+        private fun suddenDrop(hpa: Float, drop: Float): List<Reading<Pressure>> {
+            return (12 downTo 0).map { hoursAgo ->
+                val fraction = if (hoursAgo >= 3) 0f else (3 - hoursAgo) / 3f
+                Reading(Pressure.hpa(hpa - drop * fraction), weatherTime.minus(Duration.ofHours(hoursAgo.toLong())))
+            }
+        }
+
+        private fun skySwitch(hoursSinceClear: Long): List<Reading<Pressure>> {
+            val switch = weatherTime.minus(Duration.ofHours(hoursSinceClear))
+            return (24 downTo 0).map {
+                val time = weatherTime.minus(Duration.ofHours(it.toLong()))
+                Reading(Pressure.hpa(if (time < switch) 1020.5f else 1019.5f), time)
+            }
+        }
+
+        private fun unsettledPressure(): List<Reading<Pressure>> {
+            return linearPressure(1022f, 1014f, hours = 24, start = weatherTime.minus(Duration.ofHours(48))) +
+                linearPressure(1014f, 1013.2f, hours = 24).drop(1)
+        }
+
+        private fun tendencyOf(pressures: List<Reading<Pressure>>, characteristic: PressureCharacteristic): PressureTendency {
+            val current = pressures.last()
+            val target = current.time.minus(Duration.ofHours(3))
+            val past = pressures.filter { it != current }.minBy { Duration.between(it.time, target).abs() }
+            val seconds = Duration.between(past.time, current.time).seconds
+            val change = current.value.hpa().value - past.value.hpa().value
+            return PressureTendency(characteristic, (change / seconds) * 60 * 60)
+        }
+
+        private fun precipitationType(low: Float, high: Float, type: WeatherCondition): Arguments {
+            val pressures = linearPressure(1011.5f, 1010.5f)
+            return Arguments.of(
+                pressures,
+                emptyList<Reading<CloudGenus?>>(),
+                temperatures(low, high),
+                weather(
+                    null,
+                    null,
+                    tendencyOf(pressures, PressureCharacteristic.Steady),
+                    WeatherCondition.Precipitation,
+                    WeatherCondition.Overcast,
+                    type
+                ),
+                weatherLater(null, WeatherCondition.Precipitation, WeatherCondition.Overcast, type)
+            )
+        }
+
+        private fun thunderstorm(low: Float, high: Float, isThunderstorm: Boolean): Arguments {
+            val pressures = linearPressure(1015f, 1005f, hours = 3)
+            val conditions = listOfNotNull(
+                WeatherCondition.Storm,
+                WeatherCondition.Thunderstorm.takeIf { isThunderstorm },
+                WeatherCondition.Precipitation,
+                WeatherCondition.Wind,
+                WeatherCondition.Overcast,
+                WeatherCondition.Rain
+            )
+            return Arguments.of(
+                pressures,
+                emptyList<Reading<CloudGenus?>>(),
+                temperatures(low, high),
+                weather(
+                    WeatherFront.Warm,
+                    PressureSystem.Low,
+                    tendencyOf(pressures, PressureCharacteristic.FallingFast),
+                    *conditions.toTypedArray()
+                ),
+                weatherLater(PressureSystem.Low, WeatherCondition.Precipitation, WeatherCondition.Overcast, WeatherCondition.Rain)
             )
         }
 

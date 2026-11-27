@@ -1,23 +1,17 @@
 package com.kylecorry.sol.science.meteorology.forecast.sol.predictors
 
-import com.kylecorry.sol.science.meteorology.WeatherFront
 import com.kylecorry.sol.science.meteorology.forecast.sol.SolForecastFactors
-import com.kylecorry.sol.units.Temperature
 
-internal class ThunderstormPredictor(pressureTendencyStormThreshold: Float) : WeatherPredictor {
+internal class ThunderstormPredictor : WeatherPredictor {
 
-    private val stormPredictor = StormPredictor(pressureTendencyStormThreshold)
+    private val stormPredictor = StormPredictor()
 
     override fun isLikely(factors: SolForecastFactors): Boolean {
-        if (!stormPredictor.isLikely(factors)) {
-            return false
-        }
-
-        val temp = factors.temperatureRangeDaily?.end?.celsius() ?: Temperature.zero
-        return factors.weatherFront == WeatherFront.Cold && temp > TEMPERATURE_THUNDERSTORM_MIN
+        val dailyHigh = factors.temperatureRangeDaily?.end?.celsius()?.value ?: return false
+        return dailyHigh >= THUNDERSTORM_MIN_HIGH_CELSIUS && stormPredictor.isLikely(factors)
     }
 
-    companion object {
-        private val TEMPERATURE_THUNDERSTORM_MIN = Temperature.fahrenheit(55f).celsius()
+    private companion object {
+        const val THUNDERSTORM_MIN_HIGH_CELSIUS = 15f
     }
 }

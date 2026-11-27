@@ -13,13 +13,13 @@ import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.HighPressur
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.LowPressureLaterPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.OvercastLaterPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.OvercastPredicator
+import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.PrecipitationLaterPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.PrecipitationPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.StormPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.ThunderstormPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.WeatherPredictor
 import com.kylecorry.sol.science.meteorology.forecast.sol.predictors.WindPredictor
 import com.kylecorry.sol.science.meteorology.observation.WeatherObservation
-import com.kylecorry.sol.time.Time
 import com.kylecorry.sol.units.Coordinate
 import com.kylecorry.sol.units.Pressure
 import com.kylecorry.sol.units.Reading
@@ -28,11 +28,41 @@ import java.time.Duration
 import java.time.Instant
 
 internal object SolForecaster : Forecaster {
-    private val HISTORY_DURATION_NO_CHANGE_MAX = Duration.ofHours(8)
+    private val SKY_PERSISTENCE_MAX = Duration.ofHours(8)
     private val HISTORY_DURATION_MAX = Duration.ofHours(48)
     private val CLOUDS_UP_TO_DATE_DURATION = Duration.ofHours(24)
+    private val SKY_CONDITIONS = setOf(WeatherCondition.Clear, WeatherCondition.Overcast)
     private val lowPressureLaterPredictor = LowPressureLaterPredictor()
     private val highPressureLaterPredictor = HighPressureLaterPredictor()
+
+    private val weatherPredictors = listOf(
+        WeatherCondition.Storm to StormPredictor(),
+        WeatherCondition.Thunderstorm to ThunderstormPredictor(),
+        WeatherCondition.Precipitation to PrecipitationPredictor(),
+        WeatherCondition.Wind to WindPredictor(),
+        WeatherCondition.Clear to ClearPredictor(),
+        WeatherCondition.Overcast to OvercastPredicator()
+    )
+
+    private val afterWeatherPredictors = listOf(
+        WeatherCondition.Precipitation to PrecipitationLaterPredictor(),
+        WeatherCondition.Clear to ClearLaterPredictor(),
+        WeatherCondition.Overcast to OvercastLaterPredictor()
+    )
+
+    private data class Inputs(
+        val pressures: List<Reading<Pressure>>,
+        val clouds: List<Reading<CloudGenus?>>,
+        val dailyTemperatureRange: Range<Temperature>?,
+        val thresholds: SolForecastThresholds
+    )
+
+    private class Prediction(
+        val now: WeatherForecast,
+        val after: WeatherForecast,
+        val factors: SolForecastFactors,
+        val clouds: List<Reading<CloudGenus?>>
+    )
 
     override fun forecast(
         observations: List<WeatherObservation<*>>,
@@ -54,114 +84,56 @@ internal object SolForecaster : Forecaster {
             .map { it.asReading() }
 
         return forecast(
-            pressures,
-            clouds,
-            dailyTemperatureRange,
-            time,
-            pressureChangeThreshold,
-            pressureStormChangeThreshold
-        )
-    }
-
-    private fun forecast(
-        pressures: List<Reading<Pressure>>,
-        clouds: List<Reading<CloudGenus?>>,
-        dailyTemperatureRange: Range<Temperature>? = null,
-        time: Instant = Instant.now(),
-        pressureChangeThreshold: Float = 1.5f,
-        pressureStormChangeThreshold: Float = 2f
-    ): List<WeatherForecast> {
-        val weatherPredictors = listOf(
-            WeatherCondition.Storm to StormPredictor(pressureStormChangeThreshold),
-            WeatherCondition.Thunderstorm to ThunderstormPredictor(pressureStormChangeThreshold),
-            WeatherCondition.Precipitation to PrecipitationPredictor(),
-            WeatherCondition.Wind to WindPredictor(),
-            WeatherCondition.Clear to ClearPredictor(),
-            WeatherCondition.Overcast to OvercastPredicator()
-        )
-
-        val afterWeatherPredictors = listOf(
-            WeatherCondition.Clear to ClearLaterPredictor(),
-            WeatherCondition.Overcast to OvercastLaterPredictor()
-        )
-
-        val forecast = forecastHelper(
-            pressures,
-            clouds,
-            dailyTemperatureRange,
-            time,
-            pressureChangeThreshold,
-            weatherPredictors,
-            afterWeatherPredictors
-        )
-
-        // There are current conditions, so just return the forecast
-        if (forecast.first().conditions.isNotEmpty()) {
-            return forecast
-        }
-
-        // Try to figure out what the current conditions are based on past predictions
-        val times = pressures.map { it.time } + clouds.map { it.time }
-        var startTime = Time.getClosestPastTime(time, times)
-        val minTime = time.minus(HISTORY_DURATION_NO_CHANGE_MAX)
-        val maxIterations = times.size
-        var i = 0
-        while (startTime != null && startTime.isAfter(minTime) && i < maxIterations) {
-            val previous = forecastHelper(
+            Inputs(
                 pressures,
                 clouds,
                 dailyTemperatureRange,
-                startTime,
-                pressureChangeThreshold,
-                weatherPredictors,
-                afterWeatherPredictors
-            )
-
-            // Get the conditions of the previous prediction, starting with the furthest out prediction
-            val conditions = previous
-                .reversed()
-                .firstOrNull { it.conditions.isNotEmpty() }
-                ?.conditions
-                .orEmpty()
-
-            if (conditions.isNotEmpty()) {
-                return forecast.withCurrentConditions(conditions)
-            }
-
-            val newTime = Time.getClosestPastTime(startTime, times)
-            check(startTime != newTime)
-            startTime = newTime
-            i++
-        }
-
-        return forecast
+                SolForecastThresholds(pressureChangeThreshold, pressureStormChangeThreshold)
+            ),
+            time
+        )
     }
 
-    private fun List<WeatherForecast>.withCurrentConditions(conditions: List<WeatherCondition>): List<WeatherForecast> {
-        return mapIndexed { index, value ->
-            if (index == 0) {
-                value.copy(conditions = conditions)
-            } else {
-                value
-            }
+    private fun forecast(inputs: Inputs, time: Instant): List<WeatherForecast> {
+        val prediction = predict(inputs, time)
+        val now = if (prediction.now.conditions.any { it in SKY_CONDITIONS }) {
+            prediction.now
+        } else {
+            val sky = getRecentSky(inputs, time)
+            prediction.now.copy(conditions = prediction.now.conditions + listOfNotNull(sky))
         }
+
+        val arrivalTime = ArrivalTimeCalculator.getArrivalTime(
+            time,
+            now,
+            prediction.clouds,
+            prediction.factors.doCloudsIndicateWeatherFront
+        )
+
+        return listOf(now.copy(time = arrivalTime), prediction.after)
     }
 
-    private fun forecastHelper(
-        pressures: List<Reading<Pressure>>,
-        clouds: List<Reading<CloudGenus?>>,
-        dailyTemperatureRange: Range<Temperature>? = null,
-        time: Instant = Instant.now(),
-        pressureChangeThreshold: Float = 1.5f,
-        weatherPredictors: List<Pair<WeatherCondition, WeatherPredictor>>,
-        afterWeatherPredictors: List<Pair<WeatherCondition, WeatherPredictor>>,
-    ): List<WeatherForecast> {
+    private fun getRecentSky(inputs: Inputs, time: Instant): WeatherCondition? {
+        val earliest = time.minus(SKY_PERSISTENCE_MAX)
+        val pressureOnlyInputs = inputs.copy(clouds = emptyList())
+        return inputs.pressures
+            .asSequence()
+            .map { it.time }
+            .filter { it in earliest..<time }
+            .distinct()
+            .sortedDescending()
+            .firstNotNullOfOrNull { at ->
+                predict(pressureOnlyInputs, at).now.conditions.firstOrNull { it in SKY_CONDITIONS }
+            }
+    }
+
+    private fun predict(inputs: Inputs, time: Instant): Prediction {
         val oldest = time.minus(HISTORY_DURATION_MAX)
         val cloudsUpToDateTime = time.minus(CLOUDS_UP_TO_DATE_DURATION)
-        val filteredPressures = pressures
+        val filteredPressures = inputs.pressures
             .filter { it.time in oldest..time }
             .sortedBy { it.time }
-        var filteredClouds = clouds
+        var filteredClouds = inputs.clouds
             .filter { it.time in oldest..time }
             .sortedBy { it.time }
 
@@ -170,30 +142,16 @@ internal object SolForecaster : Forecaster {
             filteredClouds = emptyList()
         }
 
-        // Forecast factors
         val factors = SolForecastFactorCalculator.calculate(
             filteredPressures,
             filteredClouds,
-            pressureChangeThreshold,
-            dailyTemperatureRange,
+            inputs.thresholds,
+            inputs.dailyTemperatureRange,
             time
         )
 
-        val conditions = mutableListOf<WeatherCondition>()
-        val afterConditions = mutableListOf<WeatherCondition>()
-
-        for (predictor in weatherPredictors) {
-            if (predictor.second.isLikely(factors)) {
-                conditions.add(predictor.first)
-            }
-        }
-
-        // After
-        for (predictor in afterWeatherPredictors) {
-            if (predictor.second.isLikely(factors)) {
-                afterConditions.add(predictor.first)
-            }
-        }
+        val conditions = weatherPredictors.filter { it.second.isLikely(factors) }.map { it.first }
+        val afterConditions = afterWeatherPredictors.filter { it.second.isLikely(factors) }.map { it.first }
 
         val afterSystem =
             if (highPressureLaterPredictor.isLikely(factors)) {
@@ -206,20 +164,18 @@ internal object SolForecaster : Forecaster {
 
         val now = WeatherForecast(
             null,
-            ForecastHelper.addSecondaryConditions(conditions, dailyTemperatureRange),
+            ForecastHelper.addSecondaryConditions(conditions, inputs.dailyTemperatureRange),
             factors.weatherFront,
             factors.pressureSystem,
             factors.pressureTendency
         )
         val after = WeatherForecast(
             null,
-            ForecastHelper.addSecondaryConditions(afterConditions, dailyTemperatureRange),
+            ForecastHelper.addSecondaryConditions(afterConditions, inputs.dailyTemperatureRange),
             null,
             afterSystem
         )
 
-        val arrivalTime = ArrivalTimeCalculator.getArrivalTime(time, now, filteredClouds)
-
-        return listOf(now.copy(time = arrivalTime), after)
+        return Prediction(now, after, factors, filteredClouds)
     }
 }

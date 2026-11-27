@@ -36,6 +36,7 @@ internal object ForecastHelper {
         // Precipitation should always be paired with overcast
         if (mutableConditions.contains(WeatherCondition.Precipitation)) {
             mutableConditions.add(WeatherCondition.Overcast)
+            mutableConditions.remove(WeatherCondition.Clear)
 
             // Try to infer the precipitation type
             val precipitationType = getPrecipitationType(dailyTemperatureRange)
@@ -89,14 +90,7 @@ internal object ForecastHelper {
     private fun getPrecipitationType(temperatures: Range<Temperature>?): WeatherCondition? {
         temperatures ?: return null
 
-        if (temperatures.start.celsius().value > 0) {
-            return WeatherCondition.Rain
-        }
-
-        if (temperatures.end.celsius().value <= 0) {
-            return WeatherCondition.Snow
-        }
-
-        return null
+        val meanCelsius = (temperatures.start.celsius().value + temperatures.end.celsius().value) / 2
+        return if (meanCelsius <= 0) WeatherCondition.Snow else WeatherCondition.Rain
     }
 }

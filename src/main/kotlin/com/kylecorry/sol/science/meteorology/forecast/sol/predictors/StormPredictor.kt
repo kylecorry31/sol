@@ -2,21 +2,30 @@ package com.kylecorry.sol.science.meteorology.forecast.sol.predictors
 
 import com.kylecorry.sol.science.meteorology.WeatherFront
 import com.kylecorry.sol.science.meteorology.forecast.sol.SolForecastFactors
-import kotlin.math.absoluteValue
 
-internal class StormPredictor(private val pressureTendencyStormThreshold: Float) : WeatherPredictor {
+internal class StormPredictor : WeatherPredictor {
     override fun isLikely(factors: SolForecastFactors): Boolean {
-        if (factors.pressureTendency.characteristic.isRising) {
-            return false
-        }
+        return isStormFromClouds(factors) || isStormFromPressure(factors)
+    }
 
-        if (factors.weatherFrontFromCloudsOnly == WeatherFront.Cold) {
-            return true
-        }
+    private fun isStormFromClouds(factors: SolForecastFactors): Boolean {
+        return !factors.pressureTendency.characteristic.isRising &&
+            factors.weatherFrontFromCloudsOnly == WeatherFront.Cold
+    }
 
-        return (
-            factors.pressureTendency.characteristic.isFalling &&
-                factors.pressureTendency.amount.absoluteValue >= pressureTendencyStormThreshold.absoluteValue
-            )
+    private fun isStormFromPressure(factors: SolForecastFactors): Boolean {
+        val pressure = factors.pressure
+        val change3h = factors.change3h
+        val change12h = factors.change12h
+        return pressure != null && change3h != null && change12h != null &&
+            (
+                change3h <= -factors.stormDrop3h ||
+                    (pressure <= DEEP_LOW_HPA && change12h <= -DEEP_LOW_FALL_HPA)
+                )
+    }
+
+    private companion object {
+        const val DEEP_LOW_HPA = 1003f
+        const val DEEP_LOW_FALL_HPA = 3f
     }
 }

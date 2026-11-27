@@ -65,6 +65,17 @@ object Meteorology {
     }
 
     /**
+     * Estimates the atmospheric pressure tide, the daily oscillation in surface pressure
+     * caused by solar heating. Subtract it from a reading to remove the tide before forecasting.
+     * @param time the time of the reading
+     * @param location the location of the reading
+     * @return the pressure offset (hPa), positive when the tide raises the pressure
+     */
+    fun getPressureTide(time: Instant, location: Coordinate): Pressure {
+        return Pressure.hpa(PressureTide.getOffsetHpa(time, location))
+    }
+
+    /**
      * Calculates the tendency
      * @param last The last pressure reading (hPa)
      * @param current The current pressure reading (hPa)

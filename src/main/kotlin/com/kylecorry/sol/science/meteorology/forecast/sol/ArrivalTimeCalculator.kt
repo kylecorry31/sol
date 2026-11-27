@@ -1,6 +1,5 @@
 package com.kylecorry.sol.science.meteorology.forecast.sol
 
-import com.kylecorry.sol.science.meteorology.PressureCharacteristic
 import com.kylecorry.sol.science.meteorology.WeatherCondition
 import com.kylecorry.sol.science.meteorology.WeatherForecast
 import com.kylecorry.sol.science.meteorology.clouds.CloudGenus
@@ -13,29 +12,16 @@ internal object ArrivalTimeCalculator {
     fun getArrivalTime(
         time: Instant,
         forecast: WeatherForecast,
-        clouds: List<Reading<CloudGenus?>>
+        clouds: List<Reading<CloudGenus?>>,
+        doCloudsIndicatePrecipitation: Boolean
     ): Instant? {
-
-        val hasSkyCondition =
-            forecast.conditions.contains(WeatherCondition.Clear) || forecast.conditions.contains(
-                WeatherCondition.Overcast
-            )
-        val isSteady = forecast.tendency?.characteristic == PressureCharacteristic.Steady
-        val hasSingleCondition = forecast.conditions.size == 1
-        val hasWindCondition = forecast.conditions.contains(WeatherCondition.Wind)
-        val hasSteadySkyCondition = hasSkyCondition && isSteady
-
-        if (hasSingleCondition && (hasSteadySkyCondition || hasWindCondition)) {
-            return time
+        if (forecast.conditions.contains(WeatherCondition.Precipitation)) {
+            if (!doCloudsIndicatePrecipitation) {
+                return null
+            }
+            return CloudPrecipitationCalculator().getPrecipitationTime(clouds)?.middle()
         }
 
-        // Can't currently predict the time for other conditions
-        if (!forecast.conditions.contains(WeatherCondition.Precipitation)) {
-            return null
-        }
-
-        val cloudIndicatedArrivalRange = CloudPrecipitationCalculator().getPrecipitationTime(clouds)
-
-        return cloudIndicatedArrivalRange?.middle()
+        return time.takeIf { forecast.conditions.isNotEmpty() }
     }
 }
